@@ -1,0 +1,55 @@
+{% set data= load_setup_py_data() %}
+package:
+    name: consdb
+    version: {{ data.get('version') }}
+
+source:
+    path: ../
+
+build:
+    noarch: python
+    script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
+    script_env:
+        - PATH
+        - PYTHONPATH
+        - LD_LIBRARY_PATH
+        - OSPL_HOME
+        - PYTHON_BUILD_VERSION
+        - PYTHON_BUILD_LOCATION
+        - LSST_DDS_DOMAIN
+        # Replace with csc configuration repo directory, i.e. TS_CONFIG_ATTCS_DIR for athexapod
+
+test:
+    requires:
+        - ts-conda-build
+        - ts-dds
+        - ts-idl {{ idl_version }}
+        - ts-salobj {{ salobj_version }}
+    source_files:
+        - python
+        - bin
+        - tests
+        - schema
+        - setup.cfg
+        - pyproject.toml
+    commands:
+        - pytest
+
+requirements:
+    host:
+        - python {{ python }}
+        - pip
+        - setuptools_scm
+        - setuptools
+        - pytest-runner
+    build:
+        - python {{ python }}
+        - setuptools_scm
+        - setuptools
+        - ts-conda-build =0.3
+    run:
+        - python {{ python }}
+        - setuptools
+        - setuptools_scm
+        - ts-salobj
+        - ts-idl
