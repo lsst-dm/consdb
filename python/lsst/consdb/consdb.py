@@ -114,6 +114,7 @@ class ConsDB(salobj.ConfigurableCsc):
 
     valid_simulation_modes = (0, 1)
     version = __version__
+    remotes = {}  ## list of remotes we listen to
 
     def __init__(
         self,
@@ -131,6 +132,7 @@ class ConsDB(salobj.ConfigurableCsc):
             override=override,
             simulation_mode=simulation_mode,
         )
+        self.create_callbacks()
 
     @classmethod
     def get_config_pkg(cls) -> str:
@@ -142,7 +144,33 @@ class ConsDB(salobj.ConfigurableCsc):
     async def handle_summary_state(self) -> None:
         pass
 
+    async def end_enable(self, data):
+        """Executed after state is enabled.
+        So start listening and updateing the ConcsDB"""
+        pass
 
+    def create_callbacks(self):
+        """Get the remote(s) and set the callback function(s).
+        We may be able to make this work on a single callback."""
+
+        ## Move to config file ?
+        cameras = ['ATCamera', 'MTCamera', 'CCCamera']
+        remote = None
+        async with salobj.Domain() as domain:
+            for camera in cameras:
+                try
+                remote = salobj.Remote(domain=domain, name=camera)
+                #Assume that may fail
+                if remote:
+                    self.remotes[camera] = remote
+                    getattr(remote, 'evt_endOfImageTelemetry').callback = \
+                        self.handle_callback
+                else:
+                    self.log.warn(f"Failed to create remote for {camera}")
+
+    def handle_callback(self, data):
+        """ One callback function can handle any/all cameras"""
+        pass
 def run_consdb() -> None:
     """Run the ConsDB CSC."""
     asyncio.run(ConsDB.amain())
