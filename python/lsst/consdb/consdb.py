@@ -149,6 +149,9 @@ class ConsDB(salobj.ConfigurableCsc):
         So start listening and updateing the ConcsDB"""
         pass
 
+    def get_remotes(self):
+        return self.remotes
+
     def create_callbacks(self):
         """Get the remote(s) and set the callback function(s).
         We may be able to make this work on a single callback."""
