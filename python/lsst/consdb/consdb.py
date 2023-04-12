@@ -120,7 +120,7 @@ class ConsDB(salobj.ConfigurableCsc):
 
     def __init__(
         self,
-        config_dir: str | None = None,
+        config_dir: str = None,
         initial_state: salobj.State = salobj.State.STANDBY,
         override: str = "",
         simulation_mode: int = 0,
@@ -151,10 +151,10 @@ class ConsDB(salobj.ConfigurableCsc):
         So start listening and updateing the ConcsDB"""
         pass
 
-    def get_remotes(self):
+    async def get_remotes(self):
         return self.remotes
 
-    def create_callbacks(self):
+    async def create_callbacks(self):
         """Get the remote(s) and set the callback function(s).
         We may be able to make this work on a single callback."""
 
@@ -170,11 +170,11 @@ class ConsDB(salobj.ConfigurableCsc):
                 else:
                     self.log.warn(f"Failed to create remote for {camera}")
 
-    def handle_callback(self, data):
+    async def handle_callback(self, data):
         """ One callback function can handle any/all cameras"""
         pass
 
-    def set_cameras(self, cameras):
+    async def set_cameras(self, cameras):
         """ Mainly for testing:
         cameras : [String] List of cameras"""
         self.cameras = cameras

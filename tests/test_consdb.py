@@ -20,6 +20,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
 import pathlib
+import pytest
 import unittest
 
 import yaml
@@ -129,7 +130,6 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
 
     async def test_callback(self):
         # Need a dummy camer really to send a end of miage metadata message.
-
         async with self.make_csc(initial_state=salobj.State.STANDBY):
             await self.remote.cmd_start.start(timeout=STD_TIMEOUT)
             await self.remote.cmd_enable.start(timeout=STD_TIMEOUT)

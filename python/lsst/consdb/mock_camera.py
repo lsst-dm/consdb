@@ -49,5 +49,5 @@ class MockCamera(salobj.BaseCsc):
     async def start(self):
         await super().start()
 
-    def fake_image(self):
+    async def fake_image(self):
         """Call the call backs """
