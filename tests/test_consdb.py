@@ -50,6 +50,14 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
             **kwargs,
         )
 
+    def basic_make_csc(self, initial_state, config_dir, simulation_mode,
+                       override):
+        assert simulation_mode == 0
+        return ConsDB(
+            initial_state=initial_state,
+            config_dir=config_dir,
+            override=override,
+        )
     async def asyncSetUp(self) -> None:
         self.server = self.make_csc()
         await self.server.start()
