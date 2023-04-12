@@ -25,8 +25,7 @@ import unittest
 import yaml
 
 from lsst.ts import salobj
-from lsst.ts.genericcamera import GenericCameraCsc, run_genericcamera
-from lsst.consdb import ConsDB
+from lsst.consdb import ConsDB, MockCamera
 
 STD_TIMEOUT = 15
 SHORT_TIMEOUT = 5
@@ -35,6 +34,7 @@ TEST_CONFIG_DIR = pathlib.Path(__file__).parents[1].\
 
 
 class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
+
     def make_csc(
         self,
         initial_state=salobj.State.STANDBY,
@@ -57,7 +57,8 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
         await self.server.stop()
 
     async def test_configuration(self):
-        run_genericcamera()
+        mcamera = MockCamera()
+        ConsDB.set_cameras([mcamera.name])
         async with self.make_csc(
             initial_state=salobj.State.STANDBY, config_dir=TEST_CONFIG_DIR
         ):

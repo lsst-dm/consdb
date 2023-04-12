@@ -112,6 +112,8 @@ class ConsDB(salobj.ConfigurableCsc):
         If ``simulation_mode`` is invalid.
     """
 
+    # Move to config file ?
+    cameras = ['ATCamera', 'MTCamera', 'CCCamera']
     valid_simulation_modes = (0, 1)
     version = __version__
     remotes = {}  # list of remotes we listen to
@@ -156,11 +158,9 @@ class ConsDB(salobj.ConfigurableCsc):
         """Get the remote(s) and set the callback function(s).
         We may be able to make this work on a single callback."""
 
-        # Move to config file ?
-        cameras = ['ATCamera', 'MTCamera', 'CCCamera']
         async with salobj.Domain() as domain:
             remote = None
-            for camera in cameras:
+            for camera in self.cameras:
                 remote = salobj.Remote(domain=domain, name=camera)
                 # Assume that may fail
                 if remote:
@@ -173,6 +173,11 @@ class ConsDB(salobj.ConfigurableCsc):
     def handle_callback(self, data):
         """ One callback function can handle any/all cameras"""
         pass
+
+    def set_cameras(self, cameras):
+        """ Mainly for testing:
+        cameras : [String] List of cameras"""
+        self.cameras = cameras
 
 
 def run_consdb() -> None:
