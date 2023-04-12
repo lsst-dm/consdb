@@ -18,7 +18,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import asyncio
 import os
 import pathlib
 import unittest
@@ -26,12 +25,13 @@ import unittest
 import yaml
 
 from lsst.ts import salobj
-from lsst.ts_genericcamera import GenericCameraCsc, run_genericcamera
+from lsst.ts.genericcamera import GenericCameraCsc, run_genericcamera
 from lsst.consdb import ConsDB
 
 STD_TIMEOUT = 15
 SHORT_TIMEOUT = 5
-TEST_CONFIG_DIR = pathlib.Path(__file__).parents[1].joinpath("tests", "data", "config")
+TEST_CONFIG_DIR = pathlib.Path(__file__).parents[1].\
+    joinpath("tests", "data", "config")
 
 
 class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
@@ -126,13 +126,13 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
             self.assertEqual(settings_tcp.ip, config_all["host"])
             self.assertEqual(settings_tcp.port, config_all["port"])
 
-
     async def test_callback(self):
         # Need a dummy camer really to send a end of miage metadata message.
 
         async with self.make_csc(initial_state=salobj.State.STANDBY):
             await self.remote.cmd_start.start(timeout=STD_TIMEOUT)
             await self.remote.cmd_enable.start(timeout=STD_TIMEOUT)
+
 
 if __name__ == "__main__":
     unittest.main()

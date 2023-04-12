@@ -25,6 +25,7 @@ test:
         - ts-dds
         - ts-idl {{ idl_version }}
         - ts-salobj {{ salobj_version }}
+        - ts-genericcamera
     source_files:
         - python
         - bin
