@@ -20,7 +20,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import os
 import pathlib
-import pytest
 import unittest
 
 import yaml
@@ -39,7 +38,7 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
     def make_csc(
         self,
         initial_state=salobj.State.STANDBY,
-        config_dir=None,
+        config_dir=TEST_CONFIG_DIR,
         simulation_mode=1,
         **kwargs,
     ):
@@ -58,6 +57,7 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
             config_dir=config_dir,
             override=override,
         )
+
     async def asyncSetUp(self) -> None:
         self.server = self.make_csc()
         await self.server.start()
