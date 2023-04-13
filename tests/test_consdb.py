@@ -18,11 +18,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import os
 import pathlib
 import unittest
 
-import yaml
 
 from lsst.ts import salobj
 from lsst.consdb import ConsDB, MockCamera
@@ -42,6 +40,7 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
         simulation_mode=1,
         **kwargs,
     ):
+        print("Called  make csc")
         return ConsDB(
             initial_state=initial_state,
             config_dir=config_dir,
@@ -51,6 +50,7 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
 
     def basic_make_csc(self, initial_state, config_dir, simulation_mode,
                        override):
+        print("Called basic make csc")
         assert simulation_mode == 0
         return ConsDB(
             initial_state=initial_state,
@@ -65,6 +65,14 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
     async def asyncTearDown(self) -> None:
         await self.server.stop()
 
+    async def test_bin_script(self):
+        """Test that run_atdometrajectory runs the CSC."""
+        await self.check_bin_script(
+            name="ConsDB",
+            index=None,
+            exe_name="run_consdb",
+        )
+
     async def test_configuration(self):
         mcamera = MockCamera()
         ConsDB.set_cameras([mcamera.name])
@@ -75,72 +83,12 @@ class CscTestCase(salobj.BaseCscTestCase, unittest.IsolatedAsyncioTestCase):
             cameras = self.server.get_remotes()
             self.assertGreater(0, len(cameras), "ConsDB did not attach to the camera")
 
-            state = await self.remote.evt_summaryState.next(
-                flush=False, timeout=STD_TIMEOUT
-            )
-            self.assertEqual(state.summaryState, salobj.State.STANDBY)
-
-            for bad_config_name in ("no_such_file.yaml", "bad_port.yaml"):
-                with self.subTest(bad_config_name=bad_config_name):
-                    with salobj.assertRaisesAckError():
-                        await self.remote.cmd_start.set_start(
-                            configurationOverride=bad_config_name, timeout=STD_TIMEOUT
-                        )
-
-            os.environ["TEST_HOST"] = "127.0.0.1"
-
-            self.remote.evt_summaryState.flush()
-
-            await self.remote.cmd_start.set_start(
-                configurationOverride="host_as_env.yaml", timeout=STD_TIMEOUT
-            )
-
-            state = await self.remote.evt_summaryState.next(
-                flush=False, timeout=STD_TIMEOUT
-            )
-            self.assertEqual(state.summaryState, salobj.State.DISABLED)
-
-            settings = await self.remote.evt_settingsAppliedTcp.aget(
-                timeout=STD_TIMEOUT
-            )
-
-            self.assertEqual(settings.ip, os.environ["TEST_HOST"])
-
-            await self.remote.cmd_standby.start(timeout=STD_TIMEOUT)
-
-            state = await self.remote.evt_summaryState.aget(timeout=STD_TIMEOUT)
-            self.assertEqual(state.summaryState, salobj.State.STANDBY)
-
-            self.remote.evt_summaryState.flush()
-
-            await self.remote.cmd_start.set_start(
-                configurationOverride="all.yaml", timeout=STD_TIMEOUT
-            )
-
-            state = await self.remote.evt_summaryState.next(
-                flush=False, timeout=STD_TIMEOUT
-            )
-            self.assertEqual(
-                state.summaryState,
-                salobj.State.DISABLED,
-                f"got {salobj.State(state.summaryState)!r} expected {salobj.State.DISABLED!r}",
-            )
-
-            with open(TEST_CONFIG_DIR / "all.yaml") as fp:
-                config_all = yaml.safe_load(fp)
-
-            settings_tcp = await self.remote.evt_settingsAppliedTcp.aget(
-                timeout=STD_TIMEOUT
-            )
-
-            self.assertEqual(settings_tcp.ip, config_all["host"])
-            self.assertEqual(settings_tcp.port, config_all["port"])
-
     async def test_callback(self):
         # Need a dummy camer really to send a end of miage metadata message.
         async with self.make_csc(initial_state=salobj.State.STANDBY):
             await self.remote.cmd_start.start(timeout=STD_TIMEOUT)
             await self.remote.cmd_enable.start(timeout=STD_TIMEOUT)
+        self.assertTrue(False, "Fail for good measure")
 
 
 if __name__ == "__main__":

@@ -2,6 +2,6 @@
 <project version="4">
   <component name="PylintConfigService">
     <option name="customPylintPath" value="/Library/Frameworks/Python.framework/Versions/3.10/bin/flake8_pycharm.py" />
-    <option name="pylintrcPath" value="$PROJECT_DIR$/setup.cfg" />
+    <option name="pylintrcPath" value="$USER_HOME$/.pylintrc" />
   </component>
 </project>
