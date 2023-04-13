@@ -18,7 +18,7 @@ version = { attr = "setuptools_scm.get_version" }
 where = [ "python" ]
 
 [project.scripts]
-run_consdb = "lsst.consdb.cli:execute_csc"
+run_consdb = "lsst.consdb:run_consdb"
 
 [tool.setuptools_scm]
 write_to = "python/lsst/consdb/version.py"
