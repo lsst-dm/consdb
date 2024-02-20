@@ -31,10 +31,11 @@ def process_resource(resource: lsst.resources.ResourcePath) -> None:
     content = json.loads(resource.read())
     with engine.begin() as conn:
         # TODO get all fields and tables, do as a transaction
-        conn.execute(
-            text("INSERT INTO exposure (a, b, c, d, e)" " VALUES(:a, :b, :c, :d, :e)"),
-            [dict(a=content["something"], b=2, c=3, d=4, e=5)],
-        )
+        # conn.execute(
+        #     text("INSERT INTO exposure (a, b, c, d, e)" " VALUES(:a, :b, :c, :d, :e)"),
+        #     [dict(a=content["something"], b=2, c=3, d=4, e=5)],
+        # )
+        print(f"Processing {resource}: {content[0:100]}")
         # TODO check result
 
 
@@ -51,6 +52,7 @@ async def main() -> None:
             topic,
             bootstrap_servers=kafka_cluster,
             group_id=kafka_group_id,
+            auto_offset_reset="earliest",
         )
         await consumer.start()
         try:
