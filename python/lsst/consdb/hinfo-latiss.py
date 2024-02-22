@@ -12,11 +12,9 @@ from astro_metadata_translator import ObservationInfo
 from lsst.resources import ResourcePath
 from lsst.obs.lsst.translators import LatissTranslator
 
-os.environ["LSST_DISABLE_BUCKET_VALIDATION"] = "1"
+# import Kafka interface
 
-engine = create_engine("postgresql://usdf-butler.slac.stanford.edu:5432/lsstdb1")
-metadata_obj = MetaData(schema="cdb_latiss")
-exposure_table = Table("exposure", metadata_obj, autoload_with=engine)
+
 
 def ninety_minus(angle: float) -> float:
     return 90.0 - angle
@@ -94,6 +92,19 @@ OI_MAPPING = {
     "day_obs": "observing_day",
 }
 
+TOPIC_MAPPING = {
+     "LATISS": "ATHeaderService",
+     "LSSTComCam": "CCHeaderService",
+     "LSSTCam": "MTHeaderService",
+}
+
+
+url = os.environ.get("POSTGRES_URL", "postgresql://usdf-butler.slac.stanford.edu:5432/lsstdb1")
+engine = create_engine(url)
+instrument = os.environ.get("INSTRUMENT", "LATISS")
+metadata_obj = MetaData(schema=f"cdb_{instrument.lower()}")
+exposure_table = Table("exposure", metadata_obj, autoload_with=engine)
+
 
 def process_keyword(keyword: str | tuple, info: dict) -> Any:
     if type(keyword) == str:
@@ -106,6 +117,8 @@ def process_keyword(keyword: str | tuple, info: dict) -> Any:
             return fn(*[info[a] for a in args])
 
 def process_resource(resource: ResourcePath) -> None:
+    global engine, exposure_table
+
     content = yaml.safe_load(resource.read())
     exposure_rec = dict()
 
@@ -134,11 +147,27 @@ def process_resource(resource: ResourcePath) -> None:
     with engine.begin() as conn:
         result = conn.execute(stmt)
 
-    print(exposure_rec)
+    # print(exposure_rec)
 
 
+site = os.environ.get("SITE", "USDF")
+if site == "USDF":
+    os.environ["LSST_DISABLE_BUCKET_VALIDATION"] = "1"
+    bucket_prefix = "rubin:"
+else:
+    bucket_prefix = ""
+
+# For Kafka:
+# consumer = configure_kafka()
+# while True:
+#     msgs = consumer.consume()
+#     for msg in msgs:
+#         re.sub(r"s3://", "s3://" + bucket_prefix, msg.data)
+#         process_resource(msg.data)
+
+# To process all of a given date:
 date = "/".join(sys.argv[1].split("-"))
-d = ResourcePath(f"s3://rubin:rubinobs-lfa-cp/ATHeaderService/header/{date}/")
+d = ResourcePath(f"s3://{bucket_prefix}rubinobs-lfa-cp/{TOPIC_MAPPING[instrument]}/header/{date}/")
 for dirpath, dirnames, filenames in d.walk():
     for fname in filenames:
         process_resource(d.join(fname))
