@@ -1,0 +1,8 @@
+FROM python:3.11
+RUN pip install flask gunicorn sqlalchemy
+WORKDIR /consdb-server
+COPY src/server.py /consdb-server/
+# Environment variables that must be set:
+# POSTGRES_URL
+ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:8000", "-w", "2", "server:app" ]
+
