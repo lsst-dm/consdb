@@ -1,7 +1,7 @@
-import json
 import os
 from pandas import DataFrame
 import requests
+from requests.exceptions import RequestException
 from typing import Any, Iterable
 from urllib.parse import urljoin
 
@@ -16,8 +16,8 @@ def insert(table: str, values: dict[str, Any], **kwargs):
     url = urljoin(base_url, "insert")
     try:
         response = requests.post(url, json=data)
-    except:
-        raise
+    except (RequestException) as e:
+        raise e
     response.raise_for_status()
 
 
@@ -36,8 +36,8 @@ def query(
     data = {"tables": tables, "columns": columns, "where": where, "join": join}
     try:
         response = requests.post(url, json=data)
-    except:
-        raise
+    except (RequestException) as e:
+       raise e
     try:
         response.raise_for_status()
     except:
@@ -52,7 +52,7 @@ def schema(table: str):
     url = urljoin(url, table)
     try:
         response = requests.get(url)
-    except:
-        raise
+    except (RequestException) as e:
+        raise e
     response.raise_for_status()
     return response.json()
