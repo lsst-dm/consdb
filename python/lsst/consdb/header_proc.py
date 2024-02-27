@@ -9,7 +9,7 @@ import aiokafka
 import httpx
 import kafkit
 from lsst.resources import ResourcePath
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 
 if TYPE_CHECKING:
     import lsst.resources
@@ -30,9 +30,11 @@ engine = create_engine(db_url)
 def process_resource(resource: lsst.resources.ResourcePath) -> None:
     content = json.loads(resource.read())
     with engine.begin() as conn:
+        print(conn)
         # TODO get all fields and tables, do as a transaction
         # conn.execute(
-        #     text("INSERT INTO exposure (a, b, c, d, e)" " VALUES(:a, :b, :c, :d, :e)"),
+        #     text("INSERT INTO exposure (a, b, c, d, e)"
+        #     " VALUES(:a, :b, :c, :d, :e)"),
         #     [dict(a=content["something"], b=2, c=3, d=4, e=5)],
         # )
         print(f"Processing {resource}: {content[0:100]}")
@@ -51,7 +53,7 @@ async def main() -> None:
         consumer = aiokafka.AIOKafkaConsumer(
             topic,
             bootstrap_servers=kafka_cluster,
-            group_id=kafka_group_id,
+            group_id=str(kafka_group_id),
             auto_offset_reset="earliest",
         )
         await consumer.start()
