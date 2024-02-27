@@ -16,7 +16,7 @@ def insert(table: str, values: dict[str, Any], **kwargs):
     url = urljoin(base_url, "insert")
     try:
         response = requests.post(url, json=data)
-    except (RequestException) as e:
+    except RequestException as e:
         raise e
     response.raise_for_status()
 
@@ -36,13 +36,13 @@ def query(
     data = {"tables": tables, "columns": columns, "where": where, "join": join}
     try:
         response = requests.post(url, json=data)
-    except (RequestException) as e:
-       raise e
+    except RequestException as e:
+        raise e
     try:
         response.raise_for_status()
-    except:
+    except Exception as ex:
         print(response.content.decode())
-        raise
+        raise ex
     arr = response.json()
     return DataFrame(arr[1:], columns=arr[0])
 
@@ -52,7 +52,7 @@ def schema(table: str):
     url = urljoin(url, table)
     try:
         response = requests.get(url)
-    except (RequestException) as e:
+    except RequestException as e:
         raise e
     response.raise_for_status()
     return response.json()

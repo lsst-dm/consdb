@@ -1,6 +1,5 @@
 from flask import Flask, request
-from sqlalchemy import create_engine, MetaData, Table
-from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import create_engine, MetaData
 import sqlalchemy.exc
 
 

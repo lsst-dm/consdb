@@ -15,20 +15,23 @@ from lsst.obs.lsst.translators import LatissTranslator
 # import Kafka interface
 
 
-
 def ninety_minus(angle: float) -> float:
     return 90.0 - angle
 
+
 def tai_convert(t: str) -> datetime:
     return Time(t, format="isot", scale="tai").datetime
+
 
 def tai_mean(start: str, end: str) -> datetime:
     s = Time(start, format="isot", scale="tai")
     e = Time(end, format="isot", scale="tai")
     return (s + (e - s) / 2).datetime
 
+
 def mean(*iterable: Iterable[Any]) -> Any:
     return sum(iterable) / len(iterable)
+
 
 def logical_or(*bools: Iterable[int | str | None]) -> bool:
     return any([b == 1 or b == "1" for b in bools])
@@ -77,8 +80,9 @@ LATISS_MAPPING = {
     "dome_azimuth": "DOMEAZ",
     "shut_lower": "SHUTLOWR",
     "shut_upper": "SHUTUPPR",
-#     "temp_set": "TEMP_SET",
-    "simulated": (logical_or, "SIMULATE ATMCS", "SIMULATE ATHEXAPOD", "SIMULAT ATPNEUMATICS", "SIMULATE ATDOME", "SIMULATE ATSPECTROGRAPH"),
+    #     "temp_set": "TEMP_SET",
+    "simulated": (logical_or, "SIMULATE ATMCS", "SIMULATE ATHEXAPOD", "SIMULAT ATPNEUMATICS",
+                  "SIMULATE ATDOME", "SIMULATE ATSPECTROGRAPH"),
 }
 
 # LATISS_DETECTOR_MAPPING = {
@@ -93,9 +97,9 @@ OI_MAPPING = {
 }
 
 TOPIC_MAPPING = {
-     "LATISS": "ATHeaderService",
-     "LSSTComCam": "CCHeaderService",
-     "LSSTCam": "MTHeaderService",
+    "LATISS": "ATHeaderService",
+    "LSSTComCam": "CCHeaderService",
+    "LSSTCam": "MTHeaderService",
 }
 
 
@@ -107,14 +111,15 @@ exposure_table = Table("exposure", metadata_obj, autoload_with=engine)
 
 
 def process_keyword(keyword: str | tuple, info: dict) -> Any:
-    if type(keyword) == str:
+    if type(keyword) is str:
         if keyword in info:
             return info[keyword]
-    elif type(keyword) == tuple:
+    elif type(keyword) is tuple:
         fn = keyword[0]
         args = keyword[1:]
         if all([a in info for a in args]):
             return fn(*[info[a] for a in args])
+
 
 def process_resource(resource: ResourcePath) -> None:
     global engine, exposure_table
@@ -145,7 +150,8 @@ def process_resource(resource: ResourcePath) -> None:
 
     stmt = insert(exposure_table).values(exposure_rec).on_conflict_do_nothing()
     with engine.begin() as conn:
-        result = conn.execute(stmt)
+        conn.execute(stmt)
+        # result = conn.execute(stmt)
 
     # print(exposure_rec)
 
