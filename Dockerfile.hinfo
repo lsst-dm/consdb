@@ -3,10 +3,17 @@ FROM lsstsqre/newinstall:${RUBINENV_VERSION}
 ARG OBS_LSST_VERSION
 ENV OBS_LSST_VERSION=${OBS_LSST_VERSION:-w_2024_06}
 USER lsst
-RUN source loadLSST.bash && pip install confluent-kafka
+RUN source loadLSST.bash && mamba install aiokafka httpx
+RUN source loadLSST.bash && pip install kafkit
 RUN source loadLSST.bash && eups distrib install -t "${OBS_LSST_VERSION}" obs_lsst
-COPY python/lsst/consdb/hinfo*.py ./hinfo/
-# Environment variables that must be set:
-# POSTGRES_URL INSTRUMENT SITE
+COPY python/lsst/consdb/hinfo.py ./hinfo/
 
-ENTRYPOINT [ "bash", "-c", "source loadLSST.bash; setup obs_lsst; python .hinfo/hinfo-latiss.py" ]
+# Environment variables that must be set:
+#   INSTRUMENT: LATISS, LSSTComCam, LSSTComCamSim, LSSTCam
+#   POSTGRES_URL: SQLAlchemy connection URL
+#   KAFKA_BOOTSTRAP: AIOKafkaConsumer bootstrap server specification
+#   SCHEMA_URL: Kafkit registry schema URL
+# Optional environment variable:
+#   BUCKET_PREFIX: "rubin:" at USDF
+
+ENTRYPOINT [ "bash", "-c", "source loadLSST.bash; setup obs_lsst; python ./hinfo/hinfo.py" ]
