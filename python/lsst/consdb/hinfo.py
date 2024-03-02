@@ -251,9 +251,17 @@ match instrument:
         translator = LsstCamTranslator
         instrument_mapping = LSSTCAM_MAPPING
 
-url = os.environ.get(
-    "POSTGRES_URL", "postgresql://usdf-butler.slac.stanford.edu:5432/lsstdb1"
-)
+host = os.environ.get("DB_HOST")
+passwd = os.environ.get("DB_PASS")
+user = os.environ.get("DB_USER")
+dbname = os.environ.get("DB_NAME")
+url = ""
+if host and passwd and user and dbname:
+    url = f"postgresql://{user}:{passwd}@{host}/{dbname}"
+else:
+    url = os.environ.get(
+        "POSTGRES_URL", "postgresql://usdf-butler.slac.stanford.edu:5432/lsstdb1"
+    )
 engine = create_engine(url)
 metadata_obj = MetaData(schema=f"cdb_{instrument.lower()}")
 exposure_table = Table("exposure", metadata_obj, autoload_with=engine)
