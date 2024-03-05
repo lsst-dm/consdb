@@ -257,11 +257,13 @@ user = os.environ.get("DB_USER")
 dbname = os.environ.get("DB_NAME")
 url = ""
 if host and passwd and user and dbname:
+    print(f"Connecting to {host} as {user} to {dbname}")
     url = f"postgresql://{user}:{passwd}@{host}/{dbname}"
 else:
     url = os.environ.get(
         "POSTGRES_URL", "postgresql://usdf-butler.slac.stanford.edu:5432/lsstdb1"
     )
+    print("Using POSTGRES_URL {user} {host} {dbname}")
 engine = create_engine(url)
 metadata_obj = MetaData(schema=f"cdb_{instrument.lower()}")
 exposure_table = Table("exposure", metadata_obj, autoload_with=engine)
