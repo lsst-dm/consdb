@@ -266,7 +266,7 @@ else:
     print("Using POSTGRES_URL {user} {host} {dbname}")
 engine = create_engine(url)
 metadata_obj = MetaData(schema=f"cdb_{instrument.lower()}")
-exposure_table = Table("Exposure", metadata_obj, autoload_with=engine)
+exposure_table = Table("exposure", metadata_obj, autoload_with=engine)
 
 
 bucket_prefix = os.environ.get("BUCKET_PREFIX", "")
