@@ -11,9 +11,12 @@ COPY python/lsst/consdb/hinfo.py ./hinfo/
 # Environment variables that must be set:
 #   INSTRUMENT: LATISS, LSSTComCam, LSSTComCamSim, LSSTCam
 #   POSTGRES_URL: SQLAlchemy connection URL
-#   KAFKA_BOOTSTRAP: AIOKafkaConsumer bootstrap server specification
+#   KAFKA_BOOTSTRAP: host:port of bootstrap server
+#   KAFKA_USERNAME: username for SASL_PLAIN authentication
+#   KAFKA_PASSWORD: password for SASL_PLAIN authentication
 #   SCHEMA_URL: Kafkit registry schema URL
-# Optional environment variable:
+# Optional environment variables:
 #   BUCKET_PREFIX: "rubin:" at USDF
+#   KAFKA_GROUP_ID: name of consumer group, default is "consdb-consumer"
 
 ENTRYPOINT [ "bash", "-c", "source loadLSST.bash; setup obs_lsst; python ./hinfo/hinfo.py" ]
