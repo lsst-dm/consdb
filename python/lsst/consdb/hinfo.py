@@ -246,7 +246,7 @@ def get_kafka_config() -> KafkaConfig:
     return KafkaConfig(
         bootstrap=os.environ["KAFKA_BOOTSTRAP"],
         group_id=os.environ.get("KAFKA_GROUP_ID", "consdb-consumer"),
-        username=os.environ["KAFKA_USERNAME"],
+        username=os.environ.get("KAFKA_USERNAME", "consdb"),
         password=os.environ["KAFKA_PASSWORD"],
         schema_url=os.environ["SCHEMA_URL"],
     )
@@ -324,6 +324,7 @@ async def main() -> None:
             auto_offset_reset="earliest",
             isolation_level="read_committed",
             security_protocol="SASL_PLAINTEXT",
+            sasl_mechanism="SCRAM-SHA-512",
             sasl_plain_username=kafka_config.username,
             sasl_plain_password=kafka_config.password,
         )
