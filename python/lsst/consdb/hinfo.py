@@ -298,7 +298,7 @@ if bucket_prefix:
     os.environ["LSST_DISABLE_BUCKET_VALIDATION"] = "1"
 
 
-topic = f"lsst.{TOPIC_MAPPING[instrument]}.logevent_largeFileObjectAvailable"
+topic = f"lsst.sal.{TOPIC_MAPPING[instrument]}.logevent_largeFileObjectAvailable"
 
 
 #################
