@@ -2,4 +2,6 @@
 consdb
 ######
 
-This CSC listens for SAL events, executes EFD queries when they arrive, and writes results to columns in relational database tables in the Consolidated Database.
+Scripts and services for generating the Summit Visit Database and Consolidated Database (ConsDB), including summarizing the Engineering and Facilities Database (EFD).
+
+See also DMTN-227.lsst.io
