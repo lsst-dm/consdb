@@ -332,9 +332,10 @@ async def main() -> None:
         await consumer.start()
         try:
             async for msg in consumer:
-                message = (await deserializer.deserialize(msg.value)).message
+                message = (await deserializer.deserialize(msg.value))["message"]
+                url = message["url"]
                 if bucket_prefix:
-                    url = re.sub(r"s3://", "s3://" + bucket_prefix, message.url)
+                    url = re.sub(r"s3://", "s3://" + bucket_prefix, url)
                 resource = ResourcePath(url)
                 while not resource.exists():
                     await asyncio.sleep(random.uniform(0.1, 2.0))
