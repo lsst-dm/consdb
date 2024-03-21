@@ -146,7 +146,8 @@ def process_column(column_def: str | Sequence, info: dict) -> Any:
     column_def: `str`
         Definition of the column.  Either a string specifying the info keyword
         to use as the column value, or a tuple containing a function to apply
-        to the values of one or more info keywords.
+        to the values of one or more info keywords or function application
+        tuples.
     info: `dict`
         A dictionary containing keyword/value pairs.
 
@@ -154,15 +155,16 @@ def process_column(column_def: str | Sequence, info: dict) -> Any:
     -------
     column_value: `Any`
         The value to use for the column.
+        None if any input value is missing.
     """
     if type(column_def) is str:
         if column_def in info:
             return info[column_def]
     elif type(column_def) is tuple:
         fn = column_def[0]
-        args = column_def[1:]
-        if all([a in info for a in args]):
-            return fn(*[info[a] for a in args])
+        arg_values = [process_column(a, info) for a in column_def[1:]]
+        if all(arg_values):
+            return fn(*arg_values)
 
 
 def process_resource(resource: ResourcePath) -> None:
