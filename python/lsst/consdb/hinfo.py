@@ -1,7 +1,9 @@
 import asyncio
+import logging
 import os
 import random
 import re
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Sequence
@@ -195,6 +197,7 @@ def process_resource(resource: ResourcePath) -> None:
     for field, keyword in OI_MAPPING.items():
         exposure_rec[field] = process_column(keyword, obs_info)
 
+    logging.debug(f"Inserting {exposure_rec}")
     stmt = insert(exposure_table).values(exposure_rec).on_conflict_do_nothing()
     with engine.begin() as conn:
         conn.execute(stmt)
@@ -252,6 +255,8 @@ def get_kafka_config() -> KafkaConfig:
     )
 
 
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
+
 instrument = os.environ.get("INSTRUMENT", "LATISS")
 match instrument:
     case "LATISS":
@@ -274,21 +279,22 @@ match instrument:
 
         translator = LsstCamTranslator
         instrument_mapping = LSSTCAM_MAPPING
+logging.info(f"Instrument = {instrument}")
 
 host = os.environ.get("DB_HOST")
 passwd = os.environ.get("DB_PASS")
 user = os.environ.get("DB_USER")
 dbname = os.environ.get("DB_NAME")
-url = ""
+pg_url = ""
 if host and passwd and user and dbname:
-    print(f"Connecting to {host} as {user} to {dbname}")
-    url = f"postgresql://{user}:{passwd}@{host}/{dbname}"
+    logging.info(f"Connecting to {host} as {user} to {dbname}")
+    pg_url = f"postgresql://{user}:{passwd}@{host}/{dbname}"
 else:
-    url = os.environ.get(
+    pg_url = os.environ.get(
         "POSTGRES_URL", "postgresql://usdf-butler.slac.stanford.edu:5432/lsstdb1"
     )
-    print("Using POSTGRES_URL {user} {host} {dbname}")
-engine = create_engine(url)
+    logging.info(f"Using POSTGRES_URL {user} {host} {dbname}")
+engine = create_engine(pg_url)
 metadata_obj = MetaData(schema=f"cdb_{instrument.lower()}")
 exposure_table = Table("exposure", metadata_obj, autoload_with=engine)
 
@@ -330,16 +336,20 @@ async def main() -> None:
         )
 
         await consumer.start()
+        logging.info("Consumer started")
         try:
             async for msg in consumer:
                 message = (await deserializer.deserialize(msg.value))["message"]
+                logging.debug(f"Received message {message}")
                 url = message["url"]
                 if bucket_prefix:
                     url = re.sub(r"s3://", "s3://" + bucket_prefix, url)
                 resource = ResourcePath(url)
+                logging.info(f"Waiting for {url}")
                 while not resource.exists():
                     await asyncio.sleep(random.uniform(0.1, 2.0))
                 process_resource(resource)
+                logging.info(f"Processed {url}")
         finally:
             await consumer.stop()
 
