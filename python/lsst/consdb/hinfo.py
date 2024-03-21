@@ -52,6 +52,7 @@ def logical_or(*bools: int | str | None) -> bool:
 
 # Non-instrument-specific mapping to column name from Header Service keyword
 KW_MAPPING: dict[str, str | Sequence] = {
+    "exposure_name": "OBSID",
     "controller": "CONTRLLR",
     "seq_num": "SEQNUM",
     "band": "FILTBAND",
@@ -60,10 +61,13 @@ KW_MAPPING: dict[str, str | Sequence] = {
     "skyrotation": "ROTPA",
     "azimuth_start": "AZSTART",
     "azimuth_end": "AZEND",
+    "azimuth": (mean, "AZSTART", "AZEND"),
     "altitude_start": (ninety_minus, "ELSTART"),
     "altitude_end": (ninety_minus, "ELEND"),
+    "altitude": (mean, (ninety_minus, "ELSTART"), (ninety_minus, "ELEND")),
     "zenithdistance_start": "ELSTART",
     "zenithdistance_end": "ELEND",
+    "zenithdistance": (mean, "ELSTART", "ELEND"),
     "expmidpt": (tai_mean, "DATE-BEG", "DATE-END"),
     "expmidptmjd": (mean, "MJD-BEG", "MJD-END"),
     "obsstart": (tai_convert, "DATE-BEG"),
