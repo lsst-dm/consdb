@@ -348,6 +348,8 @@ async def main() -> None:
                 message = (await deserializer.deserialize(msg.value))["message"]
                 logging.debug(f"Received message {message}")
                 url = message["url"]
+                # Replace local HTTP access URL with generic S3 access URL.
+                url = re.sub(r"https://s3\.\w+\.lsst\.org/", "s3://", url)
                 if bucket_prefix:
                     url = re.sub(r"s3://", "s3://" + bucket_prefix, url)
                 resource = ResourcePath(url)
