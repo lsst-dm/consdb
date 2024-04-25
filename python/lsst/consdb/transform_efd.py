@@ -3,14 +3,10 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import astropy.time
 import lsst_efd_client
+import pandas
 import yaml
-from lsst.daf.butler import Butler
-from sqlalchemy import create_engine
-
-if TYPE_CHECKING:
-    import lsst.daf.butler
-    import pandas
-    import sqlalchemy
+from lsst.daf.butler import Butler, DimensionRecord
+from sqlalchemy import create_engine, Engine
 
 
 class Summary:
@@ -51,11 +47,11 @@ class EfdValues:
 
 
 class Records:
-    def __init__(self, db: sqlalchemy.Engine):
+    def __init__(self, db: Engine):
         self._db = db
 
     def add(
-        self, dim: lsst.daf.butler.DimensionRecord, topic: dict[str, Any], summary: Any
+        self, dim: DimensionRecord, topic: dict[str, Any], summary: Any
     ) -> None:
         pass
 
@@ -87,7 +83,7 @@ def get_efd_values(
 
 def process_interval(
     butler: Butler,
-    db: sqlalchemy.Engine,
+    db: Engine,
     efd: lsst_efd_client.EfdClient,
     config: dict[str, Any],
     instrument: str,
@@ -159,16 +155,17 @@ def build_argparser() -> argparse.ArgumentParser:
         required=True,
         help="end time (ISO, YYYY-MM-DDTHH:MM:SS)",
     )
-    parser.add_argument("-r", "--repo", dest="repo", required=True, help="Butler repo")
+    parser.add_argument("-r", "--repo", dest="repo", default="/repo/embargo", required=True, help="Butler repo")
     parser.add_argument(
         "-d",
         "--db",
         dest="db_conn_str",
+        default="sqlite://test.db",
         required=True,
         help="Consolidated Database connection string",
     )
     parser.add_argument(
-        "-E", "--efd", dest="efd_conn_str", required=True, help="EFD connection string"
+        "-E", "--efd", dest="efd_conn_str", default="usdf_efd", required=True, help="EFD connection string"
     )
     return parser
 
