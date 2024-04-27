@@ -16,8 +16,9 @@ import kafkit.registry.httpx
 import yaml
 from astro_metadata_translator import ObservationInfo
 from lsst.resources import ResourcePath
-from sqlalchemy import MetaData, Table, create_engine
+from sqlalchemy import MetaData, Table
 from sqlalchemy.dialects.postgresql import insert
+from utils import setup_postgres
 
 ###############################
 # Header Processing Functions #
@@ -287,20 +288,7 @@ match instrument:
         instrument_mapping = LSSTCAM_MAPPING
 logging.info(f"Instrument = {instrument}")
 
-host = os.environ.get("DB_HOST")
-passwd = os.environ.get("DB_PASS")
-user = os.environ.get("DB_USER")
-dbname = os.environ.get("DB_NAME")
-pg_url = ""
-if host and passwd and user and dbname:
-    logging.info(f"Connecting to {host} as {user} to {dbname}")
-    pg_url = f"postgresql://{user}:{passwd}@{host}/{dbname}"
-else:
-    pg_url = os.environ.get(
-        "POSTGRES_URL", "postgresql://usdf-butler.slac.stanford.edu:5432/lsstdb1"
-    )
-    logging.info(f"Using POSTGRES_URL {user} {host} {dbname}")
-engine = create_engine(pg_url)
+engine = setup_postgres()
 metadata_obj = MetaData(schema=f"cdb_{instrument.lower()}")
 exposure_table = Table("exposure", metadata_obj, autoload_with=engine)
 
