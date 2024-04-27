@@ -24,3 +24,10 @@ jobs:
         image: ${{ github.repository }}-hinfo
         github_token: ${{ secrets.GITHUB_TOKEN }}
         dockerfile: Dockerfile.hinfo
+
+    - name: Build pqserver
+      uses: lsst-sqre/build-and-push-to-ghcr@v1
+      with:
+        image: ${{ github.repository }}-pq
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        dockerfile: Dockerfile.pqserver
