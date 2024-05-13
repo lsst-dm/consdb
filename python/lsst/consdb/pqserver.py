@@ -72,12 +72,14 @@ class InstrumentTables:
                 schema_table_name = table_name + "_schema"
                 if table_name in md.tables and schema_table_name in md.tables:
                     schema_table = md.tables[schema_table_name]
-                    stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc"])
+                    stmt = sqlalchemy.select(
+                        schema_table.c["key", "dtype", "doc", "unit", "ucd"]
+                    )
+                    schema = dict()
                     with engine.connect() as conn:
                         for row in conn.execute(stmt):
-                            self.flexible_metadata_schemas[instrument][obs_type] = {
-                                row[0]: (row[1], row[2])
-                            }
+                            schema[row[0]] = row[1:]
+                    self.flexible_metadata_schemas[instrument][obs_type] = schema
 
     def compute_flexible_metadata_table_name(
         self, instrument: str, obs_type: str
@@ -363,6 +365,11 @@ def add_flexible_metadata_key(
         Data type of key's value from ``DTYPE_LIST`` (POST JSON data).
     doc: `str`
         Documentation string (POST JSON data).
+    unit: `str`, optional
+        Unit for value (POST JSON data).
+    ucd: `str`, optional
+        IVOA Unified Content Descriptor (https://www.ivoa.net/documents/UCD1+/)
+        for value (POST JSON data).
 
     Returns
     -------
@@ -385,7 +392,11 @@ def add_flexible_metadata_key(
     if dtype not in DTYPE_LIST:
         raise BadValueException("dtype", dtype, DTYPE_LIST)
     doc = info["doc"]
-    stmt = sqlalchemy.insert(schema_table).values(key=key, dtype=dtype, doc=doc)
+    unit = info.get("unit")
+    ucd = info.get("ucd")
+    stmt = sqlalchemy.insert(schema_table).values(
+        key=key, dtype=dtype, doc=doc, unit=unit, ucd=ucd
+    )
     logger.debug(str(stmt))
     with engine.connect() as conn:
         _ = conn.execute(stmt)
@@ -399,7 +410,9 @@ def add_flexible_metadata_key(
 
 
 @app.get("/consdb/flex/<instrument>/<obs_type>/schema")
-def get_flexible_metadata_keys(instrument: str, obs_type: str) -> list[sqlalchemy.Row]:
+def get_flexible_metadata_keys(
+    instrument: str, obs_type: str
+) -> dict[str, list[str | None]]:
     """Retrieve descriptions of keys for a flexible metadata table.
 
     Parameters
@@ -411,9 +424,10 @@ def get_flexible_metadata_keys(instrument: str, obs_type: str) -> list[sqlalchem
 
     Returns
     -------
-    json_dict: `dict` [ `str`, `Any` ]
+    json_dict: `dict` [ `str`, `list` [ `str` | `None` ] ]
         JSON response with 200 HTTP status on success.
-        Response is a list of lists of ``key``, ``dtype``, ``doc`` strings.
+        Response is a dictionary of ``dtype``, ``doc``, ``unit``, and ``ucd``
+        strings for each key in the table.
 
     Raises
     ------
@@ -463,14 +477,16 @@ def get_flexible_metadata(
     logger.debug(str(stmt))
     with engine.connect() as conn:
         for row in conn.execute(stmt):
-            if schema[row[0]] == "bool":
-                result[row[0]] = row[1] == "True"
-            elif schema[row[0]] == "int":
-                result[row[0]] = int(row[1])
-            elif schema[row[0]] == "float":
-                result[row[0]] = float(row[1])
+            key, value = row
+            dtype = schema[key][0]
+            if dtype == "bool":
+                result[key] = value == "True"
+            elif dtype == "int":
+                result[key] = int(value)
+            elif dtype == "float":
+                result[key] = float(value)
             else:
-                result[row[0]] = row[1]
+                result[key] = str(value)
     return result
 
 
