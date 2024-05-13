@@ -57,36 +57,36 @@ KW_MAPPING: dict[str, str | Sequence] = {
     "controller": "CONTRLLR",
     "seq_num": "SEQNUM",
     "band": "FILTBAND",
-    "ra": "RA",
-    "decl": "DEC",
-    "skyrotation": "ROTPA",
+    "s_ra": "RA",
+    "s_decl": "DEC",
+    "sky_rotation": "ROTPA",
     "azimuth_start": "AZSTART",
     "azimuth_end": "AZEND",
     "azimuth": (mean, "AZSTART", "AZEND"),
     "altitude_start": (ninety_minus, "ELSTART"),
     "altitude_end": (ninety_minus, "ELEND"),
     "altitude": (mean, (ninety_minus, "ELSTART"), (ninety_minus, "ELEND")),
-    "zenithdistance_start": "ELSTART",
-    "zenithdistance_end": "ELEND",
-    "zenithdistance": (mean, "ELSTART", "ELEND"),
-    "expmidpt": (tai_mean, "DATE-BEG", "DATE-END"),
-    "expmidptmjd": (mean, "MJD-BEG", "MJD-END"),
-    "obsstart": (tai_convert, "DATE-BEG"),
-    "obsstartmjd": "MJD-BEG",
-    "obsend": (tai_convert, "DATE-END"),
-    "obsendmjd": "MJD-END",
-    "exptime": "EXPTIME",
-    "shuttime": "SHUTTIME",
-    "darktime": "DARKTIME",
+    "zenith_distance_start": "ELSTART",
+    "zenith_distance_end": "ELEND",
+    "zenith_distance": (mean, "ELSTART", "ELEND"),
+    "exp_midpt": (tai_mean, "DATE-BEG", "DATE-END"),
+    "exp_midpt_mjd": (mean, "MJD-BEG", "MJD-END"),
+    "obs_start": (tai_convert, "DATE-BEG"),
+    "obs_start_mjd": "MJD-BEG",
+    "obs_end": (tai_convert, "DATE-END"),
+    "obs_endmjd": "MJD-END",
+    "exp_time": "EXPTIME",
+    "shut_time": "SHUTTIME",
+    "dark_time": "DARKTIME",
     "group_id": "GROUPID",
-    "curindex": "CURINDEX",
-    "maxindex": "MAXINDEX",
-    "imgtype": "IMGTYPE",
+    "cur_index": "CURINDEX",
+    "max_index": "MAXINDEX",
+    "img_type": "IMGTYPE",
     "emulated": (logical_or, "EMUIMAGE"),
     "science_program": "PROGRAM",
     "observation_reason": "REASON",
     "target_name": "OBJECT",
-    "airtemp": "AIRTEMP",
+    "air_temp": "AIRTEMP",
     "pressure": "PRESSURE",
     "humidity": "HUMIDITY",
     "wind_speed": "WINDSPD",
@@ -162,10 +162,10 @@ def process_column(column_def: str | Sequence, info: dict) -> Any:
         The value to use for the column.
         None if any input value is missing.
     """
-    if type(column_def) is str:
+    if isinstance(column_def, str):
         if column_def in info:
             return info[column_def]
-    elif type(column_def) is tuple:
+    elif isinstance(column_def, tuple):
         fn = column_def[0]
         arg_values = [process_column(a, info) for a in column_def[1:]]
         if all(arg_values):
