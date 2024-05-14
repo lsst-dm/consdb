@@ -674,7 +674,7 @@ def query() -> list[list[Any]] | tuple[dict[str, str], int]:
 
 
 @app.get("/consdb/schema/<instrument>/<table>")
-def schema(instrument: str, table: str) -> list[tuple[str, str, str]]:
+def schema(instrument: str, table: str) -> dict[str, list[str, str]]:
     """Retrieve the descriptions of columns in a ConsDB table.
 
     Parameters
@@ -686,10 +686,10 @@ def schema(instrument: str, table: str) -> list[tuple[str, str, str]]:
 
     Returns
     -------
-    json_dict: `list` [ tuple [ `str`, `str`, `str` ] ]
+    json_dict: `dict` [ `str`, `list` [ `str`, `str` ] ]
         JSON response with 200 HTTP status on success.
-        Response is a list of column name, data type, and documentation
-        string tuples.
+        Response is a dict with column names as keys and lists of data type
+        and documentation strings as values.
 
     Raises
     ------
@@ -707,4 +707,4 @@ def schema(instrument: str, table: str) -> list[tuple[str, str, str]]:
     table = table.lower()
     if table not in schema.tables:
         raise BadValueException("table", table, list(schema.tables.keys()))
-    return [(c.name, str(c.type), c.doc) for c in schema.tables[table].columns]
+    return {c.name: [str(c.type), c.doc] for c in schema.tables[table].columns}
