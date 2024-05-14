@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "consdb"
-description = "consdb is a Commandable SAL Component for the `Vera C. Rubin Observatory <https://lsst.org>`_."
+description = "consdb provides support for the Consolidated Database for the `Vera C. Rubin Observatory <https://lsst.org>`_."
 license = { text = "GPL" }
-dependencies = ["pymodbus"]
+dependencies = ["flask", "requests"]
 readme = "README.rst"
 urls = { documentation = "https://consdb.lsst.io", source_code = "https://github.com/lsst-dm/consdb"}
 dynamic = ["version"]
@@ -16,9 +16,6 @@ version = { attr = "setuptools_scm.get_version" }
 
 [tool.setuptools.packages.find]
 where = [ "python" ]
-
-[project.scripts]
-run_consdb = "lsst.consdb.cli:execute_csc"
 
 [tool.setuptools_scm]
 write_to = "python/lsst/consdb/version.py"
