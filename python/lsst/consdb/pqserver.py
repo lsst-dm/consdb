@@ -106,6 +106,8 @@ class InstrumentTables:
         BadValueException
             Raised if the `instrument` or `obs_type` are not found.
         """
+        instrument = instrument.lower()
+        obs_type = obs_type.lower()
         if instrument not in self.flexible_metadata_schemas:
             raise BadValueException(
                 "instrument", instrument, list(self.flexible_metadata_schemas.keys())
@@ -158,6 +160,8 @@ class InstrumentTables:
         table_obj: `sqlalchemy.schema.Table`
             ``Table`` object for the flexible metadata table.
         """
+        instrument = instrument.lower()
+        obs_type = obs_type.lower()
         table_name = self.compute_flexible_metadata_table_name(instrument, obs_type)
         return self.schemas[instrument].tables[table_name]
 
@@ -176,6 +180,8 @@ class InstrumentTables:
         schema_table_obj: `sqlalchemy.schema.Table`
             ``Table`` object for the flexible metadata schema table.
         """
+        instrument = instrument.lower()
+        obs_type = obs_type.lower()
         table_name = self.compute_flexible_metadata_table_schema_name(
             instrument, obs_type
         )
@@ -435,6 +441,8 @@ def get_flexible_metadata_keys(
         Raised if instrument or observation type is invalid.
     """
     logger.info(request)
+    instrument = instrument.lower()
+    obs_type = obs_type.lower()
     _ = instrument_tables.compute_flexible_metadata_table_name(instrument, obs_type)
     return instrument_tables.flexible_metadata_schemas[instrument][obs_type]
 
@@ -467,6 +475,8 @@ def get_flexible_metadata(
         Raised if instrument or observation type is invalid.
     """
     logger.info(request)
+    instrument = instrument.lower()
+    obs_type = obs_type.lower()
     table = instrument_tables.get_flexible_metadata_table(instrument, obs_type)
     schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
     result = dict()
@@ -524,6 +534,8 @@ def insert_flexible_metadata(
     """
     logger.info(request)
     info = _check_json(request.json, "flex obs", ("values",))
+    instrument = instrument.lower()
+    obs_type = obs_type.lower()
     table = instrument_tables.get_flexible_metadata_table(instrument, obs_type)
     schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
 
@@ -608,12 +620,13 @@ def insert(instrument: str) -> dict[str, Any] | tuple[dict[str, str], int]:
         Raised if instrument or observation type is invalid.
     """
     logger.info(request)
+    instrument = instrument.lower()
     if instrument not in instrument_tables.schemas:
         raise BadValueException(
             "instrument", instrument, list(instrument_tables.schemas.keys())
         )
     info = _check_json(request.json, "insert", ("table", "values", "obs_id"))
-    table_name = f"cdb_{instrument}." + info["table"]
+    table_name = f"cdb_{instrument}." + info["table"].lower()
     table = instrument_tables.schemas[instrument].tables[table_name]
     valdict = info["values"]
     obs_id_colname = instrument_tables.obs_id_column[instrument][table_name]
@@ -697,6 +710,7 @@ def schema(instrument: str, table: str) -> dict[str, list[str, str]]:
         Raised if instrument is invalid.
     """
     logger.info(request)
+    instrument = instrument.lower()
     if instrument not in instrument_tables.schemas:
         raise BadValueException(
             "instrument", instrument, list(instrument_tables.schemas.keys())
