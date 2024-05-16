@@ -228,9 +228,7 @@ def process_date(day_obs: str) -> None:
     global TOPIC_MAPPING, bucket_prefix, instrument
 
     date = "/".join(day_obs.split("-"))
-    d = ResourcePath(
-        f"s3://{bucket_prefix}rubinobs-lfa-cp/{TOPIC_MAPPING[instrument]}/header/{date}/"
-    )
+    d = ResourcePath(f"s3://{bucket_prefix}rubinobs-lfa-cp/{TOPIC_MAPPING[instrument]}/header/{date}/")
     for dirpath, dirnames, filenames in d.walk():
         for fname in filenames:
             process_resource(d.join(fname))
@@ -312,9 +310,7 @@ async def main() -> None:
 
     kafka_config = get_kafka_config()
     async with httpx.AsyncClient() as client:
-        schema_registry = kafkit.registry.httpx.RegistryApi(
-            http_client=client, url=kafka_config.schema_url
-        )
+        schema_registry = kafkit.registry.httpx.RegistryApi(http_client=client, url=kafka_config.schema_url)
         deserializer = kafkit.registry.Deserializer(registry=schema_registry)
 
         consumer = aiokafka.AIOKafkaConsumer(

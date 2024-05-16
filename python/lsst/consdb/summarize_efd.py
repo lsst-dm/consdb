@@ -22,9 +22,7 @@ class Summary:
 def gen_mean(
     config: dict[str, Any]
 ) -> Callable[[pandas.DataFrame, astropy.time.Time, astropy.time.Time], Summary]:
-    def do(
-        series: pandas.DataFrame, start: astropy.time.Time, end: astropy.time.Time
-    ) -> Summary:
+    def do(series: pandas.DataFrame, start: astropy.time.Time, end: astropy.time.Time) -> Summary:
         return Summary()
 
     return do
@@ -45,18 +43,14 @@ class EfdValues:
         self._window = window
 
     def summarize(self, start: astropy.time.Time, end: astropy.time.Time) -> Any:
-        return self._sum_function(
-            self._entries, start - self._window, end + self._window
-        )
+        return self._sum_function(self._entries, start - self._window, end + self._window)
 
 
 class Records:
     def __init__(self, db: sqlalchemy.Engine):
         self._db = db
 
-    def add(
-        self, dim: lsst.daf.butler.DimensionRecord, topic: dict[str, Any], summary: Any
-    ) -> None:
+    def add(self, dim: lsst.daf.butler.DimensionRecord, topic: dict[str, Any], summary: Any) -> None:
         pass
 
     def write(self, table: str) -> None:
@@ -139,12 +133,8 @@ def process_interval(
 
 def build_argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Summarize EFD topics in a time range")
-    parser.add_argument(
-        "-c", "--config", dest="config_name", required=True, help="config YAML"
-    )
-    parser.add_argument(
-        "-i", "--instrument", dest="instrument", required=True, help="instrument name"
-    )
+    parser.add_argument("-c", "--config", dest="config_name", required=True, help="config YAML")
+    parser.add_argument("-i", "--instrument", dest="instrument", required=True, help="instrument name")
     parser.add_argument(
         "-s",
         "--start",
@@ -167,9 +157,7 @@ def build_argparser() -> argparse.ArgumentParser:
         required=True,
         help="Consolidated Database connection string",
     )
-    parser.add_argument(
-        "-E", "--efd", dest="efd_conn_str", required=True, help="EFD connection string"
-    )
+    parser.add_argument("-E", "--efd", dest="efd_conn_str", required=True, help="EFD connection string")
     return parser
 
 
@@ -180,6 +168,4 @@ def main() -> None:
     db = create_engine(args.db_conn_str)
     efd = lsst_efd_client.EfdClient(args.efd_conn_str)
     config = read_config(args.config_name)
-    process_interval(
-        butler, db, efd, config, args.instrument, args.start_time, args.end_time
-    )
+    process_interval(butler, db, efd, config, args.instrument, args.start_time, args.end_time)
