@@ -154,6 +154,15 @@ def test_flexible_metadata(client):
     result = response.json
     assert "UNIQUE" in result["message"]
 
+    response = client.post(
+        "/consdb/flex/latiss/exposure/obs/2024032100002",
+        json={"values": {"bad_key": 2.71828}},
+    )
+    _assert_http_status(response, 404)
+    result = response.json
+    assert result["message"] == "Unknown key"
+    assert result["value"] == "bad_key"
+
     response = client.get("/consdb/flex/latiss/exposure/obs/2024032100002")
     _assert_http_status(response, 200)
     result = response.json

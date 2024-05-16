@@ -79,6 +79,15 @@ class InstrumentTables:
                             schema[row[0]] = row[1:]
                     self.flexible_metadata_schemas[instrument][obs_type] = schema
 
+    def refresh_flexible_metadata_schema(self, instrument: str, obs_type: str):
+        schema = dict()
+        schema_table = self.get_flexible_metadata_schema(instrument, obs_type)
+        stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
+        with engine.connect() as conn:
+            for row in conn.execute(stmt):
+                schema[row[0]] = row[1:]
+        self.flexible_metadata_schemas[instrument][obs_type] = schema
+
     def compute_flexible_metadata_table_name(self, instrument: str, obs_type: str) -> str:
         """Compute the name of a flexible metadata table.
 
@@ -433,6 +442,7 @@ def get_flexible_metadata_keys(instrument: str, obs_type: str) -> dict[str, list
     instrument = instrument.lower()
     obs_type = obs_type.lower()
     _ = instrument_tables.compute_flexible_metadata_table_name(instrument, obs_type)
+    instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
     return instrument_tables.flexible_metadata_schemas[instrument][obs_type]
 
 
@@ -475,6 +485,9 @@ def get_flexible_metadata(instrument: str, obs_type: str, obs_id: int) -> dict[s
     with engine.connect() as conn:
         for row in conn.execute(stmt):
             key, value = row
+            if key not in schema:
+                instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
+            schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
             dtype = schema[key][0]
             if dtype == "bool":
                 result[key] = value == "True"
@@ -527,18 +540,12 @@ def insert_flexible_metadata(
     schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
 
     value_dict = info["values"]
+    if any(key not in schema for key in value_dict):
+        instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
+        schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
     for key, value in value_dict.items():
         if key not in schema:
-            # Refresh cached schema
-            schema = dict()
-            schema_table = instrument_tables.get_flexible_metadata_schema(instrument, obs_type)
-            schema_stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
-            with engine.connect() as conn:
-                for row in conn.execute(schema_stmt):
-                    schema[row[0]] = row[1:]
-            instrument_tables.flexible_metadata_schemas[instrument][obs_type] = schema
-            if key not in schema:
-                raise BadValueException("key", key, list(schema.keys()))
+            raise BadValueException("key", key, list(schema.keys()))
 
         # check value against dtype
         dtype = schema[key][0]
