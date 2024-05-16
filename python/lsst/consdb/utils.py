@@ -32,6 +32,9 @@ import sqlalchemy
 __all__ = ["setup_postgres", "setup_logging"]
 
 
+logger = logging.getLogger(__name__)
+
+
 def setup_postgres() -> sqlalchemy.Engine:
     """Set up a SQLAlchemy Engine to talk to Postgres.
 
@@ -49,12 +52,29 @@ def setup_postgres() -> sqlalchemy.Engine:
     dbname = os.environ.get("DB_NAME")
     pg_url = ""
     if host and passwd and user and dbname:
-        logging.info(f"Connecting to {host} as {user} to {dbname}")
+        logger.info(f"Connecting to {host} as {user} to {dbname}")
         pg_url = f"postgresql://{user}:{passwd}@{host}/{dbname}"
     else:
         pg_url = os.environ["POSTGRES_URL"]
-        logging.info(f"Using POSTGRES_URL {user} {host} {dbname}")
-    return sqlalchemy.create_engine(pg_url)
+        logger.info(f"Using POSTGRES_URL {pg_url}")
+    engine = sqlalchemy.create_engine(pg_url)
+    if pg_url.startswith("sqlite:///"):
+        # For unit tests
+        start_pos = len("sqlite:///")
+        end_pos = pg_url.rindex("/")
+        db_path = pg_url[start_pos:end_pos]
+        metadata = sqlalchemy.MetaData()
+        table = sqlalchemy.Table("schemas", metadata, autoload_with=engine)
+        stmt = sqlalchemy.select(table.c.name, table.c.path)
+        schemas = dict()
+        with engine.connect() as conn:
+            for row in conn.execute(stmt):
+                schemas[row.name] = row.path
+        with engine.connect() as conn:
+            for schema, path in schemas.items():
+                path = os.path.join(db_path, path)
+                conn.exec_driver_sql(f"ATTACH DATABASE '{path}' AS {schema}")
+    return engine
 
 
 def setup_logging(module: str) -> logging.Logger:

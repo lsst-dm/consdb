@@ -11,6 +11,14 @@ readme = "README.rst"
 urls = { documentation = "https://consdb.lsst.io", source_code = "https://github.com/lsst-dm/consdb"}
 dynamic = ["version"]
 
+[tool.black]
+line-length = 110
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 110
+
 [tool.setuptools.dynamic]
 version = { attr = "setuptools_scm.get_version" }
 
