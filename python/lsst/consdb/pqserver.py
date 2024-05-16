@@ -526,23 +526,33 @@ def insert_flexible_metadata(
     table = instrument_tables.get_flexible_metadata_table(instrument, obs_type)
     schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
 
-    with engine.connect() as conn:
-        value_dict = info["values"]
-        for key, value in value_dict.items():
+    value_dict = info["values"]
+    for key, value in value_dict.items():
+        if key not in schema:
+            # Refresh cached schema
+            schema = dict()
+            schema_table = instrument_tables.get_flexible_metadata_schema(instrument, obs_type)
+            schema_stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
+            with engine.connect() as conn:
+                for row in conn.execute(schema_stmt):
+                    schema[row[0]] = row[1:]
+            instrument_tables.flexible_metadata_schemas[instrument][obs_type] = schema
             if key not in schema:
                 raise BadValueException("key", key, list(schema.keys()))
 
-            # check value against dtype
-            dtype = schema[key][0]
-            if dtype == "bool" and not isinstance(value, bool):
-                raise BadValueException("bool value", value)
-            elif dtype == "int" and not isinstance(value, int):
-                raise BadValueException("int value", value)
-            elif dtype == "float" and not isinstance(value, float):
-                raise BadValueException("float value", value)
-            elif dtype == "str" and not isinstance(value, str):
-                raise BadValueException("str value", value)
+        # check value against dtype
+        dtype = schema[key][0]
+        if dtype == "bool" and not isinstance(value, bool):
+            raise BadValueException("bool value", value)
+        elif dtype == "int" and not isinstance(value, int):
+            raise BadValueException("int value", value)
+        elif dtype == "float" and not isinstance(value, float):
+            raise BadValueException("float value", value)
+        elif dtype == "str" and not isinstance(value, str):
+            raise BadValueException("str value", value)
 
+    with engine.connect() as conn:
+        for key, value in value_dict.items():
             value_str = str(value)
             stmt: sqlalchemy.sql.dml.Insert
             if request.args and request.args.get("u") == "1":
