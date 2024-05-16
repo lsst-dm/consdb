@@ -627,7 +627,7 @@ def insert(instrument: str) -> dict[str, Any] | tuple[dict[str, str], int]:
 
 
 @app.post("/consdb/query")
-def query() -> list[list[Any]] | tuple[dict[str, str], int]:
+def query() -> dict[str, Any] | tuple[dict[str, str], int]:
     """Query the ConsDB database.
 
     Parameters
@@ -637,9 +637,11 @@ def query() -> list[list[Any]] | tuple[dict[str, str], int]:
 
     Returns
     -------
-    json_dict: `list` [ `list` [ `Any` ] ]
+    json_dict: `dict` [ `str`, `Any` ]
         JSON response with 200 HTTP status on success.
-        Response is a list of rows of column values.
+        Response is a dict with a ``columns`` key with value being a list
+        of string column names and a ``data`` key with value being a list
+        of rows.
 
     Raises
     ------
@@ -651,17 +653,19 @@ def query() -> list[list[Any]] | tuple[dict[str, str], int]:
     with engine.connect() as conn:
         cursor = conn.exec_driver_sql(info["query"])
         first = True
-        result = []
+        result = {}
+        rows = []
         for row in cursor:
             if first:
-                result.append(list(row._fields))
+                result["columns"] = list(row._fields)
                 first = False
-            result.append(list(row))
+            rows.append(list(row))
+        result["data"] = rows
     return result
 
 
 @app.get("/consdb/schema/<instrument>/<table>")
-def schema(instrument: str, table: str) -> dict[str, list[str, str]]:
+def schema(instrument: str, table: str) -> dict[str, list[str]]:
     """Retrieve the descriptions of columns in a ConsDB table.
 
     Parameters
@@ -673,7 +677,7 @@ def schema(instrument: str, table: str) -> dict[str, list[str, str]]:
 
     Returns
     -------
-    json_dict: `dict` [ `str`, `list` [ `str`, `str` ] ]
+    json_dict: `dict` [ `str`, `list` [ `str` ] ]
         JSON response with 200 HTTP status on success.
         Response is a dict with column names as keys and lists of data type
         and documentation strings as values.
