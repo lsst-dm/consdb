@@ -212,7 +212,7 @@ def test_flexible_metadata(client):
     response = client.post("/consdb/query", json={"query": "SELECT * FROM exposure ORDER BY day_obs;"})
     _assert_http_status(response, 200)
     result = response.json
-    assert len(result) == 3
-    assert "exposure_id" in result[0]
-    assert 20240321 in result[1]
-    assert "AT_O_20240327_000002" in result[2]
+    assert len(result) == 2
+    assert "exposure_id" in result["columns"]
+    assert 20240321 in result["data"][0]
+    assert "AT_O_20240327_000002" in result["data"][1]
