@@ -24,20 +24,29 @@ logger = logging.getLogger("alembic.env")
 consdb_url = os.getenv("CONSDB_URL")
 if consdb_url is None:
     raise ValueError("CONSDB_URL not found in environment")
-config.set_main_option('sqlalchemy.url', consdb_url)
+config.set_main_option("sqlalchemy.url", consdb_url)
 logger.info(f"Using connection string: {consdb_url}")
 
 # Load the Felis schema from the path specified in the alembic.ini file
 sdm_schemas_dir = os.getenv("SDM_SCHEMAS_DIR")
 if sdm_schemas_dir is None:
     raise ValueError("SDM_SCHEMAS_DIR not found in environment")
-schema_path = f"{sdm_schemas_dir}/yml/cdb_latiss.yaml"
-# context.config.get_section_option("consdb", "schema_path")
+schema_name = context.config.get_main_option("consdb.schema_name")
+schema_path = f"{sdm_schemas_dir}/yml/{schema_name}.yaml"
 logger.info(f"Using schema path: {schema_path}")
 yaml_data = yaml.safe_load(open(schema_path, "r"))
 schema = Schema.model_validate(yaml_data)
 schema_metadata = MetaDataBuilder(schema).build()
 logger.info(f"Schema {schema_metadata.schema} loaded successfully")
+
+
+def include_name(name, type_, parent_names):
+    global schema_name
+    if type_ == "schema":
+        return name == schema_name
+    else:
+        return True
+
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -69,7 +78,10 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        include_schemas=True
+        include_schemas=True,
+        include_name=include_name,
+        version_table=f"{schema_name}_version",
+        version_table_schema="cdb",
     )
 
     with context.begin_transaction():
@@ -93,7 +105,10 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            include_schemas=True
+            include_schemas=True,
+            include_name=include_name,
+            version_table=f"{schema_name}_version",
+            version_table_schema="cdb",
         )
 
         with context.begin_transaction():
