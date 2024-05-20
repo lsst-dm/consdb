@@ -30,7 +30,7 @@ INSTRUMENT_LIST = ["latiss"]
 OBS_TYPE_LIST = ["exposure", "visit", "ccdexposure", "ccdvisit"]
 DTYPE_LIST = ["bool", "int", "float", "str"]
 
-OBS_ID_COLNAME_LIST = ["obs_id", "exposure_id", "ccd_exposure_id", "reb_exposure_id"]
+OBS_ID_COLNAME_LIST = ["ccdexposure_id", "exposure_id", "obs_id"]
 
 ####################
 # Global app setup #
@@ -582,22 +582,22 @@ def insert_flexible_metadata(
     }
 
 
-@app.post("/consdb/insert/<instrument>")
-def insert(instrument: str) -> dict[str, Any] | tuple[dict[str, str], int]:
+@app.post("/consdb/insert/<instrument>/<table>/obs/<int:obs_id>")
+def insert(instrument: str, table: str, obs_id: int) -> dict[str, Any] | tuple[dict[str, str], int]:
     """Insert or update column/value pairs in a ConsDB table.
 
     Parameters
     ----------
     instrument: `str`
         Name of the instrument (e.g. ``LATISS``).
+    table: `str`
+        Name of table to insert into.
+    obs_id: `int`
+        Unique observation identifier.
     u: `str`
         Allow update if set to "1" (URL query parameter).
-    table: `str`
-        Name of table to insert into (JSON POST data).
     values: `dict` [ `str`, `Any` ]
         Dictionary of key/value pairs to insert or update (JSON POST data).
-    obs_id: `int`
-        Unique observation identifier (JSON POST data).
 
     Returns
     -------
@@ -616,30 +616,105 @@ def insert(instrument: str) -> dict[str, Any] | tuple[dict[str, str], int]:
     instrument = instrument.lower()
     if instrument not in instrument_tables.schemas:
         raise BadValueException("instrument", instrument, list(instrument_tables.schemas.keys()))
-    info = _check_json(request.json, "insert", ("table", "values", "obs_id"))
-    table_name = f"cdb_{instrument}." + info["table"].lower()
-    table = instrument_tables.schemas[instrument].tables[table_name]
+    info = _check_json(request.json, "insert", ("values",))
+    schema = f"cdb_{instrument}."
+    table_name = table.lower()
+    if not table.lower().startswith(schema):
+        table_name = schema + table_name
+    table_obj = instrument_tables.schemas[instrument].tables[table_name]
     valdict = info["values"]
     obs_id_colname = instrument_tables.obs_id_column[instrument][table_name]
-    valdict[obs_id_colname] = info["obs_id"]
+    valdict[obs_id_colname] = obs_id
 
     stmt: sqlalchemy.sql.dml.Insert
     if request.args and request.args.get("u") == "1":
         stmt = (
-            sqlalchemy.dialects.postgresql.insert(table)
+            sqlalchemy.dialects.postgresql.insert(table_obj)
             .values(valdict)
             .on_conflict_do_update(index_elements=[obs_id_colname], set_=valdict)
         )
     else:
-        stmt = sqlalchemy.insert(table).values(valdict)
+        stmt = sqlalchemy.insert(table_obj).values(valdict)
     logger.debug(str(stmt))
     with engine.connect() as conn:
         _ = conn.execute(stmt)
         conn.commit()
     return {
         "message": "Data inserted",
+        "instrument": instrument,
+        "table": table_name,
+        "obs_id": obs_id,
+    }
+
+
+@app.post("/consdb/insert/<instrument>/<table>")
+def insert_multiple(instrument: str, table: str) -> dict[str, Any] | tuple[dict[str, str], int]:
+    """Insert or update multiple observations in a ConsDB table.
+
+    Parameters
+    ----------
+    instrument: `str`
+        Name of the instrument (e.g. ``LATISS``).
+    table: `str`
+        Name of table to insert into.
+    u: `str`
+        Allow update if set to "1" (URL query parameter).
+    obs_dict: `dict` [ `int`, `dict` [ `str`, `Any` ] ]
+        Dictionary of unique observation ids and key/value pairs to insert or
+        update (JSON POST data).
+
+    Returns
+    -------
+    json_dict: `dict` [ `str`, `Any` ]
+        JSON response with 200 HTTP status on success.
+
+    Raises
+    ------
+    BadJsonException
+        Raised if JSON is absent or missing a required key.
+
+    BadValueException
+        Raised if instrument or observation type is invalid.
+    """
+    logger.info(f"{request} {request.json}")
+    instrument = instrument.lower()
+    if instrument not in instrument_tables.schemas:
+        raise BadValueException("instrument", instrument, list(instrument_tables.schemas.keys()))
+    info = _check_json(request.json, "insert", ("obs_dict"))
+    schema = f"cdb_{instrument}."
+    table_name = table.lower()
+    if not table.lower().startswith(schema):
+        table_name = schema + table_name
+    table_obj = instrument_tables.schemas[instrument].tables[table_name]
+    table_name = f"cdb_{instrument}." + info["table"].lower()
+    table = instrument_tables.schemas[instrument].tables[table_name]
+    obs_id_colname = instrument_tables.obs_id_column[instrument][table_name]
+
+    with engine.connect() as conn:
+        for obs_id, valdict in info["obs_dict"]:
+            if not isinstance(obs_id, int):
+                raise BadValueException("obs_id value", obs_id)
+            valdict[obs_id_colname] = obs_id
+
+            stmt: sqlalchemy.sql.dml.Insert
+            if request.args and request.args.get("u") == "1":
+                stmt = (
+                    sqlalchemy.dialects.postgresql.insert(table_obj)
+                    .values(valdict)
+                    .on_conflict_do_update(index_elements=[obs_id_colname], set_=valdict)
+                )
+            else:
+                stmt = sqlalchemy.insert(table_obj).values(valdict)
+            logger.debug(str(stmt))
+            # TODO: optimize as executemany
+            _ = conn.execute(stmt)
+        conn.commit()
+
+    return {
+        "message": "Data inserted",
         "table": table_name,
         "instrument": instrument,
+        "obs_ids": info["obs_dict"].keys(),
     }
 
 
