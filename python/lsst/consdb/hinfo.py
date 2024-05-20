@@ -39,7 +39,7 @@ def tai_mean(start: str, end: str) -> datetime:
     return (s + (e - s) / 2).datetime
 
 
-def mean(*iterable: float) -> Any:
+def mean(*iterable: float) -> float:
     return sum(iterable) / len(iterable)
 
 
@@ -100,12 +100,11 @@ LATISS_MAPPING: dict[str, str | Sequence] = {
     "dome_azimuth": "DOMEAZ",
     "shut_lower": "SHUTLOWR",
     "shut_upper": "SHUTUPPR",
-    #     "temp_set": "TEMP_SET",
     "simulated": (
         logical_or,
         "SIMULATE ATMCS",
         "SIMULATE ATHEXAPOD",
-        "SIMULAT ATPNEUMATICS",
+        "SIMULATE ATPNEUMATICS",
         "SIMULATE ATDOME",
         "SIMULATE ATSPECTROGRAPH",
     ),
