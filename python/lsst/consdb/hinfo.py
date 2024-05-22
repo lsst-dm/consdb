@@ -256,17 +256,17 @@ def process_column(column_def: str | Sequence, info: dict) -> Any:
 
     Parameters
     ----------
-    column_def: `str`
+    column_def : `str`
         Definition of the column.  Either a string specifying the info keyword
         to use as the column value, or a tuple containing a function to apply
         to the values of one or more info keywords or function application
         tuples.
-    info: `dict`
+    info : `dict`
         A dictionary containing keyword/value pairs.
 
     Returns
     -------
-    column_value: `Any`
+    column_value : `Any`
         The value to use for the column.
         None if any input value is missing.
     """
@@ -288,7 +288,7 @@ def process_resource(resource: ResourcePath) -> None:
 
     Parameters
     ----------
-    resource: `ResourcePath`
+    resource : `ResourcePath`
         Path to the Header Service header resource.
     """
     global KW_MAPPING, OI_MAPPING, instrument_mapping, det_mapping, translator
@@ -335,7 +335,7 @@ def process_date(day_obs: str) -> None:
 
     Parameters
     ----------
-    day_obs: `str`
+    day_obs : `str`
         Observation day to process, as YYYY-MM-DD.
     """
     global TOPIC_MAPPING, bucket_prefix, instrument
