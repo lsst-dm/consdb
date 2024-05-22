@@ -224,7 +224,7 @@ DETECTOR_MAPPING = {
     "ccdexposure_id": (ccdexposure_id, "exposure_id", "detector"),
     "exposure_id": "exposure_id",
     "detector": "detector",
-    "s_region": (ccd_region, "IMGTYPE", "RA", "DEC", "ROTPA", "_CCDNAME"),
+    "s_region": (ccd_region, "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
 }
 
 # Mapping to column name from ObservationInfo keyword
