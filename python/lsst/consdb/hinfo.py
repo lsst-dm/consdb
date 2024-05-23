@@ -56,7 +56,7 @@ def region(ra: float, dec: float, rotpa: float, points: list[tuple[str, int, int
     for detector, offset_x, offset_y in points:
         skywcs = formatter.makeRawSkyWcsFromBoresight(
             lsst.geom.SpherePoint(ra, dec, lsst.geom.degrees),
-            rotpa*lsst.geom.degrees,
+            rotpa * lsst.geom.degrees,
             camera[detector],
         )
         bbox = camera[detector].getBBox()
@@ -75,9 +75,17 @@ def ccdexposure_id(exposure_id: int, detector: int) -> int:
 def ccd_region(imgtype: str, ra: float, dec: float, rotpa: float, ccdname: str) -> str | None:
     if imgtype != "OBJECT":
         return None
-    return region(ra, dec, rotpa, [
-        (ccdname, 0, 0), (ccdname, 1, 0), (ccdname, 1, 1), (ccdname, 0, 1),
-    ])
+    return region(
+        ra,
+        dec,
+        rotpa,
+        [
+            (ccdname, 0, 0),
+            (ccdname, 1, 0),
+            (ccdname, 1, 1),
+            (ccdname, 0, 1),
+        ],
+    )
 
 
 def fp_region(imgtype: str, ra: float, dec: float, rotpa: float) -> str | None:
@@ -86,21 +94,48 @@ def fp_region(imgtype: str, ra: float, dec: float, rotpa: float) -> str | None:
         return None
     if instrument == "LATISS":
         corners = [
-            ("RXX_S00", 0, 0), ("RXX_S00", 1, 0), ("RXX_S00", 1, 1), ("RXX_S00", 0, 1),
+            ("RXX_S00", 0, 0),
+            ("RXX_S00", 1, 0),
+            ("RXX_S00", 1, 1),
+            ("RXX_S00", 0, 1),
         ]
     elif instrument == "LSSTComCam" or instrument == "LSSTComCamSim":
         corners = [
-            ("R22_S00", 0, 0), ("R22_S02", 1, 0), ("R22_S20", 0, 1), ("R22_S22", 1, 1),
+            ("R22_S00", 0, 0),
+            ("R22_S02", 1, 0),
+            ("R22_S20", 0, 1),
+            ("R22_S22", 1, 1),
         ]
     elif instrument == "LSSTCam":
         corners = [
-            ("R01_S00", 0, 0), ("R03_S02", 1, 0), ("R03_S02", 1, 1), ("R04_SG1", 1, 0),
-            ("R04_SG1", 1, 1), ("R04_SG0", 1, 0), ("R04_SG0", 1, 1), ("R14_S02", 1, 0),
-            ("R34_S22", 1, 1), ("R34_S22", 0, 1), ("R44_SG1", 1, 1), ("R44_SG1", 0, 1),
-            ("R44_SG0", 1, 1), ("R44_SG0", 0, 1), ("R43_S22", 1, 1), ("R41_S20", 0, 1),
-            ("R41_S20", 0, 0), ("R40_SG1", 0, 1), ("R40_SG1", 0, 0), ("R40_SG0", 0, 1),
-            ("R40_SG0", 0, 0), ("R30_S20", 0, 1), ("R10_S00", 0, 0), ("R10_S00", 1, 0),
-            ("R00_SG1", 0, 0), ("R00_SG1", 1, 0), ("R00_SG0", 0, 0), ("R00_SG0", 1, 0),
+            ("R01_S00", 0, 0),
+            ("R03_S02", 1, 0),
+            ("R03_S02", 1, 1),
+            ("R04_SG1", 1, 0),
+            ("R04_SG1", 1, 1),
+            ("R04_SG0", 1, 0),
+            ("R04_SG0", 1, 1),
+            ("R14_S02", 1, 0),
+            ("R34_S22", 1, 1),
+            ("R34_S22", 0, 1),
+            ("R44_SG1", 1, 1),
+            ("R44_SG1", 0, 1),
+            ("R44_SG0", 1, 1),
+            ("R44_SG0", 0, 1),
+            ("R43_S22", 1, 1),
+            ("R41_S20", 0, 1),
+            ("R41_S20", 0, 0),
+            ("R40_SG1", 0, 1),
+            ("R40_SG1", 0, 0),
+            ("R40_SG0", 0, 1),
+            ("R40_SG0", 0, 0),
+            ("R30_S20", 0, 1),
+            ("R10_S00", 0, 0),
+            ("R10_S00", 1, 0),
+            ("R00_SG1", 0, 0),
+            ("R00_SG1", 1, 0),
+            ("R00_SG0", 0, 0),
+            ("R00_SG0", 1, 0),
         ]
     else:
         return None

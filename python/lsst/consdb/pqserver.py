@@ -27,10 +27,10 @@ from flask import Flask, request
 from utils import setup_logging, setup_postgres
 
 INSTRUMENT_LIST = ["latiss"]
-OBS_TYPE_LIST = ["exposure", "visit", "ccdexposure", "ccdvisit"]
+OBS_TYPE_LIST = ["exposure", "visit1", "ccdexposure", "ccdvisit1"]
 DTYPE_LIST = ["bool", "int", "float", "str"]
 
-OBS_ID_COLNAME_LIST = ["ccdexposure_id", "exposure_id", "obs_id"]
+OBS_ID_COLNAME_LIST = ["ccdvisit_id", "visit_id", "ccdexposure_id", "exposure_id", "obs_id"]
 
 ####################
 # Global app setup #
@@ -73,6 +73,7 @@ class InstrumentTables:
                 if table_name in md.tables and schema_table_name in md.tables:
                     schema_table = md.tables[schema_table_name]
                     stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
+                    logger.debug(str(stmt))
                     schema = dict()
                     with engine.connect() as conn:
                         for row in conn.execute(stmt):
@@ -83,6 +84,7 @@ class InstrumentTables:
         schema = dict()
         schema_table = self.get_flexible_metadata_schema(instrument, obs_type)
         stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
+        logger.debug(str(stmt))
         with engine.connect() as conn:
             for row in conn.execute(stmt):
                 schema[row[0]] = row[1:]
@@ -183,6 +185,38 @@ class InstrumentTables:
         obs_type = obs_type.lower()
         table_name = self.compute_flexible_metadata_table_schema_name(instrument, obs_type)
         return self.schemas[instrument].tables[table_name]
+
+    def compute_wide_view_name(self, instrument: str, obs_type: str) -> str:
+        """Compute the name of a wide view.
+
+        The wide view joins all tables for a given instrument and observation
+        type.
+
+        Parameters
+        ----------
+        instrument: `str`
+            Name of the instrument (e.g. ``LATISS``).
+        obs_type: `str`
+            Name of the observation type (e.g. ``Exposure``).
+
+        Returns
+        -------
+        view_nae: `str`
+            Name of the appropriate wide view.
+        """
+        instrument = instrument.lower()
+        obs_type = obs_type.lower()
+        if instrument not in self.schemas:
+            raise BadValueException("instrument", instrument, list(self.schemas.keys()))
+        view_name = f"cdb_{instrument}.{obs_type}_wide_view"
+        if view_name not in self.schemas[instrument].tables:
+            obs_type_list = [
+                name[len(f"cdb_{instrument}.") : -len("_wide_view")]  # noqa: E203
+                for name in self.schemas[instrument].tables
+                if name.endswith("_wide_view")
+            ]
+            raise BadValueException("observation type", obs_type, obs_type_list)
+        return view_name
 
 
 instrument_tables = InstrumentTables()
@@ -718,6 +752,51 @@ def insert_multiple(instrument: str, table: str) -> dict[str, Any] | tuple[dict[
     }
 
 
+@app.get("/consdb/query/<instrument>/<obs_type>/obs/<int:obs_id>")
+def get_all_metadata(
+    instrument: str, obs_type: str, obs_id: int
+) -> dict[str, Any] | tuple[dict[str, str], int]:
+    """Get all information about an observation.
+
+    Parameters
+    ----------
+    instrument: `str`
+        Name of the instrument (e.g. ``LATISS``).
+    obs_type: `str`
+        Name of the observation type (e.g. ``Exposure``).
+    obs_id: `int`
+        Unique observation identifier.
+    flex: `str`
+        Include flexible metadata if set to "1" (URL query parameter).
+
+    Returns
+    -------
+    json_dict: `dict` [ `str`, `Any` ]
+        JSON response with 200 HTTP status on success.
+        Response is a dict with columns as keys.
+
+    Raises
+    ------
+    """
+    logger.info(request)
+    instrument = instrument.lower()
+    obs_type = obs_type.lower()
+    view_name = instrument_tables.compute_wide_view_name(instrument, obs_type)
+    view = instrument_tables.schemas[view_name]
+    obs_id_column = instrument_tables.obs_id_column[instrument][view_name]
+    stmt = sqlalchemy.select(view).where(view.c[obs_id_column] == obs_id)
+    logger.debug(str(stmt))
+    result = dict()
+    with engine.connect() as conn:
+        rows = conn.execute(stmt).all()
+        assert len(rows) == 1
+        result = dict(rows[0]._mapping)
+    if request.args and "flex" in request.args and request.args["flex"] == "1":
+        flex_result = get_flexible_metadata(instrument, obs_type, obs_id)
+        result.update(flex_result)
+    return result
+
+
 @app.post("/consdb/query")
 def query() -> dict[str, Any] | tuple[dict[str, str], int]:
     """Query the ConsDB database.
@@ -745,7 +824,7 @@ def query() -> dict[str, Any] | tuple[dict[str, str], int]:
     with engine.connect() as conn:
         cursor = conn.exec_driver_sql(info["query"])
         first = True
-        result = {}
+        result: dict[str, Any] = {}
         rows = []
         for row in cursor:
             if first:
