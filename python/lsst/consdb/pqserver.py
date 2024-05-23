@@ -756,6 +756,53 @@ def query() -> dict[str, Any] | tuple[dict[str, str], int]:
     return result
 
 
+@app.get("/consdb/schema")
+def list_instruments() -> list[str]:
+    """Retrieve the list of instruments available in ConsDB."
+
+    Returns
+    -------
+    json_list: `list` [ `str` ]
+        JSON response with 200 HTTP status on success.
+        Response is a list of instrument names.
+
+    Raises
+    ------
+    BadValueException
+        Raised if instrument is invalid.
+    """
+    logger.info(request)
+    return list(instrument_tables.schemas.keys())
+
+
+@app.get("/consdb/schema/<instrument>")
+def list_table(instrument: str) -> list[str]:
+    """Retrieve the list of tables for an instrument.
+
+    Parameters
+    ----------
+    instrument: `str`
+        Name of the instrument (e.g. ``LATISS``).
+
+    Returns
+    -------
+    json_list: `list` [ `str` ]
+        JSON response with 200 HTTP status on success.
+        Response is a list of table names.
+
+    Raises
+    ------
+    BadValueException
+        Raised if instrument is invalid.
+    """
+    logger.info(request)
+    instrument = instrument.lower()
+    if instrument not in instrument_tables.schemas:
+        raise BadValueException("instrument", instrument, list(instrument_tables.schemas.keys()))
+    schema = instrument_tables.schemas[instrument]
+    return list(schema.tables.keys())
+
+
 @app.get("/consdb/schema/<instrument>/<table>")
 def schema(instrument: str, table: str) -> dict[str, list[str]]:
     """Retrieve the descriptions of columns in a ConsDB table.
