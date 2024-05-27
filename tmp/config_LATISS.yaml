@@ -117,8 +117,8 @@ columns:
             is_array: False
 
   - name: ATAOS_correctionEnabled_moveWhileExposing
-    function:
-    type:
+    function: logical_or
+    type: boolean
     unit: unitless
     description: "Move hexapod and focus while exposing enabled."
     topics:
@@ -143,8 +143,8 @@ columns:
             is_array: False
 
   - name: ATAOS_correctionOffsets_y
-    function:
-    type:
+    function: mean
+    type: float
     unit: mm
     description: "Offset to the hexapod correction in the  y-direction."
     topics:
@@ -169,8 +169,8 @@ columns:
             is_array: False
 
   - name: ATAOS_correctionOffsets_u
-    function:
-    type:
+    function: mean
+    type: float
     unit: degree
     description: "Offset to the angle correction applied to the hexapod with respect to the hexapod x-axis."
     topics:
@@ -195,8 +195,8 @@ columns:
             is_array: False
 
   - name: ATAOS_correctionOffsets_w
-    function:
-    type:
+    function: float
+    type: mean
     unit: degree
     description: "Offset to the angle correction applied to the hexapod with respect to the hexapod z-axis (Ignored)."
     topics:
@@ -221,8 +221,8 @@ columns:
             is_array: False
 
   - name: ATAOS_correctionOffsets_m2
-    function:
-    type:
+    function: mean
+    type: float
     unit: Pa
     description: "Offset to the  m2 correction."
     topics:
@@ -247,8 +247,8 @@ columns:
             is_array: False
 
   - name: ATAOS_focusOffsetSummary_userApplied
-    function:
-    type:
+    function: mean
+    type: float
     unit: mm
     description: "Cumulative User-provided focus-offset."
     topics:
@@ -273,8 +273,8 @@ columns:
             is_array: False
 
   - name: ATAOS_focusOffsetSummary_disperser
-    function:
-    type:
+    function: mean
+    type: float
     unit: degree
     description: "Offset due to atspectrograph disperser."
     topics:
@@ -338,8 +338,8 @@ columns:
             is_array: False
 
   - name: ATAOS_hexapodCorrectionCompleted_hexapod_y
-    function:
-    type:
+    function: mean
+    type: float
     unit: mm
     description: "Position correction applied to the hexapod in the optical y-direction."
     topics:
@@ -364,8 +364,8 @@ columns:
             is_array: False
 
   - name: ATAOS_hexapodCorrectionCompleted_hexapod_u
-    function:
-    type:
+    function: mean
+    type: float
     unit: degree
     description: "Angle correction applied to the hexapod with respect to the optical x-axis."
     topics:
@@ -416,8 +416,8 @@ columns:
             is_array: False
 
   - name: ATAOS_hexapodCorrectionStarted_elevation
-    function:
-    type:
+    function: mean
+    type: float
     unit: degree
     description: "Elevation position for the correction."
     topics:
@@ -442,8 +442,8 @@ columns:
             is_array: False
 
   - name: ATAOS_hexapodCorrectionStarted_hexapod_y
-    function:
-    type:
+    function: mean
+    type: float
     unit: mm
     description: "Position correction applied to the hexapod in the optical y-direction."
     topics:
@@ -468,8 +468,8 @@ columns:
             is_array: False
 
   - name: ATAOS_hexapodCorrectionStarted_hexapod_u
-    function:
-    type:
+    function: mean
+    type: float
     unit: degree
     description: "Angle correction applied to the hexapod with respect to the optical x-axis."
     topics:
@@ -547,8 +547,8 @@ columns:
 
   # lsst.sal.ATAOS.logevent_m1CorrectionStarted
   - name: ATAOS_m1CorrectionStarted_azimuth
-    function:
-    type:
+    function: mean
+    type: float
     unit: degree
     description: "Azimuth position for the correction."
     topics:
@@ -600,8 +600,8 @@ columns:
             is_array: True
 
   - name: ATAOS_pointingOffsetSummary_filter
-    function:
-    type:
+    function: mean
+    type: float
     unit: arcsec
     description: "Offset due to atspectrograph filter"
     topics:
@@ -743,7 +743,7 @@ columns:
             is_array: False
 
   - name: ATHexapod_configurationApplied_configurations
-    function: unique
+    function: comma_unique
     type: string
     unit: unitless
     description: "A comma-separated list of configurations applied. If configuration comes from a clone of a git repo, or similar directory, then it will be a list of file names, without the file extension. Ignore whitespace after commas."
@@ -795,8 +795,8 @@ columns:
             is_array: False
 
   - name: ATHexapod_positionUpdate_positionU
-    function:
-    type:
+    function: mean
+    type: float
     unit: deg
     description: "New U position."
     topics:
