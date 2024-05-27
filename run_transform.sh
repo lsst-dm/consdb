@@ -6,5 +6,5 @@ python python/lsst/consdb/transform_efd.py \
     -r /repo/embargo \
     -d sqlite:///$PWD/tmp/test.db \
     -E usdf_efd \
-    -c $PWD/tmp/config.yaml \
+    -c $PWD/tmp/config_LATISS.yaml \
     -l $PWD/tmp/transform.log
