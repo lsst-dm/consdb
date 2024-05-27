@@ -26,7 +26,7 @@ class DBBase:
         elif sgbd == "postgresql":
             self.dialect = postgresql
         else:
-            raise Exception("The dialect for xxx has not yet been implemented.")
+            raise Exception("The dialect for {sgbd} has not yet been implemented.")
 
     def get_db_engine(self) -> Engine:
         if self.engine is None:
