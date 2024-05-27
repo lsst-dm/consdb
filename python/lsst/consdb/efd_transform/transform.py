@@ -7,7 +7,7 @@ import numpy
 import pandas
 from dao.butler import ButlerDao
 from dao.exposure_efd import ExposureEfdDao
-from efd_transform.aggregate import Aggregate
+from efd_transform.summary import Summary
 from lsst.daf.butler import Butler
 
 # from sqlalchemy import Engine
@@ -173,7 +173,7 @@ class Transform:
 
         values = self.concatenate_arrays(topics_values)
 
-        column_value = Aggregate(values).apply(transform_function)
+        column_value = Summary(values).apply(transform_function)
 
         return column_value
 
