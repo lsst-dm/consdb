@@ -26,248 +26,368 @@ tables:
     datatype: string
     length: 20
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
+  - name: ATAOS_atspectrographCorrectionCompleted_focusOffset
+    '@id': '#ExposureEFD.ATAOS_atspectrographCorrectionCompleted_focusOffset'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_atspectrographCorrectionCompleted_pointingOffsets
+    '@id': '#ExposureEFD.ATAOS_atspectrographCorrectionCompleted_pointingOffsets'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_atspectrographCorrectionStarted_focusOffset
+    '@id': '#ExposureEFD.ATAOS_atspectrographCorrectionStarted_focusOffset'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_atspectrographCorrectionStarted_pointingOffsets
+    '@id': '#ExposureEFD.ATAOS_atspectrographCorrectionStarted_pointingOffsets'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_m1
+    '@id': '#ExposureEFD.ATAOS_correctionEnabled_m1'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_m2
+    '@id': '#ExposureEFD.ATAOS_correctionEnabled_m2'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_hexapod
+    '@id': '#ExposureEFD.ATAOS_correctionEnabled_hexapod'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_focus
+    '@id': '#ExposureEFD.ATAOS_correctionEnabled_focus'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_atspectrograph
+    '@id': '#ExposureEFD.ATAOS_correctionEnabled_atspectrograph'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_moveWhileExposing
+    '@id': '#ExposureEFD.ATAOS_correctionEnabled_moveWhileExposing'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_x
+    '@id': '#ExposureEFD.ATAOS_correctionOffsets_x'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_y
+    '@id': '#ExposureEFD.ATAOS_correctionOffsets_y'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_z
+    '@id': '#ExposureEFD.ATAOS_correctionOffsets_z'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_u
+    '@id': '#ExposureEFD.ATAOS_correctionOffsets_u'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_v
+    '@id': '#ExposureEFD.ATAOS_correctionOffsets_v'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_w
+    '@id': '#ExposureEFD.ATAOS_correctionOffsets_w'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_m1
+    '@id': '#ExposureEFD.ATAOS_correctionOffsets_m1'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_m2
+    '@id': '#ExposureEFD.ATAOS_correctionOffsets_m2'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
   - name: ATAOS_focusOffsetSummary_total
-    "@id": "#ExposureEFD.ATAOS_focusOffsetSummary_total"
+    '@id': '#ExposureEFD.ATAOS_focusOffsetSummary_total'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
   - name: ATAOS_focusOffsetSummary_userApplied
-    "@id": "#ExposureEFD.ATAOS_focusOffsetSummary_userApplied"
+    '@id': '#ExposureEFD.ATAOS_focusOffsetSummary_userApplied'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
   - name: ATAOS_focusOffsetSummary_filter
-    "@id": "#ExposureEFD.ATAOS_focusOffsetSummary_filter"
+    '@id': '#ExposureEFD.ATAOS_focusOffsetSummary_filter'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
   - name: ATAOS_focusOffsetSummary_disperser
-    "@id": "#ExposureEFD.ATAOS_focusOffsetSummary_disperser"
+    '@id': '#ExposureEFD.ATAOS_focusOffsetSummary_disperser'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
   - name: ATAOS_focusOffsetSummary_wavelength
-    "@id": "#ExposureEFD.ATAOS_focusOffsetSummary_wavelength"
+    '@id': '#ExposureEFD.ATAOS_focusOffsetSummary_wavelength'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: ATDome_vignetted
-    "@id": "#ExposureEFD.ATDome_vignetted"
-    datatype: boolean
-    nullable: true
-    description: 'Is any part of the camera field of view blocked by dome components?'
-  - name: ATMCS_measuredTorque_elevationMax
-    "@id": "#ExposureEFD.ATMCS_measuredTorque_elevationMax"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_azimuth
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionCompleted_azimuth'
     datatype: double
     nullable: true
-    description: 'Maximum torque applied by the elevation motor during the exposure'
-  - name: ATMCS_measuredTorque_azimuth1Max
-    "@id": "#ExposureEFD.ATMCS_measuredTorque_azimuth1Max"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_elevation
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionCompleted_elevation'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: ATMCS_measuredTorque_azimuth2Max
-    "@id": "#ExposureEFD.ATMCS_measuredTorque_azimuth2Max"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_x
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionCompleted_hexapod_x'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: ATMCS_measuredTorque_nasmyth1Max
-    "@id": "#ExposureEFD.ATMCS_measuredTorque_nasmyth1Max"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_y
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionCompleted_hexapod_y'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: ATMCS_measuredTorque_nasmyth2Max
-    "@id": "#ExposureEFD.ATMCS_measuredTorque_nasmyth2Max"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_z
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionCompleted_hexapod_z'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: ATMCS_measuredTorque_m3Max
-    "@id": "#ExposureEFD.ATMCS_measuredTorque_m3Max"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_u
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionCompleted_hexapod_u'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: ATPtg_warning
-    "@id": "#ExposureEFD.ATPtg_warning"
-    datatype: boolean
-    nullable: true
-    description: 'Were any pointing system warnings triggered during the exposure?'
-  - name: MTAOS_cameraHexapodCorrection_x
-    "@id": "#ExposureEFD.MTAOS_cameraHexapodCorrection_x"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_v
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionCompleted_hexapod_v'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_cameraHexapodCorrection_y
-    "@id": "#ExposureEFD.MTAOS_cameraHexapodCorrection_y"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_w
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionCompleted_hexapod_w'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_cameraHexapodCorrection_z
-    "@id": "#ExposureEFD.MTAOS_cameraHexapodCorrection_z"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_azimuth
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionStarted_azimuth'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_cameraHexapodCorrection_u
-    "@id": "#ExposureEFD.MTAOS_cameraHexapodCorrection_u"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_elevation
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionStarted_elevation'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_cameraHexapodCorrection_v
-    "@id": "#ExposureEFD.MTAOS_cameraHexapodCorrection_v"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_x
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionStarted_hexapod_x'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_cameraHexapodCorrection_w
-    "@id": "#ExposureEFD.MTAOS_cameraHexapodCorrection_w"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_y
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionStarted_hexapod_y'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes4
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes4"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_z
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionStarted_hexapod_z'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes5
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes5"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_u
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionStarted_hexapod_u'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes6
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes6"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_v
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionStarted_hexapod_v'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes7
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes7"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_w
+    '@id': '#ExposureEFD.ATAOS_hexapodCorrectionStarted_hexapod_w'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes8
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes8"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionCompleted_azimuth
+    '@id': '#ExposureEFD.ATAOS_m1CorrectionCompleted_azimuth'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes9
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes9"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionCompleted_elevation
+    '@id': '#ExposureEFD.ATAOS_m1CorrectionCompleted_elevation'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes10
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes10"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionCompleted_pressure
+    '@id': '#ExposureEFD.ATAOS_m1CorrectionCompleted_pressure'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes11
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes11"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionStarted_azimuth
+    '@id': '#ExposureEFD.ATAOS_m1CorrectionStarted_azimuth'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes12
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes12"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionStarted_elevation
+    '@id': '#ExposureEFD.ATAOS_m1CorrectionStarted_elevation'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes13
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes13"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionStarted_pressure
+    '@id': '#ExposureEFD.ATAOS_m1CorrectionStarted_pressure'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes14
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes14"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_pointingOffsetSummary_total
+    '@id': '#ExposureEFD.ATAOS_pointingOffsetSummary_total'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes15
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes15"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_pointingOffsetSummary_filter
+    '@id': '#ExposureEFD.ATAOS_pointingOffsetSummary_filter'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes16
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes16"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_pointingOffsetSummary_disperser
+    '@id': '#ExposureEFD.ATAOS_pointingOffsetSummary_disperser'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes17
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes17"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_allAxesInPosition_inPosition
+    '@id': '#ExposureEFD.ATDome_allAxesInPosition_inPosition'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes18
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes18"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_azimuthInPosition_inPosition
+    '@id': '#ExposureEFD.ATDome_azimuthInPosition_inPosition'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes19
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes19"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_lastAzimuthGoTo_position
+    '@id': '#ExposureEFD.ATDome_lastAzimuthGoTo_position'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes20
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes20"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_settingsAppliedDomeController_rainSensorEnabled
+    '@id': '#ExposureEFD.ATDome_settingsAppliedDomeController_rainSensorEnabled'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes21
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes21"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_settingsAppliedDomeController_cloudSensorEnabled
+    '@id': '#ExposureEFD.ATDome_settingsAppliedDomeController_cloudSensorEnabled'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: MTAOS_wavefrontError_zernikes22
-    "@id": "#ExposureEFD.MTAOS_wavefrontError_zernikes22"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_settingsAppliedDomeController_tolerance
+    '@id': '#ExposureEFD.ATDome_settingsAppliedDomeController_tolerance'
     datatype: double
     nullable: true
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
-  - name: DIMM_measurement_fwhm
-    "@id": "#ExposureEFD.DIMM_measurement_fwhm"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDomeTrajectory_telescopeVignetted_vignetted
+    '@id': '#ExposureEFD.ATDomeTrajectory_telescopeVignetted_vignetted'
     datatype: double
     nullable: true
-    description: 'Combined full width half maximum for the period of the exposure'
-  - name: ESS_pressure
-    "@id": "#ExposureEFD.ESS_pressure"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDomeTrajectory_telescopeVignetted_azimuth
+    '@id': '#ExposureEFD.ATDomeTrajectory_telescopeVignetted_azimuth'
     datatype: double
     nullable: true
-    description: 'Average pressure for the period of the exposure'
-  - name: ESS_relativeHumidity
-    "@id": "#ExposureEFD.ESS_relativeHumidity"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDomeTrajectory_telescopeVignetted_shutter
+    '@id': '#ExposureEFD.ATDomeTrajectory_telescopeVignetted_shutter'
     datatype: double
     nullable: true
-    description: 'Average relative humidity for the period of the exposure'
-  - name: ESS_temperature
-    "@id": "#ExposureEFD.ESS_temperature"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_configurationApplied_configurations
+    '@id': '#ExposureEFD.ATHexapod_configurationApplied_configurations'
     datatype: double
     nullable: true
-    description: 'Average temperature for the period of the exposure'
-  - name: WeatherStation_temperature
-    "@id": "#ExposureEFD.WeatherStation_temperature"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionX
+    '@id': '#ExposureEFD.ATHexapod_positionUpdate_positionX'
     datatype: double
     nullable: true
-    description: 'Average air temperature for the period of the exposure'
-  - name: WeatherStation_pressure
-    "@id": "#ExposureEFD.WeatherStation_pressure"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionY
+    '@id': '#ExposureEFD.ATHexapod_positionUpdate_positionY'
     datatype: double
     nullable: true
-    description: 'Average pressure for the period of the exposure'
-  - name: WeatherStation_relativeHumidity
-    "@id": "#ExposureEFD.WeatherStation_relativeHumidity"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionZ
+    '@id': '#ExposureEFD.ATHexapod_positionUpdate_positionZ'
     datatype: double
     nullable: true
-    description: 'Average relative humidity for the period of the exposure'
-  - name: WeatherStation_windDirection
-    "@id": "#ExposureEFD.WeatherStation_windDirection"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionU
+    '@id': '#ExposureEFD.ATHexapod_positionUpdate_positionU'
     datatype: double
     nullable: true
-    description: 'Vector average of wind direction for the period of the exposure'
-  - name: WeatherStation_windSpeed
-    "@id": "#ExposureEFD.WeatherStation_windSpeed"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionV
+    '@id': '#ExposureEFD.ATHexapod_positionUpdate_positionV'
     datatype: double
     nullable: true
-    description: 'Average of wind speed for the period of the exposure'
-  - name: Camera_alertRaised
-    "@id": "#ExposureEFD.Camera_alertRaised"
-    datatype: boolean
-    nullable: true
-    description: 'Did any camera subsystem raise an alert?'
-  - name: Camera_rebTotalPower
-    "@id": "#ExposureEFD.Camera_rebTotalPower"
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionW
+    '@id': '#ExposureEFD.ATHexapod_positionUpdate_positionW'
     datatype: double
     nullable: true
-    description: Wattage
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATMCS_target_elevation
+    '@id': '#ExposureEFD.ATMCS_target_elevation'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATMCS_target_elevationVelocity
+    '@id': '#ExposureEFD.ATMCS_target_elevationVelocity'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATMCS_target_azimuth
+    '@id': '#ExposureEFD.ATMCS_target_azimuth'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATMCS_target_azimuthVelocity
+    '@id': '#ExposureEFD.ATMCS_target_azimuthVelocity'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedDisperserPosition_focusOffset
+    '@id': '#ExposureEFD.ATSpectrograph_reportedDisperserPosition_focusOffset'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedDisperserPosition_pointingOffsets
+    '@id': '#ExposureEFD.ATSpectrograph_reportedDisperserPosition_pointingOffsets'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedFilterPosition_centralWavelength
+    '@id': '#ExposureEFD.ATSpectrograph_reportedFilterPosition_centralWavelength'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedFilterPosition_focusOffset
+    '@id': '#ExposureEFD.ATSpectrograph_reportedFilterPosition_focusOffset'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedFilterPosition_pointingOffsets
+    '@id': '#ExposureEFD.ATSpectrograph_reportedFilterPosition_pointingOffsets'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
