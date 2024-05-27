@@ -1,0 +1,80 @@
+
+columns:
+  - name: ATAOS_focusOffsetSummary_total
+    function: mean
+    topics:
+      -
+        name: lsst.sal.ATAOS.logevent_focusOffsetSummary
+        fields:
+          -
+            name: total
+            is_array: False
+
+  - name: ATAOS_focusOffsetSummary_userApplied
+    function: min
+    topics:
+      -
+        name: lsst.sal.ATAOS.logevent_focusOffsetSummary
+        fields:
+          -
+            name: userApplied
+            is_array: False
+
+  - name: ATAOS_focusOffsetSummary_filter
+    function: max
+    topics:
+      -
+        name: lsst.sal.ATAOS.logevent_focusOffsetSummary
+        fields:
+          -
+            name: filter
+            is_array: False
+
+  # - name: ATPtg_warning
+  #   function: mean
+  #   topics:
+  #     -
+  #       name: lsst.sal.ATPtg.logevent_airmassWarning
+  #       fields:
+  #         -
+  #           name: level
+  #           is_array: False
+
+  #     -
+  #       name: lsst.sal.ATPtg.logevent_moonProximityWarning
+  #       fields:
+  #         -
+  #           name: level
+  #           is_array: False
+
+  #     -
+  #       name: lsst.sal.ATPtg.logevent_mountDataWarning
+  #       fields:
+  #         -
+  #           name: level
+  #           is_array: False
+
+  #     # -
+  #     #   name: lsst.sal.ATPtg.logevent_azWrapWarning
+  #     #   fields: ["level"]
+  #     # -
+  #     #   name: lsst.sal.ATPtg.logevent_blindSpotWarning
+  #     #   fields: ["level"]
+  #     # -
+  #     #   name: lsst.sal.ATPtg.logevent_elLimitWarning
+  #     #   fields: ["level"]
+  #     # -
+  #     #   name: lsst.sal.ATPtg.logevent_focusNameInconsistentWarning
+  #     #   fields: ["level"]
+  #     # -
+  #     #   name: lsst.sal.ATPtg.logevent_objectSetWarning
+  #     #   fields: ["level"]
+  #     # -
+  #     #   name: lsst.sal.ATPtg.logevent_rotWrapWarning
+  #     #   fields: ["level"]
+  #     # -
+  #     #   name: lsst.sal.ATPtg.logevent_sunProximityWarning
+  #     #   fields: ["level"]
+  #     # -
+  #     #   name: lsst.sal.ATPtg.logevent_objectSetWarning
+  #     #   fields: ["level"]
