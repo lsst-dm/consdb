@@ -195,8 +195,8 @@ columns:
             is_array: False
 
   - name: ATAOS_correctionOffsets_w
-    function: float
-    type: mean
+    function: mean
+    type: float
     unit: degree
     description: "Offset to the angle correction applied to the hexapod with respect to the hexapod z-axis (Ignored)."
     topics:
