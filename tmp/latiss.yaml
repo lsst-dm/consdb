@@ -391,3 +391,392 @@ tables:
     datatype: double
     nullable: true
     description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+
+- name: VisitEFD
+  "@id": "#VisitEFD"
+  primaryKey:
+  - "#VisitEFD.visit_id"
+  - "#VisitEFD.instrument"
+  constraints:
+  - name: un_visit_id_instrument
+    "@id": "#VisitEFD.un_visit_id_instrument"
+    "@type": Unique
+    description: Ensure visit_id is unique.
+    columns:
+    - "#VisitEFD.visit_id"
+    - "#VisitEFD.instrument"
+  columns:
+  - name: visit_id
+    "@id": "#VisitEFD.visit_id"
+    datatype: long
+    description: 'Reference to the corresponding entry in the Visit table.'
+  - name: instrument
+    "@id": "#VisitEFD.instrument"
+    datatype: string
+    length: 20
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit'
+  - name: ATAOS_atspectrographCorrectionCompleted_focusOffset
+    '@id': '#VisitEFD.ATAOS_atspectrographCorrectionCompleted_focusOffset'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_atspectrographCorrectionCompleted_pointingOffsets
+    '@id': '#VisitEFD.ATAOS_atspectrographCorrectionCompleted_pointingOffsets'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_atspectrographCorrectionStarted_focusOffset
+    '@id': '#VisitEFD.ATAOS_atspectrographCorrectionStarted_focusOffset'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_atspectrographCorrectionStarted_pointingOffsets
+    '@id': '#VisitEFD.ATAOS_atspectrographCorrectionStarted_pointingOffsets'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_m1
+    '@id': '#VisitEFD.ATAOS_correctionEnabled_m1'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_m2
+    '@id': '#VisitEFD.ATAOS_correctionEnabled_m2'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_hexapod
+    '@id': '#VisitEFD.ATAOS_correctionEnabled_hexapod'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_focus
+    '@id': '#VisitEFD.ATAOS_correctionEnabled_focus'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_atspectrograph
+    '@id': '#VisitEFD.ATAOS_correctionEnabled_atspectrograph'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionEnabled_moveWhileExposing
+    '@id': '#VisitEFD.ATAOS_correctionEnabled_moveWhileExposing'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_x
+    '@id': '#VisitEFD.ATAOS_correctionOffsets_x'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_y
+    '@id': '#VisitEFD.ATAOS_correctionOffsets_y'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_z
+    '@id': '#VisitEFD.ATAOS_correctionOffsets_z'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_u
+    '@id': '#VisitEFD.ATAOS_correctionOffsets_u'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_v
+    '@id': '#VisitEFD.ATAOS_correctionOffsets_v'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_w
+    '@id': '#VisitEFD.ATAOS_correctionOffsets_w'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_m1
+    '@id': '#VisitEFD.ATAOS_correctionOffsets_m1'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_correctionOffsets_m2
+    '@id': '#VisitEFD.ATAOS_correctionOffsets_m2'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_focusOffsetSummary_total
+    '@id': '#VisitEFD.ATAOS_focusOffsetSummary_total'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_focusOffsetSummary_userApplied
+    '@id': '#VisitEFD.ATAOS_focusOffsetSummary_userApplied'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_focusOffsetSummary_filter
+    '@id': '#VisitEFD.ATAOS_focusOffsetSummary_filter'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_focusOffsetSummary_disperser
+    '@id': '#VisitEFD.ATAOS_focusOffsetSummary_disperser'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_focusOffsetSummary_wavelength
+    '@id': '#VisitEFD.ATAOS_focusOffsetSummary_wavelength'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_azimuth
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionCompleted_azimuth'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_elevation
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionCompleted_elevation'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_x
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionCompleted_hexapod_x'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_y
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionCompleted_hexapod_y'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_z
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionCompleted_hexapod_z'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_u
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionCompleted_hexapod_u'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_v
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionCompleted_hexapod_v'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionCompleted_hexapod_w
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionCompleted_hexapod_w'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_azimuth
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionStarted_azimuth'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_elevation
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionStarted_elevation'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_x
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionStarted_hexapod_x'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_y
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionStarted_hexapod_y'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_z
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionStarted_hexapod_z'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_u
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionStarted_hexapod_u'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_v
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionStarted_hexapod_v'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_hexapodCorrectionStarted_hexapod_w
+    '@id': '#VisitEFD.ATAOS_hexapodCorrectionStarted_hexapod_w'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionCompleted_azimuth
+    '@id': '#VisitEFD.ATAOS_m1CorrectionCompleted_azimuth'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionCompleted_elevation
+    '@id': '#VisitEFD.ATAOS_m1CorrectionCompleted_elevation'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionCompleted_pressure
+    '@id': '#VisitEFD.ATAOS_m1CorrectionCompleted_pressure'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionStarted_azimuth
+    '@id': '#VisitEFD.ATAOS_m1CorrectionStarted_azimuth'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionStarted_elevation
+    '@id': '#VisitEFD.ATAOS_m1CorrectionStarted_elevation'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_m1CorrectionStarted_pressure
+    '@id': '#VisitEFD.ATAOS_m1CorrectionStarted_pressure'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_pointingOffsetSummary_total
+    '@id': '#VisitEFD.ATAOS_pointingOffsetSummary_total'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_pointingOffsetSummary_filter
+    '@id': '#VisitEFD.ATAOS_pointingOffsetSummary_filter'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATAOS_pointingOffsetSummary_disperser
+    '@id': '#VisitEFD.ATAOS_pointingOffsetSummary_disperser'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_allAxesInPosition_inPosition
+    '@id': '#VisitEFD.ATDome_allAxesInPosition_inPosition'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_azimuthInPosition_inPosition
+    '@id': '#VisitEFD.ATDome_azimuthInPosition_inPosition'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_lastAzimuthGoTo_position
+    '@id': '#VisitEFD.ATDome_lastAzimuthGoTo_position'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_settingsAppliedDomeController_rainSensorEnabled
+    '@id': '#VisitEFD.ATDome_settingsAppliedDomeController_rainSensorEnabled'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_settingsAppliedDomeController_cloudSensorEnabled
+    '@id': '#VisitEFD.ATDome_settingsAppliedDomeController_cloudSensorEnabled'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDome_settingsAppliedDomeController_tolerance
+    '@id': '#VisitEFD.ATDome_settingsAppliedDomeController_tolerance'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDomeTrajectory_telescopeVignetted_vignetted
+    '@id': '#VisitEFD.ATDomeTrajectory_telescopeVignetted_vignetted'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDomeTrajectory_telescopeVignetted_azimuth
+    '@id': '#VisitEFD.ATDomeTrajectory_telescopeVignetted_azimuth'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATDomeTrajectory_telescopeVignetted_shutter
+    '@id': '#VisitEFD.ATDomeTrajectory_telescopeVignetted_shutter'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_configurationApplied_configurations
+    '@id': '#VisitEFD.ATHexapod_configurationApplied_configurations'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionX
+    '@id': '#VisitEFD.ATHexapod_positionUpdate_positionX'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionY
+    '@id': '#VisitEFD.ATHexapod_positionUpdate_positionY'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionZ
+    '@id': '#VisitEFD.ATHexapod_positionUpdate_positionZ'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionU
+    '@id': '#VisitEFD.ATHexapod_positionUpdate_positionU'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionV
+    '@id': '#VisitEFD.ATHexapod_positionUpdate_positionV'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATHexapod_positionUpdate_positionW
+    '@id': '#VisitEFD.ATHexapod_positionUpdate_positionW'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATMCS_target_elevation
+    '@id': '#VisitEFD.ATMCS_target_elevation'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATMCS_target_elevationVelocity
+    '@id': '#VisitEFD.ATMCS_target_elevationVelocity'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATMCS_target_azimuth
+    '@id': '#VisitEFD.ATMCS_target_azimuth'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATMCS_target_azimuthVelocity
+    '@id': '#VisitEFD.ATMCS_target_azimuthVelocity'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedDisperserPosition_focusOffset
+    '@id': '#VisitEFD.ATSpectrograph_reportedDisperserPosition_focusOffset'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedDisperserPosition_pointingOffsets
+    '@id': '#VisitEFD.ATSpectrograph_reportedDisperserPosition_pointingOffsets'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedFilterPosition_centralWavelength
+    '@id': '#VisitEFD.ATSpectrograph_reportedFilterPosition_centralWavelength'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedFilterPosition_focusOffset
+    '@id': '#VisitEFD.ATSpectrograph_reportedFilterPosition_focusOffset'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - name: ATSpectrograph_reportedFilterPosition_pointingOffsets
+    '@id': '#VisitEFD.ATSpectrograph_reportedFilterPosition_pointingOffsets'
+    datatype: double
+    nullable: true
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit
