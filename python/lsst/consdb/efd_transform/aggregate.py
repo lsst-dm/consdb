@@ -9,7 +9,7 @@ class Aggregate:
     array of values.
     """
 
-    def __init__(self, values: Union[List[Union[float, int, bool]], numpy.ndarray]):
+    def __init__(self, values: Union[List[Union[float, int, bool, str]], numpy.ndarray]):
         """
         Initialize the Transform object.
 
@@ -19,7 +19,7 @@ class Aggregate:
         Returns:
             None
         """
-        self.values = numpy.array(values)
+        self.values = numpy.array(values) if not isinstance(values, str) else values
 
     def apply(self, method_name: str) -> Union[float, None]:
         """
@@ -49,6 +49,18 @@ class Aggregate:
 
         return numpy.nanmean(self.values)
 
+    def col_mean(self) -> float:
+        """
+        Calculate the mean of the values by column.
+
+        Returns:
+            The mean value as a float.
+        """
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+
+        return numpy.nanmean(self.values, axis=0)    
+
     def std(self, ddof: Optional[int] = 1) -> float:
         """
         Calculate the standard deviation of the values.
@@ -59,7 +71,25 @@ class Aggregate:
         Returns:
             The standard deviation as a float.
         """
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+            
         return numpy.nanstd(self.values, ddof=ddof)
+
+    def col_std(self, ddof: Optional[int] = 1) -> float:
+        """
+        Calculate the standard deviation of the values by column.
+
+        Args:
+            ddof: Delta degrees of freedom.
+
+        Returns:
+            The standard deviation as a float.
+        """
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+            
+        return numpy.nanstd(self.values, ddof=ddof, axis=0)        
 
     def max(self) -> Union[float, int, bool]:
         """
@@ -73,6 +103,18 @@ class Aggregate:
 
         return numpy.nanmax(self.values)
 
+    def col_max(self) -> Union[float, int, bool]:
+        """
+        Find the maximum value in the values by column.
+
+        Returns:
+            The maximum value as a float, int, or bool.
+        """
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+
+        return numpy.nanmax(self.values, axis=0)    
+
     def min(self) -> Union[float, int, bool]:
         """
         Find the minimum value in the values.
@@ -85,6 +127,18 @@ class Aggregate:
 
         return numpy.nanmin(self.values)
 
+    def col_min(self) -> Union[float, int, bool]:
+        """
+        Find the minimum value in the values by column.
+
+        Returns:
+            The minimum value as a float, int, or bool.
+        """
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+
+        return numpy.nanmin(self.values, axis=0)    
+
     def logical_and(self) -> Union[bool, numpy.ndarray]:
         """
         Perform element-wise logical AND operation on the values.
@@ -92,16 +146,46 @@ class Aggregate:
         Returns:
             The result of the logical AND operation as a bool or numpy array.
         """
-        return numpy.logical_and(self.values)
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+            
+        return numpy.all(self.values)
+
+    def col_logical_and(self) -> Union[bool, numpy.ndarray]:
+        """
+        Perform element-wise logical AND operation on the values.
+
+        Returns:
+            The result of the logical AND operation as a bool or numpy array.
+        """
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+            
+        return numpy.all(self.values, axis=0)    
 
     def logical_or(self) -> Union[bool, numpy.ndarray]:
+        """
+        Perform element-wise logical OR operation on the values by column.
+
+        Returns:
+            The result of the logical OR operation as a bool or numpy array.
+        """
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+            
+        return numpy.any(self.values)
+
+    def col_logical_or(self) -> Union[bool, numpy.ndarray]:
         """
         Perform element-wise logical OR operation on the values.
 
         Returns:
             The result of the logical OR operation as a bool or numpy array.
         """
-        return numpy.logical_or(self.values)
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+            
+        return numpy.any(self.values, axis=0)    
 
     def logical_not(self) -> numpy.ndarray:
         """
@@ -110,30 +194,49 @@ class Aggregate:
         Returns:
             The result of the logical NOT operation as a numpy array.
         """
-        return numpy.logical_not(self.values)
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+            
+        return ~numpy.all(self.values)
 
-    def logical_xor(self, other_values: Union[List[Union[float, int, bool]], numpy.ndarray]) -> numpy.ndarray:
+    def col_logical_not(self) -> numpy.ndarray:
         """
-        Perform element-wise logical XOR operation between the values
-        and other values.
-
-        Args:
-            other_values: A list or numpy array of other values.
+        Perform element-wise logical NOT operation on the values by column.
 
         Returns:
-            The result of the logical XOR operation as a numpy array.
+            The result of the logical NOT operation as a numpy array.
         """
-        other_values = numpy.array(other_values)
-        return numpy.logical_xor(self.values, other_values)
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+            
+        return ~numpy.all(self.values, axis=0)    
 
-    def percentile(self, q: float) -> Union[float, int, bool]:
+    def comma_unique(self) -> str:
         """
-        Calculate the q-th percentile of the values.
+        Returns a string with unique values separated by commas.
 
-        Args:
-            q: The percentile value.
+        If the input string is empty, it returns NaN.
 
         Returns:
-            The q-th percentile value as a float, int, or bool.
+            str: A string with unique values separated by commas.
         """
-        return numpy.nanpercentile(self.values, q)
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+        values = self.values.split(',')
+        return ','.join(numpy.unique(values))
+
+    def semicolon_unique(self) -> str:
+        """
+        Returns a string with semicolon-separated unique values.
+
+        If the input string is empty, it returns NaN.
+        This method splits the input string by semicolons and returns a new string
+        with only the unique values, separated by semicolons.
+
+        Returns:
+            str: A string with semicolon-separated unique values.
+        """
+        if numpy.size(self.values) == 0:
+            return numpy.nan
+        values = self.values.split(';')
+        return ';'.join(numpy.unique(values))
