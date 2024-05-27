@@ -7,6 +7,7 @@ import numpy
 import pandas
 from dao.butler import ButlerDao
 from dao.exposure_efd import ExposureEfdDao
+from dao.visit_efd import VisitEfdDao
 from efd_transform.summary import Summary
 from lsst.daf.butler import Butler
 
@@ -124,6 +125,7 @@ class Transform:
                 result_exp[exposure["id"]][column["name"]] = column_value
 
             for visit in visits:
+
                 column_value = self.proccess_column_value(
                     start_time=visit["timespan"].begin,
                     end_time=visit["timespan"].end,
@@ -144,13 +146,19 @@ class Transform:
         exp_dao = ExposureEfdDao(db_uri=self.db_uri)
         affected_rows = exp_dao.upsert(df=df_exposures)
         self.log.info(f"Database rows affected: {affected_rows}")
+        del results
 
-        # results = []
-        # for result_row in result_vis:
-        #    results.append(result_vis[result_row])
+        results = []
+        for result_row in result_vis:
+            results.append(result_vis[result_row])
 
-        # df_visits = pandas.DataFrame(results[35:45])
-        # print(df_visits)
+        df_visits = pandas.DataFrame(results)
+        self.log.info(f"Visit results to be inserted into the database: {len(df_visits)}")
+
+        vis_dao = VisitEfdDao(db_uri=self.db_uri)
+        affected_rows = vis_dao.upsert(df=df_visits)
+        self.log.info(f"Database rows affected: {affected_rows}")
+        del results
 
     def proccess_column_value(
         self, start_time: astropy.time.Time, end_time: astropy.time.Time, topics, transform_function
@@ -169,9 +177,10 @@ class Transform:
             The processed column value.
 
         """
-        topics_values = self.topic_values_by_exposure(start_time, end_time, topics)
 
-        values = self.concatenate_arrays(topics_values)
+        values = self.topic_values_by_exposure(start_time, end_time, topics)
+        if len(values) > 1:
+            values = self.concatenate_arrays(values)
 
         column_value = Summary(values).apply(transform_function)
 
@@ -195,11 +204,13 @@ class Transform:
         topics_values = []
 
         for topic in topics:
+
             topic_table = topic["series"]
-            values = topic_table.loc[
-                (topic_table.index > str(start_time)) & (topic_table.index < str(end_time))
-            ]
-            topics_values.append(values)
+            if not topic_table.empty:
+                values = topic_table.loc[
+                    (topic_table.index > str(start_time)) & (topic_table.index < str(end_time))
+                ]
+                topics_values.append(values)
 
         return topics_values
 
