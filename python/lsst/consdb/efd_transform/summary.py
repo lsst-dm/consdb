@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 import numpy
 
 
-class Aggregate:
+class Summary:
     """
     A class that performs various transformations on a list or numpy
     array of values.
