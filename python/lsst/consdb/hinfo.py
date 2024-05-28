@@ -76,7 +76,10 @@ def region(
 def ccdexposure_id(
     translator: lsst.obs.lsst.translators.lsst.LsstBaseTranslator, exposure_id: int, detector: int
 ) -> int:
-    return translator.compute_detector_exposure_id(exposure_id, detector)
+    global logger
+    det_exp_id = translator.compute_detector_exposure_id(exposure_id, detector)
+    logger.debug(f"t={translator}, eid={exposure_id}, d={detector}, cid={det_exp_id}")
+    return det_exp_id
 
 
 def ccd_region(
@@ -360,7 +363,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
         stmt = stmt.on_conflict_do_update(index_elements=["exposure_id"], set_=exposure_rec)
     else:
         stmt = stmt.on_conflict_do_nothing()
-    logger.debug(str(stmt))
+    logger.debug(exposure_rec)
     with engine.begin() as conn:
         conn.execute(stmt)
 
@@ -386,7 +389,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
                 )
             else:
                 det_stmt = det_stmt.on_conflict_do_nothing()
-            logger.debug(str(det_stmt))
+            logger.debug(det_exposure_rec)
             conn.execute(det_stmt)
 
         conn.commit()
@@ -435,7 +438,7 @@ def get_kafka_config() -> KafkaConfig:
     )
 
 
-logger = setup_logging(__name__)
+logger = setup_logging("consdb.hinfo")
 
 instrument = os.environ["INSTRUMENT"]
 logger.info(f"Instrument = {instrument}")
