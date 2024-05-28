@@ -13,8 +13,11 @@ import astropy.time
 import httpx
 import kafkit.registry
 import kafkit.registry.httpx
+import lsst.geom
+import lsst.obs.lsst
 import yaml
 from astro_metadata_translator import ObservationInfo
+from lsst.obs.lsst.rawFormatter import LsstCamRawFormatter
 from lsst.resources import ResourcePath
 from sqlalchemy import MetaData, Table
 from sqlalchemy.dialects.postgresql import insert
@@ -39,12 +42,104 @@ def tai_mean(start: str, end: str) -> datetime:
     return (s + (e - s) / 2).datetime
 
 
-def mean(*iterable: float) -> Any:
+def mean(*iterable: float) -> float:
     return sum(iterable) / len(iterable)
 
 
 def logical_or(*bools: int | str | None) -> bool:
     return any([b == 1 or b == "1" for b in bools])
+
+
+def region(ra: float, dec: float, rotpa: float, points: list[tuple[str, int, int]]) -> str:
+    global camera, formatter
+    region = "Polygon ICRS"
+    for detector, offset_x, offset_y in points:
+        skywcs = formatter.makeRawSkyWcsFromBoresight(
+            lsst.geom.SpherePoint(ra, dec, lsst.geom.degrees),
+            rotpa * lsst.geom.degrees,
+            camera[detector],
+        )
+        bbox = camera[detector].getBBox()
+        x = bbox.getMinX() + bbox.getWidth() * offset_x
+        y = bbox.getMinY() + bbox.getHeight() * offset_y
+        point = skywcs.pixelToSky(x, y)
+        region += f" {point.getLongitude().asDegrees():.6f} {point.getLatitude.asDegrees():.6f}"
+    return region
+
+
+def ccdexposure_id(exposure_id: int, detector: int) -> int:
+    global translator
+    return translator.compute_detector_exposure_id(exposure_id, detector)
+
+
+def ccd_region(imgtype: str, ra: float, dec: float, rotpa: float, ccdname: str) -> str | None:
+    if imgtype != "OBJECT":
+        return None
+    return region(
+        ra,
+        dec,
+        rotpa,
+        [
+            (ccdname, 0, 0),
+            (ccdname, 1, 0),
+            (ccdname, 1, 1),
+            (ccdname, 0, 1),
+        ],
+    )
+
+
+def fp_region(imgtype: str, ra: float, dec: float, rotpa: float) -> str | None:
+    global instrument
+    if imgtype != "OBJECT":
+        return None
+    if instrument == "LATISS":
+        corners = [
+            ("RXX_S00", 0, 0),
+            ("RXX_S00", 1, 0),
+            ("RXX_S00", 1, 1),
+            ("RXX_S00", 0, 1),
+        ]
+    elif instrument == "LSSTComCam" or instrument == "LSSTComCamSim":
+        corners = [
+            ("R22_S00", 0, 0),
+            ("R22_S02", 1, 0),
+            ("R22_S20", 0, 1),
+            ("R22_S22", 1, 1),
+        ]
+    elif instrument == "LSSTCam":
+        corners = [
+            ("R01_S00", 0, 0),
+            ("R03_S02", 1, 0),
+            ("R03_S02", 1, 1),
+            ("R04_SG1", 1, 0),
+            ("R04_SG1", 1, 1),
+            ("R04_SG0", 1, 0),
+            ("R04_SG0", 1, 1),
+            ("R14_S02", 1, 0),
+            ("R34_S22", 1, 1),
+            ("R34_S22", 0, 1),
+            ("R44_SG1", 1, 1),
+            ("R44_SG1", 0, 1),
+            ("R44_SG0", 1, 1),
+            ("R44_SG0", 0, 1),
+            ("R43_S22", 1, 1),
+            ("R41_S20", 0, 1),
+            ("R41_S20", 0, 0),
+            ("R40_SG1", 0, 1),
+            ("R40_SG1", 0, 0),
+            ("R40_SG0", 0, 1),
+            ("R40_SG0", 0, 0),
+            ("R30_S20", 0, 1),
+            ("R10_S00", 0, 0),
+            ("R10_S00", 1, 0),
+            ("R00_SG1", 0, 0),
+            ("R00_SG1", 1, 0),
+            ("R00_SG0", 0, 0),
+            ("R00_SG0", 1, 0),
+        ]
+    else:
+        return None
+    return region(ra, dec, rotpa, corners)
 
 
 #################################
@@ -92,32 +187,45 @@ KW_MAPPING: dict[str, str | Sequence] = {
     "wind_speed": "WINDSPD",
     "wind_dir": "WINDDIR",
     "dimm_seeing": "SEEING",
+    "focus_z": "FOCUSZ",
+    "s_region": (fp_region, "IMGTYPE", "RA", "DEC", "ROTPA"),
 }
 
 # Instrument-specific mapping to column name from Header Service keyword
 LATISS_MAPPING: dict[str, str | Sequence] = {
-    "focus_z": "FOCUSZ",
     "dome_azimuth": "DOMEAZ",
     "shut_lower": "SHUTLOWR",
     "shut_upper": "SHUTUPPR",
-    #     "temp_set": "TEMP_SET",
     "simulated": (
         logical_or,
         "SIMULATE ATMCS",
         "SIMULATE ATHEXAPOD",
-        "SIMULAT ATPNEUMATICS",
+        "SIMULATE ATPNEUMATICS",
         "SIMULATE ATDOME",
         "SIMULATE ATSPECTROGRAPH",
     ),
 }
 
-LSSTCOMCAM_MAPPING: dict[str, str | Sequence] = {}
-LSSTCOMCAMSIM_MAPPING: dict[str, str | Sequence] = {}
-LSSTCAM_MAPPING: dict[str, str | Sequence] = {}
+LSSTCAM_MAPPING: dict[str, str | Sequence] = {
+    "simulated": (
+        logical_or,
+        "SIMULATE MTMOUNT",
+        "SIMULATE MTM1M3",
+        "SIMULATE MTM2",
+        "SIMULATE CAMHEXAPOD",
+        "SIMULATE M2HEXAPOD",
+        "SIMULATE MTROTATOR",
+        "SIMULATE MTDOME",
+        "SIMULATE MTDOMETRAJECTORY",
+    ),
+}
 
-# LATISS_DETECTOR_MAPPING = {
-#     "ccdtemp": "CCDTEMP",
-# }
+DETECTOR_MAPPING = {
+    "ccdexposure_id": (ccdexposure_id, "exposure_id", "detector"),
+    "exposure_id": "exposure_id",
+    "detector": "detector",
+    "s_region": (ccd_region, "IMGTYPE", "RA", "DEC", "ROTPA", "_CCDNAME"),
+}
 
 # Mapping to column name from ObservationInfo keyword
 OI_MAPPING = {
@@ -183,7 +291,7 @@ def process_resource(resource: ResourcePath) -> None:
     resource: `ResourcePath`
         Path to the Header Service header resource.
     """
-    global KW_MAPPING, OI_MAPPING, instrument_mapping, translator
+    global KW_MAPPING, OI_MAPPING, instrument_mapping, det_mapping, translator
     global engine, exposure_table
 
     exposure_rec = dict()
@@ -209,12 +317,17 @@ def process_resource(resource: ResourcePath) -> None:
     with engine.begin() as conn:
         conn.execute(stmt)
 
-    # TODO: exposure_detector table processing
-    #     det_info = dict()
-    #     for header in content["R00S00_PRIMARY"]:
-    #         det_info[header["keyword"]] = header["value"]
-    #     for field, keyword in LATISS_DETECTOR_MAPPING.items():
-    #         det_exposure_rec[field] = process_column(keyword, det_info)
+    detectors = [section for section in content if section.endswith("_PRIMARY")]
+    for detector in detectors:
+        det_exposure_rec = dict()
+        det_info = info.copy()
+        ccdname = f"{detector[0:3]}_{detector[3:6]}"
+        det_info["ccdname"] = ccdname
+        det_info["detector"] = camera[ccdname].getId()
+        for header in content[detector]:
+            det_info[header["keyword"]] = header["value"]
+        for field, keyword in det_mapping.items():
+            det_exposure_rec[field] = process_column(keyword, det_info)
 
 
 def process_date(day_obs: str) -> None:
@@ -262,28 +375,38 @@ def get_kafka_config() -> KafkaConfig:
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
-instrument = os.environ.get("INSTRUMENT", "LATISS")
+instrument = os.environ["INSTRUMENT"]
+# Cheat, since we know these are all derived from the same Instrument
+formatter = LsstCamRawFormatter
 match instrument:
     case "LATISS":
         from lsst.obs.lsst.translators import LatissTranslator
 
         translator = LatissTranslator
         instrument_mapping = LATISS_MAPPING
+        det_mapping = DETECTOR_MAPPING
+        camera = lsst.obs.lsst.Latiss.getCamera()
     case "LSSTComCam":
         from lsst.obs.lsst.translators import LsstComCamTranslator
 
         translator = LsstComCamTranslator
-        instrument_mapping = LSSTCOMCAM_MAPPING
+        instrument_mapping = LSSTCAM_MAPPING
+        det_mapping = DETECTOR_MAPPING
+        camera = lsst.obs.lsst.LsstComCam.getCamera()
     case "LSSTComCamSim":
         from lsst.obs.lsst.translators import LsstComCamSimTranslator
 
         translator = LsstComCamSimTranslator
-        instrument_mapping = LSSTCOMCAMSIM_MAPPING
+        instrument_mapping = LSSTCAM_MAPPING
+        det_mapping = DETECTOR_MAPPING
+        camera = lsst.obs.lsst.LsstComCamSim.getCamera()
     case "LSSTCam":
         from lsst.obs.lsst.translators import LsstCamTranslator
 
         translator = LsstCamTranslator
         instrument_mapping = LSSTCAM_MAPPING
+        det_mapping = DETECTOR_MAPPING
+        camera = lsst.obs.lsst.LsstCam.getCamera()
 logging.info(f"Instrument = {instrument}")
 
 engine = setup_postgres()
