@@ -69,7 +69,7 @@ def region(
         x = bbox.getMinX() + bbox.getWidth() * offset_x
         y = bbox.getMinY() + bbox.getHeight() * offset_y
         point = skywcs.pixelToSky(x, y)
-        region += f" {point.getLongitude().asDegrees():.6f} {point.getLatitude.asDegrees():.6f}"
+        region += f" {point.getLongitude().asDegrees():.6f} {point.getLatitude().asDegrees():.6f}"
     return region
 
 
