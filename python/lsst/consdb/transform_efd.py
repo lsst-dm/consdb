@@ -8,8 +8,10 @@ from typing import Any, Dict
 import astropy.time
 import lsst_efd_client
 import yaml
+from efd_transform.config_model import ConfigModel
 from efd_transform.transform import Transform
 from lsst.daf.butler import Butler
+from pydantic import ValidationError
 
 # from sqlalchemy import create_engine
 
@@ -117,16 +119,27 @@ def build_argparser() -> argparse.ArgumentParser:
 
 def read_config(config_name: str) -> Dict[str, Any]:
     """
-    Reads a configuration file and returns its contents as a dictionary.
+    Reads a configuration file and returns the configuration as a dictionary.
 
     Args:
         config_name (str): The name of the configuration file.
 
     Returns:
-        dict[str, Any]: The contents of the configuration file as a dictionary.
+        dict: The configuration as a dictionary.
+
+    Raises:
+        ValidationError: If the configuration file is invalid.
+
     """
-    with open(config_name, "r") as f:
-        return yaml.safe_load(f)
+    try:
+        with open(config_name, "r") as file:
+            data = yaml.safe_load(file)
+            config = ConfigModel(**data)
+
+            return config.model_dump()
+
+    except ValidationError as e:
+        raise e
 
 
 async def main() -> None:
