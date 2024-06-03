@@ -43,6 +43,7 @@ class Transform:
         efd: lsst_efd_client.EfdClient,
         config: dict[str, Any],
         logger: logging.Logger,
+        commit_every: int = 100,
     ):
         """
         Initializes a new instance of the Transform class.
@@ -50,17 +51,23 @@ class Transform:
         Args:
             butler (Butler): The Butler object for accessing data.
             db_uri (str): The database connection string.
-            efd (lsst_efd_client.EfdClient): The EFD client for accessing EFD data.
-            config (dict[str, Any]): The configuration for the transformation process.
-            logger (logging.Logger): The logger object for logging messages.
+            efd (lsst_efd_client.EfdClient): The EFD client for accessing
+                EFD data.
+            config (dict[str, Any]): The configuration for the
+                transformation process.
+            logger (logging.Logger): The logger object for logging
+                messages.
+            commit_every (int, optional): The number of records to commit
+                to the database at once. Defaults to 100.
         """
         self.log = logger
         self.butler_dao = ButlerDao(butler)
         self.db_uri = db_uri
         self.efd = efd
         self.config = config
+        self.commit_every = commit_every
 
-        self.log.info("----------- MAIN -----------")
+        self.log.info("----------- Transform -----------")
         self.log.debug(f"DB URI: {self.db_uri}")
         self.log.debug(f"EFD: {self.efd}")
         self.log.debug(f"Configs Columns: {len(self.config['columns'])}")
@@ -71,6 +78,14 @@ class Transform:
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
     ):
+        """
+        Process the given time interval for a specific instrument.
+
+        Args:
+            instrument (str): The instrument name.
+            start_time (astropy.time.Time): The start time of the interval.
+            end_time (astropy.time.Time): The end time of the interval.
+        """
 
         self.log.info(f"Proccessing interval {start_time} - {end_time}")
 
@@ -140,11 +155,10 @@ class Transform:
             results.append(result_exp[result_row])
 
         df_exposures = pandas.DataFrame(results)
-        # df_exposures = pandas.DataFrame(results[35:45])
         self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
 
         exp_dao = ExposureEfdDao(db_uri=self.db_uri)
-        affected_rows = exp_dao.upsert(df=df_exposures)
+        affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
         self.log.info(f"Database rows affected: {affected_rows}")
         del results
 
@@ -156,7 +170,7 @@ class Transform:
         self.log.info(f"Visit results to be inserted into the database: {len(df_visits)}")
 
         vis_dao = VisitEfdDao(db_uri=self.db_uri)
-        affected_rows = vis_dao.upsert(df=df_visits)
+        affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
         self.log.info(f"Database rows affected: {affected_rows}")
         del results
 

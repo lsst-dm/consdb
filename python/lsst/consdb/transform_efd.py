@@ -152,7 +152,12 @@ async def main() -> None:
 
     config = read_config(args.config_name)
 
-    tm = Transform(butler=butler, db_uri=db_uri, efd=efd, config=config, logger=log)
+    # TODO: Commit every can be a setting
+    commit_every = 100
+
+    tm = Transform(
+        butler=butler, db_uri=db_uri, efd=efd, config=config, logger=log, commit_every=commit_every
+    )
 
     start_time = astropy.time.Time(args.start_time, format="isot")
     end_time = astropy.time.Time(args.end_time, format="isot")
