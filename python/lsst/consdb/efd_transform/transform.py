@@ -129,26 +129,27 @@ class Transform:
             # topics = [{'name': topic name, series: pandas.DataFrame}]
             topics = await self.topics_by_column(column, topic_interval)
 
-            for exposure in exposures:
-                column_value = self.proccess_column_value(
-                    start_time=exposure["timespan"].begin,
-                    end_time=exposure["timespan"].end,
-                    topics=topics,
-                    transform_function=column["function"],
-                )
+            if "ExposureEFD" in column["tables"]:
+                for exposure in exposures:
+                    column_value = self.proccess_column_value(
+                        start_time=exposure["timespan"].begin,
+                        end_time=exposure["timespan"].end,
+                        topics=topics,
+                        transform_function=column["function"],
+                    )
 
-                result_exp[exposure["id"]][column["name"]] = column_value
+                    result_exp[exposure["id"]][column["name"]] = column_value
 
-            for visit in visits:
+            if "VisitEFD" in column["tables"]:
+                for visit in visits:
+                    column_value = self.proccess_column_value(
+                        start_time=visit["timespan"].begin,
+                        end_time=visit["timespan"].end,
+                        topics=topics,
+                        transform_function=column["function"],
+                    )
 
-                column_value = self.proccess_column_value(
-                    start_time=visit["timespan"].begin,
-                    end_time=visit["timespan"].end,
-                    topics=topics,
-                    transform_function=column["function"],
-                )
-
-                result_vis[visit["id"]][column["name"]] = column_value
+                    result_vis[visit["id"]][column["name"]] = column_value
 
         results = []
         for result_row in result_exp:
