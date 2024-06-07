@@ -1,11 +1,8 @@
-ARG RUBINENV_VERSION=8.0.0
-FROM lsstsqre/newinstall:${RUBINENV_VERSION}
-ARG OBS_LSST_VERSION
-ENV OBS_LSST_VERSION=${OBS_LSST_VERSION:-w_2024_06}
+ARG OBS_LSST_VERSION=w_2024_21
+FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
 USER lsst
 RUN source loadLSST.bash && mamba install aiokafka httpx
 RUN source loadLSST.bash && pip install kafkit
-RUN source loadLSST.bash && eups distrib install -t "${OBS_LSST_VERSION}" obs_lsst
 COPY python/lsst/consdb/hinfo.py python/lsst/consdb/utils.py ./hinfo/
 
 # Environment variables that must be set:
