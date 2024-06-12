@@ -26,7 +26,6 @@ import sqlalchemy.dialects.postgresql
 from flask import Flask, request
 from utils import setup_logging, setup_postgres
 
-INSTRUMENT_LIST = ["latiss"]
 OBS_TYPE_LIST = ["exposure", "visit1", "ccdexposure", "ccdvisit1"]
 DTYPE_LIST = ["bool", "int", "float", "str"]
 
@@ -51,11 +50,15 @@ class InstrumentTables:
     """The column information for all tables in ConsDB schemas."""
 
     def __init__(self):
+        inspector = sqlalchemy.inspect(engine)
+        self.instrument_list = [
+            name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")
+        ]
         self.table_names = set()
         self.schemas = dict()
         self.flexible_metadata_schemas = dict()
         self.obs_id_column = dict()
-        for instrument in INSTRUMENT_LIST:
+        for instrument in self.instrument_list:
             md = sqlalchemy.MetaData(schema=f"cdb_{instrument}")
             md.reflect(engine)
             self.table_names.update([str(table) for table in md.tables])
@@ -356,9 +359,11 @@ def root() -> dict[str, list[str]]:
         JSON response with a list of instruments, observation types, and
         data types.
     """
+    global instrument_tables
+
     # Don't log liveness checks.
     data = {
-        "instruments": INSTRUMENT_LIST,
+        "instruments": instrument_tables.instrument_list,
         "obs_types": OBS_TYPE_LIST,
         "dtypes": DTYPE_LIST,
     }
@@ -375,9 +380,11 @@ def root2() -> dict[str, list[str]]:
         JSON response with a list of instruments, observation types, and
         data types.
     """
+    global instrument_tables
+
     logger.info(request)
     data = {
-        "instruments": INSTRUMENT_LIST,
+        "instruments": instrument_tables.instrument_list,
         "obs_types": OBS_TYPE_LIST,
         "dtypes": DTYPE_LIST,
     }
@@ -419,6 +426,8 @@ def add_flexible_metadata_key(instrument: str, obs_type: str) -> dict[str, Any] 
     BadValueException
         Raised if instrument or observation type is invalid.
     """
+    global instrument_tables
+
     logger.info(f"{request} {request.json}")
     info = _check_json(request.json, "flex addkey", ("key", "dtype", "doc"))
     schema_table = instrument_tables.get_flexible_metadata_schema(instrument, obs_type)
@@ -472,6 +481,8 @@ def get_flexible_metadata_keys(instrument: str, obs_type: str) -> dict[str, list
     BadValueException
         Raised if instrument or observation type is invalid.
     """
+    global instrument_tables
+
     logger.info(request)
     instrument = instrument.lower()
     obs_type = obs_type.lower()
@@ -505,6 +516,8 @@ def get_flexible_metadata(instrument: str, obs_type: str, obs_id: int) -> dict[s
     BadValueException
         Raised if instrument or observation type is invalid.
     """
+    global instrument_tables
+
     logger.info(request)
     instrument = instrument.lower()
     obs_type = obs_type.lower()
@@ -566,6 +579,8 @@ def insert_flexible_metadata(
     BadValueException
         Raised if instrument or observation type is invalid.
     """
+    global instrument_tables
+
     logger.info(f"{request} {request.json}")
     info = _check_json(request.json, "flex obs", ("values",))
     instrument = instrument.lower()
@@ -646,6 +661,8 @@ def insert(instrument: str, table: str, obs_id: int) -> dict[str, Any] | tuple[d
     BadValueException
         Raised if instrument or observation type is invalid.
     """
+    global instrument_tables
+
     logger.info(f"{request} {request.json}")
     instrument = instrument.lower()
     if instrument not in instrument_tables.schemas:
@@ -710,6 +727,8 @@ def insert_multiple(instrument: str, table: str) -> dict[str, Any] | tuple[dict[
     BadValueException
         Raised if instrument or observation type is invalid.
     """
+    global instrument_tables
+
     logger.info(f"{request} {request.json}")
     instrument = instrument.lower()
     if instrument not in instrument_tables.schemas:
@@ -778,6 +797,8 @@ def get_all_metadata(
     Raises
     ------
     """
+    global instrument_tables
+
     logger.info(request)
     instrument = instrument.lower()
     obs_type = obs_type.lower()
@@ -850,8 +871,10 @@ def list_instruments() -> list[str]:
     BadValueException
         Raised if instrument is invalid.
     """
+    global instrument_tables
+
     logger.info(request)
-    return list(instrument_tables.schemas.keys())
+    return instrument_tables.instrument_list
 
 
 @app.get("/consdb/schema/<instrument>")
@@ -874,6 +897,8 @@ def list_table(instrument: str) -> list[str]:
     BadValueException
         Raised if instrument is invalid.
     """
+    global instrument_tables
+
     logger.info(request)
     instrument = instrument.lower()
     if instrument not in instrument_tables.schemas:
@@ -905,6 +930,8 @@ def schema(instrument: str, table: str) -> dict[str, list[str]]:
     BadValueException
         Raised if instrument is invalid.
     """
+    global instrument_tables
+
     logger.info(request)
     instrument = instrument.lower()
     if instrument not in instrument_tables.schemas:
