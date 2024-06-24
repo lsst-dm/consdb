@@ -6,5 +6,10 @@
             79,
             110
         ],
-    }
+    },
+    "python.analysis.extraPaths": [
+        "./python",
+        "./python",
+        "./python/lsst"
+    ]
 }
