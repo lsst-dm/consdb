@@ -129,7 +129,10 @@ class InfluxDBClient:
             ]
 
         # Build query here
-        return f'SELECT {", ".join(fields)} FROM "{self.database_name}"."autogen"."{topic_name}" WHERE {timespan}'
+        return (
+            f'SELECT {", ".join(fields)} FROM "{self.database_name}"."autogen"."{topic_name}" '
+            f'WHERE {timespan}'
+        )
 
     def select_time_series(
         self,

@@ -5,13 +5,15 @@ from sqlalchemy.sql import and_, select
 
 class ExposureEfdDao(DBBase):
     """
-    A class representing a Data Access Object (DAO) for accessing ExposureEFD data.
+    A class representing a Data Access Object (DAO) for accessing
+    ExposureEFD data.
 
     Args:
         db_uri (str): The URI of the database.
 
     Attributes:
-        tbl: The table object representing the "ExposureEFD" table in the database.
+        tbl: The table object representing the "ExposureEFD" table in the
+        database.
 
     """
 
@@ -28,7 +30,8 @@ class ExposureEfdDao(DBBase):
             exposure_id (int): The exposure ID.
 
         Returns:
-            list: A list of dictionaries representing the rows retrieved from the table.
+            list: A list of dictionaries representing the rows retrieved from
+                the table.
 
         """
         stm = select(self.tbl.c).where(and_(self.tbl.c.exposure_id == exposure_id))
@@ -39,14 +42,16 @@ class ExposureEfdDao(DBBase):
 
     def get_by_exposure_id_instrument(self, exposure_id: int, instrument: str):
         """
-        Retrieves rows from the "ExposureEFD" table based on exposure ID and instrument.
+        Retrieves rows from the "ExposureEFD" table based on exposure ID and
+        instrument.
 
         Args:
             exposure_id (int): The exposure ID.
             instrument (str): The instrument name.
 
         Returns:
-            list: A list of dictionaries representing the rows retrieved from the table.
+            list: A list of dictionaries representing the rows retrieved from
+                the table.
 
         """
         stm = select(self.tbl.c).where(
@@ -73,7 +78,8 @@ class ExposureEfdDao(DBBase):
 
         Args:
             df (pandas.DataFrame): The DataFrame to be upserted.
-            commit_every (int, optional): The number of rows to commit at a time. Defaults to 100.
+            commit_every (int, optional): The number of rows to commit
+            at a time. Defaults to 100.
 
         Returns:
             int: The number of rows upserted.
