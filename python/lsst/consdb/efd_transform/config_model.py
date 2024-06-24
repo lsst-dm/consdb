@@ -15,6 +15,9 @@ class Field(BaseModel):
 
     name: str
     is_array: Optional[bool] = False
+    array_index: Optional[List[int]] = None
+    key_reference_field: Optional[str] = None
+    key_reference: Optional[str] = None
 
 
 class Topic(BaseModel):
