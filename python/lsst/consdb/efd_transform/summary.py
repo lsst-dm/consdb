@@ -29,7 +29,8 @@ class Summary:
             method_name: Name of the method to apply.
 
         Returns:
-            The result of the transformation method or None if the method is not found.
+            The result of the transformation method or None if the
+            method is not found.
         """
         method = getattr(self, method_name, None)
         if method:
@@ -59,7 +60,7 @@ class Summary:
         if numpy.size(self.values) == 0:
             return numpy.nan
 
-        return numpy.nanmean(self.values, axis=0)    
+        return numpy.nanmean(self.values, axis=0)
 
     def std(self, ddof: Optional[int] = 1) -> float:
         """
@@ -73,7 +74,7 @@ class Summary:
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-            
+
         return numpy.nanstd(self.values, ddof=ddof)
 
     def col_std(self, ddof: Optional[int] = 1) -> float:
@@ -88,8 +89,8 @@ class Summary:
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-            
-        return numpy.nanstd(self.values, ddof=ddof, axis=0)        
+
+        return numpy.nanstd(self.values, ddof=ddof, axis=0)
 
     def max(self) -> Union[float, int, bool]:
         """
@@ -113,7 +114,7 @@ class Summary:
         if numpy.size(self.values) == 0:
             return numpy.nan
 
-        return numpy.nanmax(self.values, axis=0)    
+        return numpy.nanmax(self.values, axis=0)
 
     def min(self) -> Union[float, int, bool]:
         """
@@ -137,7 +138,7 @@ class Summary:
         if numpy.size(self.values) == 0:
             return numpy.nan
 
-        return numpy.nanmin(self.values, axis=0)    
+        return numpy.nanmin(self.values, axis=0)
 
     def logical_and(self) -> Union[bool, numpy.ndarray]:
         """
@@ -148,7 +149,7 @@ class Summary:
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-            
+
         return numpy.all(self.values)
 
     def col_logical_and(self) -> Union[bool, numpy.ndarray]:
@@ -160,8 +161,8 @@ class Summary:
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-            
-        return numpy.all(self.values, axis=0)    
+
+        return numpy.all(self.values, axis=0)
 
     def logical_or(self) -> Union[bool, numpy.ndarray]:
         """
@@ -172,7 +173,7 @@ class Summary:
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-            
+
         return numpy.any(self.values)
 
     def col_logical_or(self) -> Union[bool, numpy.ndarray]:
@@ -184,8 +185,8 @@ class Summary:
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-            
-        return numpy.any(self.values, axis=0)    
+
+        return numpy.any(self.values, axis=0)
 
     def logical_not(self) -> numpy.ndarray:
         """
@@ -196,7 +197,7 @@ class Summary:
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-            
+
         return ~numpy.all(self.values)
 
     def col_logical_not(self) -> numpy.ndarray:
@@ -208,8 +209,8 @@ class Summary:
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-            
-        return ~numpy.all(self.values, axis=0)    
+
+        return ~numpy.all(self.values, axis=0)
 
     def comma_unique(self) -> str:
         """
@@ -222,21 +223,21 @@ class Summary:
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-        values = self.values.split(',')
-        return ','.join(numpy.unique(values))
+        values = self.values.split(",")
+        return ",".join(numpy.unique(values))
 
     def semicolon_unique(self) -> str:
         """
         Returns a string with semicolon-separated unique values.
 
         If the input string is empty, it returns NaN.
-        This method splits the input string by semicolons and returns a new string
-        with only the unique values, separated by semicolons.
+        This method splits the input string by semicolons and returns a
+        new string with only the unique values, separated by semicolons.
 
         Returns:
             str: A string with semicolon-separated unique values.
         """
         if numpy.size(self.values) == 0:
             return numpy.nan
-        values = self.values.split(';')
-        return ';'.join(numpy.unique(values))
+        values = self.values.split(";")
+        return ";".join(numpy.unique(values))
