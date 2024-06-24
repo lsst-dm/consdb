@@ -9,7 +9,8 @@ class Field(BaseModel):
 
     Attributes:
       name (str): The name of the field.
-      is_array (bool, optional): Indicates if the field is an array. Defaults to False.
+      is_array (bool, optional): Indicates if the field is an array.
+      Defaults to False.
     """
 
     name: str
