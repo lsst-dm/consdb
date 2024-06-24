@@ -6,7 +6,7 @@ RUN source loadLSST.bash && pip install kafkit
 COPY python/lsst/consdb/hinfo.py python/lsst/consdb/utils.py ./hinfo/
 
 # Environment variables that must be set:
-#   INSTRUMENT: LATISS, LSSTComCam, LSSTComCamSim, LSSTCam
+#   INSTRUMENT: LATISS, LSSTComCam, LSSTCam
 #   POSTGRES_URL: SQLAlchemy connection URL
 #   KAFKA_BOOTSTRAP: host:port of bootstrap server
 #   KAFKA_PASSWORD: password for SASL_PLAIN authentication
