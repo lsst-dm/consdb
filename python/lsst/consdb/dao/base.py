@@ -264,13 +264,14 @@ class DBBase:
         affected_rows = 0
 
         for i in range(0, len(records), commit_every):
-            chunk = records[i : i + commit_every]
+            chunk = records[i: i + commit_every]
 
             # Insert Statement using dialect insert
             insert_stm = self.dialect.insert(tbl).values(chunk)
 
             # Update Statement using in case of conflict makes an update.
-            # IMPORTANT: The dialect must be compatible with on_conflict_do_update.
+            # IMPORTANT: The dialect must be compatible with
+            # on_conflict_do_update.
             upsert_stm = insert_stm.on_conflict_do_update(
                 index_elements=tbl.primary_key.columns,
                 set_={k: getattr(insert_stm.excluded, k) for k in update_cols},
@@ -326,45 +327,3 @@ class DBBase:
         sql = sql.replace("\n", " ").replace("\r", "")
 
         return sql
-
-    # Possible faster solution specifically for postgresql using COPY.
-    # def import_with_copy_expert(self, sql, data):
-    #     """
-    #         This method is recommended for importing large volumes of data. using the postgresql COPY method.
-
-    #         The method is useful to handle all the parameters that PostgreSQL makes available
-    #         in COPY statement: https://www.postgresql.org/docs/current/sql-copy.html
-
-    #         it is necessary that the from clause is reading from STDIN.
-
-    #         example:
-    #         sql = COPY <table> (<columns) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);
-
-    #         Parameters:
-    #             sql (str): The sql statement should be in the form COPY table '.
-    #             data (file-like ): a file-like object to read or write
-    #         Returns:
-    #             rowcount (int):  the number of rows that the last execute*() produced (for DQL statements like SELECT) or affected (for DML statements like UPDATE or INSERT)
-
-    #     References:
-    #         https://www.psycopg.org/docs/cursor.html#cursor.copy_from
-    #         https://stackoverflow.com/questions/30050097/copy-data-from-csv-to-postgresql-using-python
-    #         https://stackoverflow.com/questions/13125236/sqlalchemy-psycopg2-and-postgresql-copy
-    #     """
-
-    #     with warnings.catch_warnings():
-    #         warnings.simplefilter("ignore", category=sa_exc.SAWarning)
-
-    #         connection = self.get_db_engine().raw_connection()
-    #         try:
-    #             cursor = connection.cursor()
-    #             cursor.copy_expert(sql, data)
-    #             connection.commit()
-
-    #             cursor.close()
-    #             return cursor.rowcount
-    #         except Exception as e:
-    #             connection.rollback()
-    #             raise (e)
-    #         finally:
-    #             connection.close()

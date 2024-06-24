@@ -73,7 +73,8 @@ class VisitEfdDao(DBBase):
 
         Args:
             df (pandas.DataFrame): The DataFrame containing the data to upsert.
-            commit_every (int, optional): The number of rows to commit at once. Defaults to 100.
+            commit_every (int, optional): The number of rows to commit at once.
+            Defaults to 100.
 
         Returns:
             int: The number of rows upserted.
