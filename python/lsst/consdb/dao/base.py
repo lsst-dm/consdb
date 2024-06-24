@@ -270,7 +270,7 @@ class DBBase:
             insert_stm = self.dialect.insert(tbl).values(chunk)
 
             # Update Statement using in case of conflict makes an update.
-            # IMPORTANT: The dialect must be compatible with 
+            # IMPORTANT: The dialect must be compatible with
             # on_conflict_do_update.
             upsert_stm = insert_stm.on_conflict_do_update(
                 index_elements=tbl.primary_key.columns,
