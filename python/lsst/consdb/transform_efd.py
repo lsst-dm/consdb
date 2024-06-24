@@ -6,8 +6,10 @@ from pathlib import Path
 from typing import Any, Dict
 
 import astropy.time
-import lsst_efd_client
+
+# import lsst_efd_client
 import yaml
+from dao.influxdb import InfluxDbDao
 from efd_transform.config_model import ConfigModel
 from efd_transform.transform import Transform
 from lsst.daf.butler import Butler
@@ -161,7 +163,7 @@ async def main() -> None:
     # db = create_engine(args.db_conn_str)
     db_uri = args.db_conn_str
 
-    efd = lsst_efd_client.EfdClient(args.efd_conn_str)
+    efd = InfluxDbDao(args.efd_conn_str)
 
     config = read_config(args.config_name)
 
@@ -175,7 +177,7 @@ async def main() -> None:
     start_time = astropy.time.Time(args.start_time, format="isot")
     end_time = astropy.time.Time(args.end_time, format="isot")
 
-    await tm.process_interval(
+    tm.process_interval(
         args.instrument,
         start_time,
         end_time,

@@ -2,16 +2,14 @@ import logging
 from typing import Any, List, Union
 
 import astropy.time
-import lsst_efd_client
 import numpy
 import pandas
 from dao.butler import ButlerDao
 from dao.exposure_efd import ExposureEfdDao
+from dao.influxdb import InfluxDbDao
 from dao.visit_efd import VisitEfdDao
 from efd_transform.summary import Summary
 from lsst.daf.butler import Butler
-
-# from sqlalchemy import Engine
 
 
 class Transform:
@@ -40,7 +38,7 @@ class Transform:
         self,
         butler: Butler,
         db_uri: str,
-        efd: lsst_efd_client.EfdClient,
+        efd: InfluxDbDao,
         config: dict[str, Any],
         logger: logging.Logger,
         commit_every: int = 100,
@@ -51,7 +49,7 @@ class Transform:
         Args:
             butler (Butler): The Butler object for accessing data.
             db_uri (str): The database connection string.
-            efd (lsst_efd_client.EfdClient): The EFD client for accessing
+            efd (dao.InfluxDbDao): The EFD client for accessing
                 EFD data.
             config (dict[str, Any]): The configuration for the
                 transformation process.
@@ -72,7 +70,7 @@ class Transform:
         self.log.debug(f"EFD: {self.efd}")
         self.log.debug(f"Configs Columns: {len(self.config['columns'])}")
 
-    async def process_interval(
+    def process_interval(
         self,
         instrument: str,
         start_time: astropy.time.Time,
@@ -127,7 +125,7 @@ class Transform:
 
             # Array with all topics needed for this column
             # topics = [{'name': topic name, series: pandas.DataFrame}]
-            topics = await self.topics_by_column(column, topic_interval)
+            topics = self.topics_by_column(column, topic_interval)
 
             if "ExposureEFD" in column["tables"]:
                 for exposure in exposures:
@@ -262,7 +260,7 @@ class Transform:
                 "Input data must be a list or list of lists or a numpy array or list of numpy arrays."
             )
 
-    async def topics_by_column(self, column, topic_interval) -> list[dict]:
+    def topics_by_column(self, column, topic_interval) -> list[dict]:
         """
         Retrieves the EFD topics and their corresponding series for a
         given column.
@@ -278,13 +276,13 @@ class Transform:
 
         data = []
         for topic in column["topics"]:
-            topic_series = await self.get_efd_values(topic, topic_interval)
+            topic_series = self.get_efd_values(topic, topic_interval)
             data.append({"topic": topic["name"], "series": topic_series})
             self.log.debug(f"EFD Topic {topic['name']} return {len(topic_series)} rows")
 
         return data
 
-    async def get_efd_values(
+    def get_efd_values(
         self,
         topic: dict[str, Any],
         topic_interval: list[astropy.time.Time],
@@ -296,12 +294,12 @@ class Transform:
 
         fields = [f["name"] for f in topic["fields"]]
 
-        series = await self.efd.select_time_series(
+        series = self.efd.select_time_series(
             topic["name"],
             fields,
             start - window,
             end + window,
-            topic.get("index", None),
+            index=topic.get("index", None),
         )
 
         # TODO: Currently doing a temporary resample and interpolate.
