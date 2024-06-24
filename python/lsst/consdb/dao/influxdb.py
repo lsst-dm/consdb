@@ -134,7 +134,6 @@ class InfluxDBClient:
             f'WHERE {timespan}'
         )
 
-
     def select_time_series(
         self,
         topic_name,
