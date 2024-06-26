@@ -328,18 +328,21 @@ class BadValueException(Exception):
 @app.errorhandler(BadJsonException)
 def handle_bad_json(e: BadJsonException) -> tuple[dict[str, Any], int]:
     """Handle a BadJsonException by returning its content as JSON."""
+    logger.info(f"{e.status_code} {e.to_dict()}")
     return e.to_dict(), e.status_code
 
 
 @app.errorhandler(BadValueException)
 def handle_bad_value(e: BadValueException) -> tuple[dict[str, Any], int]:
     """Handle a BadValueException by returning its content as JSON."""
+    logger.info(f"{e.status_code} {e.to_dict()}")
     return e.to_dict(), e.status_code
 
 
 @app.errorhandler(sqlalchemy.exc.SQLAlchemyError)
 def handle_sql_error(e: sqlalchemy.exc.SQLAlchemyError) -> tuple[dict[str, str], int]:
     """Handle a SQLAlchemyError by returning its content as JSON."""
+    logger.info(f"{e.status_code} {e}")
     return {"message": str(e)}, 500
 
 
@@ -685,7 +688,7 @@ def insert(instrument: str, table: str, obs_id: int) -> dict[str, Any] | tuple[d
         )
     else:
         stmt = sqlalchemy.insert(table_obj).values(valdict)
-    logger.debug(str(stmt))
+    logger.debug(valdict)
     with engine.connect() as conn:
         _ = conn.execute(stmt)
         conn.commit()
@@ -757,7 +760,7 @@ def insert_multiple(instrument: str, table: str) -> dict[str, Any] | tuple[dict[
                 )
             else:
                 stmt = sqlalchemy.insert(table_obj).values(valdict)
-            logger.debug(str(stmt))
+            logger.debug(valdict)
             # TODO: optimize as executemany
             _ = conn.execute(stmt)
         conn.commit()
