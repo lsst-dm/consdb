@@ -31,3 +31,10 @@ jobs:
         image: ${{ github.repository }}-pq
         github_token: ${{ secrets.GITHUB_TOKEN }}
         dockerfile: Dockerfile.pqserver
+
+    - name: Build efdtransform
+      uses: lsst-sqre/build-and-push-to-ghcr@v1
+      with:
+        image: ${{ github.repository }}-pq
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        dockerfile: Dockerfile.efdtransform
