@@ -1,0 +1,27 @@
+ARG OBS_LSST_VERSION=w_2024_21
+FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
+USER lsst
+RUN source loadLSST.bash && mamba install aiokafka httpx
+RUN source loadLSST.bash && pip install \
+    kafkit==0.2.1 \
+    lsst_efd_client==0.12.0
+
+# Python code
+COPY --chown=lsst:lsst python/lsst/consdb/transform_efd.py ./consdb/
+COPY --chown=lsst:lsst python/lsst/consdb/efd_transform ./consdb/efd_transform
+COPY --chown=lsst:lsst python/lsst/consdb/dao ./consdb/dao
+# Configuration files
+COPY --chown=lsst:lsst tmp/config_LATISS.yaml ./consdb/
+
+# Example of command used to execute transform_efd
+# python ./consdb/transform_efd.py \
+#     -i LATISS \
+#     -s 2024-04-25T00:00:00  \
+#     -e 2024-04-30T23:59:59 \
+#     -r /repo/embargo \
+#     -d sqlite:///$PWD/tmp/test.db \
+#     -E usdf_efd \
+#     -c $PWD/tmp/config_LATISS.yaml \
+#     -l $PWD/tmp/transform.log
+
+ENTRYPOINT [ "bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/transform_efd.py" ]
