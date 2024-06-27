@@ -13,15 +13,35 @@ COPY --chown=lsst:lsst python/lsst/consdb/dao ./consdb/dao
 # Configuration files
 COPY --chown=lsst:lsst tmp/config_LATISS.yaml ./consdb/
 
+RUN mkdir data
+
+# BASED IN THIS EXAMPLE: https://github.com/lsst-dm/transfer_embargo/blob/main/Dockerfile#L20C1-L32C182
+# ------------------------------
+# Define the environment variables
+# These are written over if they are re-defined
+# by the cronjob or on the command line deploy
+# of the pod
+ENV CONFIG_FILE "/opt/lsst/software/stack/consdb/config_LATISS.yaml"
+ENV INSTRUMENT "LATISS"
+ENV START_TIME "2024-04-25T00:00:00"
+ENV END_TIME "2024-04-30T23:59:59.999999"
+ENV BUTLER_REPO "/repo/embargo"
+ENV DB_URI "sqlite:////opt/lsst/software/stack/data/test.db"
+ENV EFD "usdf_efd"
+ENV LOG_FILE "/opt/lsst/software/stack/data/transform.log"
+
+CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -s \"$START_TIME\" -e \"$END_TIME\" -r \"$BUTLER_REPO\" -d \"$DB_URI\"  -E \"$EFD\" -l \"$LOG_FILE\""]
+
 # Example of command used to execute transform_efd
 # python ./consdb/transform_efd.py \
+#     -c $PWD/tmp/config_LATISS.yaml \
 #     -i LATISS \
 #     -s 2024-04-25T00:00:00  \
 #     -e 2024-04-30T23:59:59 \
 #     -r /repo/embargo \
 #     -d sqlite:///$PWD/tmp/test.db \
 #     -E usdf_efd \
-#     -c $PWD/tmp/config_LATISS.yaml \
 #     -l $PWD/tmp/transform.log
 
-ENTRYPOINT [ "bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/transform_efd.py" ]
+# Exemple of command used to execute transform_efd with docker
+# docker run --rm -it --volume $PWD/data:/opt/lsst/software/stack/data  -e CONFIG_FILE=config_LATISS.yaml -e ...  consdb/efd_transform:latest 
