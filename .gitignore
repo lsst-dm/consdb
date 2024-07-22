@@ -17,6 +17,8 @@ bin/
 # Pytest
 tests/.tests
 pytest_session.txt
+pytest_report.html
+htmlcov
 .cache/
 .pytest_cache
 .coverage
