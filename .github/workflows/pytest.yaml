@@ -6,9 +6,6 @@ name: Run PyTest
 on: [push, pull_request]
 
 jobs:
-  run_lint:
-    uses: lsst/rubin_workflows/.github/workflows/lint.yaml@main
-
   run_pytest:
     runs-on: ubuntu-latest
 
