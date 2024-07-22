@@ -198,7 +198,7 @@ def test_flexible_metadata(client):
     assert result["required_keys"] == ["values"]
 
     response = client.post(
-        f"/consdb/insert/latiss/exposure/obs/2024032100003",
+        "/consdb/insert/latiss/exposure/obs/2024032100003",
         json={
             "values": {
                 "exposure_name": "AT_O_20240327_000002",
