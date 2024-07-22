@@ -8,6 +8,7 @@ config.log
 *.pyc
 *_wrap.cc
 *Lib.py
+*.egg-info
 
 # Built by sconsUtils
 version.py
@@ -23,3 +24,7 @@ pytest_session.txt
 .flake8
 .isort.cfg
 .mypy.ini
+
+# environment
+.venv
+.vscode

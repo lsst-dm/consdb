@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "consdb"
 description = "consdb provides support for the Consolidated Database for the `Vera C. Rubin Observatory <https://lsst.org>`_."
 license = { text = "GPL" }
-dependencies = ["flask", "requests"]
+dependencies = ["flask", "requests", "sqlalchemy"]
 readme = "README.rst"
 urls = { documentation = "https://consdb.lsst.io", source_code = "https://github.com/lsst-dm/consdb"}
 dynamic = ["version"]

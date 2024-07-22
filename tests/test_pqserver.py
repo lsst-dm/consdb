@@ -52,7 +52,7 @@ def db(tmpdir, scope="module"):
 @pytest.fixture
 def app(db, scope="module"):
     os.environ["POSTGRES_URL"] = f"sqlite:///{db}"
-    import pqserver
+    from lsst.consdb import pqserver
 
     return pqserver.app
 
