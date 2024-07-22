@@ -198,16 +198,14 @@ def test_flexible_metadata(client):
     assert result["required_keys"] == ["values"]
 
     response = client.post(
-        "/consdb/insert/latiss",
+        f"/consdb/insert/latiss/exposure/obs/2024032100003",
         json={
-            "table": "exposure",
             "values": {
                 "exposure_name": "AT_O_20240327_000002",
                 "controller": "O",
                 "day_obs": 20240327,
                 "seq_num": 2,
             },
-            "obs_id": 2024032700002,
         },
     )
     _assert_http_status(response, 200)
@@ -216,6 +214,7 @@ def test_flexible_metadata(client):
         "message": "Data inserted",
         "table": "cdb_latiss.exposure",
         "instrument": "latiss",
+        "obs_id": 2024032100003,
     }
 
     response = client.post("/consdb/query", json={"query": "SELECT * FROM exposure ORDER BY day_obs;"})
