@@ -24,6 +24,7 @@ from typing import Any, Iterable
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 from flask import Flask, request
+
 from .utils import setup_logging, setup_postgres
 
 OBS_TYPE_LIST = ["exposure", "visit1", "ccdexposure", "ccdvisit1"]
@@ -51,9 +52,7 @@ class InstrumentTables:
 
     def __init__(self):
         inspector = sqlalchemy.inspect(engine)
-        self.instrument_list = [
-            name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")
-        ]
+        self.instrument_list = [name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")]
         self.table_names = set()
         self.schemas = dict()
         self.flexible_metadata_schemas = dict()
