@@ -11,7 +11,6 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
-from sqlalchemy.dialects import oracle
 
 # revision identifiers, used by Alembic.
 revision: str = "b801850c5cc9"
