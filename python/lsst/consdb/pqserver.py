@@ -24,6 +24,7 @@ from typing import Any, Iterable
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 from flask import Flask, request
+
 from .utils import setup_logging, setup_postgres
 
 OBS_TYPE_LIST = ["exposure", "visit1", "ccdexposure", "ccdvisit1"]

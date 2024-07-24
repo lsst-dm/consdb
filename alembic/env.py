@@ -3,11 +3,11 @@ import os
 from logging.config import fileConfig
 
 import yaml
-from alembic import context
-from sqlalchemy import engine_from_config, pool
-
 from felis.datamodel import Schema
 from felis.metadata import MetaDataBuilder
+from sqlalchemy import engine_from_config, pool
+
+from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
