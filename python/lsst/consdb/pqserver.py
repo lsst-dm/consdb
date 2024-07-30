@@ -26,7 +26,7 @@ from flask import Flask, request
 from fastapi import FastAPI, APIRouter, Depends, Path
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from safir.metadata import Metadata, get_metadata
 from .utils import setup_logging, setup_postgres
 
@@ -482,16 +482,16 @@ class AddKeyRequestModel(BaseModel):
         ..., title="IVOA Unified Content Descriptor (https://www.ivoa.net/documents/UCD1+/)"
     )
 
-    @validator("unit")
-    def validate_unit(cls, v):
+    @field_validator("unit")
+    def validate_unit(v):
         try:
             unit = astropy.units.Unit(v)
         except ValueError:
             raise ValueError(f"'{v}' is a not a valid unit.")
         return v
 
-    @validator("ucd")
-    def validate_ucd(cls, v):
+    @field_validator("ucd")
+    def validate_ucd(v):
         if not astropy.io.votable.ucd.check_ucd(v):
             raise ValueError(f"'{v}' is not a valid IVOA UCD.")
         return v
