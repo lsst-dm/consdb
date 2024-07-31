@@ -23,17 +23,14 @@ from enum import Enum
 from importlib.metadata import metadata, version
 from typing import Annotated, Any, Iterable, Optional
 
-from fastapi import FastAPI, APIRouter, Depends, Path
+import astropy
+from fastapi import Depends, HTTPException, FastAPI, Path
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 from pydantic import BaseModel, Field, field_validator
 from safir.metadata import Metadata, get_metadata
 from safir.middleware.x_forwarded import XForwardedMiddleware
 from .utils import setup_logging, setup_postgres
-
-internal_router = APIRouter()
-external_router = APIRouter()
-
 
 class ObsTypeEnum(str, Enum):
     EXPOSURE = "exposure"
@@ -119,11 +116,6 @@ app = FastAPI(
 )
 engine = setup_postgres()
 logger = setup_logging(__name__)
-
-app.include_router(internal_router)
-app.include_router(external_router, prefix=path_prefix)
-app.add_middleware(XForwardedMiddleware)
-
 
 ########################
 # Schema preload class #
@@ -467,8 +459,8 @@ class Index(BaseModel):
     dtypes: list[str] = Field(..., title="Allowed data types in flexible metadata")
 
 
-@external_router.get(
-    "/",
+@app.get(
+    "/consdb/",
     description="Application root",
     response_model=Index,
     response_model_exclude_none=True,
@@ -519,8 +511,8 @@ class AddKeyResponseModel(BaseModel):
     obs_type: ObsTypeEnum = Field(..., title="The observation type that owns the new key")
 
 
-@external_router.post(
-    "/flex/{instrument}/{obs_type}/addkey",
+@app.post(
+    "/consdb/flex/{instrument}/{obs_type}/addkey",
     summary="Add a flexible metadata key for the specified instrument and obs_type.",
     response_model=AddKeyResponseModel,
 )
@@ -532,7 +524,7 @@ async def add_flexible_metadata_key(
     """Add a key to a flexible metadata table."""
     global instrument_tables
 
-    logger.info(f"{request} {request.json}")
+    logger.info(f"{data.key} {data.dtype}")
     info = _check_json(request.json, "flex addkey", ("key", "dtype", "doc"))
     schema_table = instrument_tables.get_flexible_metadata_schema(instrument, obs_type)
     stmt = sqlalchemy.insert(schema_table).values(
@@ -561,8 +553,8 @@ async def add_flexible_metadata_key(
     )
 
 
-@external_router.get(
-    "/flex/{instrument}/{obs_type}/schema",
+@app.get(
+    "/consdb/flex/{instrument}/{obs_type}/schema",
     description="Flex schema for the given instrument and observation type.",
 )
 async def get_flexible_metadata_keys(
@@ -580,8 +572,8 @@ async def get_flexible_metadata_keys(
     return instrument_tables.flexible_metadata_schemas[instrument][obs_type]
 
 
-@external_router.get(
-    "/flex/{instrument}/{obs_type}/obs/{obs_id}",
+@app.get(
+    "/consdb/flex/{instrument}/{obs_type}/obs/{obs_id}",
     description="Flex schema for the given instrument and observation type.",
 )
 async def get_flexible_metadata(
@@ -620,7 +612,7 @@ class GenericResponse(BaseModel):
     table: Optional[str] = Field(..., title="Table name")
 
 
-@external_router.post("/flex/{instrument}/{obs_type}/obs/{obs_id}")
+@app.post("/consdb/flex/{instrument}/{obs_type}/obs/{obs_id}")
 async def insert_flexible_metadata(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     obs_type: ObsTypeEnum,
@@ -671,7 +663,7 @@ async def insert_flexible_metadata(
     )
 
 
-@external_router.post("/insert/{instrument}/{table}/obs/{obs_id}")
+@app.post("/consdb/insert/{instrument}/{table}/obs/{obs_id}")
 async def insert(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     table: str,
@@ -715,7 +707,7 @@ async def insert(
     )
 
 
-@external_router.post("/insert/{instrument}/{table}")
+@app.post("/consdb/insert/{instrument}/{table}")
 async def insert_multiple(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     table: str,
@@ -791,7 +783,7 @@ async def insert_multiple(
     )
 
 
-@external_router.get("/query/{instrument}/{obs_type}/obs/{obs_id}")
+@app.get("/consdb/query/{instrument}/{obs_type}/obs/{obs_id}")
 async def get_all_metadata(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     obs_type: ObsTypeEnum,
@@ -840,7 +832,7 @@ async def get_all_metadata(
     return result
 
 
-@external_router.post("/query")
+@app.post("/consdb/query")
 async def query() -> dict[str, Any] | tuple[dict[str, str], int]:
     """Query the ConsDB database.
 
@@ -878,7 +870,7 @@ async def query() -> dict[str, Any] | tuple[dict[str, str], int]:
     return result
 
 
-@external_router.get("/schema")
+@app.get("/consdb/schema")
 async def list_instruments() -> list[str]:
     """Retrieve the list of instruments available in ConsDB."""
     global instrument_tables
@@ -887,7 +879,7 @@ async def list_instruments() -> list[str]:
     return instrument_tables.instrument_list
 
 
-@external_router.get("/consdb/schema/{instrument}")
+@app.get("/consdb/schema/{instrument}")
 async def list_table(
     instrument: Annotated[str, Depends(validate_instrument_name)],
 ) -> list[str]:
@@ -899,7 +891,7 @@ async def list_table(
     return list(schema.tables.keys())
 
 
-@external_router.get("/schema/{instrument}/<table>")
+@app.get("/consdb/schema/{instrument}/<table>")
 async def schema(instrument: Annotated[str, Depends(validate_instrument_name)], table: str) -> dict[str, list[str]]:
     """Retrieve the descriptions of columns in a ConsDB table.
 
