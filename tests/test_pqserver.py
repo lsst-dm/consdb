@@ -4,12 +4,14 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
+from fastapi.testclient import TestClient
+
 import pytest
 from requests import Response
 
 
 def _assert_http_status(response: Response, status: int):
-    assert response.status_code == status, f"{response.status_code} {response.json}"
+    assert response.status_code == status, f"{response.status_code} {response.json()}"
 
 
 @pytest.fixture
@@ -60,12 +62,12 @@ def app(db, scope="module"):
 @pytest.fixture
 def client(app, scope="module"):
     # NOTE: all tests share the same client, app, and database.
-    return app.test_client()
+    return TestClient(app)
 
 
 def test_root(client):
     response = client.get("/")
-    result = response.json
+    result = response.json()
     assert "instruments" in result
     assert "obs_types" in result
     assert "dtypes" in result
@@ -73,7 +75,7 @@ def test_root(client):
 
 def test_root2(client):
     response = client.get("/consdb")
-    result = response.json
+    result = response.json()
     assert "instruments" in result
     assert "latiss" in result["instruments"]
     assert "obs_types" in result
@@ -88,7 +90,7 @@ def test_flexible_metadata(client):
         json={"key": "foo", "dtype": "bool", "doc": "bool key"},
     )
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result == {
         "message": "Key added to flexible metadata",
         "key": "foo",
@@ -101,7 +103,7 @@ def test_flexible_metadata(client):
         json={"key": "bar", "dtype": "int", "doc": "int key"},
     )
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result == {
         "message": "Key added to flexible metadata",
         "key": "bar",
@@ -114,7 +116,7 @@ def test_flexible_metadata(client):
         json={"key": "baz", "dtype": "float", "doc": "float key"},
     )
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result["obs_type"] == "Exposure"
 
     response = client.post(
@@ -122,7 +124,7 @@ def test_flexible_metadata(client):
         json={"key": "quux", "dtype": "str", "doc": "str key"},
     )
     _assert_http_status(response, 404)
-    result = response.json
+    result = response.json()
     assert result == {
         "message": "Unknown instrument",
         "value": "bad_instrument",
@@ -131,7 +133,7 @@ def test_flexible_metadata(client):
 
     response = client.get("/consdb/flex/latiss/exposure/schema")
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert "foo" in result
     assert "bar" in result
     assert "baz" in result
@@ -142,7 +144,7 @@ def test_flexible_metadata(client):
         json={"values": {"foo": True, "bar": 42, "baz": 3.14159}},
     )
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result["message"] == "Flexible metadata inserted"
     assert result["obs_id"] == 2024032100002
 
@@ -151,7 +153,7 @@ def test_flexible_metadata(client):
         json={"values": {"foo": True, "bar": 42, "baz": 3.14159}},
     )
     _assert_http_status(response, 500)
-    result = response.json
+    result = response.json()
     assert "UNIQUE" in result["message"]
 
     response = client.post(
@@ -159,18 +161,18 @@ def test_flexible_metadata(client):
         json={"values": {"bad_key": 2.71828}},
     )
     _assert_http_status(response, 404)
-    result = response.json
+    result = response.json()
     assert result["message"] == "Unknown key"
     assert result["value"] == "bad_key"
 
     response = client.get("/consdb/flex/latiss/exposure/obs/2024032100002")
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result == {"foo": True, "bar": 42, "baz": 3.14159}
 
     response = client.get("/consdb/flex/latiss/exposure/obs/2024032100002?k=bar&k=baz")
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result == {"bar": 42, "baz": 3.14159}
 
     response = client.post(
@@ -178,22 +180,22 @@ def test_flexible_metadata(client):
         json={"values": {"foo": False, "bar": 34, "baz": 2.71828}},
     )
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result["message"] == "Flexible metadata inserted"
 
     response = client.get("/consdb/flex/latiss/exposure/obs/2024032100002")
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result == {"foo": False, "bar": 34, "baz": 2.71828}
 
     response = client.get("/consdb/flex/latiss/exposure/obs/2024032100002?k=baz")
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result == {"baz": 2.71828}
 
     response = client.post("/consdb/flex/latiss/exposure/obs/2024032100002", json={})
     _assert_http_status(response, 404)
-    result = response.json
+    result = response.json()
     assert "Invalid JSON" in result["message"]
     assert result["required_keys"] == ["values"]
 
@@ -209,7 +211,7 @@ def test_flexible_metadata(client):
         },
     )
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert result == {
         "message": "Data inserted",
         "table": "cdb_latiss.exposure",
@@ -219,7 +221,7 @@ def test_flexible_metadata(client):
 
     response = client.post("/consdb/query", json={"query": "SELECT * FROM exposure ORDER BY day_obs;"})
     _assert_http_status(response, 200)
-    result = response.json
+    result = response.json()
     assert len(result) == 2
     assert "exposure_id" in result["columns"]
     assert 20240321 in result["data"][0]

@@ -20,14 +20,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from enum import Enum
+from importlib.metadata import metadata, version
 from typing import Annotated, Any, Iterable, Optional
 
-from flask import Flask, request
 from fastapi import FastAPI, APIRouter, Depends, Path
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 from pydantic import BaseModel, Field, field_validator
 from safir.metadata import Metadata, get_metadata
+from safir.middleware.x_forwarded import XForwardedMiddleware
 from .utils import setup_logging, setup_postgres
 
 internal_router = APIRouter()
@@ -108,9 +109,20 @@ def validate_instrument_name(
 # Global app setup #
 ####################
 
-app = FastAPI()
+path_prefix = "/consdb"
+app = FastAPI(
+    title="consdb-pqserver",
+    description="HTTP API for consdb",
+    openapi_url=f"{path_prefix}/openapi.json",
+    docs_url=f"{path_prefix}/docs",
+    redoc_url=f"{path_prefix}/redoc",
+)
 engine = setup_postgres()
 logger = setup_logging(__name__)
+
+app.include_router(internal_router)
+app.include_router(external_router, prefix=path_prefix)
+app.add_middleware(XForwardedMiddleware)
 
 
 ########################
@@ -423,15 +435,13 @@ def handle_sql_error(e: sqlalchemy.exc.SQLAlchemyError) -> tuple[dict[str, str],
 ###################################
 
 
-@internal_router.get(
+@app.get(
     "/",
     description="Metadata and health check endpoint.",
     include_in_schema=False,
-    response_model=Metadata,
-    response_model_exclude_none=True,
     summary="Application metadata",
 )
-async def internal_root() -> Metadata:
+async def internal_root() -> dict[str, Any]:
     """Root URL for liveness checks.
 
     Returns
@@ -440,10 +450,13 @@ async def internal_root() -> Metadata:
         JSON response with a list of instruments, observation types, and
         data types.
     """
-    return get_metadata(
-        package_name="consdb-pqserver",
-        application_name=config.name,
-    )
+    return {
+        "instruments": [ "foo", "bar", "baz" ],
+    }
+#    get_metadata(
+#        package_name="consdb-pqserver",
+#        application_name=config.name,
+#    )
 
 
 class Index(BaseModel):
@@ -608,7 +621,7 @@ class GenericResponse(BaseModel):
 
 
 @external_router.post("/flex/{instrument}/{obs_type}/obs/{obs_id}")
-def insert_flexible_metadata(
+async def insert_flexible_metadata(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     obs_type: ObsTypeEnum,
     obs_id: ObservationIdType,
@@ -659,7 +672,7 @@ def insert_flexible_metadata(
 
 
 @external_router.post("/insert/{instrument}/{table}/obs/{obs_id}")
-def insert(
+async def insert(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     table: str,
     obs_id: ObservationIdType,
@@ -703,7 +716,7 @@ def insert(
 
 
 @external_router.post("/insert/{instrument}/{table}")
-def insert_multiple(
+async def insert_multiple(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     table: str,
 ) -> dict[str, Any] | tuple[dict[str, str], int]:
@@ -779,7 +792,7 @@ def insert_multiple(
 
 
 @external_router.get("/query/{instrument}/{obs_type}/obs/{obs_id}")
-def get_all_metadata(
+async def get_all_metadata(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     obs_type: ObsTypeEnum,
     obs_id: ObservationIdType,
@@ -828,7 +841,7 @@ def get_all_metadata(
 
 
 @external_router.post("/query")
-def query() -> dict[str, Any] | tuple[dict[str, str], int]:
+async def query() -> dict[str, Any] | tuple[dict[str, str], int]:
     """Query the ConsDB database.
 
     Parameters
@@ -866,7 +879,7 @@ def query() -> dict[str, Any] | tuple[dict[str, str], int]:
 
 
 @external_router.get("/schema")
-def list_instruments() -> list[str]:
+async def list_instruments() -> list[str]:
     """Retrieve the list of instruments available in ConsDB."""
     global instrument_tables
 
@@ -875,7 +888,7 @@ def list_instruments() -> list[str]:
 
 
 @external_router.get("/consdb/schema/{instrument}")
-def list_table(
+async def list_table(
     instrument: Annotated[str, Depends(validate_instrument_name)],
 ) -> list[str]:
     """Retrieve the list of tables for an instrument."""
@@ -887,7 +900,7 @@ def list_table(
 
 
 @external_router.get("/schema/{instrument}/<table>")
-def schema(instrument: Annotated[str, Depends(validate_instrument_name)], table: str) -> dict[str, list[str]]:
+async def schema(instrument: Annotated[str, Depends(validate_instrument_name)], table: str) -> dict[str, list[str]]:
     """Retrieve the descriptions of columns in a ConsDB table.
 
     Parameters
