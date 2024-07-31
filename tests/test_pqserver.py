@@ -107,7 +107,7 @@ def test_flexible_metadata(client):
     assert result == {
         "message": "Key added to flexible metadata",
         "key": "bar",
-        "instrument": "LATISS",
+        "instrument": "latiss",
         "obs_type": "exposure",
     }
 
@@ -117,19 +117,15 @@ def test_flexible_metadata(client):
     )
     _assert_http_status(response, 200)
     result = response.json()
-    assert result["obs_type"] == "Exposure"
+    assert result["obs_type"] == "exposure"
 
     response = client.post(
         "/consdb/flex/bad_instrument/exposure/addkey",
         json={"key": "quux", "dtype": "str", "doc": "str key"},
     )
-    _assert_http_status(response, 404)
+    _assert_http_status(response, 400)
     result = response.json()
-    assert result == {
-        "message": "Unknown instrument",
-        "value": "bad_instrument",
-        "valid": ["latiss"],
-    }
+    assert "Invalid instrument" in result["detail"]
 
     response = client.get("/consdb/flex/latiss/exposure/schema")
     _assert_http_status(response, 200)
@@ -194,10 +190,11 @@ def test_flexible_metadata(client):
     assert result == {"baz": 2.71828}
 
     response = client.post("/consdb/flex/latiss/exposure/obs/2024032100002", json={})
-    _assert_http_status(response, 404)
+    _assert_http_status(response, 422)
     result = response.json()
-    assert "Invalid JSON" in result["message"]
-    assert result["required_keys"] == ["values"]
+    assert "Validation error" in result["message"]
+    assert result["detail"][0]["type"] == "missing"
+    assert "values" in result["detail"][0]["loc"]
 
     response = client.post(
         "/consdb/insert/latiss/exposure/obs/2024032100003",
