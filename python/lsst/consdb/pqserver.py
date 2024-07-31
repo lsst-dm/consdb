@@ -20,15 +20,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from enum import Enum
-from typing import Annotated, Any, Iterable, Optional
+from typing import Annotated, Any, Optional
 
 import astropy
-from fastapi import Body, Depends, HTTPException, FastAPI, Path, Query, Request, status
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
+from fastapi import Body, Depends, FastAPI, HTTPException, Path, Query, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
+
 from .utils import setup_logging, setup_postgres
 
 
@@ -54,10 +55,6 @@ ObservationIdType = int
 
 
 # This shenanigan makes flake8 recognize AllowedFlexTypeEnum as a type.
-class AllowedFlexTypeEnum(Enum):
-    pass
-
-
 AllowedFlexType = bool | int | float | str
 AllowedFlexTypeEnumBase = Enum(
     "AllowedFlexTypeEnumBase", {t.__name__.upper(): t.__name__ for t in AllowedFlexType.__args__}
@@ -352,23 +349,26 @@ class BadValueException(Exception):
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
+    exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
     logger.error(f"RequestValidationError {request}: {exc_str}")
     content = {"message": "Validation error", "detail": exc.errors()}
     return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+
 @app.exception_handler(BadValueException)
 async def bad_value_exception_handler(request: Request, exc: BadValueException):
-    exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
+    exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
     logger.error(f"BadValueException {request}: {exc_str}")
     return JSONResponse(content=exc.to_dict(), status_code=status.HTTP_404_NOT_FOUND)
 
+
 @app.exception_handler(sqlalchemy.exc.SQLAlchemyError)
 async def sqlalchemy_exception_handler(request: Request, exc: sqlalchemy.exc.SQLAlchemyError):
-    exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
+    exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
     logger.error(f"SQLAlchemyError {request}: {exc_str}")
-    content={"message": str(exc)}
+    content = {"message": str(exc)}
     return JSONResponse(content=content, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 ###################################
 # Web service application methods #
@@ -555,7 +555,8 @@ async def get_flexible_metadata(
 
 
 class InsertDataModel(BaseModel):
-    """ This model can be used for either flex or regular data. """
+    """This model can be used for either flex or regular data."""
+
     values: dict[str, AllowedFlexType] = Field(..., title="Data to insert or update")
 
 
@@ -624,6 +625,7 @@ class GenericResponse(BaseModel):
     obs_type: ObsTypeEnum = Field(..., title="The observation type (e.g., ``exposure``)")
     obs_id: ObservationIdType | list[ObservationIdType] = Field(..., title="Observation ID")
     table: Optional[str] = Field(..., title="Table name")
+
 
 class InsertDataResponse(BaseModel):
     message: str = Field(..., title="Human-readable response message")
