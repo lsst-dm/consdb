@@ -462,8 +462,9 @@ class AddKeyResponseModel(BaseModel):
 
 @app.post(
     "/consdb/flex/{instrument}/{obs_type}/addkey",
-    summary="Add a flexible metadata key for the specified instrument and obs_type.",
+    summary="Add a flexible metadata key",
     response_model=AddKeyResponseModel,
+    description="Add a flexible metadata key for the specified instrument and obs_type.",
 )
 async def add_flexible_metadata_key(
     instrument: Annotated[str, Depends(validate_instrument_name)],
@@ -500,15 +501,18 @@ async def add_flexible_metadata_key(
         obs_type=obs_type,
     )
 
+class FlexMetadataSchemaResponseModel(BaseModel):
+    schema: dict[str, tuple[AllowedFlexTypeEnum, str, str | None, str | None]] = Field(..., title="Dictionary containing each flex key name and its associated data type, documentation, unit, and UCD")
 
 @app.get(
     "/consdb/flex/{instrument}/{obs_type}/schema",
+    summary="Get all flexible metadata keys",
     description="Flex schema for the given instrument and observation type.",
 )
 async def get_flexible_metadata_keys(
-    instrument: Annotated[str, Depends(validate_instrument_name)],
-    obs_type: ObsTypeEnum,
-) -> dict[str, list[str | None]]:
+    instrument: Annotated[str, Depends(validate_instrument_name)] = Path(..., title="Instrument name"),
+    obs_type: ObsTypeEnum = Path(..., title="Observation type"),
+) -> FlexMetadataSchemaResponseModel:
     """Returns the flex schema for the given instrument and
     observation type.
     """
@@ -519,7 +523,10 @@ async def get_flexible_metadata_keys(
     obs_type = obs_type.lower()
     _ = instrument_tables.compute_flexible_metadata_table_name(instrument, obs_type)
     instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
-    return instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+    schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+
+    return FlexMetadataSchemaResponseModel(
+        schema=instrument_tables.flexible_metadata_schemas[instrument][obs_type])
 
 
 @app.get(
@@ -634,7 +641,10 @@ class InsertDataResponse(BaseModel):
     table: Optional[str] = Field(..., title="Table name")
 
 
-@app.post("/consdb/insert/{instrument}/{table}/obs/{obs_id}")
+@app.post(
+    "/consdb/insert/{instrument}/{table}/obs/{obs_id}",
+    summary="Insert data row",
+)
 async def insert(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     table: str,
@@ -677,7 +687,10 @@ class InsertMultipleRequestModel(BaseModel):
     )
 
 
-@app.post("/consdb/insert/{instrument}/{table}")
+@app.post(
+    "/consdb/insert/{instrument}/{table}",
+    summary="Insert multiple data rows",
+)
 async def insert_multiple(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     table: str,
@@ -727,7 +740,11 @@ async def insert_multiple(
     )
 
 
-@app.get("/consdb/query/{instrument}/{obs_type}/obs/{obs_id}")
+@app.get(
+    "/consdb/query/{instrument}/{obs_type}/obs/{obs_id}",
+    summary="Get all metadata",
+    description="Get all metadata for a given observation.",
+)
 async def get_all_metadata(
     instrument: Annotated[str, Depends(validate_instrument_name)],
     obs_type: ObsTypeEnum,
