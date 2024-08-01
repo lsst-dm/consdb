@@ -501,8 +501,16 @@ async def add_flexible_metadata_key(
         obs_type=obs_type,
     )
 
+
 class FlexMetadataSchemaResponseModel(BaseModel):
-    schema: dict[str, tuple[AllowedFlexTypeEnum, str, str | None, str | None]] = Field(..., title="Dictionary containing each flex key name and its associated data type, documentation, unit, and UCD")
+    schema: dict[str, tuple[AllowedFlexTypeEnum, str, str | None, str | None]] = Field(
+        ...,
+        title="""
+            Dictionary containing each flex key name
+            and its associated data type, documentation, unit, and UCD
+        """,
+    )
+
 
 @app.get(
     "/consdb/flex/{instrument}/{obs_type}/schema",
@@ -523,10 +531,10 @@ async def get_flexible_metadata_keys(
     obs_type = obs_type.lower()
     _ = instrument_tables.compute_flexible_metadata_table_name(instrument, obs_type)
     instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
-    schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
 
     return FlexMetadataSchemaResponseModel(
-        schema=instrument_tables.flexible_metadata_schemas[instrument][obs_type])
+        schema=instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+    )
 
 
 @app.get(
