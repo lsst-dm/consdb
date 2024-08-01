@@ -19,6 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from contextlib import contextmanager
 from typing import Any, Iterable
 
 import sqlalchemy
@@ -40,6 +41,22 @@ OBS_ID_COLNAME_LIST = ["ccdvisit_id", "visit_id", "ccdexposure_id", "exposure_id
 app = Flask(__name__)
 engine = setup_postgres()
 logger = setup_logging(__name__)
+
+
+@contextmanager
+def _retry_connect():
+    """Connect to the database engine with a single retry if it fails.
+
+    Yields
+    ------
+    conn : sqlalchemy.Connection
+    """
+    try:
+        with engine.connect() as conn:
+            yield conn
+    except sqlalchemy.DBAPIError:
+        with engine.connect() as conn:
+            yield conn
 
 
 ########################
@@ -77,7 +94,7 @@ class InstrumentTables:
                     stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
                     logger.debug(str(stmt))
                     schema = dict()
-                    with engine.connect() as conn:
+                    with _retry_connect() as conn:
                         for row in conn.execute(stmt):
                             schema[row[0]] = row[1:]
                     self.flexible_metadata_schemas[instrument][obs_type] = schema
@@ -87,7 +104,7 @@ class InstrumentTables:
         schema_table = self.get_flexible_metadata_schema(instrument, obs_type)
         stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
         logger.debug(str(stmt))
-        with engine.connect() as conn:
+        with _retry_connect() as conn:
             for row in conn.execute(stmt):
                 schema[row[0]] = row[1:]
         self.flexible_metadata_schemas[instrument][obs_type] = schema
@@ -439,7 +456,7 @@ def add_flexible_metadata_key(instrument: str, obs_type: str) -> dict[str, Any] 
     ucd = info.get("ucd")
     stmt = sqlalchemy.insert(schema_table).values(key=key, dtype=dtype, doc=doc, unit=unit, ucd=ucd)
     logger.debug(str(stmt))
-    with engine.connect() as conn:
+    with _retry_connect() as conn:
         _ = conn.execute(stmt)
         conn.commit()
     # Update cached copy without re-querying database.
@@ -528,7 +545,7 @@ def get_flexible_metadata(instrument: str, obs_type: str, obs_id: int) -> dict[s
         cols = request.args.getlist("k")
         stmt = stmt.where(table.c.key.in_(cols))
     logger.debug(str(stmt))
-    with engine.connect() as conn:
+    with _retry_connect() as conn:
         for row in conn.execute(stmt):
             key, value = row
             if key not in schema:
@@ -606,7 +623,7 @@ def insert_flexible_metadata(
         elif dtype == "str" and not isinstance(value, str):
             raise BadValueException("str value", value)
 
-    with engine.connect() as conn:
+    with _retry_connect() as conn:
         for key, value in value_dict.items():
             value_str = str(value)
             stmt: sqlalchemy.sql.dml.Insert
@@ -686,7 +703,7 @@ def insert(instrument: str, table: str, obs_id: int) -> dict[str, Any] | tuple[d
     else:
         stmt = sqlalchemy.insert(table_obj).values(valdict)
     logger.debug(str(stmt))
-    with engine.connect() as conn:
+    with _retry_connect() as conn:
         _ = conn.execute(stmt)
         conn.commit()
     return {
@@ -742,7 +759,7 @@ def insert_multiple(instrument: str, table: str) -> dict[str, Any] | tuple[dict[
     table = instrument_tables.schemas[instrument].tables[table_name]
     obs_id_colname = instrument_tables.obs_id_column[instrument][table_name]
 
-    with engine.connect() as conn:
+    with _retry_connect() as conn:
         for obs_id, valdict in info["obs_dict"]:
             if not isinstance(obs_id, int):
                 raise BadValueException("obs_id value", obs_id)
@@ -807,7 +824,7 @@ def get_all_metadata(
     stmt = sqlalchemy.select(view).where(view.c[obs_id_column] == obs_id)
     logger.debug(str(stmt))
     result = dict()
-    with engine.connect() as conn:
+    with _retry_connect() as conn:
         rows = conn.execute(stmt).all()
         assert len(rows) == 1
         result = dict(rows[0]._mapping)
@@ -841,7 +858,7 @@ def query() -> dict[str, Any] | tuple[dict[str, str], int]:
     """
     logger.info(f"{request} {request.json}")
     info = _check_json(request.json, "query", ("query",))
-    with engine.connect() as conn:
+    with _retry_connect() as conn:
         cursor = conn.exec_driver_sql(info["query"])
         first = True
         result: dict[str, Any] = {}
