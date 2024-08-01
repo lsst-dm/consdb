@@ -129,6 +129,7 @@ def test_flexible_metadata(client):
     response = client.get("/consdb/flex/latiss/exposure/schema")
     _assert_http_status(response, 200)
     result = response.json()
+    result = result["schema"]
     assert "foo" in result
     assert "bar" in result
     assert "baz" in result
