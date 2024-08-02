@@ -19,28 +19,111 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Any, Iterable
+from enum import StrEnum
+from typing import Annotated, Any, Optional
 
+import astropy
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
-from flask import Flask, request
+from fastapi import Body, FastAPI, HTTPException, Path, Query, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pydantic import AfterValidator, BaseModel, Field, field_validator
 
 from .utils import setup_logging, setup_postgres
 
-OBS_TYPE_LIST = ["exposure", "visit1", "ccdexposure", "ccdvisit1"]
-DTYPE_LIST = ["bool", "int", "float", "str"]
 
-OBS_ID_COLNAME_LIST = ["ccdvisit_id", "visit_id", "ccdexposure_id", "exposure_id", "obs_id"]
+class ObsTypeEnum(StrEnum):
+    EXPOSURE = "exposure"
+    VISIT1 = "visit1"
+    CCD_EXPOSURE = "ccdexposure"
+    CCD_VISIT1 = "ccdvisit1"
+
+    @classmethod
+    def _missing_(cls, value):
+        """Makes the enum case-insensitive, see
+        https://docs.python.org/3/library/enum.html
+        """
+        value = value.lower()
+        for member in cls:
+            if member.value == value:
+                return member
+        return None
+
+
+ObservationIdType = int
+
+
+# This shenanigan makes flake8 recognize AllowedFlexTypeEnum as a type.
+AllowedFlexType = bool | int | float | str
+AllowedFlexTypeEnumBase = StrEnum(
+    "AllowedFlexTypeEnumBase", {t.__name__.upper(): t.__name__ for t in AllowedFlexType.__args__}
+)
+AllowedFlexTypeEnum = AllowedFlexTypeEnumBase
+
+
+def convert_to_flex_type(ty: AllowedFlexTypeEnum, v: str) -> AllowedFlexType:
+    """Converts a string containing a flex database value into the
+    appropriate type.
+
+    Raises
+    ======
+    ValueError if the conversion is invalid
+    """
+    if ty.value == "bool":  # Special case
+        return v.lower() in ("true", "t", "1")
+    m = [t for t in AllowedFlexType.__args__ if t.__name__ == ty.value]
+    assert len(m) == 1
+    return m[0](v)
+
+
+class ObsIdColname(StrEnum):
+    CCD_VISIT_ID = "ccdvisit_id"
+    VISIT_ID = "visit_id"
+    CCDEXPOSURE_ID = "ccdexposure_id"
+    EXPOSURE_ID = "exposure_id"
+    OBS_ID = "obs_id"
+
+    @classmethod
+    def _missing_(cls, value):
+        value = value.lower()
+        for member in cls:
+            if member.value == value:
+                return member
+        return None
+
+
+def validate_instrument_name(
+    instrument: str = Path(description="Must be a valid instrument name (e.g., ``LATISS``)"),
+) -> str:
+    global instrument_tables
+    instrument_lower = instrument.lower()
+    if instrument_lower not in [i.lower() for i in instrument_tables.instrument_list]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid instrument name {instrument}, must be one of "
+            + ",".join(instrument_tables.instrument_list),
+        )
+    return instrument
+
+
+InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]
+
 
 ####################
 # Global app setup #
 ####################
 
-
-app = Flask(__name__)
+path_prefix = "/consdb"
+app = FastAPI(
+    title="consdb-pqserver",
+    description="HTTP API for consdb",
+    openapi_url=f"{path_prefix}/openapi.json",
+    docs_url=f"{path_prefix}/docs",
+    redoc_url=f"{path_prefix}/redoc",
+)
 engine = setup_postgres()
 logger = setup_logging(__name__)
-
 
 ########################
 # Schema preload class #
@@ -65,11 +148,13 @@ class InstrumentTables:
             self.obs_id_column[instrument] = dict()
             self.flexible_metadata_schemas[instrument] = dict()
             for table in md.tables:
-                for col_name in OBS_ID_COLNAME_LIST:
+                for col_name in ObsIdColname:
+                    col_name = col_name.value
                     if col_name in md.tables[table].columns:
                         self.obs_id_column[instrument][table] = col_name
                         break
-            for obs_type in OBS_TYPE_LIST:
+            for obs_type in ObsTypeEnum:
+                obs_type = obs_type.value
                 table_name = f"cdb_{instrument}.{obs_type}_flexdata"
                 schema_table_name = table_name + "_schema"
                 if table_name in md.tables and schema_table_name in md.tables:
@@ -208,8 +293,6 @@ class InstrumentTables:
         """
         instrument = instrument.lower()
         obs_type = obs_type.lower()
-        if instrument not in self.schemas:
-            raise BadValueException("instrument", instrument, list(self.schemas.keys()))
         view_name = f"cdb_{instrument}.{obs_type}_wide_view"
         if view_name not in self.schemas[instrument].tables:
             obs_type_list = [
@@ -227,62 +310,6 @@ instrument_tables = InstrumentTables()
 ##################
 # Error handling #
 ##################
-
-
-class BadJsonException(Exception):
-    """Exception raised for invalid JSON.
-
-    Reports the list of required keys.
-
-    Parameters
-    ----------
-    method: `str`
-        Name of the method being invoked.
-    keys: `Iterable` [ `str` ]
-        List of keys required in the JSON object.
-    """
-
-    status_code = 404
-
-    def __init__(self, method: str, keys: Iterable[str]):
-        self.method = method
-        self.keys = keys
-
-    def to_dict(self) -> dict[str, Any]:
-        """Convert the exception to a dictionary for JSON conversion.
-
-        Returns
-        -------
-        json_dict: `dict` [ `str`, `Any` ]
-            Dictionary with a message and list of required keys.
-        """
-        data = {
-            "message": f"Invalid JSON for {self.method}",
-            "required_keys": self.keys,
-        }
-        return data
-
-
-def _check_json(json: dict | None, method: str, keys: Iterable[str]) -> dict[str, Any]:
-    """Check a JSON object for the presence of required keys.
-
-    Parameters
-    ----------
-    json: `dict`
-        The decoded JSON object.
-    method: `str`
-        The name of the Web service method being invoked.
-    keys: `Iterable` [ `str` ]
-        The keys required to be in the JSON object.
-
-    Raises
-    ------
-    BadJsonException
-         Raised if any key is missing.
-    """
-    if not json or any(x not in json for x in keys):
-        raise BadJsonException(method, keys)
-    return json
 
 
 class BadValueException(Exception):
@@ -325,22 +352,27 @@ class BadValueException(Exception):
         return data
 
 
-@app.errorhandler(BadJsonException)
-def handle_bad_json(e: BadJsonException) -> tuple[dict[str, Any], int]:
-    """Handle a BadJsonException by returning its content as JSON."""
-    return e.to_dict(), e.status_code
+@app.exception_handler(RequestValidationError)
+def validation_exception_handler(request: Request, exc: RequestValidationError):
+    exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
+    logger.error(f"RequestValidationError {request}: {exc_str}")
+    content = {"message": "Validation error", "detail": exc.errors()}
+    return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
-@app.errorhandler(BadValueException)
-def handle_bad_value(e: BadValueException) -> tuple[dict[str, Any], int]:
-    """Handle a BadValueException by returning its content as JSON."""
-    return e.to_dict(), e.status_code
+@app.exception_handler(BadValueException)
+def bad_value_exception_handler(request: Request, exc: BadValueException):
+    exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
+    logger.error(f"BadValueException {request}: {exc_str}")
+    return JSONResponse(content=exc.to_dict(), status_code=status.HTTP_404_NOT_FOUND)
 
 
-@app.errorhandler(sqlalchemy.exc.SQLAlchemyError)
-def handle_sql_error(e: sqlalchemy.exc.SQLAlchemyError) -> tuple[dict[str, str], int]:
-    """Handle a SQLAlchemyError by returning its content as JSON."""
-    return {"message": str(e)}, 500
+@app.exception_handler(sqlalchemy.exc.SQLAlchemyError)
+def sqlalchemy_exception_handler(request: Request, exc: sqlalchemy.exc.SQLAlchemyError):
+    exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
+    logger.error(f"SQLAlchemyError {request}: {exc_str}")
+    content = {"message": str(exc)}
+    return JSONResponse(content=content, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 ###################################
@@ -348,8 +380,21 @@ def handle_sql_error(e: sqlalchemy.exc.SQLAlchemyError) -> tuple[dict[str, str],
 ###################################
 
 
-@app.get("/")
-def root() -> dict[str, list[str]]:
+class IndexResponseModel(BaseModel):
+    """Metadata returned by the external root URL."""
+
+    instruments: list[str] = Field(title="Available instruments")
+    obs_types: list[str] = Field(title="Available observation types")
+    dtypes: list[str] = Field(title="Allowed data types in flexible metadata")
+
+
+@app.get(
+    "/",
+    description="Metadata and health check endpoint.",
+    include_in_schema=False,
+    summary="Application metadata",
+)
+def internal_root() -> IndexResponseModel:
     """Root URL for liveness checks.
 
     Returns
@@ -358,365 +403,306 @@ def root() -> dict[str, list[str]]:
         JSON response with a list of instruments, observation types, and
         data types.
     """
+    return IndexResponseModel(
+        instruments=instrument_tables.instrument_list,
+        obs_types=[o.value for o in ObsTypeEnum],
+        dtypes=[d.value for d in AllowedFlexTypeEnum],
+    )
+
+
+@app.get(
+    "/consdb/",
+    description="Application root",
+    summary="Application root",
+)
+def external_root() -> IndexResponseModel:
+    """Application root URL /consdb/."""
     global instrument_tables
 
-    # Don't log liveness checks.
-    data = {
-        "instruments": instrument_tables.instrument_list,
-        "obs_types": OBS_TYPE_LIST,
-        "dtypes": DTYPE_LIST,
-    }
-    return data
+    return IndexResponseModel(
+        instruments=instrument_tables.instrument_list,
+        obs_types=[o.value for o in ObsTypeEnum],
+        dtypes=[d.value for d in AllowedFlexTypeEnum],
+    )
 
 
-@app.get("/consdb")
-def root2() -> dict[str, list[str]]:
-    """Application root URL.
+class AddKeyRequestModel(BaseModel):
+    key: str = Field(title="The name of the added key")
+    dtype: AllowedFlexTypeEnum = Field(title="Data type for the added key")
+    doc: Optional[str] = Field("", title="Documentation string for the new key")
+    unit: Optional[str] = Field(None, title="Unit for value")
+    ucd: Optional[str] = Field(
+        None, title="IVOA Unified Content Descriptor (https://www.ivoa.net/documents/UCD1+/)"
+    )
 
-    Returns
-    -------
-    json_dict: `dict` [ `str`, `Any` ]
-        JSON response with a list of instruments, observation types, and
-        data types.
-    """
+    @field_validator("unit")
+    def validate_unit(v):
+        try:
+            _ = astropy.units.Unit(v)
+        except ValueError:
+            raise ValueError(f"'{v}' is a not a valid unit.")
+        return v
+
+    @field_validator("ucd")
+    def validate_ucd(v):
+        if not astropy.io.votable.ucd.check_ucd(v):
+            raise ValueError(f"'{v}' is not a valid IVOA UCD.")
+        return v
+
+
+class AddKeyResponseModel(BaseModel):
+    """Response model for the addkey endpoint."""
+
+    message: str = Field(title="Human-readable response message")
+    key: str = Field(title="The name of the added key")
+    instrument: InstrumentName = Field(title="The instrument name")
+    obs_type: ObsTypeEnum = Field(title="The observation type that owns the new key")
+
+
+@app.post(
+    "/consdb/flex/{instrument}/{obs_type}/addkey",
+    summary="Add a flexible metadata key",
+    description="Add a flexible metadata key for the specified instrument and obs_type.",
+)
+def add_flexible_metadata_key(
+    instrument: InstrumentName,
+    obs_type: ObsTypeEnum,
+    data: AddKeyRequestModel,
+) -> AddKeyResponseModel:
+    """Add a key to a flexible metadata table."""
     global instrument_tables
 
-    logger.info(request)
-    data = {
-        "instruments": instrument_tables.instrument_list,
-        "obs_types": OBS_TYPE_LIST,
-        "dtypes": DTYPE_LIST,
-    }
-    return data
-
-
-@app.post("/consdb/flex/<instrument>/<obs_type>/addkey")
-def add_flexible_metadata_key(instrument: str, obs_type: str) -> dict[str, Any] | tuple[dict[str, str], int]:
-    """Add a key to a flexible metadata table.
-
-    Parameters
-    ----------
-    instrument: `str`
-        Name of the instrument (e.g. ``LATISS``).
-    obs_type: `str`
-        Name of the observation type (e.g. ``Exposure``).
-    key: `str`
-        Key to add (POST JSON data).
-    dtype: `str`
-        Data type of key's value from ``DTYPE_LIST`` (POST JSON data).
-    doc: `str`
-        Documentation string (POST JSON data).
-    unit: `str`, optional
-        Unit for value (POST JSON data).
-    ucd: `str`, optional
-        IVOA Unified Content Descriptor (https://www.ivoa.net/documents/UCD1+/)
-        for value (POST JSON data).
-
-    Returns
-    -------
-    json_dict: `dict` [ `str`, `Any` ]
-        JSON response with 200 HTTP status on success.
-
-    Raises
-    ------
-    BadJsonException
-        Raised if JSON is absent or missing a required key.
-
-    BadValueException
-        Raised if instrument or observation type is invalid.
-    """
-    global instrument_tables
-
-    logger.info(f"{request} {request.json}")
-    info = _check_json(request.json, "flex addkey", ("key", "dtype", "doc"))
-    schema_table = instrument_tables.get_flexible_metadata_schema(instrument, obs_type)
-    key = info["key"]
-    dtype = info["dtype"]
-    if dtype not in DTYPE_LIST:
-        raise BadValueException("dtype", dtype, DTYPE_LIST)
-    doc = info["doc"]
-    unit = info.get("unit")
-    ucd = info.get("ucd")
-    stmt = sqlalchemy.insert(schema_table).values(key=key, dtype=dtype, doc=doc, unit=unit, ucd=ucd)
+    instrument_l = instrument.lower()
+    schema_table = instrument_tables.get_flexible_metadata_schema(instrument_l, obs_type)
+    stmt = sqlalchemy.insert(schema_table).values(
+        key=data.key,
+        dtype=data.dtype.value,
+        doc=data.doc,
+        unit=data.unit,
+        ucd=data.ucd,
+    )
     logger.debug(str(stmt))
     with engine.connect() as conn:
         _ = conn.execute(stmt)
         conn.commit()
     # Update cached copy without re-querying database.
-    instrument_tables.flexible_metadata_schemas[instrument.lower()][obs_type.lower()][key] = [
-        dtype,
-        doc,
-        unit,
-        ucd,
+    instrument_tables.flexible_metadata_schemas[instrument_l][obs_type.lower()][data.key] = [
+        data.dtype.value,
+        data.doc,
+        data.unit,
+        data.ucd,
     ]
-    return {
-        "message": "Key added to flexible metadata",
-        "key": key,
-        "instrument": instrument,
-        "obs_type": obs_type,
-    }
+    return AddKeyResponseModel(
+        message="Key added to flexible metadata",
+        key=data.key,
+        instrument=instrument,
+        obs_type=obs_type,
+    )
 
 
-@app.get("/consdb/flex/<instrument>/<obs_type>/schema")
-def get_flexible_metadata_keys(instrument: str, obs_type: str) -> dict[str, list[str | None]]:
-    """Retrieve descriptions of keys for a flexible metadata table.
+class FlexMetadataSchemaResponseModel(BaseModel):
+    schema_: dict[str, tuple[AllowedFlexTypeEnum, str, str | None, str | None]] = Field(
+        title="""
+            Dictionary containing each flex key name
+            and its associated data type, documentation, unit, and UCD
+        """,
+        alias="schema",
+    )
 
-    Parameters
-    ----------
-    instrument: `str`
-        Name of the instrument (e.g. ``LATISS``).
-    obs_type: `str`
-        Name of the observation type (e.g. ``Exposure``).
 
-    Returns
-    -------
-    json_dict: `dict` [ `str`, `list` [ `str` | `None` ] ]
-        JSON response with 200 HTTP status on success.
-        Response is a dictionary of ``dtype``, ``doc``, ``unit``, and ``ucd``
-        strings for each key in the table.
-
-    Raises
-    ------
-    BadValueException
-        Raised if instrument or observation type is invalid.
+@app.get(
+    "/consdb/flex/{instrument}/{obs_type}/schema",
+    summary="Get all flexible metadata keys",
+    description="Flex schema for the given instrument and observation type.",
+)
+def get_flexible_metadata_keys(
+    instrument: InstrumentName = Path(title="Instrument name"),
+    obs_type: ObsTypeEnum = Path(title="Observation type"),
+) -> FlexMetadataSchemaResponseModel:
+    """Returns the flex schema for the given instrument and
+    observation type.
     """
     global instrument_tables
 
-    logger.info(request)
     instrument = instrument.lower()
     obs_type = obs_type.lower()
     _ = instrument_tables.compute_flexible_metadata_table_name(instrument, obs_type)
     instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
-    return instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+
+    return FlexMetadataSchemaResponseModel(
+        schema=instrument_tables.flexible_metadata_schemas[instrument.lower()][obs_type]
+    )
 
 
-@app.get("/consdb/flex/<instrument>/<obs_type>/obs/<int:obs_id>")
-def get_flexible_metadata(instrument: str, obs_type: str, obs_id: int) -> dict[str, Any]:
-    """Retrieve values for an observation from a flexible metadata table.
-
-    Parameters
-    ----------
-    instrument: `str`
-        Name of the instrument (e.g. ``LATISS``).
-    obs_type: `str`
-        Name of the observation type (e.g. ``Exposure``).
-    obs_id: `int`
-        Unique observation identifier.
-
-    Returns
-    -------
-    json_dict: `dict` [ `str`, `Any` ]
-        JSON response with 200 HTTP status on success.
-        Response is a dictionary of ``key``, ``value`` pairs with values
-        converted from strings.
-
-    Raises
-    ------
-    BadValueException
-        Raised if instrument or observation type is invalid.
-    """
+@app.get(
+    "/consdb/flex/{instrument}/{obs_type}/obs/{obs_id}",
+    description="Flex schema for the given instrument and observation type.",
+)
+def get_flexible_metadata(
+    instrument: InstrumentName,
+    obs_type: ObsTypeEnum = Path(title="Observation type"),
+    obs_id: ObservationIdType = Path(title="Observation ID"),
+    k: list[str] = Query([], title="Columns to retrieve"),
+) -> dict[str, AllowedFlexType]:
+    """Retrieve values for an observation from a flexible metadata table."""
     global instrument_tables
 
-    logger.info(request)
-    instrument = instrument.lower()
-    obs_type = obs_type.lower()
-    table = instrument_tables.get_flexible_metadata_table(instrument, obs_type)
-    schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+    instrument_l = instrument.lower()
+    table = instrument_tables.get_flexible_metadata_table(instrument_l, obs_type)
+    schema = instrument_tables.flexible_metadata_schemas[instrument_l][obs_type]
     result = dict()
     stmt = sqlalchemy.select(table.c["key", "value"]).where(table.c.obs_id == obs_id)
-    if request.args and "k" in request.args:
-        cols = request.args.getlist("k")
-        stmt = stmt.where(table.c.key.in_(cols))
+    if len(k) > 0:
+        stmt = stmt.where(table.c.key.in_(k))
     logger.debug(str(stmt))
     with engine.connect() as conn:
         for row in conn.execute(stmt):
             key, value = row
             if key not in schema:
-                instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
-            schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+                instrument_tables.refresh_flexible_metadata_schema(instrument_l, obs_type)
+            schema = instrument_tables.flexible_metadata_schemas[instrument_l][obs_type]
             dtype = schema[key][0]
-            if dtype == "bool":
-                result[key] = value == "True"
-            elif dtype == "int":
-                result[key] = int(value)
-            elif dtype == "float":
-                result[key] = float(value)
-            else:
-                result[key] = str(value)
+            result[key] = convert_to_flex_type(AllowedFlexTypeEnum(dtype), value)
     return result
 
 
-@app.post("/consdb/flex/<instrument>/<obs_type>/obs/<int:obs_id>")
+class InsertDataModel(BaseModel):
+    """This model can be used for either flex or regular data."""
+
+    values: dict[str, AllowedFlexType] = Field(title="Data to insert or update")
+
+
+class InsertFlexDataResponse(BaseModel):
+    message: str = Field(title="Human-readable response message")
+    instrument: str = Field(title="Instrument name (e.g., ``LATISS``)")
+    obs_type: ObsTypeEnum = Field(title="The observation type (e.g., ``exposure``)")
+    obs_id: ObservationIdType | list[ObservationIdType] = Field(title="Observation ID")
+
+
+@app.post("/consdb/flex/{instrument}/{obs_type}/obs/{obs_id}")
 def insert_flexible_metadata(
-    instrument: str, obs_type: str, obs_id: int
-) -> dict[str, Any] | tuple[dict[str, str], int]:
-    """Insert or update key/value pairs in a flexible metadata table.
-
-    Parameters
-    ----------
-    instrument: `str`
-        Name of the instrument (e.g. ``LATISS``).
-    obs_type: `str`
-        Name of the observation type (e.g. ``Exposure``).
-    obs_id: `int`
-        Unique observation identifier.
-    u: `str`
-        Allow update if set to "1" (URL query parameter).
-    values: `dict` [ `str`, `Any` ]
-        Dictionary of key/value pairs to insert or update (JSON POST data).
-
-    Returns
-    -------
-    json_dict: `dict` [ `str`, `Any` ]
-        JSON response with 200 HTTP status on success.
-
-    Raises
-    ------
-    BadJsonException
-        Raised if JSON is absent or missing a required key.
-
-    BadValueException
-        Raised if instrument or observation type is invalid.
-    """
+    instrument: InstrumentName,
+    obs_type: ObsTypeEnum,
+    obs_id: ObservationIdType,
+    data: InsertDataModel = Body(title="Data to insert or update"),
+    u: Optional[int] = Query(0, title="Update if exists"),
+) -> InsertFlexDataResponse:
+    """Insert or update key/value pairs in a flexible metadata table."""
     global instrument_tables
 
-    logger.info(f"{request} {request.json}")
-    info = _check_json(request.json, "flex obs", ("values",))
-    instrument = instrument.lower()
-    obs_type = obs_type.lower()
-    table = instrument_tables.get_flexible_metadata_table(instrument, obs_type)
-    schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+    instrument_l = instrument.lower()
+    table = instrument_tables.get_flexible_metadata_table(instrument_l, obs_type)
+    schema = instrument_tables.flexible_metadata_schemas[instrument_l][obs_type]
 
-    value_dict = info["values"]
+    value_dict = data.values
     if any(key not in schema for key in value_dict):
-        instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
-        schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+        instrument_tables.refresh_flexible_metadata_schema(instrument_l, obs_type)
+        schema = instrument_tables.flexible_metadata_schemas[instrument_l][obs_type]
     for key, value in value_dict.items():
         if key not in schema:
             raise BadValueException("key", key, list(schema.keys()))
 
         # check value against dtype
         dtype = schema[key][0]
-        if dtype == "bool" and not isinstance(value, bool):
-            raise BadValueException("bool value", value)
-        elif dtype == "int" and not isinstance(value, int):
-            raise BadValueException("int value", value)
-        elif dtype == "float" and not isinstance(value, float):
-            raise BadValueException("float value", value)
-        elif dtype == "str" and not isinstance(value, str):
-            raise BadValueException("str value", value)
+        if dtype != type(value).__name__:
+            raise BadValueException(f"{dtype} value", value)
 
     with engine.connect() as conn:
         for key, value in value_dict.items():
             value_str = str(value)
+
             stmt: sqlalchemy.sql.dml.Insert
-            if request.args and request.args.get("u") == "1":
-                stmt = (
-                    sqlalchemy.dialects.postgresql.insert(table)
-                    .values(obs_id=obs_id, key=key, value=value_str)
-                    .on_conflict_do_update(index_elements=["obs_id", "key"], set_={"value": value_str})
-                )
-            else:
-                stmt = sqlalchemy.insert(table).values(obs_id=obs_id, key=key, value=value_str)
+            stmt = sqlalchemy.dialects.postgresql.insert(table).values(
+                obs_id=obs_id, key=key, value=value_str
+            )
+            logger.error(f"{u=}")
+            if u != 0:
+                stmt = stmt.on_conflict_do_update(index_elements=["obs_id", "key"], set_={"value": value_str})
+
             logger.debug(str(stmt))
             _ = conn.execute(stmt)
 
         conn.commit()
-    return {
-        "message": "Flexible metadata inserted",
-        "obs_id": obs_id,
-        "instrument": instrument,
-        "obs_type": obs_type,
-    }
+    return InsertFlexDataResponse(
+        message="Flexible metadata inserted",
+        instrument=instrument,
+        obs_type=obs_type,
+        obs_id=obs_id,
+    )
 
 
-@app.post("/consdb/insert/<instrument>/<table>/obs/<int:obs_id>")
-def insert(instrument: str, table: str, obs_id: int) -> dict[str, Any] | tuple[dict[str, str], int]:
-    """Insert or update column/value pairs in a ConsDB table.
+class InsertDataResponse(BaseModel):
+    message: str = Field(title="Human-readable response message")
+    instrument: str = Field(title="Instrument name (e.g., ``LATISS``)")
+    obs_id: ObservationIdType | list[ObservationIdType] = Field(title="Observation ID")
+    table: str = Field(title="Table name")
 
-    Parameters
-    ----------
-    instrument: `str`
-        Name of the instrument (e.g. ``LATISS``).
-    table: `str`
-        Name of table to insert into.
-    obs_id: `int`
-        Unique observation identifier.
-    u: `str`
-        Allow update if set to "1" (URL query parameter).
-    values: `dict` [ `str`, `Any` ]
-        Dictionary of key/value pairs to insert or update (JSON POST data).
 
-    Returns
-    -------
-    json_dict: `dict` [ `str`, `Any` ]
-        JSON response with 200 HTTP status on success.
-
-    Raises
-    ------
-    BadJsonException
-        Raised if JSON is absent or missing a required key.
-
-    BadValueException
-        Raised if instrument or observation type is invalid.
-    """
+@app.post(
+    "/consdb/insert/{instrument}/{table}/obs/{obs_id}",
+    summary="Insert data row",
+)
+def insert(
+    instrument: InstrumentName,
+    table: str,
+    obs_id: ObservationIdType,
+    data: InsertDataModel = Body(title="Data to insert or update"),
+    u: Optional[int] = Query(0, title="Update if data already exist"),
+) -> InsertDataResponse:
+    """Insert or update column/value pairs in a ConsDB table."""
     global instrument_tables
 
-    logger.info(f"{request} {request.json}")
-    instrument = instrument.lower()
-    if instrument not in instrument_tables.schemas:
-        raise BadValueException("instrument", instrument, list(instrument_tables.schemas.keys()))
-    info = _check_json(request.json, "insert", ("values",))
-    schema = f"cdb_{instrument}."
+    instrument_l = instrument.lower()
+    schema = f"cdb_{instrument_l}."
     table_name = table.lower()
     if not table.lower().startswith(schema):
         table_name = schema + table_name
-    table_obj = instrument_tables.schemas[instrument].tables[table_name]
-    valdict = info["values"]
-    obs_id_colname = instrument_tables.obs_id_column[instrument][table_name]
+    table_obj = instrument_tables.schemas[instrument_l].tables[table_name]
+    valdict = data.values
+    obs_id_colname = instrument_tables.obs_id_column[instrument_l][table_name]
     valdict[obs_id_colname] = obs_id
 
     stmt: sqlalchemy.sql.dml.Insert
-    if request.args and request.args.get("u") == "1":
-        stmt = (
-            sqlalchemy.dialects.postgresql.insert(table_obj)
-            .values(valdict)
-            .on_conflict_do_update(index_elements=[obs_id_colname], set_=valdict)
-        )
-    else:
-        stmt = sqlalchemy.insert(table_obj).values(valdict)
+    stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict)
+    if u != 0:
+        stmt = stmt.on_conflict_do_update(index_elements=[obs_id_colname], set_=valdict)
     logger.debug(str(stmt))
     with engine.connect() as conn:
         _ = conn.execute(stmt)
         conn.commit()
-    return {
-        "message": "Data inserted",
-        "instrument": instrument,
-        "table": table_name,
-        "obs_id": obs_id,
-    }
+    return InsertDataResponse(
+        message="Data inserted",
+        instrument=instrument,
+        obs_id=obs_id,
+        table=table_name,
+    )
 
 
-@app.post("/consdb/insert/<instrument>/<table>")
-def insert_multiple(instrument: str, table: str) -> dict[str, Any] | tuple[dict[str, str], int]:
+class InsertMultipleRequestModel(BaseModel):
+    obs_dict: dict[ObservationIdType, dict[str, AllowedFlexType]] = Field(
+        title="Observation ID and key/value pairs to insert or update"
+    )
+
+
+class InsertMultipleResponseModel(BaseModel):
+    message: str = Field(title="Human-readable response message")
+    instrument: str = Field(title="Instrument name (e.g., ``LATISS``)")
+    obs_type: ObsTypeEnum = Field(title="The observation type (e.g., ``exposure``)")
+    obs_id: ObservationIdType | list[ObservationIdType] = Field(title="Observation ID")
+    table: str = Field(title="Table name")
+
+
+@app.post(
+    "/consdb/insert/{instrument}/{table}",
+    summary="Insert multiple data rows",
+)
+def insert_multiple(
+    instrument: InstrumentName,
+    table: str,
+    data: InsertMultipleRequestModel = Body(title="Data to insert or update"),
+    u: Optional[int] = Query(0, title="Update if data already exist"),
+) -> InsertMultipleResponseModel:
     """Insert or update multiple observations in a ConsDB table.
-
-    Parameters
-    ----------
-    instrument: `str`
-        Name of the instrument (e.g. ``LATISS``).
-    table: `str`
-        Name of table to insert into.
-    u: `str`
-        Allow update if set to "1" (URL query parameter).
-    obs_dict: `dict` [ `int`, `dict` [ `str`, `Any` ] ]
-        Dictionary of unique observation ids and key/value pairs to insert or
-        update (JSON POST data).
-
-    Returns
-    -------
-    json_dict: `dict` [ `str`, `Any` ]
-        JSON response with 200 HTTP status on success.
 
     Raises
     ------
@@ -728,52 +714,48 @@ def insert_multiple(instrument: str, table: str) -> dict[str, Any] | tuple[dict[
     """
     global instrument_tables
 
-    logger.info(f"{request} {request.json}")
-    instrument = instrument.lower()
-    if instrument not in instrument_tables.schemas:
-        raise BadValueException("instrument", instrument, list(instrument_tables.schemas.keys()))
-    info = _check_json(request.json, "insert", ("obs_dict"))
-    schema = f"cdb_{instrument}."
+    instrument_l = instrument.lower()
+    schema = f"cdb_{instrument_l}."
     table_name = table.lower()
     if not table.lower().startswith(schema):
         table_name = schema + table_name
-    table_obj = instrument_tables.schemas[instrument].tables[table_name]
-    table_name = f"cdb_{instrument}." + info["table"].lower()
-    table = instrument_tables.schemas[instrument].tables[table_name]
-    obs_id_colname = instrument_tables.obs_id_column[instrument][table_name]
+    table_obj = instrument_tables.schemas[instrument_l].tables[table_name]
+    table_name = f"cdb_{instrument_l}." + table.lower()
+    table = instrument_tables.schemas[instrument_l].tables[table_name]
+    obs_id_colname = instrument_tables.obs_id_column[instrument_l][table_name]
 
     with engine.connect() as conn:
-        for obs_id, valdict in info["obs_dict"]:
-            if not isinstance(obs_id, int):
-                raise BadValueException("obs_id value", obs_id)
+        for obs_id, valdict in data.obs_dict.items():
             valdict[obs_id_colname] = obs_id
 
             stmt: sqlalchemy.sql.dml.Insert
-            if request.args and request.args.get("u") == "1":
-                stmt = (
-                    sqlalchemy.dialects.postgresql.insert(table_obj)
-                    .values(valdict)
-                    .on_conflict_do_update(index_elements=[obs_id_colname], set_=valdict)
-                )
-            else:
-                stmt = sqlalchemy.insert(table_obj).values(valdict)
+            stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict)
+            if u != 0:
+                stmt = stmt.on_conflict_do_update(index_elements=[obs_id_colname], set_=valdict)
             logger.debug(str(stmt))
             # TODO: optimize as executemany
             _ = conn.execute(stmt)
         conn.commit()
 
-    return {
-        "message": "Data inserted",
-        "table": table_name,
-        "instrument": instrument,
-        "obs_ids": info["obs_dict"].keys(),
-    }
+    return InsertMultipleResponseModel(
+        message="Data inserted",
+        table=table_name,
+        instrument=instrument,
+        obs_id=data.obs_dict.keys(),
+    )
 
 
-@app.get("/consdb/query/<instrument>/<obs_type>/obs/<int:obs_id>")
+@app.get(
+    "/consdb/query/{instrument}/{obs_type}/obs/{obs_id}",
+    summary="Get all metadata",
+    description="Get all metadata for a given observation.",
+)
 def get_all_metadata(
-    instrument: str, obs_type: str, obs_id: int
-) -> dict[str, Any] | tuple[dict[str, str], int]:
+    instrument: InstrumentName,
+    obs_type: ObsTypeEnum,
+    obs_id: ObservationIdType,
+    flex: Optional[int] = Query(0, title="Include flexible metadata"),
+) -> dict[str, Any]:
     """Get all information about an observation.
 
     Parameters
@@ -798,7 +780,6 @@ def get_all_metadata(
     """
     global instrument_tables
 
-    logger.info(request)
     instrument = instrument.lower()
     obs_type = obs_type.lower()
     view_name = instrument_tables.compute_wide_view_name(instrument, obs_type)
@@ -811,14 +792,25 @@ def get_all_metadata(
         rows = conn.execute(stmt).all()
         assert len(rows) == 1
         result = dict(rows[0]._mapping)
-    if request.args and "flex" in request.args and request.args["flex"] == "1":
+    if flex != 0:
         flex_result = get_flexible_metadata(instrument, obs_type, obs_id)
         result.update(flex_result)
     return result
 
 
+class QueryRequestModel(BaseModel):
+    query: str = Field(title="SQL query string")
+
+
+class QueryResponseModel(BaseModel):
+    columns: list[str] = Field(title="Column names")
+    data: list[Any] = Field(title="Data rows")
+
+
 @app.post("/consdb/query")
-def query() -> dict[str, Any] | tuple[dict[str, str], int]:
+def query(
+    data: QueryRequestModel = Body(title="SQL query string"),
+) -> QueryResponseModel:
     """Query the ConsDB database.
 
     Parameters
@@ -833,81 +825,50 @@ def query() -> dict[str, Any] | tuple[dict[str, str], int]:
         Response is a dict with a ``columns`` key with value being a list
         of string column names and a ``data`` key with value being a list
         of rows.
-
-    Raises
-    ------
-    BadJsonException
-        Raised if JSON is absent or missing a required key.
     """
-    logger.info(f"{request} {request.json}")
-    info = _check_json(request.json, "query", ("query",))
+
+    columns = []
+    rows = []
     with engine.connect() as conn:
-        cursor = conn.exec_driver_sql(info["query"])
+        cursor = conn.exec_driver_sql(data.query)
         first = True
-        result: dict[str, Any] = {}
-        rows = []
         for row in cursor:
+            logger.debug(row)
             if first:
-                result["columns"] = list(row._fields)
+                columns.extend(row._fields)
                 first = False
             rows.append(list(row))
-        result["data"] = rows
-    return result
+
+    return QueryResponseModel(
+        columns=columns,
+        data=rows,
+    )
 
 
 @app.get("/consdb/schema")
 def list_instruments() -> list[str]:
-    """Retrieve the list of instruments available in ConsDB."
-
-    Returns
-    -------
-    json_list: `list` [ `str` ]
-        JSON response with 200 HTTP status on success.
-        Response is a list of instrument names.
-
-    Raises
-    ------
-    BadValueException
-        Raised if instrument is invalid.
-    """
+    """Retrieve the list of instruments available in ConsDB."""
     global instrument_tables
 
-    logger.info(request)
     return instrument_tables.instrument_list
 
 
-@app.get("/consdb/schema/<instrument>")
-def list_table(instrument: str) -> list[str]:
-    """Retrieve the list of tables for an instrument.
-
-    Parameters
-    ----------
-    instrument: `str`
-        Name of the instrument (e.g. ``LATISS``).
-
-    Returns
-    -------
-    json_list: `list` [ `str` ]
-        JSON response with 200 HTTP status on success.
-        Response is a list of table names.
-
-    Raises
-    ------
-    BadValueException
-        Raised if instrument is invalid.
-    """
+@app.get("/consdb/schema/{instrument}")
+def list_table(
+    instrument: InstrumentName,
+) -> list[str]:
+    """Retrieve the list of tables for an instrument."""
     global instrument_tables
 
-    logger.info(request)
-    instrument = instrument.lower()
-    if instrument not in instrument_tables.schemas:
-        raise BadValueException("instrument", instrument, list(instrument_tables.schemas.keys()))
-    schema = instrument_tables.schemas[instrument]
+    schema = instrument_tables.schemas[instrument.lower()]
     return list(schema.tables.keys())
 
 
-@app.get("/consdb/schema/<instrument>/<table>")
-def schema(instrument: str, table: str) -> dict[str, list[str]]:
+@app.get("/consdb/schema/{instrument}/{table}")
+def schema(
+    instrument: InstrumentName = Path(description="Instrument name"),
+    table: str = Path(description="Table name to retrieve schema"),
+) -> dict[str, list[str]]:
     """Retrieve the descriptions of columns in a ConsDB table.
 
     Parameters
@@ -931,13 +892,10 @@ def schema(instrument: str, table: str) -> dict[str, list[str]]:
     """
     global instrument_tables
 
-    logger.info(request)
-    instrument = instrument.lower()
-    if instrument not in instrument_tables.schemas:
-        raise BadValueException("instrument", instrument, list(instrument_tables.schemas.keys()))
-    schema = instrument_tables.schemas[instrument]
-    if not table.startswith(f"cdb_{instrument}"):
-        table = f"cdb_{instrument}.{table}"
+    instrument_l = instrument.lower()
+    schema = instrument_tables.schemas[instrument_l]
+    if not table.startswith(f"cdb_{instrument_l}."):
+        table = f"cdb_{instrument_l}.{table}"
     table = table.lower()
     if table not in schema.tables:
         raise BadValueException("table", table, list(schema.tables.keys()))
