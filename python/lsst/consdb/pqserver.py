@@ -866,8 +866,8 @@ def list_table(
 
 @app.get("/consdb/schema/{instrument}/{table}")
 def schema(
-    instrument: InstrumentName,
-    table: str = Field(title="Table name to retrieve schema"),
+    instrument: InstrumentName = Path(description="Instrument name"),
+    table: str = Path(description="Table name to retrieve schema"),
 ) -> dict[str, list[str]]:
     """Retrieve the descriptions of columns in a ConsDB table.
 
