@@ -106,6 +106,7 @@ def validate_instrument_name(
         )
     return instrument
 
+
 InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]
 
 
@@ -863,9 +864,10 @@ def list_table(
     return list(schema.tables.keys())
 
 
-@app.get("/consdb/schema/{instrument}/<table>")
+@app.get("/consdb/schema/{instrument}/{table}")
 def schema(
     instrument: InstrumentName,
+    table: str = Field(title="Table name to retrieve schema"),
 ) -> dict[str, list[str]]:
     """Retrieve the descriptions of columns in a ConsDB table.
 
