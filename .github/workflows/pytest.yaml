@@ -25,7 +25,7 @@ jobs:
     - name: Editable mode install
       run: |
         python -m pip install uv
-        uv pip install --system pytest pytest-cov pytest-html pytest-asyncio
+        uv pip install --system pytest pytest-cov pytest-html pytest-asyncio httpx
         uv pip install --system -e .
     - name: Test with pytest
       run: |
