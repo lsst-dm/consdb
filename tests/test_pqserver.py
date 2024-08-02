@@ -106,7 +106,7 @@ def test_flexible_metadata(client):
     assert result == {
         "message": "Key added to flexible metadata",
         "key": "bar",
-        "instrument": "latiss",
+        "instrument": "LATISS",
         "obs_type": "exposure",
     }
 

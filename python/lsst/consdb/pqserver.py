@@ -19,21 +19,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from enum import Enum
+from enum import StrEnum
 from typing import Annotated, Any, Optional
 
 import astropy
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
-from fastapi import Body, Depends, FastAPI, HTTPException, Path, Query, Request, status
+from fastapi import Body, FastAPI, HTTPException, Path, Query, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, field_validator
+from pydantic import AfterValidator, BaseModel, Field, field_validator
 
 from .utils import setup_logging, setup_postgres
 
 
-class ObsTypeEnum(str, Enum):
+class ObsTypeEnum(StrEnum):
     EXPOSURE = "exposure"
     VISIT1 = "visit1"
     CCD_EXPOSURE = "ccdexposure"
@@ -56,7 +56,7 @@ ObservationIdType = int
 
 # This shenanigan makes flake8 recognize AllowedFlexTypeEnum as a type.
 AllowedFlexType = bool | int | float | str
-AllowedFlexTypeEnumBase = Enum(
+AllowedFlexTypeEnumBase = StrEnum(
     "AllowedFlexTypeEnumBase", {t.__name__.upper(): t.__name__ for t in AllowedFlexType.__args__}
 )
 AllowedFlexTypeEnum = AllowedFlexTypeEnumBase
@@ -77,7 +77,7 @@ def convert_to_flex_type(ty: AllowedFlexTypeEnum, v: str) -> AllowedFlexType:
     return m[0](v)
 
 
-class ObsIdColname(str, Enum):
+class ObsIdColname(StrEnum):
     CCD_VISIT_ID = "ccdvisit_id"
     VISIT_ID = "visit_id"
     CCDEXPOSURE_ID = "ccdexposure_id"
@@ -94,7 +94,7 @@ class ObsIdColname(str, Enum):
 
 
 def validate_instrument_name(
-    instrument: str = Path(..., description="Must be a valid instrument name (e.g., ``LATISS``)"),
+    instrument: str = Path(description="Must be a valid instrument name (e.g., ``LATISS``)"),
 ) -> str:
     global instrument_tables
     instrument_lower = instrument.lower()
@@ -104,7 +104,9 @@ def validate_instrument_name(
             detail=f"Invalid instrument name {instrument}, must be one of "
             + ",".join(instrument_tables.instrument_list),
         )
-    return instrument_lower
+    return instrument
+
+InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]
 
 
 ####################
@@ -288,6 +290,8 @@ class InstrumentTables:
         view_nae: `str`
             Name of the appropriate wide view.
         """
+        instrument = instrument.lower()
+        obs_type = obs_type.lower()
         view_name = f"cdb_{instrument}.{obs_type}_wide_view"
         if view_name not in self.schemas[instrument].tables:
             obs_type_list = [
@@ -348,7 +352,7 @@ class BadValueException(Exception):
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+def validation_exception_handler(request: Request, exc: RequestValidationError):
     exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
     logger.error(f"RequestValidationError {request}: {exc_str}")
     content = {"message": "Validation error", "detail": exc.errors()}
@@ -356,14 +360,14 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 @app.exception_handler(BadValueException)
-async def bad_value_exception_handler(request: Request, exc: BadValueException):
+def bad_value_exception_handler(request: Request, exc: BadValueException):
     exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
     logger.error(f"BadValueException {request}: {exc_str}")
     return JSONResponse(content=exc.to_dict(), status_code=status.HTTP_404_NOT_FOUND)
 
 
 @app.exception_handler(sqlalchemy.exc.SQLAlchemyError)
-async def sqlalchemy_exception_handler(request: Request, exc: sqlalchemy.exc.SQLAlchemyError):
+def sqlalchemy_exception_handler(request: Request, exc: sqlalchemy.exc.SQLAlchemyError):
     exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
     logger.error(f"SQLAlchemyError {request}: {exc_str}")
     content = {"message": str(exc)}
@@ -378,20 +382,18 @@ async def sqlalchemy_exception_handler(request: Request, exc: sqlalchemy.exc.SQL
 class IndexResponseModel(BaseModel):
     """Metadata returned by the external root URL."""
 
-    instruments: list[str] = Field(..., title="Available instruments")
-    obs_types: list[str] = Field(..., title="Available observation types")
-    dtypes: list[str] = Field(..., title="Allowed data types in flexible metadata")
+    instruments: list[str] = Field(title="Available instruments")
+    obs_types: list[str] = Field(title="Available observation types")
+    dtypes: list[str] = Field(title="Allowed data types in flexible metadata")
 
 
 @app.get(
     "/",
     description="Metadata and health check endpoint.",
     include_in_schema=False,
-    response_model=IndexResponseModel,
-    response_model_exclude_none=True,
     summary="Application metadata",
 )
-async def internal_root() -> IndexResponseModel:
+def internal_root() -> IndexResponseModel:
     """Root URL for liveness checks.
 
     Returns
@@ -400,7 +402,6 @@ async def internal_root() -> IndexResponseModel:
         JSON response with a list of instruments, observation types, and
         data types.
     """
-    logger.info("GET /")
     return IndexResponseModel(
         instruments=instrument_tables.instrument_list,
         obs_types=[o.value for o in ObsTypeEnum],
@@ -411,15 +412,12 @@ async def internal_root() -> IndexResponseModel:
 @app.get(
     "/consdb/",
     description="Application root",
-    response_model=IndexResponseModel,
-    response_model_exclude_none=True,
     summary="Application root",
 )
-async def external_root() -> IndexResponseModel:
+def external_root() -> IndexResponseModel:
     """Application root URL /consdb/."""
     global instrument_tables
 
-    logger.info("GET /consdb")
     return IndexResponseModel(
         instruments=instrument_tables.instrument_list,
         obs_types=[o.value for o in ObsTypeEnum],
@@ -428,11 +426,11 @@ async def external_root() -> IndexResponseModel:
 
 
 class AddKeyRequestModel(BaseModel):
-    key: str = Field(..., title="The name of the added key")
-    dtype: AllowedFlexTypeEnum = Field(..., title="Data type for the added key")
+    key: str = Field(title="The name of the added key")
+    dtype: AllowedFlexTypeEnum = Field(title="Data type for the added key")
     doc: Optional[str] = Field("", title="Documentation string for the new key")
-    unit: Optional[str | None] = Field(None, title="Unit for value")
-    ucd: Optional[str | None] = Field(
+    unit: Optional[str] = Field(None, title="Unit for value")
+    ucd: Optional[str] = Field(
         None, title="IVOA Unified Content Descriptor (https://www.ivoa.net/documents/UCD1+/)"
     )
 
@@ -454,28 +452,27 @@ class AddKeyRequestModel(BaseModel):
 class AddKeyResponseModel(BaseModel):
     """Response model for the addkey endpoint."""
 
-    message: str = Field(..., title="Human-readable response message")
-    key: str = Field(..., title="The name of the added key")
-    instrument: str = (Depends(validate_instrument_name),)
-    obs_type: ObsTypeEnum = Field(..., title="The observation type that owns the new key")
+    message: str = Field(title="Human-readable response message")
+    key: str = Field(title="The name of the added key")
+    instrument: InstrumentName = Field(title="The instrument name")
+    obs_type: ObsTypeEnum = Field(title="The observation type that owns the new key")
 
 
 @app.post(
     "/consdb/flex/{instrument}/{obs_type}/addkey",
     summary="Add a flexible metadata key",
-    response_model=AddKeyResponseModel,
     description="Add a flexible metadata key for the specified instrument and obs_type.",
 )
-async def add_flexible_metadata_key(
-    instrument: Annotated[str, Depends(validate_instrument_name)],
+def add_flexible_metadata_key(
+    instrument: InstrumentName,
     obs_type: ObsTypeEnum,
     data: AddKeyRequestModel,
 ) -> AddKeyResponseModel:
     """Add a key to a flexible metadata table."""
     global instrument_tables
 
-    logger.info(f"{data.key} {data.dtype}")
-    schema_table = instrument_tables.get_flexible_metadata_schema(instrument, obs_type)
+    instrument_l = instrument.lower()
+    schema_table = instrument_tables.get_flexible_metadata_schema(instrument_l, obs_type)
     stmt = sqlalchemy.insert(schema_table).values(
         key=data.key,
         dtype=data.dtype.value,
@@ -488,7 +485,7 @@ async def add_flexible_metadata_key(
         _ = conn.execute(stmt)
         conn.commit()
     # Update cached copy without re-querying database.
-    instrument_tables.flexible_metadata_schemas[instrument.lower()][obs_type.lower()][data.key] = [
+    instrument_tables.flexible_metadata_schemas[instrument_l][obs_type.lower()][data.key] = [
         data.dtype.value,
         data.doc,
         data.unit,
@@ -503,12 +500,12 @@ async def add_flexible_metadata_key(
 
 
 class FlexMetadataSchemaResponseModel(BaseModel):
-    schema: dict[str, tuple[AllowedFlexTypeEnum, str, str | None, str | None]] = Field(
-        ...,
+    schema_: dict[str, tuple[AllowedFlexTypeEnum, str, str | None, str | None]] = Field(
         title="""
             Dictionary containing each flex key name
             and its associated data type, documentation, unit, and UCD
         """,
+        alias="schema",
     )
 
 
@@ -517,23 +514,22 @@ class FlexMetadataSchemaResponseModel(BaseModel):
     summary="Get all flexible metadata keys",
     description="Flex schema for the given instrument and observation type.",
 )
-async def get_flexible_metadata_keys(
-    instrument: Annotated[str, Depends(validate_instrument_name)] = Path(..., title="Instrument name"),
-    obs_type: ObsTypeEnum = Path(..., title="Observation type"),
+def get_flexible_metadata_keys(
+    instrument: InstrumentName = Path(title="Instrument name"),
+    obs_type: ObsTypeEnum = Path(title="Observation type"),
 ) -> FlexMetadataSchemaResponseModel:
     """Returns the flex schema for the given instrument and
     observation type.
     """
     global instrument_tables
 
-    logger.info(f"GET /consdb/flex/{instrument}/{obs_type}/schema")
     instrument = instrument.lower()
     obs_type = obs_type.lower()
     _ = instrument_tables.compute_flexible_metadata_table_name(instrument, obs_type)
     instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
 
     return FlexMetadataSchemaResponseModel(
-        schema=instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+        schema=instrument_tables.flexible_metadata_schemas[instrument.lower()][obs_type]
     )
 
 
@@ -541,18 +537,18 @@ async def get_flexible_metadata_keys(
     "/consdb/flex/{instrument}/{obs_type}/obs/{obs_id}",
     description="Flex schema for the given instrument and observation type.",
 )
-async def get_flexible_metadata(
-    instrument: Annotated[str, Depends(validate_instrument_name)],
-    obs_type: ObsTypeEnum = Path(..., title="Observation type"),
-    obs_id: ObservationIdType = Path(..., title="Observation ID"),
+def get_flexible_metadata(
+    instrument: InstrumentName,
+    obs_type: ObsTypeEnum = Path(title="Observation type"),
+    obs_id: ObservationIdType = Path(title="Observation ID"),
     k: list[str] = Query([], title="Columns to retrieve"),
 ) -> dict[str, AllowedFlexType]:
     """Retrieve values for an observation from a flexible metadata table."""
     global instrument_tables
 
-    logger.info(f"GET /consdb/flex/{instrument}/{obs_type}/obs/{obs_id}")
-    table = instrument_tables.get_flexible_metadata_table(instrument, obs_type)
-    schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+    instrument_l = instrument.lower()
+    table = instrument_tables.get_flexible_metadata_table(instrument_l, obs_type)
+    schema = instrument_tables.flexible_metadata_schemas[instrument_l][obs_type]
     result = dict()
     stmt = sqlalchemy.select(table.c["key", "value"]).where(table.c.obs_id == obs_id)
     if len(k) > 0:
@@ -562,8 +558,8 @@ async def get_flexible_metadata(
         for row in conn.execute(stmt):
             key, value = row
             if key not in schema:
-                instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
-            schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+                instrument_tables.refresh_flexible_metadata_schema(instrument_l, obs_type)
+            schema = instrument_tables.flexible_metadata_schemas[instrument_l][obs_type]
             dtype = schema[key][0]
             result[key] = convert_to_flex_type(AllowedFlexTypeEnum(dtype), value)
     return result
@@ -572,35 +568,35 @@ async def get_flexible_metadata(
 class InsertDataModel(BaseModel):
     """This model can be used for either flex or regular data."""
 
-    values: dict[str, AllowedFlexType] = Field(..., title="Data to insert or update")
+    values: dict[str, AllowedFlexType] = Field(title="Data to insert or update")
 
 
 class InsertFlexDataResponse(BaseModel):
-    message: str = Field(..., title="Human-readable response message")
-    instrument: str = Field(..., title="Instrument name (e.g., ``LATISS``)")
-    obs_type: ObsTypeEnum = Field(..., title="The observation type (e.g., ``exposure``)")
-    obs_id: ObservationIdType | list[ObservationIdType] = Field(..., title="Observation ID")
+    message: str = Field(title="Human-readable response message")
+    instrument: str = Field(title="Instrument name (e.g., ``LATISS``)")
+    obs_type: ObsTypeEnum = Field(title="The observation type (e.g., ``exposure``)")
+    obs_id: ObservationIdType | list[ObservationIdType] = Field(title="Observation ID")
 
 
 @app.post("/consdb/flex/{instrument}/{obs_type}/obs/{obs_id}")
-async def insert_flexible_metadata(
-    instrument: Annotated[str, Depends(validate_instrument_name)],
+def insert_flexible_metadata(
+    instrument: InstrumentName,
     obs_type: ObsTypeEnum,
     obs_id: ObservationIdType,
-    data: InsertDataModel = Body(..., title="Data to insert or update"),
+    data: InsertDataModel = Body(title="Data to insert or update"),
     u: Optional[int] = Query(0, title="Update if exists"),
 ) -> InsertFlexDataResponse:
     """Insert or update key/value pairs in a flexible metadata table."""
     global instrument_tables
 
-    logger.info(f"POST /consdb/flex/{instrument}/{obs_type}/obs/{obs_id}")
-    table = instrument_tables.get_flexible_metadata_table(instrument, obs_type)
-    schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+    instrument_l = instrument.lower()
+    table = instrument_tables.get_flexible_metadata_table(instrument_l, obs_type)
+    schema = instrument_tables.flexible_metadata_schemas[instrument_l][obs_type]
 
     value_dict = data.values
     if any(key not in schema for key in value_dict):
-        instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
-        schema = instrument_tables.flexible_metadata_schemas[instrument][obs_type]
+        instrument_tables.refresh_flexible_metadata_schema(instrument_l, obs_type)
+        schema = instrument_tables.flexible_metadata_schemas[instrument_l][obs_type]
     for key, value in value_dict.items():
         if key not in schema:
             raise BadValueException("key", key, list(schema.keys()))
@@ -634,43 +630,35 @@ async def insert_flexible_metadata(
     )
 
 
-class GenericResponse(BaseModel):
-    message: str = Field(..., title="Human-readable response message")
-    instrument: str = Field(..., title="Instrument name (e.g., ``LATISS``)")
-    obs_type: ObsTypeEnum = Field(..., title="The observation type (e.g., ``exposure``)")
-    obs_id: ObservationIdType | list[ObservationIdType] = Field(..., title="Observation ID")
-    table: Optional[str] = Field(..., title="Table name")
-
-
 class InsertDataResponse(BaseModel):
-    message: str = Field(..., title="Human-readable response message")
-    instrument: str = Field(..., title="Instrument name (e.g., ``LATISS``)")
-    obs_id: ObservationIdType | list[ObservationIdType] = Field(..., title="Observation ID")
-    table: Optional[str] = Field(..., title="Table name")
+    message: str = Field(title="Human-readable response message")
+    instrument: str = Field(title="Instrument name (e.g., ``LATISS``)")
+    obs_id: ObservationIdType | list[ObservationIdType] = Field(title="Observation ID")
+    table: str = Field(title="Table name")
 
 
 @app.post(
     "/consdb/insert/{instrument}/{table}/obs/{obs_id}",
     summary="Insert data row",
 )
-async def insert(
-    instrument: Annotated[str, Depends(validate_instrument_name)],
+def insert(
+    instrument: InstrumentName,
     table: str,
     obs_id: ObservationIdType,
-    data: InsertDataModel = Body(..., title="Data to insert or update"),
+    data: InsertDataModel = Body(title="Data to insert or update"),
     u: Optional[int] = Query(0, title="Update if data already exist"),
 ) -> InsertDataResponse:
     """Insert or update column/value pairs in a ConsDB table."""
     global instrument_tables
 
-    logger.info(f"POST /consdb/insert/{instrument}/{table}/obs/{obs_id}")
-    schema = f"cdb_{instrument}."
+    instrument_l = instrument.lower()
+    schema = f"cdb_{instrument_l}."
     table_name = table.lower()
     if not table.lower().startswith(schema):
         table_name = schema + table_name
-    table_obj = instrument_tables.schemas[instrument].tables[table_name]
+    table_obj = instrument_tables.schemas[instrument_l].tables[table_name]
     valdict = data.values
-    obs_id_colname = instrument_tables.obs_id_column[instrument][table_name]
+    obs_id_colname = instrument_tables.obs_id_column[instrument_l][table_name]
     valdict[obs_id_colname] = obs_id
 
     stmt: sqlalchemy.sql.dml.Insert
@@ -691,20 +679,28 @@ async def insert(
 
 class InsertMultipleRequestModel(BaseModel):
     obs_dict: dict[ObservationIdType, dict[str, AllowedFlexType]] = Field(
-        ..., title="Observation ID and key/value pairs to insert or update"
+        title="Observation ID and key/value pairs to insert or update"
     )
+
+
+class InsertMultipleResponseModel(BaseModel):
+    message: str = Field(title="Human-readable response message")
+    instrument: str = Field(title="Instrument name (e.g., ``LATISS``)")
+    obs_type: ObsTypeEnum = Field(title="The observation type (e.g., ``exposure``)")
+    obs_id: ObservationIdType | list[ObservationIdType] = Field(title="Observation ID")
+    table: str = Field(title="Table name")
 
 
 @app.post(
     "/consdb/insert/{instrument}/{table}",
     summary="Insert multiple data rows",
 )
-async def insert_multiple(
-    instrument: Annotated[str, Depends(validate_instrument_name)],
+def insert_multiple(
+    instrument: InstrumentName,
     table: str,
-    data: InsertMultipleRequestModel = Body(..., title="Data to insert or update"),
+    data: InsertMultipleRequestModel = Body(title="Data to insert or update"),
     u: Optional[int] = Query(0, title="Update if data already exist"),
-) -> dict[str, Any] | tuple[dict[str, str], int]:
+) -> InsertMultipleResponseModel:
     """Insert or update multiple observations in a ConsDB table.
 
     Raises
@@ -717,15 +713,15 @@ async def insert_multiple(
     """
     global instrument_tables
 
-    logger.info(f"POST /consdb/insert/{instrument}/{table}")
-    schema = f"cdb_{instrument}."
+    instrument_l = instrument.lower()
+    schema = f"cdb_{instrument_l}."
     table_name = table.lower()
     if not table.lower().startswith(schema):
         table_name = schema + table_name
-    table_obj = instrument_tables.schemas[instrument].tables[table_name]
-    table_name = f"cdb_{instrument}." + table.lower()
-    table = instrument_tables.schemas[instrument].tables[table_name]
-    obs_id_colname = instrument_tables.obs_id_column[instrument][table_name]
+    table_obj = instrument_tables.schemas[instrument_l].tables[table_name]
+    table_name = f"cdb_{instrument_l}." + table.lower()
+    table = instrument_tables.schemas[instrument_l].tables[table_name]
+    obs_id_colname = instrument_tables.obs_id_column[instrument_l][table_name]
 
     with engine.connect() as conn:
         for obs_id, valdict in data.obs_dict.items():
@@ -740,7 +736,7 @@ async def insert_multiple(
             _ = conn.execute(stmt)
         conn.commit()
 
-    return GenericResponse(
+    return InsertMultipleResponseModel(
         message="Data inserted",
         table=table_name,
         instrument=instrument,
@@ -753,8 +749,8 @@ async def insert_multiple(
     summary="Get all metadata",
     description="Get all metadata for a given observation.",
 )
-async def get_all_metadata(
-    instrument: Annotated[str, Depends(validate_instrument_name)],
+def get_all_metadata(
+    instrument: InstrumentName,
     obs_type: ObsTypeEnum,
     obs_id: ObservationIdType,
     flex: Optional[int] = Query(0, title="Include flexible metadata"),
@@ -783,7 +779,6 @@ async def get_all_metadata(
     """
     global instrument_tables
 
-    logger.info(f"GET /consdb/query/{instrument}/{obs_type}/obs/{obs_id}")
     instrument = instrument.lower()
     obs_type = obs_type.lower()
     view_name = instrument_tables.compute_wide_view_name(instrument, obs_type)
@@ -803,17 +798,17 @@ async def get_all_metadata(
 
 
 class QueryRequestModel(BaseModel):
-    query: str = Field(..., title="SQL query string")
+    query: str = Field(title="SQL query string")
 
 
 class QueryResponseModel(BaseModel):
-    columns: list[str] = Field(..., title="Column names")
-    data: list[Any] = Field(..., title="Data rows")
+    columns: list[str] = Field(title="Column names")
+    data: list[Any] = Field(title="Data rows")
 
 
 @app.post("/consdb/query")
-async def query(
-    data: QueryRequestModel = Body(..., title="SQL query string"),
+def query(
+    data: QueryRequestModel = Body(title="SQL query string"),
 ) -> QueryResponseModel:
     """Query the ConsDB database.
 
@@ -830,7 +825,6 @@ async def query(
         of string column names and a ``data`` key with value being a list
         of rows.
     """
-    logger.info("POST /consdb/query")
 
     columns = []
     rows = []
@@ -838,7 +832,7 @@ async def query(
         cursor = conn.exec_driver_sql(data.query)
         first = True
         for row in cursor:
-            logger.info(row)
+            logger.debug(row)
             if first:
                 columns.extend(row._fields)
                 first = False
@@ -851,29 +845,27 @@ async def query(
 
 
 @app.get("/consdb/schema")
-async def list_instruments() -> list[str]:
+def list_instruments() -> list[str]:
     """Retrieve the list of instruments available in ConsDB."""
     global instrument_tables
 
-    logger.info("GET /consdb/schema")
     return instrument_tables.instrument_list
 
 
 @app.get("/consdb/schema/{instrument}")
-async def list_table(
-    instrument: Annotated[str, Depends(validate_instrument_name)],
+def list_table(
+    instrument: InstrumentName,
 ) -> list[str]:
     """Retrieve the list of tables for an instrument."""
     global instrument_tables
 
-    logger.info(f"GET /consdb/schema/{instrument}")
-    schema = instrument_tables.schemas[instrument]
+    schema = instrument_tables.schemas[instrument.lower()]
     return list(schema.tables.keys())
 
 
 @app.get("/consdb/schema/{instrument}/<table>")
-async def schema(
-    instrument: Annotated[str, Depends(validate_instrument_name)], table: str
+def schema(
+    instrument: InstrumentName,
 ) -> dict[str, list[str]]:
     """Retrieve the descriptions of columns in a ConsDB table.
 
@@ -898,10 +890,10 @@ async def schema(
     """
     global instrument_tables
 
-    logger.info("GET /consdb/schema/{instrument}/{table}")
-    schema = instrument_tables.schemas[instrument]
-    if not table.startswith(f"cdb_{instrument}."):
-        table = f"cdb_{instrument}.{table}"
+    instrument_l = instrument.lower()
+    schema = instrument_tables.schemas[instrument_l]
+    if not table.startswith(f"cdb_{instrument_l}."):
+        table = f"cdb_{instrument_l}.{table}"
     table = table.lower()
     if table not in schema.tables:
         raise BadValueException("table", table, list(schema.tables.keys()))

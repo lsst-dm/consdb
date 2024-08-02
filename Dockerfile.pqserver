@@ -8,5 +8,4 @@ COPY python/lsst/consdb/__init__.py python/lsst/consdb/pqserver.py python/lsst/c
 # Expose the port.
 EXPOSE 8080
 
-ENTRYPOINT [ "gunicorn", "-b", "0.0.0.0:8080", "-w", "2", "-k", "uvicorn.workers.UvicornWorker", "consdb_pq.pqserver:app" ]
-
+ENTRYPOINT [ "uvicorn", "consdb_pq.pqserver:app", "--host", "0.0.0.0", "--port", "8080" ]
