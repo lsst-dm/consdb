@@ -1,9 +1,14 @@
 ARG OBS_LSST_VERSION=w_2024_21
 FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
 USER lsst
+
 RUN source loadLSST.bash && mamba install aiokafka httpx
-RUN source loadLSST.bash && pip install kafkit
-COPY python/lsst/consdb/hinfo.py python/lsst/consdb/utils.py ./hinfo/
+RUN source loadLSST.bash && pip install kafkit aiokafka httpx
+
+WORKDIR /home/lsst/
+COPY --chown=lsst .  ./consdb/
+WORKDIR /home/lsst/consdb/
+RUN source /opt/lsst/software/stack/loadLSST.bash && pip install -e .
 
 # Environment variables that must be set:
 #   INSTRUMENT: LATISS, LSSTComCam, LSSTCam
@@ -16,4 +21,4 @@ COPY python/lsst/consdb/hinfo.py python/lsst/consdb/utils.py ./hinfo/
 #   KAFKA_GROUP_ID: name of consumer group, default is "consdb-consumer"
 #   KAFKA_USERNAME: username for SASL_PLAIN authentication, default is "consdb"
 
-ENTRYPOINT [ "bash", "-c", "source loadLSST.bash; setup obs_lsst; python ./hinfo/hinfo.py" ]
+ENTRYPOINT [ "bash", "-c", "source /opt/lsst/software/stack/loadLSST.bash; setup obs_lsst; python -m lsst.consdb.hinfo" ]
