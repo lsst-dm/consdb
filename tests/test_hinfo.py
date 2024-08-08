@@ -1,21 +1,20 @@
 import os
-import pytest
 import sqlite3
 import tempfile
 from pathlib import Path
-from sqlalchemy import MetaData, Table, select
+
+import pytest
 import yaml
-
-from lsst.resources import ResourcePath
-
 from lsst.consdb import hinfo, utils
+from lsst.resources import ResourcePath
+from sqlalchemy import MetaData, Table, select
+
 
 @pytest.fixture
 def tmpdir(scope="module"):
     os.environ["INSTRUMENT"] = "LATISS"
     tmpdir = Path(tempfile.mkdtemp())
     return tmpdir
-    shutil.rmtree(tmpdir)
 
 
 @pytest.fixture
@@ -41,11 +40,13 @@ def engine(tmpdir, scope="module"):
 
     return hinfo.engine
 
+
 def _header_lookup(header, key):
     for line in header:
         if line["keyword"] == key:
             return line["value"]
     return None
+
 
 def test_process_resource(engine):
     yaml_path = Path(__file__).parent / "ATHeaderService_header_AT_O_20240801_000302.yaml"
