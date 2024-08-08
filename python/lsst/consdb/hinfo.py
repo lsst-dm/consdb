@@ -443,15 +443,16 @@ def get_kafka_config() -> KafkaConfig:
 
 logger = setup_logging("consdb.hinfo")
 
-instrument = os.environ["INSTRUMENT"]
-logger.info(f"Instrument = {instrument}")
+instrument = ""
+if "INSTRUMENT" in os.environ:
+    instrument = os.environ["INSTRUMENT"]
+    logger.info(f"Instrument = {instrument}")
 bucket_prefix = os.environ.get("BUCKET_PREFIX", "")
 if bucket_prefix:
     os.environ["LSST_DISABLE_BUCKET_VALIDATION"] = "1"
 
 
-engine = setup_postgres()
-
+engine = None
 
 @dataclass
 class Instrument:
@@ -578,4 +579,5 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
+    engine = setup_postgres()
     asyncio.run(main())
