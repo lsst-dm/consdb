@@ -16,8 +16,10 @@ def _assert_http_status(response: Response, status: int):
 @pytest.fixture
 def tmpdir(scope="module"):
     tmpdir = Path(tempfile.mkdtemp())
-    return tmpdir
-    shutil.rmtree(tmpdir)
+    try:
+        yield tmpdir
+    finally:
+        shutil.rmtree(tmpdir)
 
 
 @pytest.fixture
@@ -53,9 +55,13 @@ def db(tmpdir, scope="module"):
 @pytest.fixture
 def app(db, scope="module"):
     os.environ["POSTGRES_URL"] = f"sqlite:///{db}"
-    from lsst.consdb import pqserver
+    from lsst.consdb import pqserver, utils
 
-    return pqserver.app
+    pqserver.engine = utils.setup_postgres()
+    try:
+        yield pqserver.app
+    finally:
+        pqserver.engine.dispose()
 
 
 @pytest.fixture
