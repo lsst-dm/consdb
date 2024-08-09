@@ -2,6 +2,7 @@ import os
 import sqlite3
 import tempfile
 from pathlib import Path
+import shutil
 
 import pytest
 import yaml
@@ -14,7 +15,10 @@ from sqlalchemy import MetaData, Table, select
 def tmpdir(scope="module"):
     os.environ["INSTRUMENT"] = "LATISS"
     tmpdir = Path(tempfile.mkdtemp())
-    return tmpdir
+    try:
+        yield tmpdir
+    finally:
+        shutil.rmtree(tmpdir)
 
 
 @pytest.fixture
@@ -38,7 +42,10 @@ def engine(tmpdir, scope="module"):
     hinfo.engine = utils.setup_postgres()
     hinfo.instrument = "LATISS"
 
-    return hinfo.engine
+    try:
+        yield hinfo.engine
+    finally:
+        hinfo.engine.dispose()
 
 
 def _header_lookup(header, key):
