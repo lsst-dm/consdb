@@ -264,7 +264,7 @@ class DBBase:
         affected_rows = 0
 
         for i in range(0, len(records), commit_every):
-            chunk = records[i: i + commit_every]
+            chunk = records[i : i + commit_every]
 
             # Insert Statement using dialect insert
             insert_stm = self.dialect.insert(tbl).values(chunk)

@@ -21,14 +21,14 @@ RUN mkdir data
 # These are written over if they are re-defined
 # by the cronjob or on the command line deploy
 # of the pod
-ENV CONFIG_FILE "/opt/lsst/software/stack/consdb/config_LATISS.yaml"
-ENV INSTRUMENT "LATISS"
-ENV START_TIME "2024-04-25T00:00:00"
-ENV END_TIME "2024-04-30T23:59:59.999999"
-ENV BUTLER_REPO "/repo/embargo"
-ENV DB_URI "sqlite:////opt/lsst/software/stack/data/test.db"
-ENV EFD "usdf_efd"
-ENV LOG_FILE "/opt/lsst/software/stack/data/transform.log"
+ENV CONFIG_FILE="/opt/lsst/software/stack/consdb/config_LATISS.yaml"
+ENV INSTRUMENT="LATISS"
+ENV START_TIME="2024-04-25T00:00:00"
+ENV END_TIME="2024-04-30T23:59:59.999999"
+ENV BUTLER_REPO="/repo/embargo"
+ENV DB_URI="sqlite:////opt/lsst/software/stack/data/test.db"
+ENV EFD="usdf_efd"
+ENV LOG_FILE="/opt/lsst/software/stack/data/transform.log"
 
 CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -s \"$START_TIME\" -e \"$END_TIME\" -r \"$BUTLER_REPO\" -d \"$DB_URI\"  -E \"$EFD\" -l \"$LOG_FILE\""]
 
@@ -44,4 +44,4 @@ CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/tr
 #     -l $PWD/tmp/transform.log
 
 # Exemple of command used to execute transform_efd with docker
-# docker run --rm -it --volume $PWD/data:/opt/lsst/software/stack/data  -e CONFIG_FILE=config_LATISS.yaml -e ...  consdb/efd_transform:latest 
+# docker run --rm -it --volume $PWD/data:/opt/lsst/software/stack/data  -e CONFIG_FILE=config_LATISS.yaml -e ...  consdb/efd_transform:latest
