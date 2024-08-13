@@ -443,10 +443,8 @@ def get_kafka_config() -> KafkaConfig:
 
 logger = setup_logging("consdb.hinfo")
 
-instrument = ""
-if "INSTRUMENT" in os.environ:
-    instrument = os.environ["INSTRUMENT"]
-    logger.info(f"Instrument = {instrument}")
+instrument = os.environ.get("INSTRUMENT", "")
+logger.info(f"{instrument=}")
 bucket_prefix = os.environ.get("BUCKET_PREFIX", "")
 if bucket_prefix:
     os.environ["LSST_DISABLE_BUCKET_VALIDATION"] = "1"
