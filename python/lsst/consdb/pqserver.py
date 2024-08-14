@@ -25,7 +25,7 @@ from typing import Annotated, Any, Optional
 import astropy
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
-from fastapi import Body, FastAPI, HTTPException, Path, Query, Request, status
+from fastapi import Body, FastAPI, Path, Query, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import AfterValidator, BaseModel, Field, field_validator
@@ -91,8 +91,6 @@ class ObsIdColname(StrEnum):
             if member.value == value:
                 return member
         return None
-
-
 
 
 ####################
@@ -336,6 +334,7 @@ class BadValueException(Exception):
             data["valid"] = self.valid
         return data
 
+
 class UnknownInstrumentException(Exception):
     """Exception raised for an unknown instrument.
 
@@ -358,7 +357,12 @@ class UnknownInstrumentException(Exception):
         json_dict: `dict` [ `str`, `Any` ]
             Dictionary with a message and the unknown instrument name.
         """
-        return {"message": "Unknown instrument", "value": self.instrument, "valid": instrument_tables.instrument_list}
+        return {
+            "message": "Unknown instrument",
+            "value": self.instrument,
+            "valid": instrument_tables.instrument_list,
+        }
+
 
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -366,6 +370,7 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
     logger.error(f"RequestValidationError {request}: {exc_str}")
     content = {"message": "Validation error", "detail": exc.errors()}
     return JSONResponse(content=content, status_code=status.HTTP_404_NOT_FOUND)
+
 
 @app.exception_handler(UnknownInstrumentException)
 def unknown_instrument_exception_handler(request: Request, exc: UnknownInstrumentException):
@@ -542,6 +547,7 @@ class FlexibleMetadataInfo(BaseModel):
     unit: str | None = Field(None, title="Unit for value")
     ucd: str | None = Field(None, title="IVOA Unified Content Descriptor")
 
+
 @app.get(
     "/consdb/flex/{instrument}/{obs_type}/schema",
     summary="Get all flexible metadata keys",
@@ -550,7 +556,7 @@ class FlexibleMetadataInfo(BaseModel):
 def get_flexible_metadata_keys(
     instrument: InstrumentName = Path(title="Instrument name"),
     obs_type: ObsTypeEnum = Path(title="Observation type"),
-) -> dict[str, tuple[str, str, str|None, str|None]]:
+) -> dict[str, tuple[str, str, str | None, str | None]]:
     """Returns the flex schema for the given instrument and
     observation type.
     """
