@@ -93,21 +93,6 @@ class ObsIdColname(StrEnum):
         return None
 
 
-def validate_instrument_name(
-    instrument: str = Path(description="Must be a valid instrument name (e.g., ``LATISS``)"),
-) -> str:
-    global instrument_tables
-    instrument_lower = instrument.lower()
-    if instrument_lower not in [i.lower() for i in instrument_tables.instrument_list]:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid instrument name {instrument}, must be one of "
-            + ",".join(instrument_tables.instrument_list),
-        )
-    return instrument
-
-
-InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]
 
 
 ####################
@@ -351,13 +336,41 @@ class BadValueException(Exception):
             data["valid"] = self.valid
         return data
 
+class UnknownInstrumentException(Exception):
+    """Exception raised for an unknown instrument.
+
+    Parameters
+    ----------
+    instrument: `str`
+        Name of the unknown instrument.
+    """
+
+    status_code = 404
+
+    def __init__(self, instrument: str):
+        self.instrument = instrument
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the exception to a dictionary for JSON conversion.
+
+        Returns
+        -------
+        json_dict: `dict` [ `str`, `Any` ]
+            Dictionary with a message and the unknown instrument name.
+        """
+        return {"message": "Unknown instrument", "value": self.instrument, "valid": instrument_tables.instrument_list}
 
 @app.exception_handler(RequestValidationError)
 def validation_exception_handler(request: Request, exc: RequestValidationError):
     exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
     logger.error(f"RequestValidationError {request}: {exc_str}")
     content = {"message": "Validation error", "detail": exc.errors()}
-    return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    return JSONResponse(content=content, status_code=status.HTTP_404_NOT_FOUND)
+
+@app.exception_handler(UnknownInstrumentException)
+def unknown_instrument_exception_handler(request: Request, exc: UnknownInstrumentException):
+    logger.error(f"UnknownInstrumentException {request}: {exc.instrument}")
+    return JSONResponse(content=exc.to_dict(), status_code=status.HTTP_404_NOT_FOUND)
 
 
 @app.exception_handler(BadValueException)
@@ -373,6 +386,19 @@ def sqlalchemy_exception_handler(request: Request, exc: sqlalchemy.exc.SQLAlchem
     logger.error(f"SQLAlchemyError {request}: {exc_str}")
     content = {"message": str(exc)}
     return JSONResponse(content=content, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def validate_instrument_name(
+    instrument: str = Path(description="Must be a valid instrument name (e.g., ``LATISS``)"),
+) -> str:
+    global instrument_tables
+    instrument_lower = instrument.lower()
+    if instrument_lower not in [i.lower() for i in instrument_tables.instrument_list]:
+        raise UnknownInstrumentException(instrument)
+    return instrument
+
+
+InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]
 
 
 ###################################
@@ -510,6 +536,12 @@ class FlexMetadataSchemaResponseModel(BaseModel):
     )
 
 
+class FlexibleMetadataInfo(BaseModel):
+    dtype: str = Field(title="Data type for the key")
+    doc: str = Field(title="Documentation string for the key")
+    unit: str | None = Field(None, title="Unit for value")
+    ucd: str | None = Field(None, title="IVOA Unified Content Descriptor")
+
 @app.get(
     "/consdb/flex/{instrument}/{obs_type}/schema",
     summary="Get all flexible metadata keys",
@@ -518,7 +550,7 @@ class FlexMetadataSchemaResponseModel(BaseModel):
 def get_flexible_metadata_keys(
     instrument: InstrumentName = Path(title="Instrument name"),
     obs_type: ObsTypeEnum = Path(title="Observation type"),
-) -> FlexMetadataSchemaResponseModel:
+) -> dict[str, tuple[str, str, str|None, str|None]]:
     """Returns the flex schema for the given instrument and
     observation type.
     """
@@ -529,9 +561,7 @@ def get_flexible_metadata_keys(
     _ = instrument_tables.compute_flexible_metadata_table_name(instrument, obs_type)
     instrument_tables.refresh_flexible_metadata_schema(instrument, obs_type)
 
-    return FlexMetadataSchemaResponseModel(
-        schema=instrument_tables.flexible_metadata_schemas[instrument.lower()][obs_type]
-    )
+    return instrument_tables.flexible_metadata_schemas[instrument][obs_type]
 
 
 @app.get(
@@ -868,7 +898,7 @@ def list_table(
 def schema(
     instrument: InstrumentName = Path(description="Instrument name"),
     table: str = Path(description="Table name to retrieve schema"),
-) -> dict[str, list[str]]:
+) -> dict[str, list[str | None]]:
     """Retrieve the descriptions of columns in a ConsDB table.
 
     Parameters
