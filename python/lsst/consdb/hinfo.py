@@ -19,7 +19,8 @@ from lsst.obs.lsst.rawFormatter import LsstCamRawFormatter  # type: ignore
 from lsst.resources import ResourcePath
 from sqlalchemy import MetaData, Table
 from sqlalchemy.dialects.postgresql import insert
-from utils import setup_logging, setup_postgres
+
+from .utils import setup_logging, setup_postgres
 
 if TYPE_CHECKING:
     import lsst.afw.cameraGeom  # type: ignore
@@ -442,14 +443,14 @@ def get_kafka_config() -> KafkaConfig:
 
 logger = setup_logging("consdb.hinfo")
 
-instrument = os.environ["INSTRUMENT"]
-logger.info(f"Instrument = {instrument}")
+instrument = os.environ.get("INSTRUMENT", "")
+logger.info(f"{instrument=}")
 bucket_prefix = os.environ.get("BUCKET_PREFIX", "")
 if bucket_prefix:
     os.environ["LSST_DISABLE_BUCKET_VALIDATION"] = "1"
 
 
-engine = setup_postgres()
+engine = None
 
 
 @dataclass
@@ -480,10 +481,7 @@ class Instrument:
 #################
 
 
-async def main() -> None:
-    """Handle Header Service largeFileObjectAvailable messages."""
-    global logger, instrument, bucket_prefix, TOPIC_MAPPING
-
+def get_instrument_dict(instrument: str) -> dict:
     if instrument == "LATISS":
         instrument_dict = {
             "O": Instrument(
@@ -531,6 +529,15 @@ async def main() -> None:
     else:
         raise ValueError("Unrecognized instrument: {instrument}")
 
+    return instrument_dict
+
+
+async def main() -> None:
+    """Handle Header Service largeFileObjectAvailable messages."""
+    global logger, instrument, bucket_prefix, TOPIC_MAPPING
+
+    instrument_dict = get_instrument_dict(instrument)
+
     topic = f"lsst.sal.{TOPIC_MAPPING[instrument]}.logevent_largeFileObjectAvailable"
     kafka_config = get_kafka_config()
     async with httpx.AsyncClient() as client:
@@ -570,4 +577,6 @@ async def main() -> None:
             await consumer.stop()
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    engine = setup_postgres()
+    asyncio.run(main())

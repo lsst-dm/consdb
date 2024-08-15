@@ -14,25 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-        cache: "pip"
+    - name: Build docker image
+      run: docker build -f Dockerfile.pytest -t pytest_image .
 
-    - name: Editable mode install
-      run: |
-        python -m pip install uv
-        uv pip install --system pytest pytest-cov pytest-html pytest-asyncio httpx
-        uv pip install --system -e .
-    - name: Test with pytest
-      run: |
-        pytest --cov=./ --cov-report=html --html=pytest_report.html --self-contained-html
-
-    - name: Upload coverage to codecov
-      uses: codecov/codecov-action@v4
-      with:
-        files: ./coverage.xml
-        token: ${{ secrets.CODECOV_TOKEN }}
+    - name: Run docker image
+      run: docker run --rm -e PYTEST_ADDOPTS="--color=yes" pytest_image
