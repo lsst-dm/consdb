@@ -128,14 +128,13 @@ def test_flexible_metadata(client):
         "/consdb/flex/bad_instrument/exposure/addkey",
         json={"key": "quux", "dtype": "str", "doc": "str key"},
     )
-    _assert_http_status(response, 400)
+    _assert_http_status(response, 404)
     result = response.json()
-    assert "Invalid instrument" in result["detail"]
+    assert "Unknown instrument" in result["message"]
 
     response = client.get("/consdb/flex/latiss/exposure/schema")
     _assert_http_status(response, 200)
     result = response.json()
-    result = result["schema"]
     assert "foo" in result
     assert "bar" in result
     assert "baz" in result
@@ -196,7 +195,7 @@ def test_flexible_metadata(client):
     assert result == {"baz": 2.71828}
 
     response = client.post("/consdb/flex/latiss/exposure/obs/2024032100002", json={})
-    _assert_http_status(response, 422)
+    _assert_http_status(response, 404)
     result = response.json()
     assert "Validation error" in result["message"]
     assert result["detail"][0]["type"] == "missing"
