@@ -1,12 +1,12 @@
+from functools import partial
 from urllib.parse import urljoin
 
 import astropy.time
-import pandas as pd
 import numpy as np
+import pandas as pd
 import requests
 from astropy.time import Time
 from lsst_efd_client.auth_helper import NotebookAuth
-from functools import partial
 
 
 class InfluxDBClient:
@@ -135,7 +135,7 @@ class InfluxDBClient:
         n = None
         for bfield in base_fields:
             for f in fields:
-                if f.startswith(bfield) and f[len(bfield):].isdigit():  # Check prefix is complete
+                if f.startswith(bfield) and f[len(bfield) :].isdigit():  # Check prefix is complete
                     ret.setdefault(bfield, []).append(f)
             if n is None:
                 n = len(ret[bfield])
@@ -143,7 +143,7 @@ class InfluxDBClient:
                 raise ValueError(f"Field lengths do not agree for {bfield}: {n} vs. {len(ret[bfield])}")
 
             def sorter(prefix, val):
-                return int(val[len(prefix):])
+                return int(val[len(prefix) :])
 
             part = partial(sorter, bfield)
             ret[bfield].sort(key=part)
@@ -233,9 +233,9 @@ class InfluxDBClient:
         """
 
         packed_fields = [
-            k for k in packed_dataframe.keys() if k.startswith(base_field) and k[len(base_field):].isdigit()
+            k for k in packed_dataframe.keys() if k.startswith(base_field) and k[len(base_field) :].isdigit()
         ]
-        packed_fields = sorted(packed_fields, key=lambda k: int(k[len(base_field):]))  # sort by pack ID
+        packed_fields = sorted(packed_fields, key=lambda k: int(k[len(base_field) :]))  # sort by pack ID
         npack = len(packed_fields)
         if npack % stride != 0:
             raise RuntimeError(
@@ -584,5 +584,4 @@ class InfluxDbDao(InfluxDBClient):
 
         url = urljoin(f"https://{host}:{port}", f"{path}")
 
-        super(InfluxDbDao, self).__init__(
-            url, database_name=database_name, username=user, password=password)
+        super(InfluxDbDao, self).__init__(url, database_name=database_name, username=user, password=password)
