@@ -102,18 +102,20 @@ class InfluxDBClient:
                                 for value in series["values"]:
                                     field_keys.append(value[0])
             return field_keys
-        except:
+        except Exception as e:
+            print(f"Error occurred while fetching fields for topic {topic_name}: {e}")
             return None
 
     def _make_fields(self, fields, base_fields):
         """
-        Helper method to construct a dictionary of fields grouped by their base field names.
+        Helper method to construct a dictionary of fields grouped by their base
+        field names.
 
-        This function was adapted from the original implementation found at 
-        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic remains consistent with the 
-        original, but modifications might have been made to better align with our specific use case and 
-        requirements.
-        Original source: 
+        This function was adapted from the original implementation found at
+        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
+        remains consistent with the original, but modifications might have been
+        made to better align with our specific use case and requirements.
+        Original source:
         [https://github.com/lsst-sqre/lsst-efd-client/blob/main/src/lsst_efd_client/efd_helper.py#L274]
 
         Parameters
@@ -126,13 +128,14 @@ class InfluxDBClient:
         Returns
         -------
         tuple
-            A tuple containing the dictionary of grouped fields and the number of grouped fields.
+            A tuple containing the dictionary of grouped fields and the number
+            of grouped fields.
         """
         ret = {}
         n = None
         for bfield in base_fields:
             for f in fields:
-                if f.startswith(bfield) and f[len(bfield) :].isdigit():  # Check prefix is complete
+                if f.startswith(bfield) and f[len(bfield):].isdigit():  # Check prefix is complete
                     ret.setdefault(bfield, []).append(f)
             if n is None:
                 n = len(ret[bfield])
@@ -140,7 +143,7 @@ class InfluxDBClient:
                 raise ValueError(f"Field lengths do not agree for {bfield}: {n} vs. {len(ret[bfield])}")
 
             def sorter(prefix, val):
-                return int(val[len(prefix) :])
+                return int(val[len(prefix):])
 
             part = partial(sorter, bfield)
             ret[bfield].sort(key=part)
@@ -150,11 +153,11 @@ class InfluxDBClient:
         """
         Construct a list of fields based on provided base field names.
 
-        This function was adapted from the original implementation found at 
-        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic remains consistent with the 
-        original, but modifications might have been made to better align with our specific use case and 
-        requirements.
-        Original source: 
+        This function was adapted from the original implementation found at
+        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
+        remains consistent with the original, but modifications might have been
+        made to better align with our specific use case and requirements.
+        Original source:
         [https://github.com/lsst-sqre/lsst-efd-client/blob/main/src/lsst_efd_client/efd_helper.py#L301]
 
         Parameters
@@ -193,13 +196,14 @@ class InfluxDBClient:
         fmt="unix_tai",
         scale="tai",
     ):
-        """Select fields that are time samples and unpack them into a dataframe.
+        """Select fields that are time samples and unpack them into a
+        dataframe.
 
-        This function was adapted from the original implementation found at 
-        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic remains consistent with the 
-        original, but modifications might have been made to better align with our specific use case and 
-        requirements.
-        Original source: 
+        This function was adapted from the original implementation found at
+        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
+        remains consistent with the original, but modifications might have been
+        made to better align with our specific use case and requirements.
+        Original source:
         [https://github.com/lsst-sqre/lsst-efd-client/blob/main/src/lsst_efd_client/efd_utils.py#L22]
 
         Parameters
@@ -219,8 +223,8 @@ class InfluxDBClient:
             Format to give to the `astropy.time.Time` constructor. Defaults to
             'unix_tai' since most internal timestamp columns are in TAI.
         scale : `str`, optional
-            Time scale to give to the `astropy.time.Time` constructor. Defaults to
-            'tai'.
+            Time scale to give to the `astropy.time.Time` constructor.
+            Defaults to 'tai'.
 
         Returns
         -------
@@ -229,9 +233,9 @@ class InfluxDBClient:
         """
 
         packed_fields = [
-            k for k in packed_dataframe.keys() if k.startswith(base_field) and k[len(base_field) :].isdigit()
+            k for k in packed_dataframe.keys() if k.startswith(base_field) and k[len(base_field):].isdigit()
         ]
-        packed_fields = sorted(packed_fields, key=lambda k: int(k[len(base_field) :]))  # sort by pack ID
+        packed_fields = sorted(packed_fields, key=lambda k: int(k[len(base_field):]))  # sort by pack ID
         npack = len(packed_fields)
         if npack % stride != 0:
             raise RuntimeError(
@@ -267,11 +271,11 @@ class InfluxDBClient:
         """
         Merge packed time series data into a single DataFrame.
 
-        This function was adapted from the original implementation found at 
-        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic remains consistent with the 
-        original, but modifications might have been made to better align with our specific use case and 
-        requirements.
-        Original source: 
+        This function was adapted from the original implementation found at
+        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
+        remains consistent with the original, but modifications might have been
+        made to better align with our specific use case and requirements.
+        Original source:
         [https://github.com/lsst-sqre/lsst-efd-client/blob/main/src/lsst_efd_client/efd_helper.py#L319]
 
         Parameters
@@ -299,7 +303,8 @@ class InfluxDBClient:
         vals = {}
         try:
             for f in base_fields[0:3]:
-                # Ensure the helper function merge_packed_time_series is correctly defined and imported
+                # Ensure the helper function merge_packed_time_series is
+                # correctly defined and imported
                 df = self._merge_packed_time_series(
                     result,
                     f,
@@ -481,11 +486,11 @@ class InfluxDBClient:
         """Select fields that are time samples and unpack them into a
         dataframe.
 
-        This function was adapted from the original implementation found at 
-        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic remains consistent with the 
-        original, but modifications might have been made to better align with our specific use case and 
-        requirements.
-        Original source: 
+        This function was adapted from the original implementation found at
+        [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
+        remains consistent with the original, but modifications might have been
+        made to better align with our specific use case and requirements.
+        Original source:
         [https://github.com/lsst-sqre/lsst-efd-client/blob/main/src/lsst_efd_client/efd_helper.py#L1081]
 
         Parameters
@@ -560,22 +565,24 @@ class InfluxDbDao(InfluxDBClient):
         self, efd_name, database_name="efd", creds_service="https://roundtable.lsst.codes/segwarides/"
     ):
         """
-        Initialize the InfluxDbDao class, which extends the InfluxDBClient class.
+        Initialize the InfluxDbDao class, which extends the InfluxDBClient
+        class.
 
         Parameters
         ----------
         efd_name : str
-            The name of the EFD (Engineering and Facility Database) instance to connect to.
+            The name of the EFD (Engineering and Facility Database) instance to
+            connect to.
         database_name : str, optional
             The name of the InfluxDB database to use. Default is "efd".
         creds_service : str, optional
-            The URL of the credentials service to use for authentication. Default is
-            "https://roundtable.lsst.codes/segwarides/".
+            The URL of the credentials service to use for authentication.
+            Default is "https://roundtable.lsst.codes/segwarides/".
         """
         auth = NotebookAuth(service_endpoint=creds_service)
         host, schema_registry_url, port, user, password, path = auth.get_auth(efd_name)
 
         url = urljoin(f"https://{host}:{port}", f"{path}")
 
-        super(InfluxDbDao, self).__init__(url, database_name=database_name, username=user, password=password)
-        
+        super(InfluxDbDao, self).__init__(
+            url, database_name=database_name, username=user, password=password)
