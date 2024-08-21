@@ -115,39 +115,75 @@ class Transform:
                 "instrument": instrument,
             }
 
-        # self.log.info(result_exp)
-
-        # Iterates over the columns defined in the config.
-        # for each column retrieves EFD topic information
+        topics_columns_map = {}
         for column in self.config["columns"]:
-            # self.log.debug(column)
-            self.log.info(f"Proccessing Column: {column['name']}")
+            for values in column["topics"]:
+                topic = values["name"]
+                if topic not in topics_columns_map.keys():
+                    topics_columns_map[topic] = {
+                        "name": topic,
+                        "fields": [],
+                        "packed_series": [],
+                        "columns": [],
+                    }
+                for field in values["fields"]:
+                    # print(field["name"])
+                    topics_columns_map[topic]["fields"].append(field)
 
-            # Array with all topics needed for this column
-            # topics = [{'name': topic name, series: pandas.DataFrame}]
-            topics = self.topics_by_column(column, topic_interval)
+                topics_columns_map[topic]["packed_series"].append(column["packed_series"])
+                topics_columns_map[topic]["columns"].append(column)
 
-            if "ExposureEFD" in column["tables"]:
-                for exposure in exposures:
-                    column_value = self.proccess_column_value(
-                        start_time=exposure["timespan"].begin,
-                        end_time=exposure["timespan"].end,
-                        topics=topics,
-                        transform_function=column["function"],
-                    )
+        # Remove duplicated fiels in topic fields
+        for key, value in topics_columns_map.items():
+            # Removing duplicates from 'fields'
+            seen_fields = []
+            unique_fields = []
+            for field in value["fields"]:
+                if field not in seen_fields:
+                    seen_fields.append(field)
+                    unique_fields.append(field)
+            value["fields"] = unique_fields
 
-                    result_exp[exposure["id"]][column["name"]] = column_value
+            # 'packed_series' should be a boolean (all elements should be True
+            #  or False)
+            value["packed_series"] = all(value["packed_series"])
 
-            if "VisitEFD" in column["tables"]:
-                for visit in visits:
-                    column_value = self.proccess_column_value(
-                        start_time=visit["timespan"].begin,
-                        end_time=visit["timespan"].end,
-                        topics=topics,
-                        transform_function=column["function"],
-                    )
+        # Iterates over topics
+        for key, topic in topics_columns_map.items():
+            # query the topic
+            self.log.info(f"Querying the Topic: {topic['name']}")
+            topic_series = self.get_efd_values(topic, topic_interval, topic["packed_series"])
 
-                    result_vis[visit["id"]][column["name"]] = column_value
+            # process the columns in that topic:
+            for column in topic["columns"]:
+                # self.log.debug(column)
+                self.log.info(f"Proccessing Column: {column['name']}")
+                # get fields
+                if not topic_series.empty:
+                    fields = [f["name"] for f in topic["fields"]]
+                    data = [{"topic": topic["name"], "series": topic_series[fields]}]
+
+                    if "ExposureEFD" in column["tables"]:
+                        for exposure in exposures:
+                            column_value = self.proccess_column_value(
+                                start_time=exposure["timespan"].begin,
+                                end_time=exposure["timespan"].end,
+                                topics=data,
+                                transform_function=column["function"],
+                            )
+
+                            result_exp[exposure["id"]][column["name"]] = column_value
+
+                    if "VisitEFD" in column["tables"]:
+                        for visit in visits:
+                            column_value = self.proccess_column_value(
+                                start_time=visit["timespan"].begin,
+                                end_time=visit["timespan"].end,
+                                topics=data,
+                                transform_function=column["function"],
+                            )
+
+                            result_vis[visit["id"]][column["name"]] = column_value
 
         results = []
         for result_row in result_exp:
@@ -173,6 +209,123 @@ class Transform:
         self.log.info(f"Database rows affected: {affected_rows}")
         del results
 
+    # def process_interval(
+    #     self,
+    #     instrument: str,
+    #     start_time: astropy.time.Time,
+    #     end_time: astropy.time.Time,
+    # ):
+    #     """
+    #     Process the given time interval for a specific instrument.
+
+    #     Args:
+    #         instrument (str): The instrument name.
+    #         start_time (astropy.time.Time): The start time of the interval.
+    #         end_time (astropy.time.Time): The end time of the interval.
+    #     """
+
+    #     self.log.info(f"Proccessing interval {start_time} - {end_time}")
+
+    #     # Retrieves all exposures for the period
+    #     exposures = self.butler_dao.exposures_by_period(instrument,
+    #                 start_time, end_time)
+
+    #     self.log.info(f"Exposures: {len(exposures)}")
+
+    #     # Retrieves all visits for the period
+    #     visits = self.butler_dao.visits_by_period(instrument, start_time,
+    #                                               end_time)
+
+    #     self.log.info(f"Visits: {len(visits)}")
+
+    #     # Identifies the period that will be used to consult the topics
+    #     topic_interval = self.get_topic_interval(start_time, end_time,
+    #                                              exposures, visits)
+    #     self.log.info(f"Topic interval:
+    #                               {topic_interval[0]} - {topic_interval[1]}")
+
+    #     result_exp = {}
+    #     for exposure in exposures:
+    #         result_exp[exposure["id"]] = {
+    #             "exposure_id": exposure["id"],
+    #             "instrument": instrument,
+    #         }
+
+    #     result_vis = {}
+    #     for visit in visits:
+    #         result_vis[visit["id"]] = {
+    #             "visit_id": visit["id"],
+    #             "instrument": instrument,
+    #         }
+
+    #     # self.log.info(result_exp)
+
+    #     # Iterates over the columns defined in the config.
+    #     # for each column retrieves EFD topic information
+    #     for column in self.config["columns"]:
+    #         # self.log.debug(column)
+    #         self.log.info(f"Proccessing Column: {column['name']}")
+
+    #         # Array with all topics needed for this column
+    #         # topics = [{'name': topic name, series: pandas.DataFrame}]
+    #         packed_series = column.get("packed_series", False)
+    #         topics = self.topics_by_column(column, topic_interval,
+    #                                        packed_series)
+
+    #         if "ExposureEFD" in column["tables"]:
+    #             for exposure in exposures:
+    #                 column_value = self.proccess_column_value(
+    #                     start_time=exposure["timespan"].begin,
+    #                     end_time=exposure["timespan"].end,
+    #                     topics=topics,
+    #                     transform_function=column["function"],
+    #                 )
+
+    #                 result_exp[exposure["id"]][column["name"]] = column_value
+
+    #         if "VisitEFD" in column["tables"]:
+    #             for visit in visits:
+    #                 column_value = self.proccess_column_value(
+    #                     start_time=visit["timespan"].begin,
+    #                     end_time=visit["timespan"].end,
+    #                     topics=topics,
+    #                     transform_function=column["function"],
+    #                 )
+
+    #                 result_vis[visit["id"]][column["name"]] = column_value
+
+    #     results = []
+    #     for result_row in result_exp:
+    #         results.append(result_exp[result_row])
+
+    #     df_exposures = pandas.DataFrame(results)
+    #     self.log.info(f"Exposure results to be inserted into the database:
+    #                                                     {len(df_exposures)}")
+
+    #     exp_dao = ExposureEfdDao(db_uri=self.db_uri)
+    #     print("df_exposures")
+    #     print(df_exposures)
+    #     # affected_rows =
+    #       exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
+    #     # self.log.info(f"Database rows affected: {affected_rows}")
+    #     # del results
+
+    #     results = []
+    #     for result_row in result_vis:
+    #         results.append(result_vis[result_row])
+
+    #     df_visits = pandas.DataFrame(results)
+    #     self.log.info(f"Visit results to be inserted into the database:
+    #                                                        {len(df_visits)}")
+
+    #     print("df_visits")
+    #     print(df_visits)
+    #     # vis_dao = VisitEfdDao(db_uri=self.db_uri)
+    #     # affected_rows = vis_dao.upsert(df=df_visits,
+    #                                      commit_every=self.commit_every)
+    #     # self.log.info(f"Database rows affected: {affected_rows}")
+    #     del results
+
     def proccess_column_value(
         self, start_time: astropy.time.Time, end_time: astropy.time.Time, topics, transform_function
     ) -> Any:
@@ -196,7 +349,6 @@ class Transform:
             values = self.concatenate_arrays(values)
 
         column_value = Summary(values).apply(transform_function)
-
         return column_value
 
     def topic_values_by_exposure(
@@ -260,7 +412,7 @@ class Transform:
                 "Input data must be a list or list of lists or a numpy array or list of numpy arrays."
             )
 
-    def topics_by_column(self, column, topic_interval) -> list[dict]:
+    def topics_by_column(self, column, topic_interval, packed_series) -> list[dict]:
         """
         Retrieves the EFD topics and their corresponding series for a
         given column.
@@ -276,16 +428,14 @@ class Transform:
 
         data = []
         for topic in column["topics"]:
-            topic_series = self.get_efd_values(topic, topic_interval)
+            topic_series = self.get_efd_values(topic, topic_interval, packed_series)
             data.append({"topic": topic["name"], "series": topic_series})
             self.log.debug(f"EFD Topic {topic['name']} return {len(topic_series)} rows")
 
         return data
 
     def get_efd_values(
-        self,
-        topic: dict[str, Any],
-        topic_interval: list[astropy.time.Time],
+        self, topic: dict[str, Any], topic_interval: list[astropy.time.Time], packed_series: bool = False
     ) -> pandas.DataFrame:
 
         start = topic_interval[0].utc
@@ -294,13 +444,24 @@ class Transform:
 
         fields = [f["name"] for f in topic["fields"]]
 
-        series = self.efd.select_time_series(
-            topic["name"],
-            fields,
-            start - window,
-            end + window,
-            index=topic.get("index", None),
-        )
+        if packed_series:
+            try:
+                series = self.efd.select_packed_time_series(
+                    topic["name"],
+                    fields,
+                    start - window,
+                    end + window,
+                )
+            except Exception as e:
+                self.log.debug(e)
+                series = pandas.DataFrame()
+        else:
+            series = self.efd.select_time_series(
+                topic["name"],
+                fields,
+                start - window,
+                end + window,
+            )
 
         # TODO: Currently doing a temporary resample and interpolate.
         # Only to simulate that there is more than one message
