@@ -15,6 +15,9 @@ COPY --chown=lsst:lsst tmp/config_LATISS.yaml ./consdb/
 
 RUN mkdir data
 
+# TODO: SQLITE TEST DATABASE
+COPY --chown=lsst:lsst tmp/test.db ./data/
+
 # BASED IN THIS EXAMPLE: https://github.com/lsst-dm/transfer_embargo/blob/main/Dockerfile#L20C1-L32C182
 # ------------------------------
 # Define the environment variables
@@ -30,11 +33,13 @@ ENV BUTLER_REPO="s3://rubin-summit-users/butler.yaml"
 ENV S3_ENDPOINT_URL="https://s3dfrgw.slac.stanford.edu/"
 ENV AWS_ACCESS_KEY_ID="placeholder"
 ENV AWS_SECRET_ACCESS_KEY="placeholder"
+ENV PGUSER="rubin"
+ENV PGPASSWORD="placeholder"
 # USDF EFD API access Variables
 ENV EFD="usdf_efd"
 ENV EFD_USERNAME="efdreader"
 ENV EFD_PASSWORD="placeholder"
-# DATABASE Variables
+# Consdb Transform DATABASE Variables
 ENV DB_URI="sqlite:////opt/lsst/software/stack/data/test.db"
 
 ENV LOG_FILE="/opt/lsst/software/stack/data/transform.log"
