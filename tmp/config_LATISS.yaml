@@ -1,951 +1,3528 @@
 columns:
-  - name: ATAOS_atspectrographCorrectionCompleted_focusOffset
-    function: mean
-    type: float
-    unit: mm
-    description: "Focus offset applied."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_atspectrographCorrectionCompleted
-        fields:
-          -
-            name: focusOffset
-            is_array: False
-
-  - name: ATAOS_atspectrographCorrectionCompleted_pointingOffsets
-    function: mean
-    type: float
-    unit: arcsec
-    description: "Pointing Offsets applied."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_atspectrographCorrectionCompleted
-        fields:
-          -
-            name: pointingOffsets
-            is_array: True
-
-  - name: ATAOS_atspectrographCorrectionStarted_focusOffset
-    function: mean
-    type: float
-    unit: mm
-    description: "Focus offset applied."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_atspectrographCorrectionStarted
-        fields:
-          -
-            name: focusOffset
-            is_array: False
-
-  - name: ATAOS_atspectrographCorrectionStarted_pointingOffsets
-    function: mean
-    type: float
-    unit: arcsec
-    description: "Pointing Offsets applied."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_atspectrographCorrectionStarted
-        fields:
-          -
-            name: pointingOffsets
-            is_array: True
-
-  - name: ATAOS_correctionEnabled_m1
-    function: logical_and
-    type: boolean
-    unit: unitless
-    description: "M1 correction enabled."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionEnabled
-        fields:
-          -
-            name: m1
-            is_array: False
-
-  - name: ATAOS_correctionEnabled_m2
-    function: logical_and
-    type: boolean
-    unit: unitless
-    description: "M2 correction enabled."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionEnabled
-        fields:
-          -
-            name: m2
-            is_array: False
-
-  - name: ATAOS_correctionEnabled_hexapod
-    function: logical_and
-    type: boolean
-    unit: unitless
-    description: "Hexapod correction enabled."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionEnabled
-        fields:
-          -
-            name: hexapod
-            is_array: False
-
-  - name: ATAOS_correctionEnabled_focus
-    function: logical_and
-    type: boolean
-    unit: unitless
-    description: "Focus correction enabled."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionEnabled
-        fields:
-          -
-            name: focus
-            is_array: False
-
-  - name: ATAOS_correctionEnabled_atspectrograph
-    function: logical_and
-    type: boolean
-    unit: unitless
-    description: "Focus correction for atspectrograph (LATISS) grating and filter selection enabled."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionEnabled
-        fields:
-          -
-            name: atspectrograph
-            is_array: False
-
-  - name: ATAOS_correctionEnabled_moveWhileExposing
-    function: logical_or
-    type: boolean
-    unit: unitless
-    description: "Move hexapod and focus while exposing enabled."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionEnabled
-        fields:
-          -
-            name: moveWhileExposing
-            is_array: False
-
-  - name: ATAOS_correctionOffsets_x
-    function: mean
-    type: float
-    unit: mm
-    description: "Offset to the hexapod correction in the x-direction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionOffsets
-        fields:
-          -
-            name: x
-            is_array: False
-
-  - name: ATAOS_correctionOffsets_y
-    function: mean
-    type: float
-    unit: mm
-    description: "Offset to the hexapod correction in the  y-direction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionOffsets
-        fields:
-          -
-            name: y
-            is_array: False
-
-  - name: ATAOS_correctionOffsets_z
-    function: mean
-    type: float
-    unit: mm
-    description: "Offset to the hexapod correction in the  z-direction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionOffsets
-        fields:
-          -
-            name: z
-            is_array: False
-
-  - name: ATAOS_correctionOffsets_u
-    function: mean
-    type: float
-    unit: degree
-    description: "Offset to the angle correction applied to the hexapod with respect to the hexapod x-axis."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionOffsets
-        fields:
-          -
-            name: u
-            is_array: False
-
-  - name: ATAOS_correctionOffsets_v
-    function: mean
-    type: float
-    unit: degree
-    description: "Offset to the angle correction applied to the hexapod with respect to the hexapod  y-axis."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionOffsets
-        fields:
-          -
-            name: v
-            is_array: False
-
-  - name: ATAOS_correctionOffsets_w
-    function: mean
-    type: float
-    unit: degree
-    description: "Offset to the angle correction applied to the hexapod with respect to the hexapod z-axis (Ignored)."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionOffsets
-        fields:
-          -
-            name: w
-            is_array: False
-
-  - name: ATAOS_correctionOffsets_m1
-    function: mean
-    type: float
-    unit: Pa
-    description: "Offset to the m1 correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionOffsets
-        fields:
-          -
-            name: m1
-            is_array: False
-
-  - name: ATAOS_correctionOffsets_m2
-    function: mean
-    type: float
-    unit: Pa
-    description: "Offset to the  m2 correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_correctionOffsets
-        fields:
-          -
-            name: m2
-            is_array: False
-
-  - name: ATAOS_focusOffsetSummary_total
-    function: mean
-    type: float
-    unit: mm
-    description: "Sum total of all focus offsets."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_focusOffsetSummary
-        fields:
-          -
-            name: total
-            is_array: False
-
-  - name: ATAOS_focusOffsetSummary_userApplied
-    function: mean
-    type: float
-    unit: mm
-    description: "Cumulative User-provided focus-offset."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_focusOffsetSummary
-        fields:
-          -
-            name: userApplied
-            is_array: False
-
-  - name: ATAOS_focusOffsetSummary_filter
-    function: mean
-    type: float
-    unit: degree
-    description: "Offset due to atspectrograph filter"
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_focusOffsetSummary
-        fields:
-          -
-            name: filter
-            is_array: False
-
-  - name: ATAOS_focusOffsetSummary_disperser
-    function: mean
-    type: float
-    unit: degree
-    description: "Offset due to atspectrograph disperser."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_focusOffsetSummary
-        fields:
-          -
-            name: disperser
-            is_array: False
-
-  - name: ATAOS_focusOffsetSummary_wavelength
-    function: mean
-    type: float
-    unit: degree
-    description: "Offset due to selected wavelength."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_focusOffsetSummary
-        fields:
-          -
-            name: wavelength
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionCompleted_azimuth
-    function: mean
-    type: float
-    unit: degree
-    description: "Azimuth position for the correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionCompleted
-        fields:
-          -
-            name: azimuth
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionCompleted_elevation
-    function: mean
-    type: float
-    unit: degree
-    description: "Elevation position for the correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionCompleted
-        fields:
-          -
-            name: elevation
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionCompleted_hexapod_x
-    function: mean
-    type: float
-    unit: mm
-    description: "Position correction applied to the hexapod in the optical x-direction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionCompleted
-        fields:
-          -
-            name: hexapod_x
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionCompleted_hexapod_y
-    function: mean
-    type: float
-    unit: mm
-    description: "Position correction applied to the hexapod in the optical y-direction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionCompleted
-        fields:
-          -
-            name: hexapod_y
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionCompleted_hexapod_z
-    function: mean
-    type: float
-    unit: mm
-    description: "Position correction applied to the hexapod in the optical z-direction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionCompleted
-        fields:
-          -
-            name: hexapod_z
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionCompleted_hexapod_u
-    function: mean
-    type: float
-    unit: degree
-    description: "Angle correction applied to the hexapod with respect to the optical x-axis."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionCompleted
-        fields:
-          -
-            name: hexapod_u
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionCompleted_hexapod_v
-    function: mean
-    type: float
-    unit: degree
-    description: "Angle correction applied to the hexapod with respect to the optical y-axis."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionCompleted
-        fields:
-          -
-            name: hexapod_v
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionCompleted_hexapod_w
-    function: mean
-    type: float
-    unit: degree
-    description: "Angle correction applied to the hexapod with respect to the optical w-axis."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionCompleted
-        fields:
-          -
-            name: hexapod_w
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionStarted_azimuth
-    function: mean
-    type: float
-    unit: degree
-    description: "Azimuth position for the correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionStarted
-        fields:
-          -
-            name: azimuth
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionStarted_elevation
-    function: mean
-    type: float
-    unit: degree
-    description: "Elevation position for the correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionStarted
-        fields:
-          -
-            name: elevation
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionStarted_hexapod_x
-    function: mean
-    type: float
-    unit: mm
-    description: "Position correction applied to the hexapod in the optical x-direction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionStarted
-        fields:
-          -
-            name: hexapod_x
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionStarted_hexapod_y
-    function: mean
-    type: float
-    unit: mm
-    description: "Position correction applied to the hexapod in the optical y-direction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionStarted
-        fields:
-          -
-            name: hexapod_y
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionStarted_hexapod_z
-    function: mean
-    type: float
-    unit: mm
-    description: "Position correction applied to the hexapod in the optical z-direction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionStarted
-        fields:
-          -
-            name: hexapod_z
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionStarted_hexapod_u
-    function: mean
-    type: float
-    unit: degree
-    description: "Angle correction applied to the hexapod with respect to the optical x-axis."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionStarted
-        fields:
-          -
-            name: hexapod_u
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionStarted_hexapod_v
-    function: mean
-    type: float
-    unit: degree
-    description: "Angle correction applied to the hexapod with respect to the optical y-axis."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionStarted
-        fields:
-          -
-            name: hexapod_v
-            is_array: False
-
-  - name: ATAOS_hexapodCorrectionStarted_hexapod_w
-    function: mean
-    type: float
-    unit: degree
-    description: "Angle correction applied to the hexapod with respect to the optical w-axis."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_hexapodCorrectionStarted
-        fields:
-          -
-            name: hexapod_w
-            is_array: False
-
-  - name: ATAOS_m1CorrectionCompleted_azimuth
-    function: mean
-    type: float
-    unit: degree
-    description: "Azimuth position for the correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_m1CorrectionCompleted
-        fields:
-          -
-            name: azimuth
-            is_array: False
-
-  - name: ATAOS_m1CorrectionCompleted_elevation
-    function: mean
-    type: float
-    unit: degree
-    description: "Elevation position for the correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_m1CorrectionCompleted
-        fields:
-          -
-            name: elevation
-            is_array: False
-
-  - name: ATAOS_m1CorrectionCompleted_pressure
-    function: mean
-    type: float
-    unit: Pa
-    description: "Pressure correction applied to M1."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_m1CorrectionCompleted
-        fields:
-          -
-            name: pressure
-            is_array: False
-
-  # lsst.sal.ATAOS.logevent_m1CorrectionStarted
-  - name: ATAOS_m1CorrectionStarted_azimuth
-    function: mean
-    type: float
-    unit: degree
-    description: "Azimuth position for the correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_m1CorrectionStarted
-        fields:
-          -
-            name: azimuth
-            is_array: False
-
-  - name: ATAOS_m1CorrectionStarted_elevation
-    function: mean
-    type: float
-    unit: degree
-    description: "Elevation position for the correction."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_m1CorrectionStarted
-        fields:
-          -
-            name: elevation
-            is_array: False
-
-  - name: ATAOS_m1CorrectionStarted_pressure
-    function: mean
-    type: float
-    unit: Pa
-    description: "Pressure correction applied to M1."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_m1CorrectionStarted
-        fields:
-          -
-            name: pressure
-            is_array: False
-
-  # lsst.sal.ATAOS.logevent_pointingOffsetSummary
-  - name: ATAOS_pointingOffsetSummary_total
-    function: mean
-    type: float
-    unit: arcsec
-    description: "Sum total of all pointing offsets."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_pointingOffsetSummary
-        fields:
-          -
-            name: total
-            is_array: True
-
-  - name: ATAOS_pointingOffsetSummary_filter
-    function: mean
-    type: float
-    unit: arcsec
-    description: "Offset due to atspectrograph filter"
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_pointingOffsetSummary
-        fields:
-          -
-            name: filter
-            is_array: True
-
-  - name: ATAOS_pointingOffsetSummary_disperser
-    function: mean
-    type: float
-    unit: arcsec
-    description: "Offset due to atspectrograph disperser."
-    topics:
-      -
-        name: lsst.sal.ATAOS.logevent_pointingOffsetSummary
-        fields:
-          -
-            name: disperser
-            is_array: True
-
-  - name: ATDome_allAxesInPosition_inPosition
-    function: logical_and
-    type: boolean
-    unit: unitless
-    description: "In position?"
-    topics:
-      -
-        name: lsst.sal.ATDome.logevent_allAxesInPosition
-        fields:
-          -
-            name: inPosition
-            is_array: False
-
-  - name: ATDome_azimuthInPosition_inPosition
-    function: logical_and
-    type: boolean
-    unit: unitless
-    description: "In position?"
-    topics:
-      -
-        name: lsst.sal.ATDome.logevent_azimuthInPosition
-        fields:
-          -
-            name: inPosition
-            is_array: False
-
-  - name: ATDome_lastAzimuthGoTo_position
-    function: mean
-    type: float
-    unit: deg
-    description: "Reported position."
-    topics:
-      -
-        name: lsst.sal.ATDome.logevent_lastAzimuthGoTo
-        fields:
-          -
-            name: position
-            is_array: False
-
-  - name: ATDome_settingsAppliedDomeController_rainSensorEnabled
-    function: logical_and
-    type: boolean
-    unit: unitless
-    description: "Is the rain/snow sensor enabled?"
-    topics:
-      -
-        name: lsst.sal.ATDome.logevent_settingsAppliedDomeController
-        fields:
-          -
-            name: rainSensorEnabled
-            is_array: False
-
-  - name: ATDome_settingsAppliedDomeController_cloudSensorEnabled
-    function: logical_and
-    type: boolean
-    unit: unitless
-    description: "Is the cloud sensor enabled?"
-    topics:
-      -
-        name: lsst.sal.ATDome.logevent_settingsAppliedDomeController
-        fields:
-          -
-            name: cloudSensorEnabled
-            is_array: False
-
-  - name: ATDome_settingsAppliedDomeController_tolerance
-    function: mean
-    type: float
-    unit: deg
-    description: "A request to move less than this amount in azimuth is ignored."
-    topics:
-      -
-        name: lsst.sal.ATDome.logevent_settingsAppliedDomeController
-        fields:
-          -
-            name: tolerance
-            is_array: False
-
-  - name: ATDomeTrajectory_telescopeVignetted_vignetted
-    function: max
-    type: int
-    unit: unitless
-    description: "Is the telescope vignetted for any of the reasons below? A TelescopeVignetted enum."
-    topics:
-      -
-        name: lsst.sal.ATDomeTrajectory.logevent_telescopeVignetted
-        fields:
-          -
-            name: vignetted
-            is_array: False
-
-  - name: ATDomeTrajectory_telescopeVignetted_azimuth
-    function: max
-    type: int
-    unit: unitless
-    description: "Is the telescope vignetted due to azimuth? A TelescopeVignetted enum."
-    topics:
-      -
-        name: lsst.sal.ATDomeTrajectory.logevent_telescopeVignetted
-        fields:
-          -
-            name: azimuth
-            is_array: False
-
-  - name: ATDomeTrajectory_telescopeVignetted_shutter
-    function: max
-    type: int
-    unit: unitless
-    description: "Is the telescope vignetted due to the shutter? A TelescopeVignetted enum."
-    topics:
-      -
-        name: lsst.sal.ATDomeTrajectory.logevent_telescopeVignetted
-        fields:
-          -
-            name: shutter
-            is_array: False
-
-  - name: ATHexapod_configurationApplied_configurations
-    function: comma_unique
-    type: string
-    unit: unitless
-    description: "A comma-separated list of configurations applied. If configuration comes from a clone of a git repo, or similar directory, then it will be a list of file names, without the file extension. Ignore whitespace after commas."
-    topics:
-      -
-        name: lsst.sal.ATHexapod.logevent_configurationApplied
-        fields:
-          -
-            name: configurations
-            is_array: False
-
-  - name: ATHexapod_positionUpdate_positionX
-    function: mean
-    type: float
-    unit: mm
-    description: "New X position."
-    topics:
-      -
-        name: lsst.sal.ATHexapod.logevent_positionUpdate
-        fields:
-          -
-            name: positionX
-            is_array: False
-
-  - name: ATHexapod_positionUpdate_positionY
-    function: mean
-    type: float
-    unit: mm
-    description: "New Y position."
-    topics:
-      -
-        name: lsst.sal.ATHexapod.logevent_positionUpdate
-        fields:
-          -
-            name: positionY
-            is_array: False
-
-  - name: ATHexapod_positionUpdate_positionZ
-    function: mean
-    type: float
-    unit: mm
-    description: "New Z position."
-    topics:
-      -
-        name: lsst.sal.ATHexapod.logevent_positionUpdate
-        fields:
-          -
-            name: positionZ
-            is_array: False
-
-  - name: ATHexapod_positionUpdate_positionU
-    function: mean
-    type: float
-    unit: deg
-    description: "New U position."
-    topics:
-      -
-        name: lsst.sal.ATHexapod.logevent_positionUpdate
-        fields:
-          -
-            name: positionU
-            is_array: False
-
-  - name: ATHexapod_positionUpdate_positionV
-    function: mean
-    type: float
-    unit: deg
-    description: "New V position."
-    topics:
-      -
-        name: lsst.sal.ATHexapod.logevent_positionUpdate
-        fields:
-          -
-            name: positionV
-            is_array: False
-
-  - name: ATHexapod_positionUpdate_positionW
-    function: mean
-    type: float
-    unit: deg
-    description: "New W position."
-    topics:
-      -
-        name: lsst.sal.ATHexapod.logevent_positionUpdate
-        fields:
-          -
-            name: positionW
-            is_array: False
-
-  - name: ATMCS_target_elevation
-    function: mean
-    type: float
-    unit: deg
-    description: "Target mount elevation angle at the specified time."
-    topics:
-      -
-        name: lsst.sal.ATMCS.logevent_target
-        fields:
-          -
-            name: elevation
-            is_array: False
-
-  - name: ATMCS_target_elevationVelocity
-    function: mean
-    type: float
-    unit: deg/second
-    description: "Target mount elevation angle velocity at the specified time."
-    topics:
-      -
-        name: lsst.sal.ATMCS.logevent_target
-        fields:
-          -
-            name: elevationVelocity
-            is_array: False
-
-  - name: ATMCS_target_azimuth
-    function: mean
-    type: float
-    unit: deg
-    description: "Target mount azimuth angle at the specified time. The allowed range is 0 to 360."
-    topics:
-      -
-        name: lsst.sal.ATMCS.logevent_target
-        fields:
-          -
-            name: azimuth
-            is_array: False
-
-  - name: ATMCS_target_azimuthVelocity
-    function: mean
-    type: float
-    unit: deg/second
-    description: "Target mount azimuth velocity at the specified time."
-    topics:
-      -
-        name: lsst.sal.ATMCS.logevent_target
-        fields:
-          -
-            name: azimuthVelocity
-            is_array: False
-
-  - name: ATSpectrograph_reportedDisperserPosition_focusOffset
-    function: mean
-    type: float
-    unit: mm
-    description: "<A HREF=https://ts-xml.lsst.io/python/lsst/ts/xml/data/sal_interfaces/ATSpectrograph.html#reporteddisperserposition>ATSpectrograph_ATSpectrograph_logevent_reportedDisperserPosition</A>"
-    topics:
-      -
-        name: lsst.sal.ATSpectrograph.logevent_reportedDisperserPosition
-        fields:
-          -
-            name: focusOffset
-            is_array: False
-
-  - name: ATSpectrograph_reportedDisperserPosition_pointingOffsets
-    function: mean
-    type: float
-    unit: arcsec
-    description: "<A HREF=https://ts-xml.lsst.io/python/lsst/ts/xml/data/sal_interfaces/ATSpectrograph.html#reporteddisperserposition>ATSpectrograph_ATSpectrograph_logevent_reportedDisperserPosition</A>"
-    topics:
-      -
-        name: lsst.sal.ATSpectrograph.logevent_reportedDisperserPosition
-        fields:
-          -
-            name: pointingOffsets
-            is_array: True
-
-  - name: ATSpectrograph_reportedFilterPosition_centralWavelength
-    function: mean
-    type: float
-    unit: nm
-    description: "<A HREF=https://ts-xml.lsst.io/python/lsst/ts/xml/data/sal_interfaces/ATSpectrograph.html#reportedfilterposition>ATSpectrograph_ATSpectrograph_logevent_reportedFilterPosition</A>"
-    topics:
-      -
-        name: lsst.sal.ATSpectrograph.logevent_reportedFilterPosition
-        fields:
-          -
-            name: centralWavelength
-            is_array: False
-
-  - name: ATSpectrograph_reportedFilterPosition_focusOffset
-    function: mean
-    type: float
-    unit: mm
-    description: "<A HREF=https://ts-xml.lsst.io/python/lsst/ts/xml/data/sal_interfaces/ATSpectrograph.html#reportedfilterposition>ATSpectrograph_ATSpectrograph_logevent_reportedFilterPosition</A>"
-    topics:
-      -
-        name: lsst.sal.ATSpectrograph.logevent_reportedFilterPosition
-        fields:
-          -
-            name: focusOffset
-            is_array: False
-
-  - name: ATSpectrograph_reportedFilterPosition_pointingOffsets
-    function: mean
-    type: float
-    unit: arcsec
-    description: "<A HREF=https://ts-xml.lsst.io/python/lsst/ts/xml/data/sal_interfaces/ATSpectrograph.html#reportedfilterposition>ATSpectrograph_ATSpectrograph_logevent_reportedFilterPosition</A>"
-    topics:
-      -
-        name: lsst.sal.ATSpectrograph.logevent_reportedFilterPosition
-        fields:
-          -
-            name: pointingOffsets
-            is_array: True
+- name: AT_Mount_Jitter_Azimuth
+  tables: ["ExposureEFD"]
+  function: rms_4thdeg_polyfit
+  function_args: {"degree": 4}
+  datatype: float
+  unit: unitless
+  description: RMS after 4th order polynomial fit of azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
+  packed_series: True
+  topics:
+  - name: lsst.sal.ATMCS.mount_AzEl_Encoders
+    fields:
+    - name: azimuthCalculatedAngle
+
+- name: AT_Mount_Jitter_Elevation
+  tables: ["ExposureEFD"]
+  function: rms_4thdeg_polyfit
+  function_args: {"degree": 4}
+  datatype: float
+  unit: unitless
+  description: RMS after 4th order polynomial fit of elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  packed_series: True
+  topics:
+  - name: lsst.sal.ATMCS.mount_AzEl_Encoders
+    fields:
+    - name: elevationCalculatedAngle
+
+- name: AT_Mount_Jitter_Nasmyth
+  tables: ["ExposureEFD"]
+  function: rms_4thdeg_polyfit
+  function_args: {"degree": 4}
+  datatype: float
+  unit: unitless
+  description: RMS after 4th order polynomial fit of Nasmyth 1 axis position computed from the axis encoders, or nan if this axis is not in use. The range is the software limits (L1), approximately -175 to 175.
+  packed_series: True
+  topics:
+  - name: lsst.sal.ATMCS.mount_Nasmyth_Encoders
+    fields:
+    - name: nasmyth1CalculatedAngle
+
+- name: AT_salIndex201_Sonic_Temperature_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: AT_salIndex201_Sonic_Temperature_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: AT_salIndex205_Sonic_Temperature_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: AT_salIndex205_Sonic_Temperature_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_X_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_0_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_0_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_0_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_1_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_1_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_1_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_2_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_2_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_2_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_2_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_0_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_0_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_0_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_0_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_1_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_1_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_1_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_2_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_2_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_2_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_speedStdDev_2_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_Magnitude_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_Magnitude_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_Magnitude_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_Magnitude_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_MaxMagnitude_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salIndex201_Wind_Speed_MaxMagnitude_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_MaxMagnitude_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salindex201_Wind_Speed_MaxMagnitude_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_0_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_0_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_0_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_0_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_1_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_1_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_1_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_2_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_2_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_2_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_2_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_0_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_0_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_0_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_0_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_1_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_1_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_1_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_2_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_2_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_2_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_speedStdDev_2_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_Magnitude_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_Magnitude_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_Magnitude_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_Magnitude_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_MaxMagnitude_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salIndex204_Wind_Speed_MaxMagnitude_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_MaxMagnitude_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salindex204_Wind_Speed_MaxMagnitude_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_0_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_0_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_0_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_0_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_1_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_1_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_1_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_2_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_2_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_2_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_2_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_0_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_0_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_0_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_0_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_1_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_1_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_1_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_2_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_2_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_2_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_speedStdDev_2_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_Magnitude_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_Magnitude_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_Magnitude_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_Magnitude_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_MaxMagnitude_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salIndex205_Wind_Speed_MaxMagnitude_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_MaxMagnitude_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salindex205_Wind_Speed_MaxMagnitude_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: AT_salindex201_AirFlow_Speed_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salindex201_AirFlow_Speed_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salindex201_AirFlow_Speed_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salindex201_AirFlow_Speed_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salIndex201_AirFlow_SpeedStdDev_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salIndex201_AirFlow_SpeedStdDev_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salIndex201_AirFlow_SpeedStdDev_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salIndex201_AirFlow_SpeedStdDev_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salindex201_AirFlow_Direction_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex201_AirFlow_Direction_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex201_AirFlow_Direction_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex201_AirFlow_Direction_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex204_AirFlow_Speed_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salindex204_AirFlow_Speed_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salindex204_AirFlow_Speed_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salindex204_AirFlow_Speed_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salIndex204_AirFlow_SpeedStdDev_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salIndex204_AirFlow_SpeedStdDev_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salIndex204_AirFlow_SpeedStdDev_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salIndex204_AirFlow_SpeedStdDev_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salindex204_AirFlow_Direction_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex204_AirFlow_Direction_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex204_AirFlow_Direction_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex204_AirFlow_Direction_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 204
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex205_AirFlow_Speed_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salindex205_AirFlow_Speed_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salindex205_AirFlow_Speed_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salindex205_AirFlow_Speed_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speed
+    - name: salIndex
+
+- name: AT_salIndex205_AirFlow_SpeedStdDev_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salIndex205_AirFlow_SpeedStdDev_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salIndex205_AirFlow_SpeedStdDev_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salIndex205_AirFlow_SpeedStdDev_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: speedStdDev
+    - name: salIndex
+
+- name: AT_salindex205_AirFlow_Direction_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex205_AirFlow_Direction_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex205_AirFlow_Direction_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salindex205_AirFlow_Direction_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: m/s
+  description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 205
+  topics:
+  - name: lsst.sal.ESS.airFlow
+    fields:
+    - name: direction
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_0_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_0_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_0_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_0_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem1
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_1_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem1
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_1_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem1
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_1_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem1
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_2_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem2
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_2_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem2
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_2_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem2
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_2_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem2
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_3_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem3
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_3_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem3
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_3_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem3
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_3_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem3
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_4_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem4
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_4_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem4
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_4_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem4
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_4_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem4
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_5_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem5
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_5_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem5
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_5_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem5
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_5_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem5
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_6_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_6_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_6_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_6_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_7_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_7_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_7_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
+
+- name: AT_salIndex201_TemperatureItem_7_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_0_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_0_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_0_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_0_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem1
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_1_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem1
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_1_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem1
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_1_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem1
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_2_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem2
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_2_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem2
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_2_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem2
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_2_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem2
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_3_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem3
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_3_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem3
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_3_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem3
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_3_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem3
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_4_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem4
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_4_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem4
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_4_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem4
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_4_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem4
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_5_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem5
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_5_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem5
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_5_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem5
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_5_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem5
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_6_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_6_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_6_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_6_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_7_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_7_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_7_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
+
+- name: AT_salIndex301_TemperatureItem_7_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: Celsius
+  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
+
+- name: AT_Azimuth_Calculated_Angle
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: unitless
+  description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3),  approximately -280 to 280.
+  packed_series: True
+  topics:
+  - name: lsst.sal.ATMCS.mount_AzEl_Encoders
+    fields:
+    - name: azimuthCalculatedAngle
+
+- name: AT_Elevation_Calculated_Angle
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: unitless
+  description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  packed_series: True
+  topics:
+  - name: lsst.sal.ATMCS.mount_AzEl_Encoders
+    fields:
+    - name: elevationCalculatedAngle
+
+- name: AT_DIMM_FWHM_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: arcsec
+  description: Combined full width half maximum
+  packed_series: False
+  topics:
+  - name: lsst.sal.DIMM.logevent_dimmMeasurement
+    fields:
+    - name: fwhm
+
+- name: AT_Azimuth_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: degree
+  description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATMCS.mount_AzEl_Encoders
+    fields:
+    - name: elevationCalculatedAngle
+
+- name: AT_Elevation_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: degree
+  description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATMCS.mount_AzEl_Encoders
+    fields:
+    - name: azimuthCalculatedAngle
+
+- name: AT_Hexapod_Position_x_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in x
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition0
+
+- name: AT_Hexapod_Position_x_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in x
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition0
+
+- name: AT_Hexapod_Position_x_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in x
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition0
+
+- name: AT_Hexapod_Position_y_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in y
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition1
+
+- name: AT_Hexapod_Position_y_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in y
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition1
+
+- name: AT_Hexapod_Position_y_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in y
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition1
+
+- name: AT_Hexapod_Position_z_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in z
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition2
+
+- name: AT_Hexapod_Position_2_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in z
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition2
+
+- name: AT_Hexapod_Position_2_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in z
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition2
+
+- name: AT_Hexapod_Position_u_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in u
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition3
+
+- name: AT_Hexapod_Position_u_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in u
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition3
+
+- name: AT_Hexapod_Position_u_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in u
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition3
+
+- name: AT_Hexapod_Position_v_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in v
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition4
+
+- name: AT_Hexapod_Position_v_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in v
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition4
+
+- name: AT_Hexapod_Position_v_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in v
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition4
+
+- name: AT_Hexapod_Position_w_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in w
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition5
+
+- name: AT_Hexapod_Position_w_Max
+  tables: ["ExposureEFD","VisitEFD"]
+  function: min
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in w
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition5
+
+- name: AT_Hexapod_Position_w_Min
+  tables: ["ExposureEFD","VisitEFD"]
+  function: max
+  datatype: float
+  unit: mm
+  description: Auxiliary telescope hexapod reported position in w
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATHexapod.positionStatus
+    fields:
+    - name: reportedPosition5
+
+- name: AT_salIndex201_Dewpoint_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Dew point in AuxTel-ESS02
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.dewPoint
+    fields:
+    - name: dewPointItem
+    - name: salIndex
+
+- name: AT_salIndex201_Relative_Humidity_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: percent
+  description: Relative humidity in AuxTel-ESS02
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.relativeHumidity
+    fields:
+    - name: relativeHumidityItem
+    - name: salIndex
+
+- name: AT_salIndex201_Pressure_Item_0_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Pa
+  description: Atmosferic pressure item 0 in AuxTel-ESS02
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.pressure
+    fields:
+    - name: pressureItem0
+    - name: salIndex
+
+- name: AT_salIndex201_Pressure_Item_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Pa
+  description: Atmosferic pressure item 1 in AuxTel-ESS02
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 201
+  topics:
+  - name: lsst.sal.ESS.pressure
+    fields:
+    - name: pressureItem1
+    - name: salIndex
+
+- name: AT_salIndex301_Pressure_Item_0_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Pa
+  description: Atmosferic pressure item 0 in weather tower atmospheric pressure
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.pressure
+    fields:
+    - name: pressureItem0
+    - name: salIndex
+
+- name: AT_salIndex301_Pressure_Item_1_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: Pa
+  description: Atmosferic pressure item 1 in weather tower atmospheric pressure
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 301
+  topics:
+  - name: lsst.sal.ESS.pressure
+    fields:
+    - name: pressureItem1
+    - name: salIndex
+
+- name: AT_Pointing_Mount_Position_RA_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: degree
+  description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATPtg.mountPositions
+    fields:
+    - name: ra
+
+- name: AT_Pointing_Mount_Position_RA_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  datatype: float
+  unit: degree
+  description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATPtg.mountPositions
+    fields:
+    - name: ra
+
+- name: AT_Pointing_Mount_Position_Dec_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: degree
+  description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATPtg.mountPositions
+    fields:
+    - name: declination
+
+- name: AT_Pointing_Mount_Position_Dec_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  datatype: float
+  unit: degree
+  description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATPtg.mountPositions
+    fields:
+    - name: declination
+
+- name: AT_Pointing_Mount_Position_Sky_Angle_Mean
+  tables: ["ExposureEFD","VisitEFD"]
+  function: mean
+  datatype: float
+  unit: degree
+  description: Calculated sky angle.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATPtg.mountPositions
+    fields:
+    - name: skyAngle
+
+- name: AT_Pointing_Mount_Position_Sky_Angle_StdDev
+  tables: ["ExposureEFD","VisitEFD"]
+  function: stddev
+  datatype: float
+  unit: degree
+  description: Calculated sky angle.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ATPtg.mountPositions
+    fields:
+    - name: skyAngle
