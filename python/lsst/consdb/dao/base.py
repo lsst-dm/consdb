@@ -102,9 +102,9 @@ class DBBase:
             metadata.reflect(bind=engine)
 
             if schema:
-                tbl = Table(tablename, metadata, autoload=True, schema=schema)
+                tbl = Table(tablename, metadata, autoload_with=True, schema=schema)
             else:
-                tbl = Table(tablename, metadata, autoload=True)
+                tbl = Table(tablename, metadata, autoload_with=True)
             return tbl
 
     def execute(self, stm):
