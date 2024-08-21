@@ -1,32 +1,38 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
 
 class Field(BaseModel):
     """
-    Represents a field in the Topic model.
+    Represents a field in the config model.
 
-    Attributes:
-      name (str): The name of the field.
-      is_array (bool, optional): Indicates if the field is an array.
-      Defaults to False.
+    Attributes
+    ----------
+    name : str
+      The name of the field.
     """
 
     name: str
-    is_array: Optional[bool] = False
-    array_index: Optional[List[int]] = None
-    key_reference_field: Optional[str] = None
-    key_reference: Optional[str] = None
 
 
 class Topic(BaseModel):
     """
-    Represents a topic in the Column model.
+    Represents a topic.
 
-    Attributes:
-      name (str): The name of the topic.
-      fields (List[Field]): A list of fields associated with the topic.
+    Parameters
+    ----------
+    name : str
+      The name of the topic.
+    fields : List[Field]
+      The list of fields associated with the topic.
+
+    Attributes
+    ----------
+    name : str
+      The name of the topic.
+    fields : List[Field]
+      The list of fields associated with the topic.
     """
 
     name: str
@@ -35,36 +41,56 @@ class Topic(BaseModel):
 
 class Column(BaseModel):
     """
-    Represents a column in a database table.
+    Represents a column in the configuration model.
 
-    Attributes:
-      name (str): The name of the column.
-      function (str): The function to be applied to the column.
-      function_args (Optional[Dict]): Optional arguments for the function.
-      type (str): The data type of the column.
-      unit (str): The unit of measurement for the column.
-      description (str): A description of the column.
-      tables (Optional[List[str]]): Optional list of tables where the column is
-      present.
-      topics (List[Topic]): List of topics associated with the column.
+    Parameters
+    ----------
+    name : str
+      The name of the column.
+    tables : Optional[List[str]], optional
+      The list of tables that the column belongs to, by default
+      ["ExposureEFD", "VisitEFD"].
+    function : str
+      The function applied to the column.
+    function_args : Optional[Dict], optional
+      The arguments passed to the function, by default {}.
+    datatype : str
+      The datatype of the column.
+    unit : str
+      The unit of the column.
+    description : str
+      The description of the column.
+    packed_series : bool
+      Indicates if the column is part of a packed series.
+    subset_field : Optional[str], optional
+      The field used for subsetting, by default None.
+    subset_value : Optional[Union[str,int]], optional
+      The value used for subsetting, by default None.
+    topics : List[Topic]
+      The list of topics associated with the column.
     """
 
     name: str
+    tables: Optional[List[str]] = ["ExposureEFD", "VisitEFD"]
     function: str
     function_args: Optional[Dict] = None
-    type: str
+    datatype: str
     unit: str
     description: str
-    tables: Optional[List[str]] = ["ExposureEFD", "VisitEFD"]
+    packed_series: bool
+    subset_field: Optional[str] = None
+    subset_value: Optional[Union[str, int]] = None
     topics: List[Topic]
 
 
 class ConfigModel(BaseModel):
     """
-    Represents a configuration model.
+    Model representing the configuration of a database table.
 
-    Attributes:
-      columns (List[Column]): A list of columns.
+    Attributes
+    ----------
+      columns (List[Column]): List of columns in the table.
+
     """
 
     columns: List[Column]
