@@ -1,3 +1,4 @@
+import os
 from functools import partial
 from urllib.parse import urljoin
 
@@ -6,7 +7,8 @@ import numpy as np
 import pandas as pd
 import requests
 from astropy.time import Time
-from lsst_efd_client.auth_helper import NotebookAuth
+
+# from lsst_efd_client.auth_helper import NotebookAuth
 
 
 class InfluxDBClient:
@@ -562,7 +564,7 @@ class InfluxDBClient:
 class InfluxDbDao(InfluxDBClient):
 
     def __init__(
-        self, efd_name, database_name="efd", creds_service="https://roundtable.lsst.codes/segwarides/"
+        self, efd_name: str, database_name="efd", creds_service="https://roundtable.lsst.codes/segwarides/"
     ):
         """
         Initialize the InfluxDbDao class, which extends the InfluxDBClient
@@ -579,8 +581,16 @@ class InfluxDbDao(InfluxDBClient):
             The URL of the credentials service to use for authentication.
             Default is "https://roundtable.lsst.codes/segwarides/".
         """
-        auth = NotebookAuth(service_endpoint=creds_service)
-        host, schema_registry_url, port, user, password, path = auth.get_auth(efd_name)
+        # auth = NotebookAuth(service_endpoint=creds_service)
+        # host, schema_registry_url, port, user,
+        # password, path = auth.get_auth(efd_name)
+
+        user = os.getenv("EFD_USERNAME", "efdreader")
+        password = os.getenv("EFD_PASSWORD")
+        # database_name=os.getenv("EFD_DATABASE", "efd")
+        host = os.getenv("EFD_HOST", "usdf-rsp.slac.stanford.edu")
+        port = os.getenv("EFD_PORT", 443)
+        path = os.getenv("EFD_PATH", "/influxdb-enterprise-data/")
 
         url = urljoin(f"https://{host}:{port}", f"{path}")
 
