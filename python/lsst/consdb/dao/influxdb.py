@@ -350,16 +350,38 @@ class InfluxDBClient:
         # One topic queried at a time
         series = statement["series"][0]
         result = pd.DataFrame(series.get("values", []), columns=series["columns"])
+
         if "time" not in result.columns:
             return result
-        result = result.set_index(pd.to_datetime(result["time"])).drop("time", axis=1)
+
+        # Convert the "time" column to datetime objects
+        result["time"] = pd.to_datetime(result["time"], errors="coerce", utc=True)
+
+        # Define a lambda function to convert datetime to the desired format
+        convert_index_format = lambda x: x.strftime("%Y-%m-%dT%H:%M:%S.%f%z") if pd.notna(x) else x
+
+        # Apply the lambda function to format the index
+        result_index = result["time"].map(lambda x: convert_index_format(x))
+
+        # Set the formatted index
+        result = result.set_index(result_index).drop("time", axis=1)
+
+        # Convert the index to a DatetimeIndex
+        result.index = pd.to_datetime(result.index, errors="coerce", utc=True)
+
+        # Ensure the index is timezone-aware
         if result.index.tzinfo is None:
             result.index = result.index.tz_localize("UTC")
+
+        # Add tags if present
         if "tags" in series:
             for k, v in series["tags"].items():
                 result[k] = v
+
+        # Set the name if present
         if "name" in series:
             result.name = series["name"]
+
         return result
 
     def build_time_range_query(self, topic_name, fields, start, end, index=None, use_old_csc_indexing=False):
