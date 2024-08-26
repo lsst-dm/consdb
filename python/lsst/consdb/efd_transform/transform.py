@@ -161,26 +161,38 @@ class Transform:
                 # get fields
                 if not topic_series.empty:
                     fields = [f["name"] for f in topic["fields"]]
-                    data = [{"topic": topic["name"], "series": topic_series[fields]}]
+                    # if there is filter column and value
+                    if column["subset_field"]:
+                        subset_field, subset_value = str(column["subset_field"]), str(column["subset_value"])
+                        topic_series[subset_field] = topic_series[subset_field].astype(str)
+                        filtered_df = topic_series[topic_series[subset_field] == subset_value]
+                        fields.remove(subset_field)
+                        data = [{"topic": topic["name"], "series": filtered_df[fields]}]
+                    else:
+                        data = [{"topic": topic["name"], "series": topic_series[fields]}]
 
                     if "ExposureEFD" in column["tables"]:
                         for exposure in exposures:
+                            function_kwargs = column["function_args"] or {}
                             column_value = self.proccess_column_value(
                                 start_time=exposure["timespan"].begin,
                                 end_time=exposure["timespan"].end,
                                 topics=data,
                                 transform_function=column["function"],
+                                **function_kwargs,
                             )
 
                             result_exp[exposure["id"]][column["name"]] = column_value
 
                     if "VisitEFD" in column["tables"]:
                         for visit in visits:
+                            function_kwargs = column["function_args"] or {}
                             column_value = self.proccess_column_value(
                                 start_time=visit["timespan"].begin,
                                 end_time=visit["timespan"].end,
                                 topics=data,
                                 transform_function=column["function"],
+                                **function_kwargs,
                             )
 
                             result_vis[visit["id"]][column["name"]] = column_value
@@ -209,125 +221,13 @@ class Transform:
         self.log.info(f"Database rows affected: {affected_rows}")
         del results
 
-    # def process_interval(
-    #     self,
-    #     instrument: str,
-    #     start_time: astropy.time.Time,
-    #     end_time: astropy.time.Time,
-    # ):
-    #     """
-    #     Process the given time interval for a specific instrument.
-
-    #     Args:
-    #         instrument (str): The instrument name.
-    #         start_time (astropy.time.Time): The start time of the interval.
-    #         end_time (astropy.time.Time): The end time of the interval.
-    #     """
-
-    #     self.log.info(f"Proccessing interval {start_time} - {end_time}")
-
-    #     # Retrieves all exposures for the period
-    #     exposures = self.butler_dao.exposures_by_period(instrument,
-    #                 start_time, end_time)
-
-    #     self.log.info(f"Exposures: {len(exposures)}")
-
-    #     # Retrieves all visits for the period
-    #     visits = self.butler_dao.visits_by_period(instrument, start_time,
-    #                                               end_time)
-
-    #     self.log.info(f"Visits: {len(visits)}")
-
-    #     # Identifies the period that will be used to consult the topics
-    #     topic_interval = self.get_topic_interval(start_time, end_time,
-    #                                              exposures, visits)
-    #     self.log.info(f"Topic interval:
-    #                               {topic_interval[0]} - {topic_interval[1]}")
-
-    #     result_exp = {}
-    #     for exposure in exposures:
-    #         result_exp[exposure["id"]] = {
-    #             "exposure_id": exposure["id"],
-    #             "instrument": instrument,
-    #         }
-
-    #     result_vis = {}
-    #     for visit in visits:
-    #         result_vis[visit["id"]] = {
-    #             "visit_id": visit["id"],
-    #             "instrument": instrument,
-    #         }
-
-    #     # self.log.info(result_exp)
-
-    #     # Iterates over the columns defined in the config.
-    #     # for each column retrieves EFD topic information
-    #     for column in self.config["columns"]:
-    #         # self.log.debug(column)
-    #         self.log.info(f"Proccessing Column: {column['name']}")
-
-    #         # Array with all topics needed for this column
-    #         # topics = [{'name': topic name, series: pandas.DataFrame}]
-    #         packed_series = column.get("packed_series", False)
-    #         topics = self.topics_by_column(column, topic_interval,
-    #                                        packed_series)
-
-    #         if "ExposureEFD" in column["tables"]:
-    #             for exposure in exposures:
-    #                 column_value = self.proccess_column_value(
-    #                     start_time=exposure["timespan"].begin,
-    #                     end_time=exposure["timespan"].end,
-    #                     topics=topics,
-    #                     transform_function=column["function"],
-    #                 )
-
-    #                 result_exp[exposure["id"]][column["name"]] = column_value
-
-    #         if "VisitEFD" in column["tables"]:
-    #             for visit in visits:
-    #                 column_value = self.proccess_column_value(
-    #                     start_time=visit["timespan"].begin,
-    #                     end_time=visit["timespan"].end,
-    #                     topics=topics,
-    #                     transform_function=column["function"],
-    #                 )
-
-    #                 result_vis[visit["id"]][column["name"]] = column_value
-
-    #     results = []
-    #     for result_row in result_exp:
-    #         results.append(result_exp[result_row])
-
-    #     df_exposures = pandas.DataFrame(results)
-    #     self.log.info(f"Exposure results to be inserted into the database:
-    #                                                     {len(df_exposures)}")
-
-    #     exp_dao = ExposureEfdDao(db_uri=self.db_uri)
-    #     print("df_exposures")
-    #     print(df_exposures)
-    #     # affected_rows =
-    #       exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
-    #     # self.log.info(f"Database rows affected: {affected_rows}")
-    #     # del results
-
-    #     results = []
-    #     for result_row in result_vis:
-    #         results.append(result_vis[result_row])
-
-    #     df_visits = pandas.DataFrame(results)
-    #     self.log.info(f"Visit results to be inserted into the database:
-    #                                                        {len(df_visits)}")
-
-    #     print("df_visits")
-    #     print(df_visits)
-    #     # vis_dao = VisitEfdDao(db_uri=self.db_uri)
-    #     # affected_rows = vis_dao.upsert(df=df_visits,
-    #                                      commit_every=self.commit_every)
-    #     # self.log.info(f"Database rows affected: {affected_rows}")
-    #     del results
-
     def proccess_column_value(
-        self, start_time: astropy.time.Time, end_time: astropy.time.Time, topics, transform_function
+        self,
+        start_time: astropy.time.Time,
+        end_time: astropy.time.Time,
+        topics,
+        transform_function,
+        **function_kwargs,
     ) -> Any:
         """
         Process the column value for a given time range and topics using an
@@ -338,22 +238,23 @@ class Transform:
             end_time (astropy.time.Time): The end time of the time range.
             topics: The topics to retrieve values from.
             transform_function: The function to apply to the values.
+            **function_kwargs: Additional keyword arguments to pass to the 
+              transform function.
 
         Returns:
             The processed column value.
-
         """
-
         values = self.topic_values_by_exposure(start_time, end_time, topics)
-        if len(values) > 1:
-            values = self.concatenate_arrays(values)
 
-        column_value = Summary(values).apply(transform_function)
-        return column_value
+        if not values.empty:
+            column_value = Summary(values).apply(transform_function, **function_kwargs)
+            return column_value
+
+        return None
 
     def topic_values_by_exposure(
         self, start_time: astropy.time.Time, end_time: astropy.time.Time, topics
-    ) -> List:
+    ) -> pandas.DataFrame:
         """
         Retrieve topic values for a given time range.
 
@@ -363,21 +264,30 @@ class Transform:
             topics (list): A list of topics.
 
         Returns:
-            list: A list of topic values for the given time range.
+            pandas.DataFrame: A DataFrame containing the topic values for the 
+                              given time range, or an empty DataFrame if no 
+                              values match.
         """
 
         topics_values = []
 
         for topic in topics:
-
             topic_table = topic["series"]
             if not topic_table.empty:
                 values = topic_table.loc[
                     (topic_table.index > str(start_time)) & (topic_table.index < str(end_time))
                 ]
-                topics_values.append(values)
+                if not values.empty:
+                    topics_values.append(values)
 
-        return topics_values
+        # Concatenate the list of DataFrames or return an empty DataFrame if 
+        # the list is empty
+        if topics_values:
+            result = pandas.concat(topics_values)
+        else:
+            result = pandas.DataFrame()  # Return an empty DataFrame
+
+        return result
 
     def concatenate_arrays(
         self, input_data: Union[List[float], List[List[float]], numpy.ndarray, List[numpy.ndarray]]
