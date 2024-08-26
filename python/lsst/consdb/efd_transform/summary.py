@@ -25,25 +25,27 @@ class Summary:
         self.values = numpy.array(dataframe.to_numpy(), dtype=datatype)
         self.time = dataframe.index
 
-        # Handle empty or all-NaN arrays after conversion to numpy array
-        if self.values.size == 0 or numpy.all(numpy.isnan(self.values.astype(float))):
-            self.values = numpy.full_like(self.values, numpy.nan, dtype=float)
-
     def mean(self, **kwargs) -> float:
         """Calculate the mean ignoring NaN values."""
-        return numpy.nanmean(self.values)
+        values = self.values.astype(numpy.float64).flatten()
+        return numpy.nanmean(values)
 
     def stddev(self, ddof: int = 1, **kwargs) -> float:
         """Calculate the standard deviation ignoring NaN values."""
-        return numpy.nanstd(self.values, ddof=ddof)
+        values = self.values.astype(numpy.float64).flatten()
+        if numpy.count_nonzero(~numpy.isnan(values)) > 1:
+            return numpy.nanstd(values, ddof=ddof)
+        return None
 
     def max(self, **kwargs) -> Union[float, int, bool]:
         """Find the maximum value ignoring NaN values."""
-        return numpy.nanmax(self.values)
+        values = self.values.astype(numpy.float64).flatten()
+        return numpy.nanmax(values)
 
     def min(self, **kwargs) -> Union[float, int, bool]:
         """Find the minimum value ignoring NaN values."""
-        return numpy.nanmin(self.values)
+        values = self.values.astype(numpy.float64).flatten()
+        return numpy.nanmin(values)
 
     def mean_columnwise(self, **kwargs) -> float:
         """Calculate column-wise mean."""
@@ -102,6 +104,10 @@ class Summary:
             The result of the transformation method or None if the
             method is not found.
         """
+        # Handle empty or all-NaN arrays after conversion to numpy array
+        if self.values.size == 0 or numpy.all(numpy.isnan(self.values.astype(float))):
+            return None
+
         method = getattr(self, method_name, None)
         if method and callable(method):
             try:
