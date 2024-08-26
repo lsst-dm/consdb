@@ -1,7 +1,7 @@
 columns:
 - name: AT_Mount_Jitter_Azimuth
   tables: ["ExposureEFD"]
-  function: rms_4thdeg_polyfit
+  function: rms_from_polynomial_fit
   function_args: {"degree": 4}
   datatype: float
   unit: unitless
@@ -14,7 +14,7 @@ columns:
 
 - name: AT_Mount_Jitter_Elevation
   tables: ["ExposureEFD"]
-  function: rms_4thdeg_polyfit
+  function: rms_from_polynomial_fit
   function_args: {"degree": 4}
   datatype: float
   unit: unitless
@@ -27,7 +27,7 @@ columns:
 
 - name: AT_Mount_Jitter_Nasmyth
   tables: ["ExposureEFD"]
-  function: rms_4thdeg_polyfit
+  function: rms_from_polynomial_fit
   function_args: {"degree": 4}
   datatype: float
   unit: unitless
