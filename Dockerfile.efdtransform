@@ -7,16 +7,12 @@ RUN source loadLSST.bash && pip install \
     lsst_efd_client==0.12.0
 
 # Python code
-COPY --chown=lsst:lsst python/lsst/consdb/transform_efd.py ./consdb/
 COPY --chown=lsst:lsst python/lsst/consdb/efd_transform ./consdb/efd_transform
-COPY --chown=lsst:lsst python/lsst/consdb/dao ./consdb/dao
-# Configuration files
-COPY --chown=lsst:lsst tmp/config_LATISS.yaml ./consdb/
 
 RUN mkdir data
 
 # TODO: SQLITE TEST DATABASE
-COPY --chown=lsst:lsst tmp/test.db ./data/
+COPY --chown=lsst:lsst tests/efd_transform/test.db ./data/
 
 # Environment variables that must be set:
 # ------------------------------
@@ -43,18 +39,7 @@ ENV DB_URI="sqlite:////opt/lsst/software/stack/data/test.db"
 
 ENV LOG_FILE="/opt/lsst/software/stack/data/transform.log"
 
-CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -s \"$START_TIME\" -e \"$END_TIME\" -r \"$BUTLER_REPO\" -d \"$DB_URI\"  -E \"$EFD\" -l \"$LOG_FILE\""]
-
-# Example of command used to execute transform_efd
-# python ./consdb/transform_efd.py \
-#     -c $PWD/tmp/config_LATISS.yaml \
-#     -i LATISS \
-#     -s 2024-04-25T00:00:00  \
-#     -e 2024-04-30T23:59:59 \
-#     -r /repo/embargo \
-#     -d sqlite:///$PWD/tmp/test.db \
-#     -E usdf_efd \
-#     -l $PWD/tmp/transform.log
+CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/efd_transform/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -s \"$START_TIME\" -e \"$END_TIME\" -r \"$BUTLER_REPO\" -d \"$DB_URI\"  -E \"$EFD\" -l \"$LOG_FILE\""]
 
 # Exemple of command used to execute transform_efd with docker
 # docker run --rm -it --volume $PWD/data:/opt/lsst/software/stack/data  -e CONFIG_FILE=config_LATISS.yaml -e ...  consdb/efd_transform:latest
