@@ -321,6 +321,12 @@ class InfluxDBClient:
             print(f"Error occurred while merging field {f}: {e}")
             raise
 
+    def _convert_index_format(self, x):
+        if pd.notna(x):
+            return x.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+        else:
+            return x
+
     def _to_dataframe(self, response: dict) -> pd.DataFrame:
         """
         Convert an InfluxDB query response to a Pandas DataFrame.
@@ -354,30 +360,21 @@ class InfluxDBClient:
         if "time" not in result.columns:
             return result
 
-        # Convert the "time" column to datetime objects
-        result["time"] = pd.to_datetime(result["time"], errors="coerce", utc=True)
-
-        # Define a lambda function to convert datetime to the desired format
-        convert_index_format = lambda x: x.strftime("%Y-%m-%dT%H:%M:%S.%f%z") if pd.notna(x) else x
-
-        # Apply the lambda function to format the index
-        result_index = result["time"].map(lambda x: convert_index_format(x))
-
-        # Set the formatted index
-        result = result.set_index(result_index).drop("time", axis=1)
-
+        # Convert the "time" column to datetime objects and fix inconsistencies 
+        # in datetime iso format
+        result["time"] = pd.to_datetime(result["time"], errors="coerce", utc=True).apply(
+            self._convert_index_format
+        )
+        result = result.set_index(result["time"]).drop("time", axis=1)
         # Convert the index to a DatetimeIndex
         result.index = pd.to_datetime(result.index, errors="coerce", utc=True)
-
         # Ensure the index is timezone-aware
         if result.index.tzinfo is None:
             result.index = result.index.tz_localize("UTC")
-
         # Add tags if present
         if "tags" in series:
             for k, v in series["tags"].items():
                 result[k] = v
-
         # Set the name if present
         if "name" in series:
             result.name = series["name"]
