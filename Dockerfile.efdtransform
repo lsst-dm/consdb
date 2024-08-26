@@ -18,16 +18,13 @@ RUN mkdir data
 # TODO: SQLITE TEST DATABASE
 COPY --chown=lsst:lsst tmp/test.db ./data/
 
-# BASED IN THIS EXAMPLE: https://github.com/lsst-dm/transfer_embargo/blob/main/Dockerfile#L20C1-L32C182
+# Environment variables that must be set:
 # ------------------------------
-# Define the environment variables
-# These are written over if they are re-defined
-# by the cronjob or on the command line deploy
-# of the pod
 ENV CONFIG_FILE="/opt/lsst/software/stack/consdb/config_LATISS.yaml"
 ENV INSTRUMENT="LATISS"
 ENV START_TIME="2024-04-25T00:00:00"
 ENV END_TIME="2024-04-30T23:59:59.999999"
+
 # Buttler Access Variables
 ENV BUTLER_REPO="s3://rubin-summit-users/butler.yaml"
 ENV S3_ENDPOINT_URL="https://s3dfrgw.slac.stanford.edu/"
@@ -35,10 +32,12 @@ ENV S3_ENDPOINT_URL="https://s3dfrgw.slac.stanford.edu/"
 # ENV AWS_SECRET_ACCESS_KEY="placeholder"
 ENV PGUSER="rubin"
 # ENV PGPASSWORD="placeholder"
+
 # USDF EFD API access Variables
 ENV EFD="usdf_efd"
 ENV EFD_USERNAME="efdreader"
 # ENV EFD_PASSWORD="placeholder"
+
 # Consdb Transform DATABASE Variables
 ENV DB_URI="sqlite:////opt/lsst/software/stack/data/test.db"
 
