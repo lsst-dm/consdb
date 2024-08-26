@@ -10,8 +10,8 @@ import astropy.time
 # import lsst_efd_client
 import yaml
 from dao.influxdb import InfluxDbDao
-from efd_transform.config_model import ConfigModel
-from efd_transform.transform import Transform
+from config_model import ConfigModel
+from transform import Transform
 from lsst.daf.butler import Butler
 from pydantic import ValidationError
 
