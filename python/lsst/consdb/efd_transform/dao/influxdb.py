@@ -360,7 +360,7 @@ class InfluxDBClient:
         if "time" not in result.columns:
             return result
 
-        # Convert the "time" column to datetime objects and fix inconsistencies 
+        # Convert the "time" column to datetime objects and fix inconsistencies
         # in datetime iso format
         result["time"] = pd.to_datetime(result["time"], errors="coerce", utc=True).apply(
             self._convert_index_format
