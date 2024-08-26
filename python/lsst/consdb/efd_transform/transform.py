@@ -238,7 +238,7 @@ class Transform:
             end_time (astropy.time.Time): The end time of the time range.
             topics: The topics to retrieve values from.
             transform_function: The function to apply to the values.
-            **function_kwargs: Additional keyword arguments to pass to the 
+            **function_kwargs: Additional keyword arguments to pass to the
               transform function.
 
         Returns:
@@ -264,8 +264,8 @@ class Transform:
             topics (list): A list of topics.
 
         Returns:
-            pandas.DataFrame: A DataFrame containing the topic values for the 
-                              given time range, or an empty DataFrame if no 
+            pandas.DataFrame: A DataFrame containing the topic values for the
+                              given time range, or an empty DataFrame if no
                               values match.
         """
 
@@ -280,7 +280,7 @@ class Transform:
                 if not values.empty:
                     topics_values.append(values)
 
-        # Concatenate the list of DataFrames or return an empty DataFrame if 
+        # Concatenate the list of DataFrames or return an empty DataFrame if
         # the list is empty
         if topics_values:
             result = pandas.concat(topics_values)
