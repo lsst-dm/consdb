@@ -8,7 +8,7 @@ from dao.butler import ButlerDao
 from dao.exposure_efd import ExposureEfdDao
 from dao.influxdb import InfluxDbDao
 from dao.visit_efd import VisitEfdDao
-from efd_transform.summary import Summary
+from summary import Summary
 from lsst.daf.butler import Butler
 
 
