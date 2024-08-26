@@ -8,8 +8,8 @@ from dao.butler import ButlerDao
 from dao.exposure_efd import ExposureEfdDao
 from dao.influxdb import InfluxDbDao
 from dao.visit_efd import VisitEfdDao
-from summary import Summary
 from lsst.daf.butler import Butler
+from summary import Summary
 
 
 class Transform:
@@ -348,42 +348,58 @@ class Transform:
         self, topic: dict[str, Any], topic_interval: list[astropy.time.Time], packed_series: bool = False
     ) -> pandas.DataFrame:
 
-        start = topic_interval[0].utc
-        end = topic_interval[1].utc
-        window = astropy.time.TimeDelta(topic.get("window", 0.0), format="sec")
+        start = topic_interval[0].utc  # Start time of the interval in UTC
+        end = topic_interval[1].utc  # End time of the interval in UTC
+        window = astropy.time.TimeDelta(
+            topic.get("window", 0.0), format="sec"
+        )  # Time window around the interval
 
-        fields = [f["name"] for f in topic["fields"]]
+        fields = [f["name"] for f in topic["fields"]]  # List of field names to query
 
-        if packed_series:
+        # Define the chunk size for querying to manage large numbers of fields
+        chunk_size = 100  # Adjust as necessary based on system capabilities
+        chunks = [fields[i : i + chunk_size] for i in range(0, len(fields), chunk_size)]
+        # Split the fields into smaller lists (chunks) to avoid querying too
+        # many fields at once
+
+        all_series = []  # List to collect DataFrames from each chunk
+
+        for chunk in chunks:
             try:
-                series = self.efd.select_packed_time_series(
-                    topic["name"],
-                    fields,
-                    start - window,
-                    end + window,
-                )
+                if packed_series:
+                    # Query packed time series for the current chunk of fields
+                    series = self.efd.select_packed_time_series(
+                        topic["name"],
+                        chunk,
+                        start - window,
+                        end + window,
+                    )
+                else:
+                    # Query regular time series for the current chunk of fields
+                    series = self.efd.select_time_series(
+                        topic["name"],
+                        chunk,
+                        start - window,
+                        end + window,
+                    )
+                if not series.empty:
+                    all_series.append(series)  # Append the result to the list
+                    # only if not empty
             except Exception as e:
+                # Log any errors encountered during querying
                 self.log.debug(e)
-                series = pandas.DataFrame()
+                # Optional: you might want to include a placeholder DataFrame
+                # with the same columns here if needed
+
+        if all_series:
+            # Concatenate all collected DataFrames into a single DataFrame if
+            # any results were collected
+            combined_series = pandas.concat(all_series, axis=1)
         else:
-            series = self.efd.select_time_series(
-                topic["name"],
-                fields,
-                start - window,
-                end + window,
-            )
+            # Return an empty DataFrame if no data was collected
+            combined_series = pandas.DataFrame()
 
-        # TODO: Currently doing a temporary resample and interpolate.
-        # Only to simulate that there is more than one message
-        # per exposure period and allow summarization to be done.
-        # if len(series) > 0:
-        #     series = series.resample("10s", origin=series.index[0]).mean()
-        #     series = series.interpolate(method="time")
-
-        # print(series)
-        # print(series.info(verbose=True))
-
-        return series
+        return combined_series
 
     def get_topic_interval(
         self,
