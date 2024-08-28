@@ -1,0 +1,81 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: exposure_id, datatype: int64}
+# - {name: exposure_name, datatype: string}
+# - {name: controller, datatype: string}
+# - {name: day_obs, datatype: int64}
+# - {name: seq_num, datatype: int64}
+# - {name: physical_filter, datatype: string}
+# - {name: band, datatype: string, subtype: json}
+# - {name: s_ra, datatype: string, subtype: json}
+# - {name: s_dec, datatype: string, subtype: json}
+# - {name: sky_rotation, datatype: string, subtype: json}
+# - {name: azimuth_start, datatype: string, subtype: json}
+# - {name: azimuth_end, datatype: string, subtype: json}
+# - {name: azimuth, datatype: string, subtype: json}
+# - {name: altitude_start, datatype: string, subtype: json}
+# - {name: altitude_end, datatype: string, subtype: json}
+# - {name: altitude, datatype: string, subtype: json}
+# - {name: zenith_distance_start, datatype: string, subtype: json}
+# - {name: zenith_distance_end, datatype: string, subtype: json}
+# - {name: zenith_distance, datatype: string, subtype: json}
+# - {name: airmass, datatype: string, subtype: json}
+# - {name: exp_midpt, datatype: string}
+# - {name: exp_midpt_mjd, datatype: float64}
+# - {name: obs_start, datatype: string}
+# - {name: obs_start_mjd, datatype: float64}
+# - {name: obs_end, datatype: string}
+# - {name: obs_end_mjd, datatype: float64}
+# - {name: exp_time, datatype: string, subtype: json}
+# - {name: shut_time, datatype: string, subtype: json}
+# - {name: dark_time, datatype: string, subtype: json}
+# - {name: group_id, datatype: string, subtype: json}
+# - {name: cur_index, datatype: string, subtype: json}
+# - {name: max_index, datatype: string, subtype: json}
+# - {name: img_type, datatype: string, subtype: json}
+# - {name: emulated, datatype: bool}
+# - {name: science_program, datatype: string, subtype: json}
+# - {name: observation_reason, datatype: string, subtype: json}
+# - {name: target_name, datatype: string, subtype: json}
+# - {name: air_temp, datatype: string, subtype: json}
+# - {name: pressure, datatype: string, subtype: json}
+# - {name: humidity, datatype: string, subtype: json}
+# - {name: wind_speed, datatype: string, subtype: json}
+# - {name: wind_dir, datatype: string, subtype: json}
+# - {name: dimm_seeing, datatype: string, subtype: json}
+# - {name: focus_z, datatype: string, subtype: json}
+# - {name: simulated, datatype: string, subtype: json}
+# - {name: s_region, datatype: string, subtype: json}
+# - {name: vignette, datatype: string, subtype: json}
+# - {name: vignette_min, datatype: string, subtype: json}
+# meta: !!omap
+# - __serialized_columns__:
+#     exp_midpt:
+#       __class__: astropy.time.core.Time
+#       format: isot
+#       in_subfmt: '*'
+#       out_subfmt: '*'
+#       precision: 6
+#       scale: tai
+#       value: !astropy.table.SerializedColumn {name: exp_midpt}
+#     obs_start:
+#       __class__: astropy.time.core.Time
+#       format: isot
+#       in_subfmt: '*'
+#       out_subfmt: '*'
+#       precision: 6
+#       scale: tai
+#       value: !astropy.table.SerializedColumn {name: obs_start}
+#     obs_end:
+#       __class__: astropy.time.core.Time
+#       format: isot
+#       in_subfmt: '*'
+#       out_subfmt: '*'
+#       precision: 6
+#       scale: tai
+#       value: !astropy.table.SerializedColumn {name: obs_end}
+# schema: astropy-2.0
+exposure_id exposure_name controller day_obs seq_num physical_filter band s_ra s_dec sky_rotation azimuth_start azimuth_end azimuth altitude_start altitude_end altitude zenith_distance_start zenith_distance_end zenith_distance airmass exp_midpt exp_midpt_mjd obs_start obs_start_mjd obs_end obs_end_mjd exp_time shut_time dark_time group_id cur_index max_index img_type emulated science_program observation_reason target_name air_temp pressure humidity wind_speed wind_dir dimm_seeing focus_z simulated s_region vignette vignette_min
+7024052800003 CC_S_20240528_000003 S 20240528 3 i_06 null null null null null null null null null null null null null null 2024-05-28T22:18:26.874000 60458.92947770489 2024-05-28T22:18:26.326000 60458.929471360774 2024-05-28T22:18:27.422000 60458.92948404902 null null null null null null null False null null null null null null null null null null null null null null
+

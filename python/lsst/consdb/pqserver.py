@@ -123,6 +123,7 @@ class InstrumentTables:
         self.schemas = dict()
         self.flexible_metadata_schemas = dict()
         self.obs_id_column = dict()
+        self.timestamp_columns = dict()
         for instrument in self.instrument_list:
             md = sqlalchemy.MetaData(schema=f"cdb_{instrument}")
             md.reflect(engine)
@@ -131,11 +132,20 @@ class InstrumentTables:
             self.obs_id_column[instrument] = dict()
             self.flexible_metadata_schemas[instrument] = dict()
             for table in md.tables:
+                # Find all timestamp columns in the table
+                self.timestamp_columns[table] = set(
+                    [
+                        column.name for column in md.tables[table].columns
+                        if isinstance(column.type, sqlalchemy.DateTime)
+                    ]
+                )
+
                 for col_name in ObsIdColname:
                     col_name = col_name.value
                     if col_name in md.tables[table].columns:
                         self.obs_id_column[instrument][table] = col_name
                         break
+
             for obs_type in ObsTypeEnum:
                 obs_type = obs_type.value
                 table_name = f"cdb_{instrument}.{obs_type}_flexdata"
@@ -149,6 +159,26 @@ class InstrumentTables:
                         for row in conn.execute(stmt):
                             schema[row[0]] = row[1:]
                     self.flexible_metadata_schemas[instrument][obs_type] = schema
+
+    def get_timestamp_columns(self, table: str) -> set[str]:
+        """Returns a set containing all timestamp columns.
+
+        Given the instrument and table name, returns a set
+        of strings listing all the columns in the table that
+        are a timestamp.
+
+        Parameters
+        ----------
+        table : `str`
+            The name of the table, e.g., "cdb_latiss.exposure".
+
+        Returns
+        -------
+        `set[str]`
+            The names of all timestamp columns in the table.
+        """
+        columns = self.timestamp_columns[table]
+        return columns
 
     def refresh_flexible_metadata_schema(self, instrument: str, obs_type: str):
         schema = dict()
@@ -467,7 +497,7 @@ class AddKeyRequestModel(BaseModel):
     )
 
     @field_validator("unit")
-    def validate_unit(v):
+    def validate_unit(v: str):
         try:
             _ = astropy.units.Unit(v)
         except ValueError:
@@ -475,7 +505,7 @@ class AddKeyRequestModel(BaseModel):
         return v
 
     @field_validator("ucd")
-    def validate_ucd(v):
+    def validate_ucd(v: str):
         if not astropy.io.votable.ucd.check_ucd(v):
             raise ValueError(f"'{v}' is not a valid IVOA UCD.")
         return v
@@ -723,7 +753,6 @@ class InsertMultipleRequestModel(BaseModel):
 class InsertMultipleResponseModel(BaseModel):
     message: str = Field(title="Human-readable response message")
     instrument: str = Field(title="Instrument name (e.g., ``LATISS``)")
-    obs_type: ObsTypeEnum = Field(title="The observation type (e.g., ``exposure``)")
     obs_id: ObservationIdType | list[ObservationIdType] = Field(title="Observation ID")
     table: str = Field(title="Table name")
 
@@ -757,12 +786,20 @@ def insert_multiple(
         table_name = schema + table_name
     table_obj = instrument_tables.schemas[instrument_l].tables[table_name]
     table_name = f"cdb_{instrument_l}." + table.lower()
-    table = instrument_tables.schemas[instrument_l].tables[table_name]
     obs_id_colname = instrument_tables.obs_id_column[instrument_l][table_name]
+
+    timestamp_columns = instrument_tables.get_timestamp_columns(table_name)
 
     with engine.connect() as conn:
         for obs_id, valdict in data.obs_dict.items():
             valdict[obs_id_colname] = obs_id
+
+            # Convert timestamps in the input from string to datetime
+            for column in timestamp_columns:
+                if column in valdict and valdict[column] is not None:
+                    timestamp = valdict[column]
+                    timestamp = astropy.time.Time(timestamp, format="isot", scale="tai")
+                    valdict[column] = timestamp.to_datetime()
 
             stmt: sqlalchemy.sql.dml.Insert
             stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict)
@@ -775,7 +812,7 @@ def insert_multiple(
 
     return InsertMultipleResponseModel(
         message="Data inserted",
-        table=table_name,
+        table=table,
         instrument=instrument,
         obs_id=data.obs_dict.keys(),
     )

@@ -1,8 +1,14 @@
+import datetime
 import os
 import shutil
 import sqlite3
 import tempfile
 from pathlib import Path
+
+from astropy.table import Table
+from astropy.time import Time
+import numpy as np
+import sqlalchemy as sa
 
 import pytest
 from fastapi.testclient import TestClient
@@ -53,6 +59,77 @@ def db(tmpdir, scope="module"):
 
 
 @pytest.fixture
+def lsstcomcamsim(tmpdir, request, scope="module"):
+    schema = "cdb_lsstcomcamsim"
+    db_path = tmpdir / "test.db"
+    schema_path = tmpdir / f"{schema}.db"
+
+    data_path = Path(__file__).parent / "lsstcomcamsim"
+    sql_path = data_path / f"{schema}.sql"
+
+    # Build the main db file to specify where to look for
+    # specific schemas.
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("CREATE TABLE schemas (name text, path text)")
+        conn.execute(f"INSERT INTO schemas VALUES ('{schema}', '{schema_path}')")
+
+    # Set up the lsstcomcamsim schema with the schema from the SQL file
+    # generated with felis, and with sample data interrogated from consdb,
+    # and with fake made up flex data
+    with sqlite3.connect(schema_path) as conn:
+        conn.executescript(sql_path.read_text())
+    import time
+    time.sleep(10)
+
+    engine = sa.create_engine(f"sqlite:///{schema_path}")
+
+    table_dict = {
+        "exposure2.ecsv": "exposure",
+        "ccdexposure.ecsv": "ccdexposure",
+        "ccdvisit1_quicklook.ecsv": "ccdvisit1_quicklook",
+        "exposure.ecsv": "exposure",
+        "visit1_quicklook.ecsv": "visit1_quicklook",
+    }
+
+    request.astropy_tables = dict()
+    for file_name, table_name in table_dict.items():
+        astropy_table = Table.read(data_path / file_name)
+        request.astropy_tables[file_name] = astropy_table
+        metadata = sa.MetaData()
+
+        sql_table = sa.Table(table_name, metadata, autoload_with=engine)
+
+        # Convert the Astropy table to a list of dictionaries, one per row
+        rows = [
+            {
+                k: (
+                    None if v is None or v == "null" else
+                    v.to_datetime() if isinstance(v, Time) else
+                    bool(v) if isinstance(v, np.bool_) else
+                    str(v)
+                )
+                for k, v in dict(row).items()
+            }
+            for row in astropy_table
+        ]
+
+        # Insert rows into the SQL table
+        with engine.begin() as connection:
+            connection.execute(sql_table.insert(), rows)
+
+    engine.dispose()
+
+    print(f"{db_path=}")
+    os.environ["POSTGRES_URL"] = f"sqlite:///{db_path}"
+    from lsst.consdb import pqserver, utils
+    #pqserver.engine = utils.setup_postgres()
+    try:
+        yield TestClient(pqserver.app)
+    finally:
+        pqserver.engine.dispose()
+
+
+@pytest.fixture
 def app(db, scope="module"):
     os.environ["POSTGRES_URL"] = f"sqlite:///{db}"
     from lsst.consdb import pqserver, utils
@@ -87,6 +164,185 @@ def test_root2(client):
     assert "exposure" in result["obs_types"]
     assert "dtypes" in result
     assert set(result["dtypes"]) == {"bool", "int", "float", "str"}
+
+def test_insert_multiple(lsstcomcamsim, request):
+    data = {
+        7024052800012: {
+            "exposure_name": "CC_S_20240528_000012",
+            "controller": "S",
+            "day_obs": 20240528,
+            "seq_num": 12,
+            "physical_filter": "i_06",
+            "exp_midpt": "2024-05-28T22:19:04.847500",
+            "exp_midpt_mjd": 60458.92991721521,
+            "obs_start": "2024-05-28T22:19:04.300000",
+            "obs_start_mjd": 60458.92991088214,
+            "obs_end": "2024-05-28T22:19:05.395000",
+            "obs_end_mjd": 60458.929923548276,
+            "emulated": False,
+        },
+        7024052800011:
+        {
+            "exposure_name": "CC_S_20240528_000011",
+            "controller": "S",
+            "day_obs": 20240528,
+            "seq_num": 11,
+            "physical_filter": "i_06",
+            "exp_midpt": "2024-05-28T22:19:00.632500",
+            "exp_midpt_mjd": 60458.929868432606,
+            "obs_start": "2024-05-28T22:19:00.086000",
+            "obs_start_mjd": 60458.929862109704,
+            "obs_end": "2024-05-28T22:19:01.179000",
+            "obs_end_mjd": 60458.92987475551,
+            "emulated": False,
+        },
+    }
+    response = lsstcomcamsim.post(
+        "/consdb/insert/lsstcomcamsim/exposure",
+        json={"obs_dict": data},
+    )
+    _assert_http_status(response, 200)
+    result = response.json()
+    assert "Data inserted" in result["message"]
+    assert result["table"] == "exposure"
+    assert result["instrument"] == "lsstcomcamsim"
+    assert result["obs_id"] == list(data.keys())
+
+
+def test_insert_multiple_update(lsstcomcamsim, request):
+    data = {
+        7024052800012: {
+            "exposure_name": "CC_S_20240528_000012",
+            "controller": "S",
+            "day_obs": 20240528,
+            "seq_num": 12,
+            "physical_filter": "i_06",
+            "exp_midpt": "2024-05-28T22:19:04.847500",
+            "exp_midpt_mjd": 60458.92991721521,
+            "obs_start": "2024-05-28T22:19:04.300000",
+            "obs_start_mjd": 60458.92991088214,
+            "obs_end": "2024-05-28T22:19:05.395000",
+            "obs_end_mjd": 60458.929923548276,
+            "emulated": False,
+        },
+        7024052800011:
+        {
+            "exposure_name": "CC_S_20240528_000011",
+            "controller": "S",
+            "day_obs": 20240528,
+            "seq_num": 11,
+            "physical_filter": "i_06",
+            "exp_midpt": "2024-05-28T22:19:00.632500",
+            "exp_midpt_mjd": 60458.929868432606,
+            "obs_start": "2024-05-28T22:19:00.086000",
+            "obs_start_mjd": 60458.929862109704,
+            "obs_end": "2024-05-28T22:19:01.179000",
+            "obs_end_mjd": 60458.92987475551,
+            "emulated": False,
+        },
+    }
+    response = lsstcomcamsim.post(
+        "/consdb/insert/lsstcomcamsim/exposure",
+        json={"obs_dict": data},
+    )
+    _assert_http_status(response, 200)
+
+    data[7024052800012]["exposure_name"] = "fred"
+    data[7024052800011]["exposure_name"] = "sally"
+    response = lsstcomcamsim.post(
+        "/consdb/insert/lsstcomcamsim/exposure",
+        json={"obs_dict": data},
+    )
+    _assert_http_status(response, 500)
+
+
+    response = lsstcomcamsim.post(
+        "/consdb/insert/lsstcomcamsim/exposure?u=1",
+        json={"obs_dict": data},
+    )
+    _assert_http_status(response, 200)
+    assert response.json()["obs_id"] == list(data.keys())
+
+
+def test_schema(lsstcomcamsim, request):
+    response = lsstcomcamsim.get(
+        "/consdb/schema/lsstcomcamsim"
+    )
+    _assert_http_status(response, 200)
+
+
+def test_schema_non_instrument(lsstcomcamsim, request):
+    response = lsstcomcamsim.get(
+        "/consdb/schema/asdf"
+    )
+    _assert_http_status(response, 404)
+    result = response.json()
+    assert "Unknown instrument" in result["message"]
+
+
+def test_schema_instrument(lsstcomcamsim, request):
+    response = lsstcomcamsim.get(
+        "/consdb/schema/lsstcomcamsim"
+    )
+    _assert_http_status(response, 200)
+    result = response.json()
+    assert isinstance(result, list)
+    tables = [
+        "exposure",
+        "ccdexposure",
+        "ccdexposure_camera",
+        "ccdvisit1_quicklook",
+        "visit1_quicklook",
+        "exposure_flexdata",
+        "exposure_flexdata_schema",
+        "ccdexposure_flexdata",
+        "ccdexposure_flexdata_schema",
+    ]
+    tables = [f"cdb_lsstcomcamsim.{t}" for t in tables]
+    for t in tables:
+        assert t in result
+
+
+def test_schema_non_table(lsstcomcamsim, request):
+    response = lsstcomcamsim.get(
+        "/consdb/schema/lsstcomcamsim/asdf"
+    )
+    _assert_http_status(response, 404)
+    assert "Unknown table" in response.json()["message"]
+
+
+def test_schema_table(lsstcomcamsim, request):
+    response = lsstcomcamsim.get(
+        "/consdb/schema/lsstcomcamsim/exposure"
+    )
+    astropy_table = request.astropy_tables["exposure.ecsv"]
+    _assert_http_status(response, 200)
+    result = response.json()
+    for column in astropy_table.columns:
+        assert column in result.keys()
+
+
+def test_validate_unit():
+    os.environ["POSTGRES_URL"] = "sqlite://"
+    from lsst.consdb import pqserver
+    assert pqserver.AddKeyRequestModel.validate_unit("s") == "s"
+    assert pqserver.AddKeyRequestModel.validate_unit("km/s") == "km/s"
+    assert pqserver.AddKeyRequestModel.validate_unit("km s-1") == "km s-1"
+
+    with pytest.raises(ValueError):
+        pqserver.AddKeyRequestModel.validate_unit("tacos / s")
+
+def test_validate_ucd():
+    os.environ["POSTGRES_URL"] = "sqlite://"
+    from lsst.consdb import pqserver
+    assert pqserver.AddKeyRequestModel.validate_ucd("this.is.a.valid.ucd")
+    assert pqserver.AddKeyRequestModel.validate_ucd("THIS-ONE.IS.TOO")
+
+    with pytest.raises(ValueError):
+        pqserver.AddKeyRequestModel.validate_ucd("but this is not")
+
+    with pytest.raises(ValueError):
+        pqserver.AddKeyRequestModel.validate_ucd("neither#is@this[one]!")
 
 
 def test_flexible_metadata(client):

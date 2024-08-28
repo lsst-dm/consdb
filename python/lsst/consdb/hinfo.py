@@ -398,6 +398,19 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
         conn.commit()
 
 
+def process_local_path(path: str) -> None:
+    # If a directory is provided on the command line, process all yaml
+    # files recursively.
+    if os.path.isdir(path):
+        for _, _, files in os.walk(path):
+            for file in files:
+                if file.endswith(".yaml"):
+                    process_resource(ResourcePath(file), get_instrument_dict(instrument))
+    # If a yaml file is provided on the command line, process it.
+    elif os.path.isfile(path) and path.endswith(".yaml"):
+        process_resource(ResourcePath(path), get_instrument_dict(instrument))
+
+
 def process_date(day_obs: str, instrument_dict: dict, update: bool = False) -> None:
     """Process all headers from a given observation day (as YYYY-MM-DD).
 
@@ -527,7 +540,7 @@ def get_instrument_dict(instrument: str) -> dict:
             ),
         }
     else:
-        raise ValueError("Unrecognized instrument: {instrument}")
+        raise ValueError(f"Unrecognized instrument: {instrument}")
 
     return instrument_dict
 
@@ -578,5 +591,10 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
+    import sys
+
     engine = setup_postgres()
-    asyncio.run(main())
+    if len(sys.argv) > 1:
+        process_local_path(sys.argv[1])
+    else:
+        asyncio.run(main())
