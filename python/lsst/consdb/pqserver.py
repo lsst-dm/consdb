@@ -105,7 +105,7 @@ app = FastAPI(
     docs_url=f"{path_prefix}/docs",
     redoc_url=f"{path_prefix}/redoc",
 )
-engine = setup_postgres()
+engine = None
 logger = setup_logging(__name__)
 
 ########################
@@ -135,7 +135,8 @@ class InstrumentTables:
                 # Find all timestamp columns in the table
                 self.timestamp_columns[table] = set(
                     [
-                        column.name for column in md.tables[table].columns
+                        column.name
+                        for column in md.tables[table].columns
                         if isinstance(column.type, sqlalchemy.DateTime)
                     ]
                 )
@@ -317,7 +318,7 @@ class InstrumentTables:
         return view_name
 
 
-instrument_tables = InstrumentTables()
+instrument_tables = None
 
 
 ##################
@@ -973,3 +974,8 @@ def schema(
     if table not in schema.tables:
         raise BadValueException("table", table, list(schema.tables.keys()))
     return {c.name: [str(c.type), c.doc] for c in schema.tables[table].columns}
+
+
+if __name__ == "__main__":
+    engine = setup_postgres()
+    instrument_tables = InstrumentTables()

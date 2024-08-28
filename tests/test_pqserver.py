@@ -1,16 +1,14 @@
-import datetime
 import os
 import shutil
 import sqlite3
 import tempfile
 from pathlib import Path
 
+import numpy as np
+import pytest
+import sqlalchemy as sa
 from astropy.table import Table
 from astropy.time import Time
-import numpy as np
-import sqlalchemy as sa
-
-import pytest
 from fastapi.testclient import TestClient
 from requests import Response
 
@@ -59,7 +57,13 @@ def db(tmpdir, scope="module"):
 
 
 @pytest.fixture
-def lsstcomcamsim(tmpdir, request, scope="module"):
+def astropy_tables(scope="module"):
+    t = dict()
+    return t
+
+
+@pytest.fixture
+def lsstcomcamsim(tmpdir, astropy_tables, scope="module"):
     schema = "cdb_lsstcomcamsim"
     db_path = tmpdir / "test.db"
     schema_path = tmpdir / f"{schema}.db"
@@ -79,6 +83,7 @@ def lsstcomcamsim(tmpdir, request, scope="module"):
     with sqlite3.connect(schema_path) as conn:
         conn.executescript(sql_path.read_text())
     import time
+
     time.sleep(10)
 
     engine = sa.create_engine(f"sqlite:///{schema_path}")
@@ -91,10 +96,9 @@ def lsstcomcamsim(tmpdir, request, scope="module"):
         "visit1_quicklook.ecsv": "visit1_quicklook",
     }
 
-    request.astropy_tables = dict()
     for file_name, table_name in table_dict.items():
         astropy_table = Table.read(data_path / file_name)
-        request.astropy_tables[file_name] = astropy_table
+        astropy_tables[file_name] = astropy_table
         metadata = sa.MetaData()
 
         sql_table = sa.Table(table_name, metadata, autoload_with=engine)
@@ -103,10 +107,13 @@ def lsstcomcamsim(tmpdir, request, scope="module"):
         rows = [
             {
                 k: (
-                    None if v is None or v == "null" else
-                    v.to_datetime() if isinstance(v, Time) else
-                    bool(v) if isinstance(v, np.bool_) else
-                    str(v)
+                    None
+                    if v is None or v == "null"
+                    else (
+                        v.to_datetime()
+                        if isinstance(v, Time)
+                        else bool(v) if isinstance(v, np.bool_) else str(v)
+                    )
                 )
                 for k, v in dict(row).items()
             }
@@ -122,7 +129,9 @@ def lsstcomcamsim(tmpdir, request, scope="module"):
     print(f"{db_path=}")
     os.environ["POSTGRES_URL"] = f"sqlite:///{db_path}"
     from lsst.consdb import pqserver, utils
-    #pqserver.engine = utils.setup_postgres()
+
+    pqserver.engine = utils.setup_postgres()
+    pqserver.instrument_tables = pqserver.InstrumentTables()
     try:
         yield TestClient(pqserver.app)
     finally:
@@ -135,6 +144,7 @@ def app(db, scope="module"):
     from lsst.consdb import pqserver, utils
 
     pqserver.engine = utils.setup_postgres()
+    pqserver.instrument_tables = pqserver.InstrumentTables()
     try:
         yield pqserver.app
     finally:
@@ -165,7 +175,8 @@ def test_root2(client):
     assert "dtypes" in result
     assert set(result["dtypes"]) == {"bool", "int", "float", "str"}
 
-def test_insert_multiple(lsstcomcamsim, request):
+
+def test_insert_multiple(lsstcomcamsim):
     data = {
         7024052800012: {
             "exposure_name": "CC_S_20240528_000012",
@@ -181,8 +192,7 @@ def test_insert_multiple(lsstcomcamsim, request):
             "obs_end_mjd": 60458.929923548276,
             "emulated": False,
         },
-        7024052800011:
-        {
+        7024052800011: {
             "exposure_name": "CC_S_20240528_000011",
             "controller": "S",
             "day_obs": 20240528,
@@ -209,7 +219,7 @@ def test_insert_multiple(lsstcomcamsim, request):
     assert result["obs_id"] == list(data.keys())
 
 
-def test_insert_multiple_update(lsstcomcamsim, request):
+def test_insert_multiple_update(lsstcomcamsim):
     data = {
         7024052800012: {
             "exposure_name": "CC_S_20240528_000012",
@@ -225,8 +235,7 @@ def test_insert_multiple_update(lsstcomcamsim, request):
             "obs_end_mjd": 60458.929923548276,
             "emulated": False,
         },
-        7024052800011:
-        {
+        7024052800011: {
             "exposure_name": "CC_S_20240528_000011",
             "controller": "S",
             "day_obs": 20240528,
@@ -255,7 +264,6 @@ def test_insert_multiple_update(lsstcomcamsim, request):
     )
     _assert_http_status(response, 500)
 
-
     response = lsstcomcamsim.post(
         "/consdb/insert/lsstcomcamsim/exposure?u=1",
         json={"obs_dict": data},
@@ -264,26 +272,20 @@ def test_insert_multiple_update(lsstcomcamsim, request):
     assert response.json()["obs_id"] == list(data.keys())
 
 
-def test_schema(lsstcomcamsim, request):
-    response = lsstcomcamsim.get(
-        "/consdb/schema/lsstcomcamsim"
-    )
+def test_schema(lsstcomcamsim):
+    response = lsstcomcamsim.get("/consdb/schema/lsstcomcamsim")
     _assert_http_status(response, 200)
 
 
-def test_schema_non_instrument(lsstcomcamsim, request):
-    response = lsstcomcamsim.get(
-        "/consdb/schema/asdf"
-    )
+def test_schema_non_instrument(lsstcomcamsim):
+    response = lsstcomcamsim.get("/consdb/schema/asdf")
     _assert_http_status(response, 404)
     result = response.json()
     assert "Unknown instrument" in result["message"]
 
 
-def test_schema_instrument(lsstcomcamsim, request):
-    response = lsstcomcamsim.get(
-        "/consdb/schema/lsstcomcamsim"
-    )
+def test_schema_instrument(lsstcomcamsim):
+    response = lsstcomcamsim.get("/consdb/schema/lsstcomcamsim")
     _assert_http_status(response, 200)
     result = response.json()
     assert isinstance(result, list)
@@ -303,19 +305,15 @@ def test_schema_instrument(lsstcomcamsim, request):
         assert t in result
 
 
-def test_schema_non_table(lsstcomcamsim, request):
-    response = lsstcomcamsim.get(
-        "/consdb/schema/lsstcomcamsim/asdf"
-    )
+def test_schema_non_table(lsstcomcamsim):
+    response = lsstcomcamsim.get("/consdb/schema/lsstcomcamsim/asdf")
     _assert_http_status(response, 404)
     assert "Unknown table" in response.json()["message"]
 
 
-def test_schema_table(lsstcomcamsim, request):
-    response = lsstcomcamsim.get(
-        "/consdb/schema/lsstcomcamsim/exposure"
-    )
-    astropy_table = request.astropy_tables["exposure.ecsv"]
+def test_schema_table(lsstcomcamsim, astropy_tables):
+    astropy_table = astropy_tables["exposure.ecsv"]
+    response = lsstcomcamsim.get("/consdb/schema/lsstcomcamsim/exposure")
     _assert_http_status(response, 200)
     result = response.json()
     for column in astropy_table.columns:
@@ -325,6 +323,7 @@ def test_schema_table(lsstcomcamsim, request):
 def test_validate_unit():
     os.environ["POSTGRES_URL"] = "sqlite://"
     from lsst.consdb import pqserver
+
     assert pqserver.AddKeyRequestModel.validate_unit("s") == "s"
     assert pqserver.AddKeyRequestModel.validate_unit("km/s") == "km/s"
     assert pqserver.AddKeyRequestModel.validate_unit("km s-1") == "km s-1"
@@ -332,9 +331,11 @@ def test_validate_unit():
     with pytest.raises(ValueError):
         pqserver.AddKeyRequestModel.validate_unit("tacos / s")
 
+
 def test_validate_ucd():
     os.environ["POSTGRES_URL"] = "sqlite://"
     from lsst.consdb import pqserver
+
     assert pqserver.AddKeyRequestModel.validate_ucd("this.is.a.valid.ucd")
     assert pqserver.AddKeyRequestModel.validate_ucd("THIS-ONE.IS.TOO")
 
