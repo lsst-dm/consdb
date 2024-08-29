@@ -302,7 +302,7 @@ class InstrumentTables:
 
         Returns
         -------
-        view_nae: `str`
+        view_name: `str`
             Name of the appropriate wide view.
         """
         instrument = instrument.lower()
