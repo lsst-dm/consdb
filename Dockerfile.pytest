@@ -2,7 +2,7 @@ ARG OBS_LSST_VERSION=w_2024_21
 FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
 USER lsst
 RUN source loadLSST.bash && mamba install aiokafka httpx
-RUN source loadLSST.bash && pip install kafkit aiokafka httpx pytest-asyncio
+RUN source loadLSST.bash && pip install kafkit aiokafka httpx pytest-asyncio testing.postgresql
 
 WORKDIR /home/lsst/
 COPY --chown=lsst .  ./consdb/

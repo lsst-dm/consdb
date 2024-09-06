@@ -11,6 +11,14 @@ from astropy.table import Table
 from astropy.time import Time
 from fastapi.testclient import TestClient
 from requests import Response
+import yaml
+
+from felis.datamodel import Schema
+from felis.db.utils import DatabaseContext
+from felis.metadata import MetaDataBuilder
+from felis.tests.postgresql import setup_postgres_test_db
+from lsst.consdb import pqserver
+import lsst.utils
 
 
 def _assert_http_status(response: Response, status: int):
@@ -64,75 +72,62 @@ def astropy_tables(scope="module"):
 
 @pytest.fixture
 def lsstcomcamsim(tmpdir, astropy_tables, scope="module"):
-    schema = "cdb_lsstcomcamsim"
-    db_path = tmpdir / "test.db"
-    schema_path = tmpdir / f"{schema}.db"
-
+    schema_name = "cdb_lsstcomcamsim"
     data_path = Path(__file__).parent / "lsstcomcamsim"
-    sql_path = data_path / f"{schema}.sql"
 
-    # Build the main db file to specify where to look for
-    # specific schemas.
-    with sqlite3.connect(db_path) as conn:
-        conn.execute("CREATE TABLE schemas (name text, path text)")
-        conn.execute(f"INSERT INTO schemas VALUES ('{schema}', '{schema_path}')")
+    schema_file = os.path.join(lsst.utils.getPackageDir("sdm_schemas"), "yml", schema_name + ".yaml")
 
-    # Set up the lsstcomcamsim schema with the schema from the SQL file
-    # generated with felis, and with sample data interrogated from consdb,
-    # and with fake made up flex data
-    with sqlite3.connect(schema_path) as conn:
-        conn.executescript(sql_path.read_text())
+    with open(schema_file) as f:
+        yaml_data = yaml.safe_load(f)
+    schema = Schema.model_validate(yaml_data)
+    md = MetaDataBuilder(schema).build()
 
-    engine = sa.create_engine(f"sqlite:///{schema_path}")
+    with setup_postgres_test_db() as instance:
+        context = DatabaseContext(md, instance.engine)
+        print(f"{type(instance.engine)=}")
+        context.initialize()
+        context.create_all()
 
-    table_dict = {
-        "exposure2.ecsv": "exposure",
-        "ccdexposure.ecsv": "ccdexposure",
-        "ccdvisit1_quicklook.ecsv": "ccdvisit1_quicklook",
-        "exposure.ecsv": "exposure",
-        "visit1_quicklook.ecsv": "visit1_quicklook",
-    }
+        table_dict = {
+            "exposure.ecsv": "exposure",
+            "exposure2.ecsv": "exposure",
+            "ccdexposure.ecsv": "ccdexposure",
+            "ccdvisit1_quicklook.ecsv": "ccdvisit1_quicklook",
+            "visit1_quicklook.ecsv": "visit1_quicklook",
+        }
 
-    for file_name, table_name in table_dict.items():
-        astropy_table = Table.read(data_path / file_name)
-        astropy_tables[file_name] = astropy_table
-        metadata = sa.MetaData()
+        for file_name, table_name in table_dict.items():
+            astropy_table = Table.read(data_path / file_name)
+            astropy_tables[file_name] = astropy_table
+            metadata = sa.MetaData()
 
-        sql_table = sa.Table(table_name, metadata, autoload_with=engine)
+            sql_table = sa.Table(table_name, metadata, schema=schema_name, autoload_with=instance.engine)
 
-        # Convert the Astropy table to a list of dictionaries, one per row
-        rows = [
-            {
-                k: (
-                    None
-                    if v is None or v == "null"
-                    else (
-                        v.to_datetime()
-                        if isinstance(v, Time)
-                        else bool(v) if isinstance(v, np.bool_) else str(v)
+            # Convert the Astropy table to a list of dictionaries, one per row
+            rows = [
+                {
+                    k: (
+                        None
+                        if v is None or v == "null"
+                        else (
+                            v.to_datetime()
+                            if isinstance(v, Time)
+                            else bool(v) if isinstance(v, np.bool_) else str(v)
+                        )
                     )
-                )
-                for k, v in dict(row).items()
-            }
-            for row in astropy_table
-        ]
+                    for k, v in dict(row).items()
+                }
+                for row in astropy_table
+            ]
 
-        # Insert rows into the SQL table
-        with engine.begin() as connection:
-            connection.execute(sql_table.insert(), rows)
+            # Insert rows into the SQL table
+            with instance.engine.begin() as connection:
+                connection.execute(sql_table.insert(), rows)
 
-    engine.dispose()
+        pqserver.engine = instance.engine
+        pqserver.instrument_tables = pqserver.InstrumentTables()
 
-    print(f"{db_path=}")
-    os.environ["POSTGRES_URL"] = f"sqlite:///{db_path}"
-    from lsst.consdb import pqserver, utils
-
-    pqserver.engine = utils.setup_postgres()
-    pqserver.instrument_tables = pqserver.InstrumentTables()
-    try:
         yield TestClient(pqserver.app)
-    finally:
-        pqserver.engine.dispose()
 
 
 @pytest.fixture
