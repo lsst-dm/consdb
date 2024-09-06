@@ -399,8 +399,8 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
 
 
 def process_local_path(path: str) -> None:
-    """If a directory is provided on the command line, process all yaml files recursively.
-    
+    """Processes all yaml files in the specified path recursively.
+
     Parameters
     -----------
     path : `str`
