@@ -82,9 +82,6 @@ def lsstcomcamsim(tmpdir, astropy_tables, scope="module"):
     # and with fake made up flex data
     with sqlite3.connect(schema_path) as conn:
         conn.executescript(sql_path.read_text())
-    import time
-
-    time.sleep(10)
 
     engine = sa.create_engine(f"sqlite:///{schema_path}")
 
