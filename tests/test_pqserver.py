@@ -4,21 +4,20 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
+import lsst.utils
 import numpy as np
 import pytest
 import sqlalchemy as sa
+import yaml
 from astropy.table import Table
 from astropy.time import Time
 from fastapi.testclient import TestClient
-from requests import Response
-import yaml
-
 from felis.datamodel import Schema
 from felis.db.utils import DatabaseContext
 from felis.metadata import MetaDataBuilder
 from felis.tests.postgresql import setup_postgres_test_db
 from lsst.consdb import pqserver
-import lsst.utils
+from requests import Response
 
 
 def _assert_http_status(response: Response, status: int):
