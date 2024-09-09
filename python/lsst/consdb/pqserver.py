@@ -181,6 +181,22 @@ class InstrumentTables:
         columns = self.timestamp_columns[table]
         return columns
 
+    def get_day_obs_and_seq_num(self, instrument: str, exposure_id: int) -> tuple[int, int]:
+        exposure_table_name = f"cdb_{instrument}.exposure"
+        exposure_table = self.schemas[instrument].tables[exposure_table_name]
+        query = sqlalchemy.select(
+            exposure_table.c.day_obs, exposure_table.c.seq_num
+        ).where(
+            exposure_table.c.exposure_id == exposure_id
+        )
+
+        with engine.connect() as conn:
+            query_result = conn.execute(query).first()
+
+        if not query_result:
+            raise BadValueException(f"Exposure ID: {exposure_id} - no such exposure ID")
+        return (query_result.day_obs, query_result.seq_num)
+
     def refresh_flexible_metadata_schema(self, instrument: str, obs_type: str):
         schema = dict()
         schema_table = self.get_flexible_metadata_schema(instrument, obs_type)
@@ -684,9 +700,11 @@ def insert_flexible_metadata(
         for key, value in value_dict.items():
             value_str = str(value)
 
+            day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
+
             stmt: sqlalchemy.sql.dml.Insert
             stmt = sqlalchemy.dialects.postgresql.insert(table).values(
-                obs_id=obs_id, key=key, value=value_str
+                obs_id=obs_id, day_obs=day_obs, seq_num=seq_num, key=key, value=value_str
             )
             logger.error(f"{u=}")
             if u != 0:
@@ -731,9 +749,19 @@ def insert(
     if not table.lower().startswith(schema):
         table_name = schema + table_name
     table_obj = instrument_tables.schemas[instrument_l].tables[table_name]
+
     valdict = data.values
     obs_id_colname = instrument_tables.obs_id_column[instrument_l][table_name]
     valdict[obs_id_colname] = obs_id
+
+    # If needed, cross-reference day_obs and seq_num from the exposure table.
+    if "day_obs" in table_obj.columns and "seq_num" in table_obj.columns:
+        if "day_obs" not in valdict or "seq_num" not in valdict:
+            day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
+            if "day_obs" not in valdict:
+                valdict["day_obs"] = day_obs
+            if "seq_num" not in valdict:
+                valdict["seq_num"] = seq_num
 
     stmt: sqlalchemy.sql.dml.Insert
     stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict)
@@ -800,6 +828,16 @@ def insert_multiple(
     with engine.connect() as conn:
         for obs_id, valdict in data.obs_dict.items():
             valdict[obs_id_colname] = obs_id
+
+            # If needed, cross-reference day_obs and seq_num from the
+            # exposure table.
+            if "day_obs" in table_obj.columns and "seq_num" in table_obj.columns:
+                if "day_obs" not in valdict or "seq_num" not in valdict:
+                    day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
+                    if "day_obs" not in valdict:
+                        valdict["day_obs"] = day_obs
+                    if "seq_num" not in valdict:
+                        valdict["seq_num"] = seq_num
 
             # Convert timestamps in the input from string to datetime
             for column in timestamp_columns:
