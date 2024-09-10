@@ -375,8 +375,6 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
             det_exposure_rec = dict()
             det_info = info.copy()
             det_info["exposure_id"] = obs_info["exposure_id"]
-            det_info["day_obs"] = obs_info["day_obs"]
-            det_info["seq_num"] = obs_info["seq_num"]
             ccdname = f"{detector[0:3]}_{detector[3:6]}"
             if ccdname == "R00_S00" and instrument_obj.instrument_name == "latiss":
                 ccdname = "RXX_S00"
@@ -386,6 +384,10 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
                 det_info[header["keyword"]] = header["value"]
             for field, keyword in instrument_obj.det_mapping.items():
                 det_exposure_rec[field] = process_column(keyword, det_info)
+
+            if "day_obs" in instrument_obj.ccdexposure_table.columns:  # schema version >= 3.2.0
+                det_exposure_rec["day_obs"] = exposure_rec["day_obs"]
+                det_exposure_rec["seq_num"] = exposure_rec["seq_num"]
 
             det_stmt = insert(instrument_obj.ccdexposure_table).values(det_exposure_rec)
             if update:

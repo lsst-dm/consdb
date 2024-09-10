@@ -1,0 +1,14 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: key, datatype: string}
+# - {name: dtype, datatype: string}
+# - {name: doc, datatype: string}
+# - {name: unit, datatype: string, subtype: json}
+# - {name: ucd, datatype: string, subtype: json}
+# schema: astropy-2.0
+key dtype doc unit ucd
+spam bool "Sample flex bool type" null null
+ham int "Sample flex int type" """s""" """time.relax"""
+eggs float "Sample flex int type" """C""" """phys.electCharge"""
+bacon str "Sample flex str type" """m / s""" """phys.veloc"""

@@ -28,6 +28,7 @@ import sqlalchemy.dialects.postgresql
 from fastapi import Body, FastAPI, Path, Query, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from packaging.version import Version
 from pydantic import AfterValidator, BaseModel, Field, field_validator
 
 from .utils import setup_logging, setup_postgres
@@ -180,6 +181,13 @@ class InstrumentTables:
         """
         columns = self.timestamp_columns[table]
         return columns
+
+
+    def get_schema_version(self, instrument: str) -> Version:
+        if "day_obs" in self.schemas[instrument].tables[f"cdb_{instrument}.ccdexposure"].columns:
+            return Version("3.2.0")
+        else:
+            return Version("3.1.0")
 
     def get_day_obs_and_seq_num(self, instrument: str, exposure_id: int) -> tuple[int, int]:
         exposure_table_name = f"cdb_{instrument}.exposure"
@@ -700,12 +708,14 @@ def insert_flexible_metadata(
         for key, value in value_dict.items():
             value_str = str(value)
 
-            day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
+            values = {"obs_id": obs_id, "key": key, "value": value_str}
+            if instrument_tables.get_schema_version(instrument_l) >= Version("3.2.0"):
+                day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
+                values["day_obs"] = day_obs
+                values["seq_num"] = seq_num
 
             stmt: sqlalchemy.sql.dml.Insert
-            stmt = sqlalchemy.dialects.postgresql.insert(table).values(
-                obs_id=obs_id, day_obs=day_obs, seq_num=seq_num, key=key, value=value_str
-            )
+            stmt = sqlalchemy.dialects.postgresql.insert(table).values(**values)
             logger.error(f"{u=}")
             if u != 0:
                 stmt = stmt.on_conflict_do_update(index_elements=["obs_id", "key"], set_={"value": value_str})

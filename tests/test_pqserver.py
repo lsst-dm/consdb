@@ -1,7 +1,4 @@
 import os
-import shutil
-import sqlite3
-import tempfile
 from pathlib import Path
 
 import lsst.utils
@@ -25,53 +22,15 @@ def _assert_http_status(response: Response, status: int):
 
 
 @pytest.fixture
-def tmpdir(scope="module"):
-    tmpdir = Path(tempfile.mkdtemp())
-    try:
-        yield tmpdir
-    finally:
-        shutil.rmtree(tmpdir)
-
-
-@pytest.fixture
-def db(tmpdir, scope="module"):
-    db_path = tmpdir / "test.db"
-    instruments = ["latiss"]
-    with sqlite3.connect(db_path) as conn:
-        conn.execute("CREATE TABLE schemas (name text, path text)")
-        for instrument in instruments:
-            schema = f"cdb_{instrument}"
-            sql = Path(__file__).parent / f"{schema}.sql"
-            if not sql.exists():
-                continue
-            schema_path = tmpdir / f"{schema}.db"
-            conn.execute(f"INSERT INTO schemas VALUES ('{schema}', '{schema_path}')")
-            with sqlite3.connect(schema_path) as schema_conn:
-                schema_conn.executescript(sql.read_text())
-            schema_conn.close()
-    conn.close()
-    with sqlite3.connect(tmpdir / "cdb_latiss.db") as conn:
-        conn.execute(
-            "INSERT INTO exposure "
-            "(exposure_id, exposure_name, controller, day_obs, seq_num, "
-            "physical_filter, band, s_ra, s_dec, sky_rotation) "
-            "VALUES "
-            "(2024032100002, 'AT_O_20240321_000002', 'O', 20240321, 2, "
-            "'empty~empty', 'EMPTY', 0, 0, 3.780205180514687);"
-        )
-    conn.close()
-    return db_path
-
-
-@pytest.fixture
 def astropy_tables(scope="module"):
     t = dict()
     return t
 
 
 @pytest.fixture
-def lsstcomcamsim(tmpdir, astropy_tables, scope="module"):
-    schema_name = "cdb_lsstcomcamsim"
+def lsstcomcamsim(request, astropy_tables, scope="module"):
+    schema_name = request.param if hasattr(request, "param") else "cdb_lsstcomcamsim"
+    print(f"{schema_name=}")
     data_path = Path(__file__).parent / "lsstcomcamsim"
 
     schema_file = os.path.join(lsst.utils.getPackageDir("sdm_schemas"), "yml", schema_name + ".yaml")
@@ -93,6 +52,10 @@ def lsstcomcamsim(tmpdir, astropy_tables, scope="module"):
             "ccdexposure.ecsv": "ccdexposure",
             "ccdvisit1_quicklook.ecsv": "ccdvisit1_quicklook",
             "visit1_quicklook.ecsv": "visit1_quicklook",
+            "exposure_flexdata_schema.ecsv": "exposure_flexdata_schema",
+            "ccdexposure_flexdata_schema.ecsv": "ccdexposure_flexdata_schema",
+            "exposure_flexdata.ecsv": "exposure_flexdata",
+            "ccdexposure_flexdata.ecsv": "ccdexposure_flexdata",
         }
 
         for file_name, table_name in table_dict.items():
@@ -142,24 +105,20 @@ def app(db, scope="module"):
         pqserver.engine.dispose()
 
 
-@pytest.fixture
-def client(app, scope="module"):
-    # NOTE: all tests share the same client, app, and database.
-    return TestClient(app)
-
-
-def test_root(client):
-    response = client.get("/")
+def test_root(lsstcomcamsim):
+    response = lsstcomcamsim.get("/")
     result = response.json()
     assert "instruments" in result
     assert "obs_types" in result
     assert "dtypes" in result
 
 
-def test_root2(client):
-    response = client.get("/consdb")
+@pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
+def test_root2(lsstcomcamsim, request):
+    response = lsstcomcamsim.get("/consdb")
     result = response.json()
     assert "instruments" in result
+
     assert "latiss" in result["instruments"]
     assert "obs_types" in result
     assert "exposure" in result["obs_types"]
@@ -337,36 +296,39 @@ def test_validate_ucd():
         pqserver.AddKeyRequestModel.validate_ucd("neither#is@this[one]!")
 
 
-def test_flexible_metadata(client):
+@pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
+def test_flexible_metadata(lsstcomcamsim):
+    client = lsstcomcamsim
+
     response = client.post(
         "/consdb/flex/latiss/exposure/addkey",
-        json={"key": "foo", "dtype": "bool", "doc": "bool key"},
+        json={"key": "foo2", "dtype": "bool", "doc": "new bool key"},
     )
     _assert_http_status(response, 200)
     result = response.json()
     assert result == {
         "message": "Key added to flexible metadata",
-        "key": "foo",
+        "key": "foo2",
         "instrument": "latiss",
         "obs_type": "exposure",
     }
 
     response = client.post(
         "/consdb/flex/LATISS/exposure/addkey",
-        json={"key": "bar", "dtype": "int", "doc": "int key"},
+        json={"key": "bar2", "dtype": "int", "doc": "int key"},
     )
     _assert_http_status(response, 200)
     result = response.json()
     assert result == {
         "message": "Key added to flexible metadata",
-        "key": "bar",
+        "key": "bar2",
         "instrument": "LATISS",
         "obs_type": "exposure",
     }
 
     response = client.post(
         "/consdb/flex/latiss/Exposure/addkey",
-        json={"key": "baz", "dtype": "float", "doc": "float key"},
+        json={"key": "baz2", "dtype": "float", "doc": "float key 2"},
     )
     _assert_http_status(response, 200)
     result = response.json()
@@ -374,7 +336,7 @@ def test_flexible_metadata(client):
 
     response = client.post(
         "/consdb/flex/bad_instrument/exposure/addkey",
-        json={"key": "quux", "dtype": "str", "doc": "str key"},
+        json={"key": "quux2", "dtype": "str", "doc": "str key"},
     )
     _assert_http_status(response, 404)
     result = response.json()
@@ -386,27 +348,30 @@ def test_flexible_metadata(client):
     assert "foo" in result
     assert "bar" in result
     assert "baz" in result
-    assert result["baz"] == ["float", "float key", None, None]
+    assert result["baz2"] == ["float", "float key 2", None, None]
+    assert "foo2" in result
+    assert "bar2" in result
+    assert "baz2" in result
 
     response = client.post(
-        "/consdb/flex/latiss/exposure/obs/2024032100002",
-        json={"values": {"foo": True, "bar": 42, "baz": 3.14159}},
+        "/consdb/flex/latiss/exposure/obs/7024040300451",
+        json={"values": {"foo2": True, "bar2": 42, "baz2": 3.14159}},
     )
     _assert_http_status(response, 200)
     result = response.json()
     assert result["message"] == "Flexible metadata inserted"
-    assert result["obs_id"] == 2024032100002
+    assert result["obs_id"] == 7024040300451
 
     response = client.post(
-        "/consdb/flex/latiss/exposure/obs/2024032100002",
-        json={"values": {"foo": True, "bar": 42, "baz": 3.14159}},
+        "/consdb/flex/latiss/exposure/obs/7024040300451",
+        json={"values": {"foo2": True, "bar2": 42, "baz2": 3.14159}},
     )
     _assert_http_status(response, 500)
     result = response.json()
-    assert "UNIQUE" in result["message"]
+    assert "already exists" in result["message"]
 
     response = client.post(
-        "/consdb/flex/latiss/exposure/obs/2024032100002",
+        "/consdb/flex/latiss/exposure/obs/7024040300451",
         json={"values": {"bad_key": 2.71828}},
     )
     _assert_http_status(response, 404)
@@ -414,35 +379,43 @@ def test_flexible_metadata(client):
     assert result["message"] == "Unknown key"
     assert result["value"] == "bad_key"
 
-    response = client.get("/consdb/flex/latiss/exposure/obs/2024032100002")
+    response = client.get("/consdb/flex/latiss/exposure/obs/7024040300451")
     _assert_http_status(response, 200)
     result = response.json()
-    assert result == {"foo": True, "bar": 42, "baz": 3.14159}
+    assert result == {
+        "bar": 1234,
+        "bar2": 42,
+        "baz": 3.14,
+        "baz2": 3.14159,
+        "foo": True,
+        "foo2": True,
+        "qux": "nachos",
+    }
 
-    response = client.get("/consdb/flex/latiss/exposure/obs/2024032100002?k=bar&k=baz")
+    response = client.get("/consdb/flex/latiss/exposure/obs/7024040300451?k=bar2&k=baz2")
     _assert_http_status(response, 200)
     result = response.json()
-    assert result == {"bar": 42, "baz": 3.14159}
+    assert result == {"bar2": 42, "baz2": 3.14159}
 
     response = client.post(
-        "/consdb/flex/latiss/exposure/obs/2024032100002?u=1",
+        "/consdb/flex/latiss/exposure/obs/7024052800003?u=1",
         json={"values": {"foo": False, "bar": 34, "baz": 2.71828}},
     )
     _assert_http_status(response, 200)
     result = response.json()
     assert result["message"] == "Flexible metadata inserted"
 
-    response = client.get("/consdb/flex/latiss/exposure/obs/2024032100002")
+    response = client.get("/consdb/flex/latiss/exposure/obs/7024052800003")
     _assert_http_status(response, 200)
     result = response.json()
-    assert result == {"foo": False, "bar": 34, "baz": 2.71828}
+    assert result == {"foo": False, "bar": 34, "baz": 2.71828, "qux": "burritos"}  # Qux loaded by fixture
 
-    response = client.get("/consdb/flex/latiss/exposure/obs/2024032100002?k=baz")
+    response = client.get("/consdb/flex/latiss/exposure/obs/7024052800003?k=baz")
     _assert_http_status(response, 200)
     result = response.json()
     assert result == {"baz": 2.71828}
 
-    response = client.post("/consdb/flex/latiss/exposure/obs/2024032100002", json={})
+    response = client.post("/consdb/flex/latiss/exposure/obs/7024052800003", json={})
     _assert_http_status(response, 404)
     result = response.json()
     assert "Validation error" in result["message"]
@@ -469,10 +442,11 @@ def test_flexible_metadata(client):
         "obs_id": 2024032100003,
     }
 
-    response = client.post("/consdb/query", json={"query": "SELECT * FROM exposure ORDER BY day_obs;"})
+    response = client.post("/consdb/query",
+                           json={"query": "SELECT * FROM cdb_latiss.exposure ORDER BY day_obs;"})
     _assert_http_status(response, 200)
     result = response.json()
     assert len(result) == 2
     assert "exposure_id" in result["columns"]
-    assert 20240321 in result["data"][0]
-    assert "AT_O_20240327_000002" in result["data"][1]
+    assert 2024032100003 in result["data"][0]
+    assert "CC_S_20240403_000451" in result["data"][1]

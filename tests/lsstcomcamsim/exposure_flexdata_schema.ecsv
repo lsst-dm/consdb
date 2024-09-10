@@ -1,0 +1,14 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: key, datatype: string}
+# - {name: dtype, datatype: string}
+# - {name: doc, datatype: string}
+# - {name: unit, datatype: string, subtype: json}
+# - {name: ucd, datatype: string, subtype: json}
+# schema: astropy-2.0
+key dtype doc unit ucd
+foo bool "Sample flex bool type" """deg""" """pos.eq.ra;meta.main"""
+bar int "Sample flex int type" null null
+baz float "Sample flex float type" """m3 / (kg s2)""" """phys.gravity"""
+qux str "Sample flex string type" """K""" """phys.temperature"""
