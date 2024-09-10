@@ -1,0 +1,19 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: ccdexposure_id, datatype: int64}
+# - {name: exposure_id, datatype: int64}
+# - {name: detector, datatype: int64}
+# - {name: s_region, datatype: string, subtype: json}
+# schema: astropy-2.0
+ccdexposure_id exposure_id detector s_region
+730865976064 7024040300451 0 null
+730865976065 7024040300451 1 null
+730865976066 7024040300451 2 null
+730865976067 7024040300451 3 null
+730865976068 7024040300451 4 null
+730865976069 7024040300451 5 null
+730865976070 7024040300451 6 null
+730865976071 7024040300451 7 null
+730865976072 7024040300451 8 null
+

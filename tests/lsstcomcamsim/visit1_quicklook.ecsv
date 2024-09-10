@@ -1,0 +1,96 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: visit_id, datatype: int64}
+# - {name: astrom_offset_mean_min, datatype: float64}
+# - {name: astrom_offset_mean_max, datatype: float64}
+# - {name: astrom_offset_mean_median, datatype: float64}
+# - {name: astrom_offset_std_min, datatype: float64}
+# - {name: astrom_offset_std_max, datatype: float64}
+# - {name: astrom_offset_std_median, datatype: float64}
+# - {name: eff_time_min, datatype: float64}
+# - {name: eff_time_max, datatype: float64}
+# - {name: eff_time_median, datatype: float64}
+# - {name: eff_time_psf_sigma_scale_min, datatype: float64}
+# - {name: eff_time_psf_sigma_scale_max, datatype: float64}
+# - {name: eff_time_psf_sigma_scale_median, datatype: float64}
+# - {name: eff_time_sky_bg_scale_min, datatype: float64}
+# - {name: eff_time_sky_bg_scale_max, datatype: float64}
+# - {name: eff_time_sky_bg_scale_median, datatype: float64}
+# - {name: eff_time_zero_point_scale_min, datatype: float64}
+# - {name: eff_time_zero_point_scale_max, datatype: float64}
+# - {name: eff_time_zero_point_scale_median, datatype: float64}
+# - {name: max_dist_to_nearest_psf_min, datatype: float64}
+# - {name: max_dist_to_nearest_psf_max, datatype: float64}
+# - {name: max_dist_to_nearest_psf_median, datatype: float64}
+# - {name: mean_var_min, datatype: float64}
+# - {name: mean_var_max, datatype: float64}
+# - {name: mean_var_median, datatype: float64}
+# - {name: n_psf_star_min, datatype: int64}
+# - {name: n_psf_star_max, datatype: int64}
+# - {name: n_psf_star_median, datatype: int64}
+# - {name: n_psf_star_total, datatype: int64}
+# - {name: psf_area_min, datatype: float64}
+# - {name: psf_area_max, datatype: float64}
+# - {name: psf_area_median, datatype: float64}
+# - {name: psf_ixx_min, datatype: float64}
+# - {name: psf_ixx_max, datatype: float64}
+# - {name: psf_ixx_median, datatype: float64}
+# - {name: psf_ixy_min, datatype: float64}
+# - {name: psf_ixy_max, datatype: float64}
+# - {name: psf_ixy_median, datatype: float64}
+# - {name: psf_iyy_min, datatype: float64}
+# - {name: psf_iyy_max, datatype: float64}
+# - {name: psf_iyy_median, datatype: float64}
+# - {name: psf_sigma_min, datatype: float64}
+# - {name: psf_sigma_max, datatype: float64}
+# - {name: psf_sigma_median, datatype: float64}
+# - {name: psf_star_delta_e1_median_min, datatype: float64}
+# - {name: psf_star_delta_e1_median_max, datatype: float64}
+# - {name: psf_star_delta_e1_median_median, datatype: float64}
+# - {name: psf_star_delta_e1_scatter_min, datatype: float64}
+# - {name: psf_star_delta_e1_scatter_max, datatype: float64}
+# - {name: psf_star_delta_e1_scatter_median, datatype: float64}
+# - {name: psf_star_delta_e2_median_min, datatype: float64}
+# - {name: psf_star_delta_e2_median_max, datatype: float64}
+# - {name: psf_star_delta_e2_median_median, datatype: float64}
+# - {name: psf_star_delta_e2_scatter_min, datatype: float64}
+# - {name: psf_star_delta_e2_scatter_max, datatype: float64}
+# - {name: psf_star_delta_e2_scatter_median, datatype: float64}
+# - {name: psf_star_delta_size_median_min, datatype: float64}
+# - {name: psf_star_delta_size_median_max, datatype: float64}
+# - {name: psf_star_delta_size_median_median, datatype: float64}
+# - {name: psf_star_delta_size_scatter_min, datatype: float64}
+# - {name: psf_star_delta_size_scatter_max, datatype: float64}
+# - {name: psf_star_delta_size_scatter_median, datatype: float64}
+# - {name: psf_star_scaled_delta_size_scatter_min, datatype: float64}
+# - {name: psf_star_scaled_delta_size_scatter_max, datatype: float64}
+# - {name: psf_star_scaled_delta_size_scatter_median, datatype: float64}
+# - {name: psf_trace_radius_delta_min, datatype: float64}
+# - {name: psf_trace_radius_delta_max, datatype: float64}
+# - {name: psf_trace_radius_delta_median, datatype: float64}
+# - {name: sky_bg_min, datatype: float64}
+# - {name: sky_bg_max, datatype: float64}
+# - {name: sky_bg_median, datatype: float64}
+# - {name: sky_noise_min, datatype: float64}
+# - {name: sky_noise_max, datatype: float64}
+# - {name: sky_noise_median, datatype: float64}
+# - {name: zero_point_min, datatype: float64}
+# - {name: zero_point_max, datatype: float64}
+# - {name: zero_point_median, datatype: float64}
+# - {name: low_snr_source_count_min, datatype: string, subtype: json}
+# - {name: low_snr_source_count_max, datatype: string, subtype: json}
+# - {name: low_snr_source_count_median, datatype: string, subtype: json}
+# - {name: low_snr_source_count_total, datatype: string, subtype: json}
+# - {name: high_snr_source_count_min, datatype: string, subtype: json}
+# - {name: high_snr_source_count_max, datatype: string, subtype: json}
+# - {name: high_snr_source_count_median, datatype: string, subtype: json}
+# - {name: high_snr_source_count_total, datatype: string, subtype: json}
+# - {name: seeing_zenith_500nm_min, datatype: string, subtype: json}
+# - {name: seeing_zenith_500nm_max, datatype: string, subtype: json}
+# - {name: seeing_zenith_500nm_median, datatype: string, subtype: json}
+# - {name: n_inputs, datatype: int64}
+# schema: astropy-2.0
+visit_id astrom_offset_mean_min astrom_offset_mean_max astrom_offset_mean_median astrom_offset_std_min astrom_offset_std_max astrom_offset_std_median eff_time_min eff_time_max eff_time_median eff_time_psf_sigma_scale_min eff_time_psf_sigma_scale_max eff_time_psf_sigma_scale_median eff_time_sky_bg_scale_min eff_time_sky_bg_scale_max eff_time_sky_bg_scale_median eff_time_zero_point_scale_min eff_time_zero_point_scale_max eff_time_zero_point_scale_median max_dist_to_nearest_psf_min max_dist_to_nearest_psf_max max_dist_to_nearest_psf_median mean_var_min mean_var_max mean_var_median n_psf_star_min n_psf_star_max n_psf_star_median n_psf_star_total psf_area_min psf_area_max psf_area_median psf_ixx_min psf_ixx_max psf_ixx_median psf_ixy_min psf_ixy_max psf_ixy_median psf_iyy_min psf_iyy_max psf_iyy_median psf_sigma_min psf_sigma_max psf_sigma_median psf_star_delta_e1_median_min psf_star_delta_e1_median_max psf_star_delta_e1_median_median psf_star_delta_e1_scatter_min psf_star_delta_e1_scatter_max psf_star_delta_e1_scatter_median psf_star_delta_e2_median_min psf_star_delta_e2_median_max psf_star_delta_e2_median_median psf_star_delta_e2_scatter_min psf_star_delta_e2_scatter_max psf_star_delta_e2_scatter_median psf_star_delta_size_median_min psf_star_delta_size_median_max psf_star_delta_size_median_median psf_star_delta_size_scatter_min psf_star_delta_size_scatter_max psf_star_delta_size_scatter_median psf_star_scaled_delta_size_scatter_min psf_star_scaled_delta_size_scatter_max psf_star_scaled_delta_size_scatter_median psf_trace_radius_delta_min psf_trace_radius_delta_max psf_trace_radius_delta_median sky_bg_min sky_bg_max sky_bg_median sky_noise_min sky_noise_max sky_noise_median zero_point_min zero_point_max zero_point_median low_snr_source_count_min low_snr_source_count_max low_snr_source_count_median low_snr_source_count_total high_snr_source_count_min high_snr_source_count_max high_snr_source_count_median high_snr_source_count_total seeing_zenith_500nm_min seeing_zenith_500nm_max seeing_zenith_500nm_median n_inputs
+7024040300451 0.007426047697663307 0.007426047697663307 0.007426047697663307 0.0040731728076934814 0.0040731728076934814 0.0040731728076934814 36.148712158203125 36.148712158203125 36.148712158203125 1.3490833044052124 1.3490833044052124 1.3490833044052124 0.8557785749435425 0.8557785749435425 0.8557785749435425 1.042473316192627 1.042473316192627 1.042473316192627 514.4628295898438 514.4628295898438 514.4628295898438 323.9481201171875 323.9481201171875 323.9481201171875 209 209 209 1902 33.13351821899414 33.13351821899414 33.13351821899414 2.22502064704895 2.22502064704895 2.22502064704895 -0.03166781738400459 -0.03166781738400459 -0.03166781738400459 2.159698009490967 2.159698009490967 2.159698009490967 1.480843186378479 1.480843186378479 1.480843186378479 0.00036173660191707313 0.00036173660191707313 0.00036173660191707313 0.010656812228262424 0.010656812228262424 0.010656812228262424 -9.827991743804887e-05 -9.827991743804887e-05 -9.827991743804887e-05 0.010869131423532963 0.010869131423532963 0.010869131423532963 -0.000794879742898047 -0.000794879742898047 -0.000794879742898047 0.0121929831802845 0.0121929831802845 0.0121929831802845 0.008244113996624947 0.008244113996624947 0.008244113996624947 0.012445911765098572 0.012445911765098572 0.012445911765098572 327.421142578125 327.421142578125 327.421142578125 18.019407272338867 18.019407272338867 18.019407272338867 31.395383834838867 31.395383834838867 31.395383834838867 null null null null null null null null null null null 9
+

@@ -1,12 +1,18 @@
-ARG OBS_LSST_VERSION=w_2024_21
+ARG OBS_LSST_VERSION=w_2024_32
 FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
+USER root
+
+# testing.postgresql looks for pg in /usr/local...
+RUN yum install -y postgresql-server postgresql && rmdir /usr/local/bin && ln -s /usr/bin /usr/local
+
 USER lsst
-RUN source loadLSST.bash && mamba install aiokafka httpx
-RUN source loadLSST.bash && pip install kafkit aiokafka httpx pytest-asyncio
+RUN source loadLSST.bash && mamba install -y aiokafka httpx
+RUN source loadLSST.bash && pip install kafkit aiokafka httpx pytest-asyncio testing.postgresql lsst-felis
 
 WORKDIR /home/lsst/
+
 COPY --chown=lsst .  ./consdb/
 WORKDIR /home/lsst/consdb/
 RUN source /opt/lsst/software/stack/loadLSST.bash && pip install -e .
 
-ENTRYPOINT [ "/bin/bash", "-c", "source /opt/lsst/software/stack/loadLSST.bash; setup obs_lsst; pytest ."  ]
+ENTRYPOINT [ "/bin/bash", "-c", "source /opt/lsst/software/stack/loadLSST.bash; setup obs_lsst; setup felis; pytest ."  ]
