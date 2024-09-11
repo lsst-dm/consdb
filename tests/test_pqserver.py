@@ -82,8 +82,28 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
                 for row in astropy_table
             ]
 
-            # Insert rows into the SQL table
+            fk_column = {
+                "ccdexposure": "exposure_id",
+                "visit1_quicklook": "visit_id",
+                "exposure_flexdata": "obs_id",
+            }
             with instance.engine.begin() as connection:
+                if table_name in fk_column.keys() and "day_obs" in sql_table.columns:
+                    # Adjust for multi-column primary keys
+                    exposure_table = sa.Table(
+                        "exposure", metadata, schema=schema_name, autoload_with=instance.engine)
+                    for row in rows:
+                        stmt = sa.select(
+                            exposure_table.c["day_obs", "seq_num"]
+                        ).where(
+                            exposure_table.c.exposure_id == row[fk_column[table_name]]
+                        )
+                        query_result = connection.execute(stmt).first()
+
+                        row["day_obs"] = query_result.day_obs
+                        row["seq_num"] = query_result.seq_num
+
+                # Insert rows into the SQL table
                 connection.execute(sql_table.insert(), rows)
 
         pqserver.engine = instance.engine

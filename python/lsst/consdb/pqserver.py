@@ -704,12 +704,14 @@ def insert_flexible_metadata(
         if dtype != type(value).__name__:
             raise BadValueException(f"{dtype} value", value)
 
+    has_multi_column_primary_keys = instrument_tables.get_schema_version(instrument_l) >= Version("3.2.0")
+
     with engine.connect() as conn:
         for key, value in value_dict.items():
             value_str = str(value)
 
             values = {"obs_id": obs_id, "key": key, "value": value_str}
-            if instrument_tables.get_schema_version(instrument_l) >= Version("3.2.0"):
+            if has_multi_column_primary_keys:
                 day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
                 values["day_obs"] = day_obs
                 values["seq_num"] = seq_num
@@ -718,7 +720,12 @@ def insert_flexible_metadata(
             stmt = sqlalchemy.dialects.postgresql.insert(table).values(**values)
             logger.error(f"{u=}")
             if u != 0:
-                stmt = stmt.on_conflict_do_update(index_elements=["obs_id", "key"], set_={"value": value_str})
+                if has_multi_column_primary_keys:
+                    stmt = stmt.on_conflict_do_update(
+                        index_elements=["day_obs", "seq_num", "key"], set_={"value": value_str})
+                else:
+                    stmt = stmt.on_conflict_do_update(
+                        index_elements=["obs_id", "key"], set_={"value": value_str})
 
             logger.debug(str(stmt))
             _ = conn.execute(stmt)
