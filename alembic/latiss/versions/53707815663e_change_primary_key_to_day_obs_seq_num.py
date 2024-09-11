@@ -1,8 +1,8 @@
 """change primary key to day_obs + seq_num
 
-Revision ID: 2440b54348d8
+Revision ID: 53707815663e
 Revises: 59776480aa4d
-Create Date: 2024-08-30 23:34:27.200734+00:00
+Create Date: 2024-09-11 00:15:14.413772+00:00
 
 """
 
@@ -11,9 +11,10 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = "2440b54348d8"
+revision: str = "53707815663e"
 down_revision: Union[str, None] = "59776480aa4d"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -42,13 +43,18 @@ def upgrade() -> None:
         schema="cdb_latiss",
     )
     op.drop_constraint("un_exposure_id_detector", "ccdexposure", schema="cdb_latiss", type_="unique")
-    op.create_unique_constraint("un_ccdexposure_id", "ccdexposure", ["ccdexposure_id"], schema="cdb_latiss")
     op.create_unique_constraint(
-        "un_day_obs_seq_num_detector", "ccdexposure", ["day_obs", "seq_num", "detector"], schema="cdb_latiss"
+        "un_ccdexposure_ccdexposure_id", "ccdexposure", ["ccdexposure_id"], schema="cdb_latiss"
+    )
+    op.create_unique_constraint(
+        "un_ccdexposure_day_obs_seq_num_detector",
+        "ccdexposure",
+        ["day_obs", "seq_num", "detector"],
+        schema="cdb_latiss",
     )
     op.drop_constraint("fk_exposure_id", "ccdexposure", schema="cdb_latiss", type_="foreignkey")
     op.create_foreign_key(
-        "fk_day_obs_seq_num",
+        "fk_ccdexposure_day_obs_seq_num",
         "ccdexposure",
         "exposure",
         ["day_obs", "seq_num"],
@@ -56,6 +62,11 @@ def upgrade() -> None:
         source_schema="cdb_latiss",
         referent_schema="cdb_latiss",
     )
+    op.drop_constraint("un_day_obs_seq_num", "exposure", schema="cdb_latiss", type_="unique")
+    op.create_unique_constraint(
+        "un_exposure_day_obs_seq_num", "exposure", ["day_obs", "seq_num"], schema="cdb_latiss"
+    )
+    op.create_unique_constraint("un_exposure_exposure_id", "exposure", ["exposure_id"], schema="cdb_latiss")
     op.add_column(
         "exposure_flexdata",
         sa.Column(
@@ -173,7 +184,12 @@ def downgrade() -> None:
     )
     op.drop_column("exposure_flexdata", "seq_num", schema="cdb_latiss")
     op.drop_column("exposure_flexdata", "day_obs", schema="cdb_latiss")
-    op.drop_constraint("fk_day_obs_seq_num", "ccdexposure", schema="cdb_latiss", type_="foreignkey")
+    op.drop_constraint("un_exposure_exposure_id", "exposure", schema="cdb_latiss", type_="unique")
+    op.drop_constraint("un_exposure_day_obs_seq_num", "exposure", schema="cdb_latiss", type_="unique")
+    op.create_unique_constraint("un_day_obs_seq_num", "exposure", ["day_obs", "seq_num"], schema="cdb_latiss")
+    op.drop_constraint(
+        "fk_ccdexposure_day_obs_seq_num", "ccdexposure", schema="cdb_latiss", type_="foreignkey"
+    )
     op.create_foreign_key(
         "fk_exposure_id",
         "ccdexposure",
@@ -183,8 +199,10 @@ def downgrade() -> None:
         source_schema="cdb_latiss",
         referent_schema="cdb_latiss",
     )
-    op.drop_constraint("un_day_obs_seq_num_detector", "ccdexposure", schema="cdb_latiss", type_="unique")
-    op.drop_constraint("un_ccdexposure_id", "ccdexposure", schema="cdb_latiss", type_="unique")
+    op.drop_constraint(
+        "un_ccdexposure_day_obs_seq_num_detector", "ccdexposure", schema="cdb_latiss", type_="unique"
+    )
+    op.drop_constraint("un_ccdexposure_ccdexposure_id", "ccdexposure", schema="cdb_latiss", type_="unique")
     op.create_unique_constraint(
         "un_exposure_id_detector", "ccdexposure", ["exposure_id", "detector"], schema="cdb_latiss"
     )
