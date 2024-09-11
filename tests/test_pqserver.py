@@ -91,11 +91,10 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
                 if table_name in fk_column.keys() and "day_obs" in sql_table.columns:
                     # Adjust for multi-column primary keys
                     exposure_table = sa.Table(
-                        "exposure", metadata, schema=schema_name, autoload_with=instance.engine)
+                        "exposure", metadata, schema=schema_name, autoload_with=instance.engine
+                    )
                     for row in rows:
-                        stmt = sa.select(
-                            exposure_table.c["day_obs", "seq_num"]
-                        ).where(
+                        stmt = sa.select(exposure_table.c["day_obs", "seq_num"]).where(
                             exposure_table.c.exposure_id == row[fk_column[table_name]]
                         )
                         query_result = connection.execute(stmt).first()
@@ -462,8 +461,9 @@ def test_flexible_metadata(lsstcomcamsim):
         "obs_id": 2024032100003,
     }
 
-    response = client.post("/consdb/query",
-                           json={"query": "SELECT * FROM cdb_latiss.exposure ORDER BY day_obs;"})
+    response = client.post(
+        "/consdb/query", json={"query": "SELECT * FROM cdb_latiss.exposure ORDER BY day_obs;"}
+    )
     _assert_http_status(response, 200)
     result = response.json()
     assert len(result) == 2

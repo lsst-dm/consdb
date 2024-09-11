@@ -182,7 +182,6 @@ class InstrumentTables:
         columns = self.timestamp_columns[table]
         return columns
 
-
     def get_schema_version(self, instrument: str) -> Version:
         if "day_obs" in self.schemas[instrument].tables[f"cdb_{instrument}.ccdexposure"].columns:
             return Version("3.2.0")
@@ -192,9 +191,7 @@ class InstrumentTables:
     def get_day_obs_and_seq_num(self, instrument: str, exposure_id: int) -> tuple[int, int]:
         exposure_table_name = f"cdb_{instrument}.exposure"
         exposure_table = self.schemas[instrument].tables[exposure_table_name]
-        query = sqlalchemy.select(
-            exposure_table.c.day_obs, exposure_table.c.seq_num
-        ).where(
+        query = sqlalchemy.select(exposure_table.c.day_obs, exposure_table.c.seq_num).where(
             exposure_table.c.exposure_id == exposure_id
         )
 
@@ -722,10 +719,12 @@ def insert_flexible_metadata(
             if u != 0:
                 if has_multi_column_primary_keys:
                     stmt = stmt.on_conflict_do_update(
-                        index_elements=["day_obs", "seq_num", "key"], set_={"value": value_str})
+                        index_elements=["day_obs", "seq_num", "key"], set_={"value": value_str}
+                    )
                 else:
                     stmt = stmt.on_conflict_do_update(
-                        index_elements=["obs_id", "key"], set_={"value": value_str})
+                        index_elements=["obs_id", "key"], set_={"value": value_str}
+                    )
 
             logger.debug(str(stmt))
             _ = conn.execute(stmt)

@@ -1,24 +1,22 @@
 import os
 from pathlib import Path
 
+import lsst.utils
 import pytest
-from sqlalchemy import MetaData, select
 import sqlalchemy as sa
 import yaml
-
 from felis.datamodel import Schema
 from felis.db.utils import DatabaseContext
 from felis.metadata import MetaDataBuilder
 from felis.tests.postgresql import setup_postgres_test_db
 from lsst.consdb import hinfo
 from lsst.resources import ResourcePath
-import lsst.utils
+from sqlalchemy import MetaData, select
 
 
 @pytest.fixture
 def pg_engine(request, scope="module"):
     schema_name = request.param if hasattr(request, "param") else "cdb_latiss"
-    data_path = Path(__file__).parent / "lsstcomcamsim"
 
     schema_file = os.path.join(lsst.utils.getPackageDir("sdm_schemas"), "yml", schema_name + ".yaml")
 
