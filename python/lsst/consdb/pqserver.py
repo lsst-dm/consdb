@@ -318,11 +318,8 @@ class InstrumentTables:
         return view_name
 
 
-if __name__ == "__main__":
-    engine = setup_postgres()
-    instrument_tables = InstrumentTables()
-else:
-    instrument_tables = None
+engine = setup_postgres()
+instrument_tables = InstrumentTables()
 
 
 ##################
