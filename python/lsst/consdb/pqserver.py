@@ -318,8 +318,11 @@ class InstrumentTables:
         return view_name
 
 
-engine = setup_postgres()
-instrument_tables = InstrumentTables()
+engine = None
+instrument_tables = None
+if __name__ == "__main__" or __name__ == "consdb_pq.pqserver":
+    engine = setup_postgres()
+    instrument_tables = InstrumentTables()
 
 
 ##################
