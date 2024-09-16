@@ -41,7 +41,10 @@ def upgrade() -> None:
         ),
         schema="cdb_lsstcomcamsim",
     )
+    op.drop_constraint("fk_obs_id", "exposure_flexdata", schema="cdb_lsstcomcamsim", type_="foreignkey")
+    op.drop_constraint("fk_exposure_id", "ccdexposure", schema="cdb_lsstcomcamsim", type_="foreignkey")
     op.drop_constraint("un_exposure_id_detector", "ccdexposure", schema="cdb_lsstcomcamsim", type_="unique")
+    op.drop_constraint("un_day_obs_seq_num", "exposure", schema="cdb_lsstcomcamsim", type_="unique")
     op.create_unique_constraint(
         "un_ccdexposure_ccdexposure_id", "ccdexposure", ["ccdexposure_id"], schema="cdb_lsstcomcamsim"
     )
@@ -50,16 +53,6 @@ def upgrade() -> None:
         "ccdexposure",
         ["day_obs", "seq_num", "detector"],
         schema="cdb_lsstcomcamsim",
-    )
-    op.drop_constraint("fk_exposure_id", "ccdexposure", schema="cdb_lsstcomcamsim", type_="foreignkey")
-    op.create_foreign_key(
-        "fk_ccdexposure_day_obs_seq_num",
-        "ccdexposure",
-        "exposure",
-        ["day_obs", "seq_num"],
-        ["day_obs", "seq_num"],
-        source_schema="cdb_lsstcomcamsim",
-        referent_schema="cdb_lsstcomcamsim",
     )
     op.add_column(
         "ccdvisit1_quicklook",
@@ -71,7 +64,6 @@ def upgrade() -> None:
         ),
         schema="cdb_lsstcomcamsim",
     )
-    op.drop_constraint("un_day_obs_seq_num", "exposure", schema="cdb_lsstcomcamsim", type_="unique")
     op.create_unique_constraint(
         "un_exposure_day_obs_seq_num", "exposure", ["day_obs", "seq_num"], schema="cdb_lsstcomcamsim"
     )
@@ -98,7 +90,6 @@ def upgrade() -> None:
         ),
         schema="cdb_lsstcomcamsim",
     )
-    op.drop_constraint("fk_obs_id", "exposure_flexdata", schema="cdb_lsstcomcamsim", type_="foreignkey")
     op.create_foreign_key(
         "fk_exposure_flexdata_day_obs_seq_num",
         "exposure_flexdata",
@@ -161,6 +152,15 @@ def upgrade() -> None:
     op.create_foreign_key(
         "fk_visit1_quicklook_day_obs_seq_num",
         "visit1_quicklook",
+        "exposure",
+        ["day_obs", "seq_num"],
+        ["day_obs", "seq_num"],
+        source_schema="cdb_lsstcomcamsim",
+        referent_schema="cdb_lsstcomcamsim",
+    )
+    op.create_foreign_key(
+        "fk_ccdexposure_day_obs_seq_num",
+        "ccdexposure",
         "exposure",
         ["day_obs", "seq_num"],
         ["day_obs", "seq_num"],
