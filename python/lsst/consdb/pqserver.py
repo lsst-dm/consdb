@@ -701,7 +701,9 @@ def insert_flexible_metadata(
         if dtype != type(value).__name__:
             raise BadValueException(f"{dtype} value", value)
 
-    has_multi_column_primary_keys = instrument_tables.get_schema_version(instrument_l) >= Version("3.2.0")
+    has_multi_column_primary_keys = (
+        instrument_tables.get_schema_version(instrument_l) >= Version("3.2.0") and obs_type == "exposure"
+    )
 
     with engine.connect() as conn:
         for key, value in value_dict.items():
