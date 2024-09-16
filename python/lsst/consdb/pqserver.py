@@ -318,7 +318,11 @@ class InstrumentTables:
         return view_name
 
 
+engine = None
 instrument_tables = None
+if __name__ == "__main__" or __name__ == "consdb_pq.pqserver":
+    engine = setup_postgres()
+    instrument_tables = InstrumentTables()
 
 
 ##################
@@ -465,6 +469,8 @@ def internal_root() -> IndexResponseModel:
         JSON response with a list of instruments, observation types, and
         data types.
     """
+    global instrument_tables
+
     return IndexResponseModel(
         instruments=instrument_tables.instrument_list,
         obs_types=[o.value for o in ObsTypeEnum],
@@ -974,8 +980,3 @@ def schema(
     if table not in schema.tables:
         raise BadValueException("table", table, list(schema.tables.keys()))
     return {c.name: [str(c.type), c.doc] for c in schema.tables[table].columns}
-
-
-if __name__ == "__main__":
-    engine = setup_postgres()
-    instrument_tables = InstrumentTables()
