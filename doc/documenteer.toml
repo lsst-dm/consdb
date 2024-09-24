@@ -1,5 +1,5 @@
 [project]
-title = "Consolidated Database (ConsDB)"
+title = "ConsDB"
 copyright = "GNU General Public License v3"
 
 [project.python]
