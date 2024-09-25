@@ -30,7 +30,6 @@ def astropy_tables(scope="module"):
 @pytest.fixture
 def lsstcomcamsim(request, astropy_tables, scope="module"):
     schema_name = request.param if hasattr(request, "param") else "cdb_lsstcomcamsim"
-    print(f"{schema_name=}")
     data_path = Path(__file__).parent / "lsstcomcamsim"
 
     schema_file = os.path.join(lsst.utils.getPackageDir("sdm_schemas"), "yml", schema_name + ".yaml")
@@ -42,7 +41,6 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
 
     with setup_postgres_test_db() as instance:
         context = DatabaseContext(md, instance.engine)
-        print(f"{type(instance.engine)=}")
         context.initialize()
         context.create_all()
 

@@ -27,7 +27,6 @@ def pg_engine(request, scope="module"):
 
     with setup_postgres_test_db() as instance:
         context = DatabaseContext(md, instance.engine)
-        print(f"{type(instance.engine)=}")
         context.initialize()
         context.create_all()
 
@@ -58,8 +57,6 @@ def test_process_resource(pg_engine):
     exposure_table = sa.Table("exposure", metadata_obj, autoload_with=pg_engine)
     with pg_engine.begin() as conn:
         row = conn.execute(select(exposure_table)).first()
-        print(f"{row=}")
-        print(f"{row.exposure_name=}")
 
     assert _header_lookup(header, "OBSID") == row.exposure_name
     assert _header_lookup(header, "VIGN_MIN") == row.vignette_min
