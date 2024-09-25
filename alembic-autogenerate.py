@@ -2,16 +2,19 @@
 
 #
 # How to use this script:
-# 1. Set the SDM_SCHEMAS_DIR environment variable to point to your sdm_schemas
+# 1. Load the LSST environment and setup sdm_schemas and felis.
+#        source loadLSST.bash
+#        setup felis
+#        setup -r /path/to/sdm_schemas
+# 2. Set the SDM_SCHEMAS_DIR environment variable to point to your sdm_schemas
 #    tree. The schema yaml files should be in
 #    $SDM_SCHEMAS_DIR/yml/cdb_latiss.yaml,
 #    $SDM_SCHEMAS_DIR/yml/cdb_lsstcomcam.yaml, etc.
-# 2. Load the LSST environment and setup felis.
-#        source loadLSST.bash
-#        setup felis
-# 3. From the consdb root, invoke the script. Supply a revision message as the
-#    command line argument:
-#        python alembic-autogenerate.py this is my revision message
+# 3. From the root of the consdb git repo, invoke the script. Supply a
+#    revision message as the command line argument:
+#        python alembic-autogenerate.py this is my revision message "\n" \
+#            the message can span multiple lines "\n" \
+#            if desired
 # 4. Heed the message at the end to revise your auto-generated code as needed.
 #
 
