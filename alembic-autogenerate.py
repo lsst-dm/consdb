@@ -30,14 +30,16 @@ from sqlalchemy.sql import text
 from felis.tests.postgresql import setup_postgres_test_db
 
 if len(sys.argv) <= 1:
-    print("""
+    print(
+        """
     Usage:
         {sys.argv[0]} put a revision message here")
 
-    """)
+    """
+    )
     sys.exit(1)
 
-revision_message = ' '.join(sys.argv[1:])
+revision_message = " ".join(sys.argv[1:])
 
 # Configuration for Alembic
 alembic_ini_path = "alembic.ini"
@@ -66,7 +68,8 @@ for instrument in instruments:
         # Autogenerate a new migration
         command.revision(alembic_cfg, autogenerate=True, message=revision_message)
 
-print("""
+print(
+    """
 ==========================================
  Don't forget to edit your migration
  files! You'll need to remove the visit1
@@ -74,4 +77,5 @@ print("""
  to shuffle data around to accomodate the
  new schema!
 ==========================================
-""")
+"""
+)

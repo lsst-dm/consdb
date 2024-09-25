@@ -416,8 +416,10 @@ def process_local_path(path: str) -> None:
                 if file.endswith(".yaml"):
                     try:
                         logger.info(f"Processing: {file}...")
-                        process_resource(ResourcePath(os.path.join(root, file)), get_instrument_dict(instrument))
-                    except:
+                        process_resource(
+                            ResourcePath(os.path.join(root, file)), get_instrument_dict(instrument)
+                        )
+                    except Exception:
                         logger.exception(f"Failed to process resource {file}")
     # If a yaml file is provided on the command line, process it.
     elif os.path.isfile(path) and path.endswith(".yaml"):
