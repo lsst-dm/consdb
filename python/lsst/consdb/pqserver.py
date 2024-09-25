@@ -705,13 +705,15 @@ def insert_flexible_metadata(
         instrument_tables.get_schema_version(instrument_l) >= Version("3.2.0") and obs_type == "exposure"
     )
 
+    if has_multi_column_primary_keys:
+        day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
+
     with engine.connect() as conn:
         for key, value in value_dict.items():
             value_str = str(value)
 
             values = {"obs_id": obs_id, "key": key, "value": value_str}
             if has_multi_column_primary_keys:
-                day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
                 values["day_obs"] = day_obs
                 values["seq_num"] = seq_num
 
