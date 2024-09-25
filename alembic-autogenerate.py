@@ -28,10 +28,11 @@ from sqlalchemy.sql import text
 from felis.tests.postgresql import setup_postgres_test_db
 
 if len(sys.argv) <= 1:
-    print()
-    print("Usage:")
-    print(f"    {sys.argv[0]} put a revision message here")
-    print()
+    print("""
+    Usage:
+        {sys.argv[0]} put a revision message here")
+
+    """)
     sys.exit(1)
 
 revision_message = ' '.join(sys.argv[1:])
@@ -61,11 +62,12 @@ for instrument in ("latiss", "lsstcomcam", "lsstcomcamsim"):
         # Autogenerate a new migration
         command.revision(alembic_cfg, autogenerate=True, message=revision_message)
 
-print()
-print("="*42)
-print(" Don't forget to edit your migration")
-print(" files! You'll need to remove the visit1")
-print(" and ccdvisit1 tables, and you might need")
-print(" to shuffle data around to accomodate the")
-print(" new schema!")
-print("="*42)
+print("""
+==========================================
+ Don't forget to edit your migration
+ files! You'll need to remove the visit1
+ and ccdvisit1 tables, and you might need
+ to shuffle data around to accomodate the
+ new schema!
+==========================================
+""")
