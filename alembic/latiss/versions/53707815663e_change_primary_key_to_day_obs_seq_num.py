@@ -153,7 +153,7 @@ def upgrade() -> None:
                 UPDATE {the_schema}.{destination_table}
                     SET day_obs = {the_schema}.exposure.day_obs,
                         seq_num = {the_schema}.exposure.seq_num
-
+                    FROM {the_schema}.exposure
                     WHERE {the_schema}.exposure.exposure_id =
                         {the_schema}.{destination_table}.{pkey[destination_table]}
             """
