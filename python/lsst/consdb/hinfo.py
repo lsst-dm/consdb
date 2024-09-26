@@ -385,6 +385,10 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
             for field, keyword in instrument_obj.det_mapping.items():
                 det_exposure_rec[field] = process_column(keyword, det_info)
 
+            if "day_obs" in instrument_obj.ccdexposure_table.columns:  # schema version >= 3.2.0
+                det_exposure_rec["day_obs"] = exposure_rec["day_obs"]
+                det_exposure_rec["seq_num"] = exposure_rec["seq_num"]
+
             det_stmt = insert(instrument_obj.ccdexposure_table).values(det_exposure_rec)
             if update:
                 det_stmt = det_stmt.on_conflict_do_update(
@@ -407,10 +411,16 @@ def process_local_path(path: str) -> None:
         Path to directory that contains yaml files.
     """
     if os.path.isdir(path):
-        for _, _, files in os.walk(path):
+        for root, _, files in os.walk(path):
             for file in files:
                 if file.endswith(".yaml"):
-                    process_resource(ResourcePath(file), get_instrument_dict(instrument))
+                    try:
+                        logger.info(f"Processing: {file}...")
+                        process_resource(
+                            ResourcePath(os.path.join(root, file)), get_instrument_dict(instrument)
+                        )
+                    except Exception:
+                        logger.exception(f"Failed to process resource {file}")
     # If a yaml file is provided on the command line, process it.
     elif os.path.isfile(path) and path.endswith(".yaml"):
         process_resource(ResourcePath(path), get_instrument_dict(instrument))

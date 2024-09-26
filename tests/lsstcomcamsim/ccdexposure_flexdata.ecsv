@@ -1,0 +1,16 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: obs_id, datatype: string}
+# - {name: key, datatype: string}
+# - {name: value, datatype: string}
+# schema: astropy-2.0
+obs_id key value
+730865976064 spam false
+730865976064 ham 1001
+730865976064 eggs 0.5
+730865976064 bacon alpha
+730865976065 spam true
+730865976065 ham 987654321
+730865976065 eggs 0.1
+730865976065 bacon beta
