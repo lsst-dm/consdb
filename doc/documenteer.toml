@@ -1,0 +1,11 @@
+[project]
+title = "ConsDB"
+copyright = "GNU General Public License v3"
+
+[project.python]
+package = "consdb"
+
+[sphinx]
+disable_primary_sidebars = [
+    "index"
+]
