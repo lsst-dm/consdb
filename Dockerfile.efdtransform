@@ -37,9 +37,13 @@ ENV EFD_USERNAME="efdreader"
 # Consdb Transform DATABASE Variables
 ENV DB_URI="sqlite:////opt/lsst/software/stack/data/test.db"
 
+# Processing time interval in minutes
+ENV TIMEDELTA="5"
+
 ENV LOG_FILE="/opt/lsst/software/stack/data/transform.log"
 
-CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/efd_transform/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -s \"$START_TIME\" -e \"$END_TIME\" -r \"$BUTLER_REPO\" -d \"$DB_URI\"  -E \"$EFD\" -l \"$LOG_FILE\""]
+CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/efd_transform/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -r \"$BUTLER_REPO\" -d \"$DB_URI\"  -E \"$EFD\" -t \"$TIMEDELTA\" -l \"$LOG_FILE\""]
+# CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/efd_transform/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -s \"$START_TIME\" -e \"$END_TIME\" -r \"$BUTLER_REPO\" -d \"$DB_URI\"  -E \"$EFD\" -l \"$LOG_FILE\""]
 
 # Exemple of command used to execute transform_efd with docker
 # docker run --rm -it --volume $PWD/data:/opt/lsst/software/stack/data  -e CONFIG_FILE=config_LATISS.yaml -e ...  consdb/efd_transform:latest
