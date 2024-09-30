@@ -1,6 +1,6 @@
-############
+########
 Schemas
-############
+########
 
 * Types of schemas
     * Summit for observers and Summit systems

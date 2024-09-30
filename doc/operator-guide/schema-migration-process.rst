@@ -1,6 +1,6 @@
-############
+########################
 Schema Migration Process
-############
+########################
 
 * Add columns to sdm_schemas
 * Create alembic migration
