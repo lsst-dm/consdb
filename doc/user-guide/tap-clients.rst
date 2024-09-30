@@ -2,7 +2,7 @@
 TAP Clients
 ############
 
-    * Connection information
-        * Summit
-        * USDF
-        * Release
+* Connection information
+    * Summit
+    * USDF
+    * Release
