@@ -6,4 +6,3 @@ TAP Clients
         * Summit
         * USDF
         * Release
-

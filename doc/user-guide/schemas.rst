@@ -11,4 +11,3 @@ Schemas
         * Near-real-time "prompt" ConsDB replicates a subset of the USDF version
         * Data Release ConsDB is a snapshot of a subset of the USDF version with data pertaining to the exposures/visits in the DR
 * Schema browser
-

@@ -7,4 +7,3 @@ Inserting Information
     * Direct Kafka messages
 * ConsDB client library in summit_utils
 * ConsDB REST API
-

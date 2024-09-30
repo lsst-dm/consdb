@@ -6,4 +6,3 @@ SQL Clients (not recommended)
     * Summit
     * USDF
     * Release
-
