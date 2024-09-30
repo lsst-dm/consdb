@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import logging
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict
 
@@ -9,11 +10,11 @@ import astropy.time
 
 # import lsst_efd_client
 import yaml
-from dao.influxdb import InfluxDbDao
 from config_model import ConfigModel
-from transform import Transform
+from dao.influxdb import InfluxDbDao
 from lsst.daf.butler import Butler
 from pydantic import ValidationError
+from transform import Transform
 
 # from sqlalchemy import create_engine
 
@@ -73,21 +74,21 @@ def build_argparser() -> argparse.ArgumentParser:
         "-s",
         "--start",
         dest="start_time",
-        required=True,
+        required=False,
         help="start time (ISO, YYYY-MM-DDTHH:MM:SS)",
     )
     parser.add_argument(
         "-e",
         "--end",
         dest="end_time",
-        required=True,
+        required=False,
         help="end time (ISO, YYYY-MM-DDTHH:MM:SS)",
     )
     parser.add_argument(
         "-r",
         "--repo",
         dest="repo",
-        # default="/repo/embargo",
+        default="s3://rubin-summit-users/butler.yaml",
         required=True,
         help="Butler repo",
     )
@@ -107,7 +108,14 @@ def build_argparser() -> argparse.ArgumentParser:
         required=True,
         help="EFD connection string",
     )
-
+    parser.add_argument(
+        "-t",
+        "--timedelta",
+        dest="timedelta",
+        default=5,
+        required=False,
+        help="Processing time interval in minutes",
+    )
     parser.add_argument(
         "-l",
         "--logfile",
@@ -158,25 +166,40 @@ async def main() -> None:
 
     log = get_logger(args.logfile)
 
+    # defining the start and end time
+    # TODO: Should I use UTC???
+    # now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
+    now = datetime.now().replace(second=0, microsecond=0)
+
+    if args.start_time is None:
+        start_time = now - timedelta(minutes=int(args.timedelta))
+    else:
+        start_time = datetime.fromisoformat(args.start_time)
+
+    if args.end_time is None:
+        end_time = now
+    else:
+        end_time = datetime.fromisoformat(args.end_time)
+
+    start_time = astropy.time.Time(start_time.isoformat(), format="isot")
+    end_time = astropy.time.Time(end_time.isoformat(), format="isot")
+
+    # Instantiate the butler
     butler = Butler(args.repo)
 
-    # db = create_engine(args.db_conn_str)
+    # Instantiate the EFD
     db_uri = args.db_conn_str
-
     efd = InfluxDbDao(args.efd_conn_str)
 
     config = read_config(args.config_name)
 
-    # TODO: Commit every can be a setting
+    # TODO: Commit every can be a enviroment variable
     commit_every = 100
 
+    # Instantiate the main class transform
     tm = Transform(
         butler=butler, db_uri=db_uri, efd=efd, config=config, logger=log, commit_every=commit_every
     )
-
-    start_time = astropy.time.Time(args.start_time, format="isot")
-    end_time = astropy.time.Time(args.end_time, format="isot")
-
     tm.process_interval(
         args.instrument,
         start_time,
