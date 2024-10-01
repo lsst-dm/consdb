@@ -2,4 +2,4 @@
 ConsDbClient in summit_utils
 ############################
 
-Is this a repeat, or a different scope than the other page?
+How to write and test code in summit_utils for ConsDbClient
