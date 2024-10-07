@@ -14,3 +14,6 @@ Documentation
     :maxdepth: 1
 
     user-guide/index
+    contributor-guide/index
+    developer-guide/index
+    operator-guide/index
