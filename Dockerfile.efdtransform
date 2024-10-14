@@ -16,10 +16,8 @@ COPY --chown=lsst:lsst tests/efd_transform/test.db ./data/
 
 # Environment variables that must be set:
 # ------------------------------
-ENV CONFIG_FILE="/opt/lsst/software/stack/consdb/config_LATISS.yaml"
+ENV CONFIG_FILE="/opt/lsst/software/stack/consdb/efd_transform/config_LATISS.yaml"
 ENV INSTRUMENT="LATISS"
-ENV START_TIME="2024-04-25T00:00:00"
-ENV END_TIME="2024-04-30T23:59:59.999999"
 
 # Buttler Access Variables
 ENV BUTLER_REPO="s3://rubin-summit-users/butler.yaml"
