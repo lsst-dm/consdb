@@ -302,6 +302,9 @@ class InfluxDBClient:
         result : `pandas.DataFrame`
             A `pandas.DataFrame` containing the merged time series data.
         """
+        if result.empty:
+            return result
+        
         vals = {}
         try:
             for f in base_fields[0:3]:
@@ -610,7 +613,6 @@ class InfluxDbDao(InfluxDBClient):
         host = os.getenv("EFD_HOST", "usdf-rsp.slac.stanford.edu")
         port = os.getenv("EFD_PORT", 443)
         path = os.getenv("EFD_PATH", "/influxdb-enterprise-data/")
-
         url = urljoin(f"https://{host}:{port}", f"{path}")
 
         super(InfluxDbDao, self).__init__(url, database_name=database_name, username=user, password=password)

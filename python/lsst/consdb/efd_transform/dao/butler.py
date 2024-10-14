@@ -26,7 +26,9 @@ class ButlerDao:
         Returns:
             A list of dictionaries representing the resultset.
         """
-        return [r.toDict() for r in resultset]
+        list_of_dicts = [r.toDict() for r in resultset]
+        sorted_list = sorted(list_of_dicts, key=lambda x: x['timespan'].begin)
+        return sorted_list
 
     def query_dimension_to_dataframe(self, resultset) -> pandas.DataFrame:
         """
@@ -38,7 +40,7 @@ class ButlerDao:
         Returns:
             A pandas DataFrame containing the query dimensions.
         """
-        return pandas.DataFrame([q.toDict() for q in resultset])
+        return pandas.DataFrame(self.query_dimension_to_list(resultset))
 
     def exposures_by_period(
         self,
@@ -58,8 +60,8 @@ class ButlerDao:
         Returns:
             list: A list of exposures within the specified time period.
 
-        """
-        where_clause = f"instrument=instr and exposure.timespan OVERLAPS (T'{start_time}', T'{end_time}')"
+        """        
+        where_clause = f"instrument=instr and exposure.timespan OVERLAPS (T'{start_time}/utc', T'{end_time}/utc')"
 
         resultset = self.butler.registry.queryDimensionRecords(
             "exposure", where=where_clause, bind=dict(instr=instrument)
@@ -85,7 +87,7 @@ class ButlerDao:
             list: A list of visits within the specified time period.
 
         """
-        where_clause = f"instrument=instr and visit.timespan OVERLAPS (T'{start_time}', T'{end_time}')"
+        where_clause = f"instrument=instr and visit.timespan OVERLAPS (T'{start_time}/utc', T'{end_time}/utc')"
 
         resultset = self.butler.registry.queryDimensionRecords(
             "visit", where=where_clause, bind=dict(instr=instrument)
