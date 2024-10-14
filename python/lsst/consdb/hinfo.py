@@ -363,7 +363,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
         exposure_rec[field] = process_column(keyword, obs_info)
 
     # Add missing data as best we can
-    exposure_rec.update(Fixer(exposure_rec))
+    exposure_rec.update(Fixer(exposure_rec).updates)
 
     stmt = insert(instrument_obj.exposure_table).values(exposure_rec)
     if update:
