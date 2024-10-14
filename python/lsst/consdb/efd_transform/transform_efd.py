@@ -5,7 +5,7 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict
-
+import os
 import astropy.time
 
 # import lsst_efd_client
