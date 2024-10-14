@@ -5,7 +5,6 @@ from typing import Any
 import sqlalchemy as sa
 from astropy.coordinates import AltAz, EarthLocation, SkyCoord
 from astropy.time import Time
-from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Session
 
 from .utils import setup_logging, setup_postgres
