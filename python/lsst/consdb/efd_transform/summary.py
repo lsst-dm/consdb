@@ -8,21 +8,27 @@ class Summary:
     """Class to summarize and analyze numeric data, handling NaN values and
     key-based filtering.
     """
-
     def __init__(
         self,
         dataframe: pandas.DataFrame,
-        datatype: Optional[str] = "object",  # Keep the default datatype to "object"
+        datatype: Optional[str] = None  # Use None to let NumPy infer the dtype by default
     ):
         """
         Initialize Summary with a DataFrame of numeric and boolean values.
+        NaN/NA values are handled by dropping rows containing any missing values.
         """
+        # Ensure the DataFrame index is a DatetimeIndex
+        if not isinstance(dataframe.index, pandas.DatetimeIndex):
+            raise ValueError("The DataFrame index must be a DatetimeIndex.")
+        
+        # Handle invalid values (NaN, pandas.NA) by dropping rows with any NaN or pandas.NA values
+        dataframe = dataframe.dropna()
 
-        # Handle NaN values within the DataFrame before conversion
-        dataframe = dataframe.fillna(numpy.nan)  # Ensure NaN values are correctly represented
+        # Infer object types if any, and handle nullable dtypes
+        dataframe = dataframe.convert_dtypes()  # Improved conversion of dtypes with pandas 2.x
 
-        # Convert the DataFrame to a NumPy array with the specified datatype
-        self.values = numpy.array(dataframe.to_numpy(), dtype=datatype)
+        # Convert the DataFrame to a NumPy array, allowing NumPy to infer datatype if None is passed
+        self.values = dataframe.to_numpy(dtype=datatype) if datatype else dataframe.to_numpy()       
         self.time = dataframe.index
 
     def mean(self, **kwargs) -> float:
@@ -47,49 +53,26 @@ class Summary:
         values = self.values.astype(numpy.float64).flatten()
         return numpy.nanmin(values)
 
-    def mean_columnwise(self, **kwargs) -> float:
-        """Calculate column-wise mean."""
-        return numpy.apply_along_axis(numpy.nanmean, axis=0, arr=self.values)
-
-    def stddev_columnwise(self, ddof: int = 1, **kwargs) -> float:
-        """Calculate column-wise standard deviation."""
-        return numpy.apply_along_axis(numpy.nanstd, axis=0, arr=self.values, ddof=ddof)
-
-    def max_columnwise(self, **kwargs) -> Union[float, int, bool]:
-        """Find column-wise maximum value."""
-        return numpy.apply_along_axis(numpy.nanmax, axis=0, arr=self.values)
-
-    def min_columnwise(self, **kwargs) -> Union[float, int, bool]:
-        """Find column-wise minimum value."""
-        return numpy.apply_along_axis(numpy.nanmin, axis=0, arr=self.values)
-
-    def rms_from_polynomial_fit(self, degree=1, **kwargs) -> float:
+    def rms_from_polynomial_fit(self, degree=1, fit_basis='index', **kwargs) -> float:
         """Calculate RMS after fitting a nth-degree polynomial."""
-
-        values = self.values.astype(numpy.float64).flatten()
         try:
-            index = numpy.isfinite(values)
-            x, y = numpy.arange(len(values))[index], values[index]
-
+            if fit_basis == 'time':
+                x = self.time.values.astype('datetime64[ns]').astype('int') / 1e9
+                x -= x[0]
+            else:
+                x = numpy.arange(len(self.time))
+            y = self.values
             if len(x) <= degree:
                 return numpy.nan
-
+            
             coeffs = numpy.polyfit(x, y, degree)
             y_fit = numpy.polyval(coeffs, x)
-            rms_value = numpy.sqrt(numpy.nanmean(y - y_fit) ** 2)
+            residuals = numpy.array(y) - numpy.array(y_fit)           
+            rms_value = numpy.sqrt(numpy.mean(residuals**2))
             return rms_value
         except Exception as e:
             print(f"Error occurred during RMS calculation: {str(e)}")
             return numpy.nan
-
-    def rms_from_polynomial_fit_columnwise(self, degree=1, **kwargs) -> float:
-        """Calculate RMS after fitting a nth-degree polynomial, columnwise."""
-        return numpy.apply_along_axis(
-            self.rms_from_polynomial_fit,
-            axis=0,
-            arr=self.values,
-            **kwargs,
-        )
 
     def apply(self, method_name: str, **kwargs) -> Union[float, None]:
         """
