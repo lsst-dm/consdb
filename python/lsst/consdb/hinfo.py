@@ -20,6 +20,7 @@ from lsst.resources import ResourcePath
 from sqlalchemy import MetaData, Table
 from sqlalchemy.dialects.postgresql import insert
 
+from .hinfo_fix_missing import Fixer
 from .utils import setup_logging, setup_postgres
 
 if TYPE_CHECKING:
@@ -360,6 +361,9 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
         obs_info[keyword] = getattr(obs_info_obj, keyword)
     for field, keyword in OI_MAPPING.items():
         exposure_rec[field] = process_column(keyword, obs_info)
+
+    # Add missing data as best we can
+    exposure_rec.update(Fixer(exposure_rec))
 
     stmt = insert(instrument_obj.exposure_table).values(exposure_rec)
     if update:
