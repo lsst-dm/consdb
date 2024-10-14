@@ -63,7 +63,7 @@ class Fixer:
             # Bail out because we don't have enough info.
             return dict()
 
-        if exposure_rec["s_ra"] == 0. and exposure_rec["s_dec"] == 0.:
+        if exposure_rec["s_ra"] == 0.0 and exposure_rec["s_dec"] == 0.0:
             # Bail out because ra and dec don't appear to be valid.
             return dict()
 
