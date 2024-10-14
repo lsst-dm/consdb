@@ -1,5 +1,5 @@
 import logging
-from typing import Any, List, Union
+from typing import Any, List, Union, Dict
 
 import astropy.time
 import numpy
@@ -39,7 +39,7 @@ class Transform:
         butler: Butler,
         db_uri: str,
         efd: InfluxDbDao,
-        config: dict[str, Any],
+        config: Dict[str, Any],
         logger: logging.Logger,
         commit_every: int = 100,
     ):
@@ -115,6 +115,7 @@ class Transform:
                 "instrument": instrument,
             }
 
+        # map all topics and fields to perform a single query per topic
         topics_columns_map = {}
         for column in self.config["columns"]:
             for values in column["topics"]:
@@ -148,7 +149,7 @@ class Transform:
             #  or False)
             value["packed_series"] = all(value["packed_series"])
 
-        # Iterates over topics
+        # Iterates over topic to perform the transformation
         for key, topic in topics_columns_map.items():
             # query the topic
             self.log.info(f"Querying the Topic: {topic['name']}")
@@ -160,14 +161,30 @@ class Transform:
                 self.log.info(f"Proccessing Column: {column['name']}")
                 # get fields
                 if not topic_series.empty:
-                    fields = [f["name"] for f in topic["fields"]]
-                    # if there is filter column and value
+                    fields = [f["name"] for f in column["topics"][0]["fields"]]
                     if column["subset_field"]:
-                        subset_field, subset_value = str(column["subset_field"]), str(column["subset_value"])
-                        topic_series[subset_field] = topic_series[subset_field].astype(str)
-                        filtered_df = topic_series[topic_series[subset_field] == subset_value]
-                        fields.remove(subset_field)
-                        data = [{"topic": topic["name"], "series": filtered_df[fields]}]
+                        subset_field = str(column["subset_field"])
+                        subset_value = str(column["subset_value"])
+
+                        if subset_field in topic_series and not topic_series[subset_field].empty:
+                            # Ensure both the column and subset_value are of the same type
+                            topic_series[subset_field] = topic_series[subset_field].fillna('').astype(str)
+                            subset_value = str(subset_value)
+
+                            # Filter the DataFrame
+                            filtered_df = topic_series.loc[topic_series[subset_field] == subset_value]
+
+                            # Verify which fields exist in the filtered DataFrame
+                            fields.remove(subset_field)
+                            valid_fields = [field for field in fields if field in filtered_df.columns]
+
+                            if valid_fields:
+                                data = [{"topic": topic["name"], "series": filtered_df[valid_fields]}]
+                            else:
+                                self.log.warning(f"No valid fields found in filtered DataFrame for topic: {topic['name']}")
+                                data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
+                        else:
+                            data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
                     else:
                         data = [{"topic": topic["name"], "series": topic_series[fields]}]
 
@@ -175,8 +192,8 @@ class Transform:
                         for exposure in exposures:
                             function_kwargs = column["function_args"] or {}
                             column_value = self.proccess_column_value(
-                                start_time=exposure["timespan"].begin,
-                                end_time=exposure["timespan"].end,
+                                start_time=exposure["timespan"].begin.utc,
+                                end_time=exposure["timespan"].end.utc,
                                 topics=data,
                                 transform_function=column["function"],
                                 **function_kwargs,
@@ -188,8 +205,8 @@ class Transform:
                         for visit in visits:
                             function_kwargs = column["function_args"] or {}
                             column_value = self.proccess_column_value(
-                                start_time=visit["timespan"].begin,
-                                end_time=visit["timespan"].end,
+                                start_time=visit["timespan"].begin.utc,
+                                end_time=visit["timespan"].end.utc,
                                 topics=data,
                                 transform_function=column["function"],
                                 **function_kwargs,
@@ -322,7 +339,7 @@ class Transform:
                 "Input data must be a list or list of lists or a numpy array or list of numpy arrays."
             )
 
-    def topics_by_column(self, column, topic_interval, packed_series) -> list[dict]:
+    def topics_by_column(self, column, topic_interval, packed_series) -> List[dict]:
         """
         Retrieves the EFD topics and their corresponding series for a
         given column.
@@ -345,7 +362,7 @@ class Transform:
         return data
 
     def get_efd_values(
-        self, topic: dict[str, Any], topic_interval: list[astropy.time.Time], packed_series: bool = False
+        self, topic: Dict[str, Any], topic_interval: List[astropy.time.Time], packed_series: bool = False
     ) -> pandas.DataFrame:
 
         start = topic_interval[0].utc  # Start time of the interval in UTC
@@ -373,6 +390,7 @@ class Transform:
                         chunk,
                         start - window,
                         end + window,
+                        ref_timestamp_scale='utc'
                     )
                 else:
                     # Query regular time series for the current chunk of fields
@@ -405,9 +423,9 @@ class Transform:
         self,
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
-        exposures: list[dict],
-        visits: list[dict],
-    ) -> list[astropy.time.Time]:
+        exposures: List[dict],
+        visits: List[dict],
+    ) -> List[astropy.time.Time]:
         """
         Get the topic interval based on the given start and end times,
         exposures, and visits.
