@@ -63,6 +63,10 @@ class Fixer:
             # Bail out because we don't have enough info.
             return dict()
 
+        if exposure_rec["s_ra"] == 0. and exposure_rec["s_dec"] == 0.:
+            # Bail out because ra and dec don't appear to be valid.
+            return dict()
+
         # Convert from RA and Dec
         s_ra, s_dec = map(lambda x: float(exposure_rec[x]), ("s_ra", "s_dec"))
         location = EarthLocation.of_site("LSST")
