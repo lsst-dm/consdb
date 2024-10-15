@@ -166,6 +166,23 @@ async def main() -> None:
 
     log = get_logger(args.logfile)
 
+    log.debug("------------------------------------------------------------")
+    log.debug("Testing postgres connection")
+    # ConsDB DB URI
+    consdb_url = args.db_conn_str
+    log.debug(f"ConsDB URL: {consdb_url}")
+
+    from dao.base import DBBase
+    try:
+        consdb = DBBase(consdb_url)
+        log.debug(f"ConsDB engine: {consdb.get_db_engine()}")
+        log.debug(f"ConsDB connection: {consdb.get_con()}")
+        log.debug("Postgres connection successful")
+    except Exception as e:
+        log.error(f"Postgres connection failed: {e}")
+        sys.exit(1)
+    log.debug("------------------------------------------------------------")
+
     # defining the start and end time
     # TODO: Should I use UTC???
     # now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
@@ -188,7 +205,6 @@ async def main() -> None:
     butler = Butler(args.repo)
 
     # Instantiate the EFD
-    db_uri = args.db_conn_str
     efd = InfluxDbDao(args.efd_conn_str)
 
     config = read_config(args.config_name)
@@ -198,7 +214,7 @@ async def main() -> None:
 
     # Instantiate the main class transform
     tm = Transform(
-        butler=butler, db_uri=db_uri, efd=efd, config=config, logger=log, commit_every=commit_every
+        butler=butler, db_uri=consdb_url, efd=efd, config=config, logger=log, commit_every=commit_every
     )
     tm.process_interval(
         args.instrument,
