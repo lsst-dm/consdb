@@ -259,8 +259,18 @@ class InfluxDBClient:
             output[i0::n_used] = packed_dataframe[f"{base_field}{i}"]
             times[i0::n_used] = packed_dataframe[ref_timestamp_col] + i * dt
 
+            # Convert times to astropy Time and then to pandas timestamps in UTC
         timestamps = Time(times, format=fmt, scale=scale)
-        return pd.DataFrame({base_field: output, "times": times}, index=timestamps.utc.datetime64)
+        result = pd.DataFrame({base_field: output, "time": times})
+        result["time"] = pd.to_datetime(timestamps.utc.iso, errors="coerce", utc=True)
+        
+        # Set time as index and ensure index is timezone-aware
+        result = result.set_index(result["time"]).drop("time", axis=1)
+        if result.index.tzinfo is None:
+            result.index = result.index.tz_localize("UTC")
+
+        return result
+    
 
     def merge_packed_time_series(
         self,
@@ -318,7 +328,7 @@ class InfluxDBClient:
                     scale=ref_timestamp_scale,
                 )
                 vals[f] = df[f]
-            vals.update({"times": df["times"]})
+            # vals.update({"times": df["times"]})
             return pd.DataFrame(vals, index=df.index)
         except Exception as e:
             print(f"Error occurred while merging field {f}: {e}")
@@ -359,7 +369,7 @@ class InfluxDBClient:
         # One topic queried at a time
         series = statement["series"][0]
         result = pd.DataFrame(series.get("values", []), columns=series["columns"])
-
+        
         if "time" not in result.columns:
             return result
 
