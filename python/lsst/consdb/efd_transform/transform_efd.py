@@ -172,12 +172,22 @@ async def main() -> None:
     consdb_url = args.db_conn_str
     log.debug(f"ConsDB URL: {consdb_url}")
 
-    from dao.base import DBBase
     try:
+        from dao.base import DBBase
+        from dao.exposure_efd import ExposureEfdDao
+        from dao.visit_efd import VisitEfdDao
         consdb = DBBase(consdb_url)
         log.debug(f"ConsDB engine: {consdb.get_db_engine()}")
         log.debug(f"ConsDB connection: {consdb.get_con()}")
         log.debug("Postgres connection successful")
+
+        log.debug("Testing table ExposureEFD")
+        expdao = ExposureEfdDao(consdb_url)
+        log.debug(f"ExposureEFD table: {expdao.tbl}")
+
+        log.debug("Testing table VisitEFD")
+        visdao = VisitEfdDao(consdb_url)
+        log.debug(f"VisitEFD table: {visdao.tbl}")
     except Exception as e:
         log.error(f"Postgres connection failed: {e}")
         sys.exit(1)
