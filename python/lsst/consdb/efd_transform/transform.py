@@ -201,6 +201,9 @@ class Transform:
 
                             result_exp[exposure["id"]][column["name"]] = column_value
 
+                    # if column["function"] == "proccess_column_value":
+                    # print(result_exp)
+
                     if "VisitEFD" in column["tables"]:
                         for visit in visits:
                             function_kwargs = column["function_args"] or {}
@@ -285,6 +288,9 @@ class Transform:
                               given time range, or an empty DataFrame if no
                               values match.
         """
+        
+        start_time = pandas.Timestamp(start_time.to_datetime(), tz='UTC')
+        end_time = pandas.Timestamp(end_time.to_datetime(), tz='UTC')
 
         topics_values = []
 
@@ -292,7 +298,7 @@ class Transform:
             topic_table = topic["series"]
             if not topic_table.empty:
                 values = topic_table.loc[
-                    (topic_table.index > str(start_time)) & (topic_table.index < str(end_time))
+                    (topic_table.index > start_time) & (topic_table.index < end_time)
                 ]
                 if not values.empty:
                     topics_values.append(values)
