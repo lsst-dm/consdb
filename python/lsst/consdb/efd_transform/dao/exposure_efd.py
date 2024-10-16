@@ -20,7 +20,7 @@ class ExposureEfdDao(DBBase):
     def __init__(self, db_uri: str):
         super(ExposureEfdDao, self).__init__(db_uri)
 
-        self.tbl = self.get_table("ExposureEFD")
+        self.tbl = self.get_table("ExposureEFD", schema="cdb_latiss")
 
     def get_by_exposure_id(self, exposure_id: int):
         """
