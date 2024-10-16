@@ -18,7 +18,7 @@ class VisitEfdDao(DBBase):
     def __init__(self, db_uri: str):
         super(VisitEfdDao, self).__init__(db_uri)
 
-        self.tbl = self.get_table("VisitEFD")
+        self.tbl = self.get_table("VisitEFD", schema="cdb_latiss")
 
     def get_by_visit_id(self, visit_id: int):
         """
