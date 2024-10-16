@@ -99,12 +99,12 @@ class DBBase:
 
             engine = self.get_db_engine()
             metadata = MetaData()
-            metadata.reflect(bind=engine)
+            metadata.reflect(engine)
 
             if schema:
-                tbl = Table(tablename, metadata, autoload=True, autoload_with=self.get_con(), schema=schema)
+                tbl = Table(tablename, metadata, autoload_with=self.get_con(), schema=schema)
             else:
-                tbl = Table(tablename, metadata, autoload=True, autoload_with=self.get_con())
+                tbl = Table(tablename, metadata, autoload_with=self.get_con())
             return tbl
 
     def execute(self, stm):
