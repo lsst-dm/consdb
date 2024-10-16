@@ -101,7 +101,7 @@ class DBBase:
             metadata = MetaData()
             metadata.reflect(engine)
 
-            if schema:
+            if schema is not None and self.dialect == postgresql:
                 tbl = Table(tablename, metadata, autoload_with=self.get_con(), schema=schema)
             else:
                 tbl = Table(tablename, metadata, autoload_with=self.get_con())
