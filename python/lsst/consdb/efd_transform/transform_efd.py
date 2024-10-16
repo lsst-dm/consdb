@@ -166,12 +166,11 @@ async def main() -> None:
 
     log = get_logger(args.logfile)
 
+    # TODO: Remove this or make it optional
     log.debug("------------------------------------------------------------")
     log.debug("Testing postgres connection")
     # ConsDB DB URI
     consdb_url = args.db_conn_str
-    log.debug(f"ConsDB URL: {consdb_url}")
-
     try:
         from dao.base import DBBase
         from dao.exposure_efd import ExposureEfdDao
