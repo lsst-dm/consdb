@@ -90,7 +90,10 @@ class Fixer:
         # Use K&Y 1989 model to compute airmass from altitude
         airmass = None
         if altitude >= 0 and altitude <= 90:
-            airmass = 1 / (sin(radians(altitude)) + 0.50572 * (altitude + 6.07995) ** -1.6364)
+            a_ky89 = 0.50572
+            b_ky89 = 6.07995
+            c_ky89 = 1.6364
+            airmass = 1 / (sin(radians(altitude)) + a_ky89 * (altitude + b_ky89) ** -c_ky89)
 
         # Load them into the update dictionary.
         update = {}
@@ -106,10 +109,10 @@ class Fixer:
             "zenith_distance_end": zenith_distance_end,
             "airmass": airmass,
         }
-        for k, v in calculations.items():
-            if exposure_rec[k] is None and v is not None:
-                update[k] = v
-                self.logger.debug(f"Inferring column: {k}")
+        for key, value in calculations.items():
+            if exposure_rec[key] is None and value is not None:
+                update[key] = value
+                self.logger.debug(f"Inferring column: {key}")
         return update
 
     def fix_band(self, exposure_rec: dict[str, Any]) -> dict[str, Any]:
@@ -180,7 +183,10 @@ class Fixer:
 
         if exposure_rec["obs_start_mjd"] is not None and exposure_rec["obs_end_mjd"] is not None:
             self.logger.debug("Inferring column: dark_time")
-            return {"dark_time": 86400 * (exposure_rec["obs_end_mjd"] - exposure_rec["obs_start_mjd"])}
+            seconds_per_day = 86400
+            return {
+                "dark_time": seconds_per_day * (exposure_rec["obs_end_mjd"] - exposure_rec["obs_start_mjd"])
+            }
 
         if exposure_rec["exp_time"] is None:
             return dict()
