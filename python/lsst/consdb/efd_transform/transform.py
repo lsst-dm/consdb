@@ -116,6 +116,7 @@ class Transform:
             }
 
         # map all topics and fields to perform a single query per topic
+        # map all topics and fields to perform a single query per topic
         topics_columns_map = {}
         for column in self.config["columns"]:
             for values in column["topics"]:
@@ -128,32 +129,23 @@ class Transform:
                         "columns": [],
                     }
                 for field in values["fields"]:
-                    # print(field["name"])
-                    topics_columns_map[topic]["fields"].append(field)
+                    topics_columns_map[topic]["fields"].append(field["name"])
 
+                # remove duplicate fields per topic
+                topics_columns_map[topic]["fields"] = list(set(topics_columns_map[topic]["fields"]))
+
+                # Append packed_series to the list
                 topics_columns_map[topic]["packed_series"].append(column["packed_series"])
                 topics_columns_map[topic]["columns"].append(column)
 
-        # Remove duplicated fiels in topic fields
-        for key, value in topics_columns_map.items():
-            # Removing duplicates from 'fields'
-            seen_fields = []
-            unique_fields = []
-            for field in value["fields"]:
-                if field not in seen_fields:
-                    seen_fields.append(field)
-                    unique_fields.append(field)
-            value["fields"] = unique_fields
-
-            # 'packed_series' should be a boolean (all elements should be True
-            #  or False)
-            value["packed_series"] = all(value["packed_series"])
+            # Add a new key to store if any series is packed
+            topics_columns_map[topic]["is_packed"] = any(topics_columns_map[topic]["packed_series"])
 
         # Iterates over topic to perform the transformation
         for key, topic in topics_columns_map.items():
             # query the topic
             self.log.info(f"Querying the Topic: {topic['name']}")
-            topic_series = self.get_efd_values(topic, topic_interval, topic["packed_series"])
+            topic_series = self.get_efd_values(topic, topic_interval, topic["is_packed"])
 
             # process the columns in that topic:
             for column in topic["columns"]:
@@ -200,9 +192,7 @@ class Transform:
                             )
 
                             result_exp[exposure["id"]][column["name"]] = column_value
-
-                    # if column["function"] == "proccess_column_value":
-                    # print(result_exp)
+                    
 
                     if "VisitEFD" in column["tables"]:
                         for visit in visits:
@@ -222,6 +212,8 @@ class Transform:
             results.append(result_exp[result_row])
 
         df_exposures = pandas.DataFrame(results)
+
+        df_exposures.to_csv('exposures.csv')
         self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
 
         exp_dao = ExposureEfdDao(db_uri=self.db_uri)
@@ -377,7 +369,7 @@ class Transform:
             topic.get("window", 0.0), format="sec"
         )  # Time window around the interval
 
-        fields = [f["name"] for f in topic["fields"]]  # List of field names to query
+        fields = [f for f in topic["fields"]]  # List of field names to query
 
         # Define the chunk size for querying to manage large numbers of fields
         chunk_size = 100  # Adjust as necessary based on system capabilities
@@ -411,7 +403,7 @@ class Transform:
                     # only if not empty
             except Exception as e:
                 # Log any errors encountered during querying
-                self.log.debug(e)
+                self.log.warning(f"An unexpected error occurred: {e}")
                 # Optional: you might want to include a placeholder DataFrame
                 # with the same columns here if needed
 
