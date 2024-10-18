@@ -263,14 +263,13 @@ class InfluxDBClient:
         timestamps = Time(times, format=fmt, scale=scale)
         result = pd.DataFrame({base_field: output, "time": times})
         result["time"] = pd.to_datetime(timestamps.utc.iso, errors="coerce", utc=True)
-        
+
         # Set time as index and ensure index is timezone-aware
         result = result.set_index(result["time"]).drop("time", axis=1)
         if result.index.tzinfo is None:
             result.index = result.index.tz_localize("UTC")
 
         return result
-    
 
     def merge_packed_time_series(
         self,
@@ -314,7 +313,7 @@ class InfluxDBClient:
         """
         if result.empty:
             return result
-        
+
         vals = {}
         try:
             for f in base_fields[0:3]:
@@ -369,7 +368,7 @@ class InfluxDBClient:
         # One topic queried at a time
         series = statement["series"][0]
         result = pd.DataFrame(series.get("values", []), columns=series["columns"])
-        
+
         if "time" not in result.columns:
             return result
 

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, List, Union, Dict
+from typing import Any, Dict, List, Union
 
 import astropy.time
 import numpy
@@ -160,7 +160,7 @@ class Transform:
 
                         if subset_field in topic_series and not topic_series[subset_field].empty:
                             # Ensure both the column and subset_value are of the same type
-                            topic_series[subset_field] = topic_series[subset_field].fillna('').astype(str)
+                            topic_series[subset_field] = topic_series[subset_field].fillna("").astype(str)
                             subset_value = str(subset_value)
 
                             # Filter the DataFrame
@@ -173,7 +173,9 @@ class Transform:
                             if valid_fields:
                                 data = [{"topic": topic["name"], "series": filtered_df[valid_fields]}]
                             else:
-                                self.log.warning(f"No valid fields found in filtered DataFrame for topic: {topic['name']}")
+                                self.log.warning(
+                                    f"No valid fields found in filtered DataFrame for topic: {topic['name']}"
+                                )
                                 data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
                         else:
                             data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
@@ -280,18 +282,16 @@ class Transform:
                               given time range, or an empty DataFrame if no
                               values match.
         """
-        
-        start_time = pandas.Timestamp(start_time.to_datetime(), tz='UTC')
-        end_time = pandas.Timestamp(end_time.to_datetime(), tz='UTC')
+
+        start_time = pandas.Timestamp(start_time.to_datetime(), tz="UTC")
+        end_time = pandas.Timestamp(end_time.to_datetime(), tz="UTC")
 
         topics_values = []
 
         for topic in topics:
             topic_table = topic["series"]
             if not topic_table.empty:
-                values = topic_table.loc[
-                    (topic_table.index > start_time) & (topic_table.index < end_time)
-                ]
+                values = topic_table.loc[(topic_table.index > start_time) & (topic_table.index < end_time)]
                 if not values.empty:
                     topics_values.append(values)
 
@@ -384,11 +384,7 @@ class Transform:
                 if packed_series:
                     # Query packed time series for the current chunk of fields
                     series = self.efd.select_packed_time_series(
-                        topic["name"],
-                        chunk,
-                        start - window,
-                        end + window,
-                        ref_timestamp_scale='utc'
+                        topic["name"], chunk, start - window, end + window, ref_timestamp_scale="utc"
                     )
                 else:
                     # Query regular time series for the current chunk of fields

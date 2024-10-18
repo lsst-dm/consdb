@@ -1,11 +1,12 @@
 import argparse
 import asyncio
 import logging
+import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict
-import os
+
 import astropy.time
 
 # import lsst_efd_client
@@ -175,6 +176,7 @@ async def main() -> None:
         from dao.base import DBBase
         from dao.exposure_efd import ExposureEfdDao
         from dao.visit_efd import VisitEfdDao
+
         consdb = DBBase(consdb_url)
         log.debug(f"ConsDB engine: {consdb.get_db_engine()}")
         log.debug(f"ConsDB connection: {consdb.get_con()}")
