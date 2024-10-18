@@ -5,20 +5,20 @@ from sqlalchemy.sql import and_, select
 
 class VisitEfdDao(DBBase):
     """
-    Data Access Object for VisitEFD table.
+    Data Access Object for visit1_efd table.
 
     Args:
         db_uri (str): The URI of the database.
 
     Attributes:
-        tbl: The VisitEFD table object.
+        tbl: The visit1_efd table object.
 
     """
 
-    def __init__(self, db_uri: str):
-        super(VisitEfdDao, self).__init__(db_uri)
+    def __init__(self, db_uri: str, schema: str):
+        super(VisitEfdDao, self).__init__(db_uri, schema)
 
-        self.tbl = self.get_table("VisitEFD", schema="cdb_latiss")
+        self.tbl = self.get_table("visit1_efd", schema=schema)
 
     def get_by_visit_id(self, visit_id: int):
         """

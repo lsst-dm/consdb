@@ -8,10 +8,11 @@ class Summary:
     """Class to summarize and analyze numeric data, handling NaN values and
     key-based filtering.
     """
+
     def __init__(
         self,
         dataframe: pandas.DataFrame,
-        datatype: Optional[str] = None  # Use None to let NumPy infer the dtype by default
+        datatype: Optional[str] = None,  # Use None to let NumPy infer the dtype by default
     ):
         """
         Initialize Summary with a DataFrame of numeric and boolean values.
@@ -20,7 +21,7 @@ class Summary:
         # Ensure the DataFrame index is a DatetimeIndex
         if not isinstance(dataframe.index, pandas.DatetimeIndex):
             raise ValueError("The DataFrame index must be a DatetimeIndex.")
-        
+
         # Handle invalid values (NaN, pandas.NA) by dropping rows with any NaN or pandas.NA values
         dataframe = dataframe.dropna()
 
@@ -28,7 +29,7 @@ class Summary:
         dataframe = dataframe.convert_dtypes()  # Improved conversion of dtypes with pandas 2.x
 
         # Convert the DataFrame to a NumPy array, allowing NumPy to infer datatype if None is passed
-        self.values = dataframe.to_numpy(dtype=datatype) if datatype else dataframe.to_numpy()       
+        self.values = dataframe.to_numpy(dtype=datatype) if datatype else dataframe.to_numpy()
         self.time = dataframe.index
 
     def mean(self, **kwargs) -> float:
@@ -53,21 +54,21 @@ class Summary:
         values = self.values.astype(numpy.float64).flatten()
         return numpy.nanmin(values)
 
-    def rms_from_polynomial_fit(self, degree=1, fit_basis='index', **kwargs) -> float:
+    def rms_from_polynomial_fit(self, degree=1, fit_basis="index", **kwargs) -> float:
         """Calculate RMS after fitting a nth-degree polynomial."""
         try:
-            if fit_basis == 'time':
-                x = self.time.values.astype('datetime64[ns]').astype('int') / 1e9
+            if fit_basis == "time":
+                x = self.time.values.astype("datetime64[ns]").astype("int") / 1e9
                 x -= x[0]
             else:
                 x = numpy.arange(len(self.time))
             y = self.values
             if len(x) <= degree:
                 return numpy.nan
-            
+
             coeffs = numpy.polyfit(x, y, degree)
             y_fit = numpy.polyval(coeffs, x)
-            residuals = numpy.array(y) - numpy.array(y_fit)           
+            residuals = numpy.array(y) - numpy.array(y_fit)
             rms_value = numpy.sqrt(numpy.mean(residuals**2))
             return rms_value
         except Exception as e:
