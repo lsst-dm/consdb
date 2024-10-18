@@ -194,7 +194,6 @@ class Transform:
                             )
 
                             result_exp[exposure["id"]][column["name"]] = column_value
-                    
 
                     if "VisitEFD" in column["tables"]:
                         for visit in visits:
@@ -215,7 +214,7 @@ class Transform:
 
         df_exposures = pandas.DataFrame(results)
 
-        df_exposures.to_csv('exposures.csv')
+        df_exposures.to_csv("exposures.csv")
         self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
 
         exp_dao = ExposureEfdDao(db_uri=self.db_uri)
