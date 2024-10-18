@@ -1,5 +1,5 @@
 import logging
-from typing import Any, List, Union, Dict
+from typing import Any, Dict, List, Union
 
 import astropy.time
 import numpy
@@ -160,7 +160,7 @@ class Transform:
 
                         if subset_field in topic_series and not topic_series[subset_field].empty:
                             # Ensure both the column and subset_value are of the same type
-                            topic_series[subset_field] = topic_series[subset_field].fillna('').astype(str)
+                            topic_series[subset_field] = topic_series[subset_field].fillna("").astype(str)
                             subset_value = str(subset_value)
 
                             # Filter the DataFrame
@@ -173,14 +173,16 @@ class Transform:
                             if valid_fields:
                                 data = [{"topic": topic["name"], "series": filtered_df[valid_fields]}]
                             else:
-                                self.log.warning(f"No valid fields found in filtered DataFrame for topic: {topic['name']}")
+                                self.log.warning(
+                                    f"No valid fields found in filtered DataFrame for topic: {topic['name']}"
+                                )
                                 data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
                         else:
                             data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
                     else:
                         data = [{"topic": topic["name"], "series": topic_series[fields]}]
 
-                    if "ExposureEFD" in column["tables"]:
+                    if "exposure_efd" in column["tables"]:
                         for exposure in exposures:
                             function_kwargs = column["function_args"] or {}
                             column_value = self.proccess_column_value(
@@ -192,9 +194,8 @@ class Transform:
                             )
 
                             result_exp[exposure["id"]][column["name"]] = column_value
-                    
 
-                    if "VisitEFD" in column["tables"]:
+                    if "visit1_efd" in column["tables"]:
                         for visit in visits:
                             function_kwargs = column["function_args"] or {}
                             column_value = self.proccess_column_value(
@@ -213,10 +214,10 @@ class Transform:
 
         df_exposures = pandas.DataFrame(results)
 
-        df_exposures.to_csv('exposures.csv')
         self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
 
-        exp_dao = ExposureEfdDao(db_uri=self.db_uri)
+        #TODO: Set schema by instrument
+        exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema="cdb_latiss")
         affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
         self.log.info(f"Database rows affected: {affected_rows}")
         del results
@@ -228,7 +229,7 @@ class Transform:
         df_visits = pandas.DataFrame(results)
         self.log.info(f"Visit results to be inserted into the database: {len(df_visits)}")
 
-        vis_dao = VisitEfdDao(db_uri=self.db_uri)
+        vis_dao = VisitEfdDao(db_uri=self.db_uri, schema="cdb_latiss")
         affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
         self.log.info(f"Database rows affected: {affected_rows}")
         del results
@@ -280,18 +281,16 @@ class Transform:
                               given time range, or an empty DataFrame if no
                               values match.
         """
-        
-        start_time = pandas.Timestamp(start_time.to_datetime(), tz='UTC')
-        end_time = pandas.Timestamp(end_time.to_datetime(), tz='UTC')
+
+        start_time = pandas.Timestamp(start_time.to_datetime(), tz="UTC")
+        end_time = pandas.Timestamp(end_time.to_datetime(), tz="UTC")
 
         topics_values = []
 
         for topic in topics:
             topic_table = topic["series"]
             if not topic_table.empty:
-                values = topic_table.loc[
-                    (topic_table.index > start_time) & (topic_table.index < end_time)
-                ]
+                values = topic_table.loc[(topic_table.index > start_time) & (topic_table.index < end_time)]
                 if not values.empty:
                     topics_values.append(values)
 
@@ -384,11 +383,7 @@ class Transform:
                 if packed_series:
                     # Query packed time series for the current chunk of fields
                     series = self.efd.select_packed_time_series(
-                        topic["name"],
-                        chunk,
-                        start - window,
-                        end + window,
-                        ref_timestamp_scale='utc'
+                        topic["name"], chunk, start - window, end + window, ref_timestamp_scale="utc"
                     )
                 else:
                     # Query regular time series for the current chunk of fields

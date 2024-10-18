@@ -26,7 +26,7 @@ class DBBase:
     dialect = None
     db_uri: str
 
-    def __init__(self, db_uri: str):
+    def __init__(self, db_uri: str, schema: str = None):
         """
         Initialize a BaseDAO object.
 
