@@ -8,9 +8,10 @@ Create Date: 2024-09-11 00:15:17.621595+00:00
 
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "5f50b32c44fc"
@@ -26,7 +27,7 @@ def upgrade() -> None:
         sa.Column(
             "day_obs",
             sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
-            nullable=False,
+            nullable=True,
             comment="Day of observation.",
         ),
         schema="cdb_lsstcomcamsim",
@@ -36,7 +37,7 @@ def upgrade() -> None:
         sa.Column(
             "seq_num",
             sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
-            nullable=False,
+            nullable=True,
             comment="Sequence number.",
         ),
         schema="cdb_lsstcomcamsim",
@@ -75,7 +76,7 @@ def upgrade() -> None:
         sa.Column(
             "day_obs",
             sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
-            nullable=False,
+            nullable=True,
             comment="Day of observation.",
         ),
         schema="cdb_lsstcomcamsim",
@@ -85,7 +86,7 @@ def upgrade() -> None:
         sa.Column(
             "seq_num",
             sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
-            nullable=False,
+            nullable=True,
             comment="Sequence number.",
         ),
         schema="cdb_lsstcomcamsim",
@@ -104,7 +105,7 @@ def upgrade() -> None:
         sa.Column(
             "day_obs",
             sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
-            nullable=False,
+            nullable=True,
             comment="Day of observation.",
         ),
         schema="cdb_lsstcomcamsim",
@@ -114,7 +115,7 @@ def upgrade() -> None:
         sa.Column(
             "seq_num",
             sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
-            nullable=False,
+            nullable=True,
             comment="Sequence number.",
         ),
         schema="cdb_lsstcomcamsim",
