@@ -781,7 +781,7 @@ def insert(
             primary_key = obs_id
             for primary_key_name in ("obs_id", "exposure_id", "visit_id"):
                 if primary_key_name in valdict:
-                    primary_key = valdict["primary_key_name"]
+                    primary_key = valdict[primary_key_name]
 
             day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, primary_key)
             if "day_obs" not in valdict:
@@ -862,7 +862,7 @@ def insert_multiple(
                     primary_key = obs_id
                     for primary_key_name in ("obs_id", "exposure_id", "visit_id"):
                         if primary_key_name in valdict:
-                            primary_key = valdict["primary_key_name"]
+                            primary_key = valdict[primary_key_name]
 
                     day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, primary_key)
                     if "day_obs" not in valdict:
