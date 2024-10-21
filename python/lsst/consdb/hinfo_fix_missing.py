@@ -30,7 +30,7 @@ class Fixer:
         for attr_name in dir(self):
             if attr_name.startswith("fix_"):
                 attr = getattr(self, attr_name)
-                self.updates = {**self.updates, **attr(exposure_rec)}
+                self.updates.update(attr(exposure_rec))
 
     def fix_telescope_position(self, exposure_rec: dict[str, Any]) -> dict[str, Any]:
         """Attempts to fill in missing sky position columns.
