@@ -69,7 +69,7 @@ class Fixer:
 
         # Convert from RA and Dec
         s_ra, s_dec = map(lambda x: float(exposure_rec[x]), ("s_ra", "s_dec"))
-        location = EarthLocation.of_site("LSST")
+        location = EarthLocation.of_site("Rubin")
         obstimes = Time(
             [
                 exposure_rec["obs_start_mjd"],
