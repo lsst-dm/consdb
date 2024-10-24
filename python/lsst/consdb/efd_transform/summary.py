@@ -74,6 +74,16 @@ class Summary:
         except Exception as e:
             print(f"Error occurred during RMS calculation: {str(e)}")
             return numpy.nan
+        
+    def most_recent_value_in_last_minute(self, **kwargs) -> Union[float, int, bool]:
+        """Find the most recent value in the last minute."""
+        if len(self.time) == 0:
+            return None
+        last_minute = self.time[-1] - pandas.Timedelta(minutes=1)
+        recent_values = self.values[self.time >= last_minute]
+        if len(recent_values) == 0:
+            return None
+        return recent_values[-1]
 
     def apply(self, method_name: str, **kwargs) -> Union[float, None]:
         """
