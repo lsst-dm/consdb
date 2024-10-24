@@ -1,9 +1,9 @@
 columns:
 - name: AT_Mount_Jitter_Azimuth
-  tables: ["ExposureEFD"]
+  tables: ["exposure_efd"]
   function: rms_from_polynomial_fit
   function_args: {"degree": 4}
-  datatype: float
+  datatype: double
   unit: unitless
   description: RMS after 4th order polynomial fit of azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
   packed_series: True
@@ -13,10 +13,10 @@ columns:
     - name: azimuthCalculatedAngle
 
 - name: AT_Mount_Jitter_Elevation
-  tables: ["ExposureEFD"]
+  tables: ["exposure_efd"]
   function: rms_from_polynomial_fit
   function_args: {"degree": 4}
-  datatype: float
+  datatype: double
   unit: unitless
   description: RMS after 4th order polynomial fit of elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
   packed_series: True
@@ -26,10 +26,10 @@ columns:
     - name: elevationCalculatedAngle
 
 - name: AT_Mount_Jitter_Nasmyth
-  tables: ["ExposureEFD"]
+  tables: ["exposure_efd"]
   function: rms_from_polynomial_fit
   function_args: {"degree": 4}
-  datatype: float
+  datatype: double
   unit: unitless
   description: RMS after 4th order polynomial fit of Nasmyth 1 axis position computed from the axis encoders, or nan if this axis is not in use. The range is the software limits (L1), approximately -175 to 175.
   packed_series: True
@@ -39,9 +39,9 @@ columns:
     - name: nasmyth1CalculatedAngle
 
 - name: AT_salIndex201_Sonic_Temperature_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
@@ -54,10 +54,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Sonic_Temperature_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
@@ -70,9 +70,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Sonic_Temperature_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
@@ -85,10 +85,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Sonic_Temperature_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
@@ -101,9 +101,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_X_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
   packed_series: False
@@ -116,10 +116,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_0_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
   packed_series: False
@@ -132,9 +132,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_0_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
   packed_series: False
@@ -147,9 +147,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_0_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
   packed_series: False
@@ -162,9 +162,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
   packed_series: False
@@ -177,10 +177,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_1_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
   packed_series: False
@@ -193,9 +193,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_1_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
   packed_series: False
@@ -208,9 +208,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_1_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
   packed_series: False
@@ -223,9 +223,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_2_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
   packed_series: False
@@ -238,10 +238,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_2_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
   packed_series: False
@@ -254,9 +254,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_2_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
   packed_series: False
@@ -269,9 +269,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_2_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
   packed_series: False
@@ -284,9 +284,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_0_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
   packed_series: False
@@ -299,10 +299,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_0_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
   packed_series: False
@@ -315,9 +315,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_0_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
   packed_series: False
@@ -330,9 +330,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_0_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
   packed_series: False
@@ -345,9 +345,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
   packed_series: False
@@ -360,10 +360,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_1_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
   packed_series: False
@@ -376,9 +376,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_1_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
   packed_series: False
@@ -391,9 +391,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_1_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
   packed_series: False
@@ -406,9 +406,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_2_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
   packed_series: False
@@ -421,10 +421,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_2_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
   packed_series: False
@@ -437,9 +437,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_2_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
   packed_series: False
@@ -452,9 +452,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_speedStdDev_2_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
   packed_series: False
@@ -467,9 +467,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_Magnitude_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
   packed_series: False
@@ -482,10 +482,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_Magnitude_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
   packed_series: False
@@ -498,9 +498,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_Magnitude_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
   packed_series: False
@@ -513,9 +513,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_Magnitude_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
   packed_series: False
@@ -528,9 +528,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_MaxMagnitude_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
   packed_series: False
@@ -543,10 +543,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Wind_Speed_MaxMagnitude_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
   packed_series: False
@@ -559,9 +559,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_MaxMagnitude_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
   packed_series: False
@@ -574,9 +574,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_Wind_Speed_MaxMagnitude_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
   packed_series: False
@@ -589,9 +589,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_0_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
   packed_series: False
@@ -604,10 +604,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_0_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
   packed_series: False
@@ -620,9 +620,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_0_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
   packed_series: False
@@ -635,9 +635,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_0_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
   packed_series: False
@@ -650,9 +650,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
   packed_series: False
@@ -665,10 +665,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_1_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
   packed_series: False
@@ -681,9 +681,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_1_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
   packed_series: False
@@ -696,9 +696,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_1_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
   packed_series: False
@@ -711,9 +711,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_2_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
   packed_series: False
@@ -726,10 +726,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_2_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
   packed_series: False
@@ -742,9 +742,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_2_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
   packed_series: False
@@ -757,9 +757,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_2_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
   packed_series: False
@@ -772,9 +772,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_0_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
   packed_series: False
@@ -787,10 +787,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_0_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
   packed_series: False
@@ -803,9 +803,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_0_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
   packed_series: False
@@ -818,9 +818,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_0_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
   packed_series: False
@@ -833,9 +833,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
   packed_series: False
@@ -848,10 +848,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_1_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
   packed_series: False
@@ -864,9 +864,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_1_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
   packed_series: False
@@ -879,9 +879,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_1_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
   packed_series: False
@@ -894,9 +894,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_2_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
   packed_series: False
@@ -909,10 +909,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_2_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
   packed_series: False
@@ -925,9 +925,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_2_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
   packed_series: False
@@ -940,9 +940,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_speedStdDev_2_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
   packed_series: False
@@ -955,9 +955,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_Magnitude_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude (salIndex 204)
   packed_series: False
@@ -970,10 +970,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_Magnitude_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude (salIndex 204)
   packed_series: False
@@ -986,9 +986,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_Magnitude_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude (salIndex 204)
   packed_series: False
@@ -1001,9 +1001,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_Magnitude_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude (salIndex 204)
   packed_series: False
@@ -1016,9 +1016,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_MaxMagnitude_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude (salIndex 204)
   packed_series: False
@@ -1031,10 +1031,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_Wind_Speed_MaxMagnitude_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude (salIndex 204)
   packed_series: False
@@ -1047,9 +1047,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_MaxMagnitude_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude (salIndex 204)
   packed_series: False
@@ -1062,9 +1062,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_Wind_Speed_MaxMagnitude_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude (salIndex 204)
   packed_series: False
@@ -1077,9 +1077,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_0_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
   packed_series: False
@@ -1092,10 +1092,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_0_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
   packed_series: False
@@ -1108,9 +1108,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_0_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
   packed_series: False
@@ -1123,9 +1123,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_0_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
   packed_series: False
@@ -1138,9 +1138,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
   packed_series: False
@@ -1153,10 +1153,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_1_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
   packed_series: False
@@ -1169,9 +1169,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_1_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
   packed_series: False
@@ -1184,9 +1184,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_1_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
   packed_series: False
@@ -1199,9 +1199,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_2_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
   packed_series: False
@@ -1214,10 +1214,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_2_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
   packed_series: False
@@ -1230,9 +1230,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_2_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
   packed_series: False
@@ -1245,9 +1245,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_2_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
   packed_series: False
@@ -1260,9 +1260,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_0_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
   packed_series: False
@@ -1275,10 +1275,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_0_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
   packed_series: False
@@ -1291,9 +1291,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_0_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
   packed_series: False
@@ -1306,9 +1306,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_0_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
   packed_series: False
@@ -1321,9 +1321,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
   packed_series: False
@@ -1336,10 +1336,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_1_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
   packed_series: False
@@ -1352,9 +1352,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_1_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
   packed_series: False
@@ -1367,9 +1367,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_1_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
   packed_series: False
@@ -1382,9 +1382,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_2_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
   packed_series: False
@@ -1397,10 +1397,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_2_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
   packed_series: False
@@ -1413,9 +1413,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_2_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
   packed_series: False
@@ -1428,9 +1428,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_speedStdDev_2_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
   packed_series: False
@@ -1443,9 +1443,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_Magnitude_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
   packed_series: False
@@ -1458,10 +1458,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_Magnitude_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
   packed_series: False
@@ -1474,9 +1474,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_Magnitude_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
   packed_series: False
@@ -1489,9 +1489,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_Magnitude_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
   packed_series: False
@@ -1504,9 +1504,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_MaxMagnitude_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
   packed_series: False
@@ -1519,10 +1519,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_Wind_Speed_MaxMagnitude_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
   packed_series: False
@@ -1535,9 +1535,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_MaxMagnitude_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
   packed_series: False
@@ -1550,9 +1550,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_Wind_Speed_MaxMagnitude_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
   packed_series: False
@@ -1565,9 +1565,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_AirFlow_Speed_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 201)
   packed_series: False
@@ -1580,10 +1580,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_AirFlow_Speed_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 201)
   packed_series: False
@@ -1596,9 +1596,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_AirFlow_Speed_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 201)
   packed_series: False
@@ -1611,9 +1611,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_AirFlow_Speed_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 201)
   packed_series: False
@@ -1626,9 +1626,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_AirFlow_SpeedStdDev_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
   packed_series: False
@@ -1641,10 +1641,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_AirFlow_SpeedStdDev_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
   packed_series: False
@@ -1657,9 +1657,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_AirFlow_SpeedStdDev_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
   packed_series: False
@@ -1672,9 +1672,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_AirFlow_SpeedStdDev_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
   packed_series: False
@@ -1687,9 +1687,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_AirFlow_Direction_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 201)
   packed_series: False
@@ -1702,10 +1702,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_AirFlow_Direction_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 201)
   packed_series: False
@@ -1718,9 +1718,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_AirFlow_Direction_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 201)
   packed_series: False
@@ -1733,9 +1733,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex201_AirFlow_Direction_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 201)
   packed_series: False
@@ -1748,9 +1748,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_AirFlow_Speed_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
   packed_series: False
@@ -1763,10 +1763,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_AirFlow_Speed_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
   packed_series: False
@@ -1779,9 +1779,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_AirFlow_Speed_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
   packed_series: False
@@ -1794,9 +1794,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_AirFlow_Speed_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
   packed_series: False
@@ -1809,9 +1809,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_AirFlow_SpeedStdDev_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
@@ -1824,10 +1824,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_AirFlow_SpeedStdDev_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
@@ -1840,9 +1840,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_AirFlow_SpeedStdDev_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
@@ -1855,9 +1855,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex204_AirFlow_SpeedStdDev_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
@@ -1870,9 +1870,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_AirFlow_Direction_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
   packed_series: False
@@ -1885,10 +1885,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_AirFlow_Direction_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
   packed_series: False
@@ -1901,9 +1901,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_AirFlow_Direction_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
   packed_series: False
@@ -1916,9 +1916,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex204_AirFlow_Direction_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
   packed_series: False
@@ -1931,9 +1931,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_AirFlow_Speed_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 205)
   packed_series: False
@@ -1946,10 +1946,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_AirFlow_Speed_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 205)
   packed_series: False
@@ -1962,9 +1962,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_AirFlow_Speed_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 205)
   packed_series: False
@@ -1977,9 +1977,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_AirFlow_Speed_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 205)
   packed_series: False
@@ -1992,9 +1992,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_AirFlow_SpeedStdDev_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
   packed_series: False
@@ -2007,10 +2007,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_AirFlow_SpeedStdDev_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
   packed_series: False
@@ -2023,9 +2023,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_AirFlow_SpeedStdDev_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
   packed_series: False
@@ -2038,9 +2038,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex205_AirFlow_SpeedStdDev_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
   packed_series: False
@@ -2053,9 +2053,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_AirFlow_Direction_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 205)
   packed_series: False
@@ -2068,10 +2068,10 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_AirFlow_Direction_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 205)
   packed_series: False
@@ -2084,9 +2084,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_AirFlow_Direction_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 205)
   packed_series: False
@@ -2099,9 +2099,9 @@ columns:
     - name: salIndex
 
 - name: AT_salindex205_AirFlow_Direction_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s
   description: Median (mean for some sensors) wind speed in [] (salIndex 205)
   packed_series: False
@@ -2114,9 +2114,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_0_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
   packed_series: False
@@ -2129,10 +2129,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_0_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
   packed_series: False
@@ -2145,9 +2145,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_0_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
   packed_series: False
@@ -2160,9 +2160,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_0_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
   packed_series: False
@@ -2175,9 +2175,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
   packed_series: False
@@ -2190,10 +2190,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_1_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
   packed_series: False
@@ -2206,9 +2206,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_1_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
   packed_series: False
@@ -2221,9 +2221,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_1_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
   packed_series: False
@@ -2236,9 +2236,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_2_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
   packed_series: False
@@ -2251,10 +2251,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_2_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
   packed_series: False
@@ -2267,9 +2267,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_2_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
   packed_series: False
@@ -2282,9 +2282,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_2_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
   packed_series: False
@@ -2297,9 +2297,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_3_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
   packed_series: False
@@ -2312,10 +2312,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_3_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
   packed_series: False
@@ -2328,9 +2328,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_3_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
   packed_series: False
@@ -2343,9 +2343,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_3_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
   packed_series: False
@@ -2358,9 +2358,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_4_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
   packed_series: False
@@ -2373,10 +2373,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_4_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
   packed_series: False
@@ -2389,9 +2389,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_4_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
   packed_series: False
@@ -2404,9 +2404,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_4_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
   packed_series: False
@@ -2419,9 +2419,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_5_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
   packed_series: False
@@ -2434,10 +2434,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_5_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
   packed_series: False
@@ -2450,9 +2450,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_5_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
   packed_series: False
@@ -2465,9 +2465,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_5_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
   packed_series: False
@@ -2480,9 +2480,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_6_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
   packed_series: False
@@ -2495,10 +2495,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_6_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
   packed_series: False
@@ -2511,9 +2511,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_6_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
   packed_series: False
@@ -2526,9 +2526,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_6_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
   packed_series: False
@@ -2541,9 +2541,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_7_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
   packed_series: False
@@ -2556,10 +2556,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_7_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
   packed_series: False
@@ -2572,9 +2572,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_7_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
   packed_series: False
@@ -2587,9 +2587,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_TemperatureItem_7_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
   packed_series: False
@@ -2602,9 +2602,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_0_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
   packed_series: False
@@ -2617,10 +2617,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_0_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
   packed_series: False
@@ -2633,9 +2633,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_0_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
   packed_series: False
@@ -2648,9 +2648,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_0_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
   packed_series: False
@@ -2663,9 +2663,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
   packed_series: False
@@ -2678,10 +2678,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_1_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
   packed_series: False
@@ -2694,9 +2694,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_1_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
   packed_series: False
@@ -2709,9 +2709,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_1_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
   packed_series: False
@@ -2724,9 +2724,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_2_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
   packed_series: False
@@ -2739,10 +2739,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_2_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
   packed_series: False
@@ -2755,9 +2755,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_2_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
   packed_series: False
@@ -2770,9 +2770,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_2_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
   packed_series: False
@@ -2785,9 +2785,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_3_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
   packed_series: False
@@ -2800,10 +2800,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_3_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
   packed_series: False
@@ -2816,9 +2816,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_3_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
   packed_series: False
@@ -2831,9 +2831,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_3_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
   packed_series: False
@@ -2846,9 +2846,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_4_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
   packed_series: False
@@ -2861,10 +2861,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_4_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
   packed_series: False
@@ -2877,9 +2877,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_4_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
   packed_series: False
@@ -2892,9 +2892,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_4_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
   packed_series: False
@@ -2907,9 +2907,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_5_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
   packed_series: False
@@ -2922,10 +2922,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_5_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
   packed_series: False
@@ -2938,9 +2938,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_5_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
   packed_series: False
@@ -2953,9 +2953,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_5_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
   packed_series: False
@@ -2968,9 +2968,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_6_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
   packed_series: False
@@ -2983,10 +2983,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_6_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
   packed_series: False
@@ -2999,9 +2999,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_6_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
   packed_series: False
@@ -3014,9 +3014,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_6_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
   packed_series: False
@@ -3029,9 +3029,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_7_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
   packed_series: False
@@ -3044,10 +3044,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_7_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
   packed_series: False
@@ -3060,9 +3060,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_7_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
   packed_series: False
@@ -3075,9 +3075,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_TemperatureItem_7_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: Celsius
   description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
   packed_series: False
@@ -3090,9 +3090,9 @@ columns:
     - name: salIndex
 
 - name: AT_Azimuth_Calculated_Angle
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: unitless
   description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3),  approximately -280 to 280.
   packed_series: True
@@ -3102,9 +3102,9 @@ columns:
     - name: azimuthCalculatedAngle
 
 - name: AT_Elevation_Calculated_Angle
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: unitless
   description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
   packed_series: True
@@ -3114,9 +3114,9 @@ columns:
     - name: elevationCalculatedAngle
 
 - name: AT_DIMM_FWHM_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: arcsec
   description: Combined full width half maximum
   packed_series: False
@@ -3126,9 +3126,9 @@ columns:
     - name: fwhm
 
 - name: AT_Azimuth_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: degree
   description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
   packed_series: False
@@ -3138,9 +3138,9 @@ columns:
     - name: elevationCalculatedAngle
 
 - name: AT_Elevation_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: degree
   description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
   packed_series: False
@@ -3150,9 +3150,9 @@ columns:
     - name: azimuthCalculatedAngle
 
 - name: AT_Hexapod_Position_x_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in x
   packed_series: False
@@ -3162,9 +3162,9 @@ columns:
     - name: reportedPosition0
 
 - name: AT_Hexapod_Position_x_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in x
   packed_series: False
@@ -3174,9 +3174,9 @@ columns:
     - name: reportedPosition0
 
 - name: AT_Hexapod_Position_x_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in x
   packed_series: False
@@ -3186,9 +3186,9 @@ columns:
     - name: reportedPosition0
 
 - name: AT_Hexapod_Position_y_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in y
   packed_series: False
@@ -3198,9 +3198,9 @@ columns:
     - name: reportedPosition1
 
 - name: AT_Hexapod_Position_y_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in y
   packed_series: False
@@ -3210,9 +3210,9 @@ columns:
     - name: reportedPosition1
 
 - name: AT_Hexapod_Position_y_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in y
   packed_series: False
@@ -3222,9 +3222,9 @@ columns:
     - name: reportedPosition1
 
 - name: AT_Hexapod_Position_z_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in z
   packed_series: False
@@ -3234,9 +3234,9 @@ columns:
     - name: reportedPosition2
 
 - name: AT_Hexapod_Position_2_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in z
   packed_series: False
@@ -3246,9 +3246,9 @@ columns:
     - name: reportedPosition2
 
 - name: AT_Hexapod_Position_2_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in z
   packed_series: False
@@ -3258,9 +3258,9 @@ columns:
     - name: reportedPosition2
 
 - name: AT_Hexapod_Position_u_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in u
   packed_series: False
@@ -3270,9 +3270,9 @@ columns:
     - name: reportedPosition3
 
 - name: AT_Hexapod_Position_u_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in u
   packed_series: False
@@ -3282,9 +3282,9 @@ columns:
     - name: reportedPosition3
 
 - name: AT_Hexapod_Position_u_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in u
   packed_series: False
@@ -3294,9 +3294,9 @@ columns:
     - name: reportedPosition3
 
 - name: AT_Hexapod_Position_v_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in v
   packed_series: False
@@ -3306,9 +3306,9 @@ columns:
     - name: reportedPosition4
 
 - name: AT_Hexapod_Position_v_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in v
   packed_series: False
@@ -3318,9 +3318,9 @@ columns:
     - name: reportedPosition4
 
 - name: AT_Hexapod_Position_v_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in v
   packed_series: False
@@ -3330,9 +3330,9 @@ columns:
     - name: reportedPosition4
 
 - name: AT_Hexapod_Position_w_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in w
   packed_series: False
@@ -3342,9 +3342,9 @@ columns:
     - name: reportedPosition5
 
 - name: AT_Hexapod_Position_w_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in w
   packed_series: False
@@ -3354,9 +3354,9 @@ columns:
     - name: reportedPosition5
 
 - name: AT_Hexapod_Position_w_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: mm
   description: Auxiliary telescope hexapod reported position in w
   packed_series: False
@@ -3366,9 +3366,9 @@ columns:
     - name: reportedPosition5
 
 - name: AT_salIndex202_Acceleration_X_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -3780,10 +3780,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex202_Acceleration_X_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -4195,9 +4195,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex202_Acceleration_X_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -4609,9 +4609,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex202_Acceleration_X_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -5023,9 +5023,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndeY202_Acceleration_Y_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -5437,10 +5437,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex202_Acceleration_Y_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -5852,9 +5852,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex202_Acceleration_Y_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -6266,9 +6266,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex202_Acceleration_Y_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -6680,9 +6680,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndeZ202_Acceleration_Z_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -7094,10 +7094,10 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex202_Acceleration_Z_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -7509,9 +7509,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex202_Acceleration_Z_Min
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -7923,9 +7923,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex202_Acceleration_Z_Max
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
-  datatype: float
+  datatype: double
   unit: m/s2
   description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
   packed_series: False
@@ -7934,10 +7934,10 @@ columns:
   topics:
   - name: lsst.sal.ESS.accelerometer
     fields:
-    - name: accelerationZ0
     - name: accelerationZ1
-    - name: accelerationZ2
+    - name: accelerationZ0
     - name: accelerationZ3
+    - name: accelerationZ2
     - name: accelerationZ4
     - name: accelerationZ5
     - name: accelerationZ6
@@ -8337,9 +8337,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Dewpoint_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Celsius
   description: Dew point in AuxTel-ESS02
   packed_series: False
@@ -8352,9 +8352,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Relative_Humidity_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: percent
   description: Relative humidity in AuxTel-ESS02
   packed_series: False
@@ -8367,9 +8367,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Pressure_Item_0_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Pa
   description: Atmosferic pressure item 0 in AuxTel-ESS02
   packed_series: False
@@ -8382,9 +8382,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex201_Pressure_Item_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Pa
   description: Atmosferic pressure item 1 in AuxTel-ESS02
   packed_series: False
@@ -8397,9 +8397,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_Pressure_Item_0_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Pa
   description: Atmosferic pressure item 0 in weather tower atmospheric pressure
   packed_series: False
@@ -8412,9 +8412,9 @@ columns:
     - name: salIndex
 
 - name: AT_salIndex301_Pressure_Item_1_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: Pa
   description: Atmosferic pressure item 1 in weather tower atmospheric pressure
   packed_series: False
@@ -8427,9 +8427,9 @@ columns:
     - name: salIndex
 
 - name: AT_Pointing_Mount_Position_RA_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: degree
   description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
@@ -8439,9 +8439,9 @@ columns:
     - name: ra
 
 - name: AT_Pointing_Mount_Position_RA_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
-  datatype: float
+  datatype: double
   unit: degree
   description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
@@ -8451,9 +8451,9 @@ columns:
     - name: ra
 
 - name: AT_Pointing_Mount_Position_Dec_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: degree
   description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
@@ -8463,9 +8463,9 @@ columns:
     - name: declination
 
 - name: AT_Pointing_Mount_Position_Dec_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
-  datatype: float
+  datatype: double
   unit: degree
   description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
@@ -8475,9 +8475,9 @@ columns:
     - name: declination
 
 - name: AT_Pointing_Mount_Position_Sky_Angle_Mean
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
-  datatype: float
+  datatype: double
   unit: degree
   description: Calculated sky angle.
   packed_series: False
@@ -8487,9 +8487,9 @@ columns:
     - name: skyAngle
 
 - name: AT_Pointing_Mount_Position_Sky_Angle_StdDev
-  tables: ["ExposureEFD","VisitEFD"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
-  datatype: float
+  datatype: double
   unit: degree
   description: Calculated sky angle.
   packed_series: False
