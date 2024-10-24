@@ -1,0 +1,2613 @@
+---
+name: cdb_latiss
+"@id": "#cdb_latiss"
+description: Transformed EFD Consolidated Database for LATISS
+tables:
+- name: exposure_efd
+  "@id": "#exposure_efd"
+  description: Transformed EFD topics by exposure.
+  primaryKey:
+  - "#exposure_efd.exposure_id"
+  - "#exposure_efd.instrument"
+  constraints:
+  - name: un_exposure_id_instrument
+    "@id": "#exposure_efd.un_exposure_id_instrument"
+    "@type": Unique
+    description: Ensure exposure_id is unique.
+    columns:
+    - "#exposure_efd.exposure_id"
+    - "#exposure_efd.instrument"
+  columns:
+  - name: exposure_id
+    "@id": "#exposure_efd.exposure_id"
+    datatype: long
+    description: Exposure unique ID.
+  - name: created_at
+    "@id": "#exposure.created_at"
+    datatype: timestamp
+    value: 'CURRENT_TIMESTAMP'
+    description: Timestamp when the record was created, default is the current timestamp
+  - name: instrument
+    "@id": "#exposure_efd.instrument"
+    datatype: char
+    length: 20
+    description: Instrument name.
+  - name: "AT_Mount_Jitter_Azimuth"
+    "@id": "#exposure_efd.AT_Mount_Jitter_Azimuth"
+    datatype: double
+    nullable: True
+    description: RMS after 4th order polynomial fit of azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
+  - name: "AT_Mount_Jitter_Elevation"
+    "@id": "#exposure_efd.AT_Mount_Jitter_Elevation"
+    datatype: double
+    nullable: True
+    description: RMS after 4th order polynomial fit of elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  - name: "AT_Mount_Jitter_Nasmyth"
+    "@id": "#exposure_efd.AT_Mount_Jitter_Nasmyth"
+    datatype: double
+    nullable: True
+    description: RMS after 4th order polynomial fit of Nasmyth 1 axis position computed from the axis encoders, or nan if this axis is not in use. The range is the software limits (L1), approximately -175 to 175.
+  - name: "AT_salIndex201_Sonic_Temperature_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Sonic_Temperature_Mean"
+    datatype: double
+    nullable: True
+    description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  - name: "AT_salIndex201_Sonic_Temperature_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_Sonic_Temperature_StdDev"
+    datatype: double
+    nullable: True
+    description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  - name: "AT_salIndex205_Sonic_Temperature_Mean"
+    "@id": "#exposure_efd.AT_salIndex205_Sonic_Temperature_Mean"
+    datatype: double
+    nullable: True
+    description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  - name: "AT_salIndex205_Sonic_Temperature_StdDev"
+    "@id": "#exposure_efd.AT_salIndex205_Sonic_Temperature_StdDev"
+    datatype: double
+    nullable: True
+    description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  - name: "AT_salIndex201_Wind_Speed_X_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_X_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_0_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_0_Min"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_0_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_0_Max"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_0_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_1_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_1_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_1_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_1_Min"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_1_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_1_Max"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_1_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_2_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_2_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_2_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_2_Min"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_2_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_2_Max"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_2_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_0_Mean"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_0_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_0_StdDev"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_0_Min"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_0_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_0_Max"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_0_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_1_Mean"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_1_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_1_StdDev"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_1_Min"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_1_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_1_Max"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_1_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_2_Mean"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_2_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_2_StdDev"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_2_Min"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_2_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_2_Max"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_speedStdDev_2_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_Magnitude_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_Magnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_Magnitude_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_Magnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_Magnitude_Min"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_Magnitude_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_Magnitude_Max"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_Magnitude_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_MaxMagnitude_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_MaxMagnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_MaxMagnitude_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_Wind_Speed_MaxMagnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_MaxMagnitude_Min"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_MaxMagnitude_Min"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_MaxMagnitude_Max"
+    "@id": "#exposure_efd.AT_salindex201_Wind_Speed_MaxMagnitude_Max"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salIndex204_Wind_Speed_0_Mean"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_0_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_0_StdDev"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_0_Min"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_0_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_0_Max"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_0_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_1_Mean"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_1_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_1_StdDev"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_1_Min"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_1_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_1_Max"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_1_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_2_Mean"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_2_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_2_StdDev"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_2_Min"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_2_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_2_Max"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_2_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_0_Mean"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_0_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_0_StdDev"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_0_Min"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_0_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_0_Max"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_0_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_1_Mean"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_1_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_1_StdDev"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_1_Min"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_1_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_1_Max"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_1_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_2_Mean"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_2_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_2_StdDev"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_2_Min"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_2_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_2_Max"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_speedStdDev_2_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_Magnitude_Mean"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_Magnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_Magnitude_StdDev"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_Magnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_Magnitude_Min"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_Magnitude_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_Magnitude_Max"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_Magnitude_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_MaxMagnitude_Mean"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_MaxMagnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_MaxMagnitude_StdDev"
+    "@id": "#exposure_efd.AT_salIndex204_Wind_Speed_MaxMagnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_MaxMagnitude_Min"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_MaxMagnitude_Min"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_MaxMagnitude_Max"
+    "@id": "#exposure_efd.AT_salindex204_Wind_Speed_MaxMagnitude_Max"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude (salIndex 204)
+  - name: "AT_salIndex205_Wind_Speed_0_Mean"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_0_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_0_StdDev"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_0_Min"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_0_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_0_Max"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_0_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_1_Mean"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_1_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_1_StdDev"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_1_Min"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_1_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_1_Max"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_1_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_2_Mean"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_2_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_2_StdDev"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_2_Min"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_2_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_2_Max"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_2_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_0_Mean"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_0_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_0_StdDev"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_0_Min"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_0_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_0_Max"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_0_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_1_Mean"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_1_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_1_StdDev"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_1_Min"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_1_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_1_Max"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_1_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_2_Mean"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_2_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_2_StdDev"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_2_Min"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_2_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_2_Max"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_speedStdDev_2_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_Magnitude_Mean"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_Magnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_Magnitude_StdDev"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_Magnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_Magnitude_Min"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_Magnitude_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_Magnitude_Max"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_Magnitude_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_MaxMagnitude_Mean"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_MaxMagnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_MaxMagnitude_StdDev"
+    "@id": "#exposure_efd.AT_salIndex205_Wind_Speed_MaxMagnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_MaxMagnitude_Min"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_MaxMagnitude_Min"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_MaxMagnitude_Max"
+    "@id": "#exposure_efd.AT_salindex205_Wind_Speed_MaxMagnitude_Max"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex201_AirFlow_Speed_Mean"
+    "@id": "#exposure_efd.AT_salindex201_AirFlow_Speed_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Speed_StdDev"
+    "@id": "#exposure_efd.AT_salindex201_AirFlow_Speed_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Speed_Min"
+    "@id": "#exposure_efd.AT_salindex201_AirFlow_Speed_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Speed_Max"
+    "@id": "#exposure_efd.AT_salindex201_AirFlow_Speed_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salIndex201_AirFlow_SpeedStdDev_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_AirFlow_SpeedStdDev_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  - name: "AT_salIndex201_AirFlow_SpeedStdDev_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_AirFlow_SpeedStdDev_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  - name: "AT_salIndex201_AirFlow_SpeedStdDev_Min"
+    "@id": "#exposure_efd.AT_salIndex201_AirFlow_SpeedStdDev_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  - name: "AT_salIndex201_AirFlow_SpeedStdDev_Max"
+    "@id": "#exposure_efd.AT_salIndex201_AirFlow_SpeedStdDev_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  - name: "AT_salindex201_AirFlow_Direction_Mean"
+    "@id": "#exposure_efd.AT_salindex201_AirFlow_Direction_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Direction_StdDev"
+    "@id": "#exposure_efd.AT_salindex201_AirFlow_Direction_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Direction_Min"
+    "@id": "#exposure_efd.AT_salindex201_AirFlow_Direction_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Direction_Max"
+    "@id": "#exposure_efd.AT_salindex201_AirFlow_Direction_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex204_AirFlow_Speed_Mean"
+    "@id": "#exposure_efd.AT_salindex204_AirFlow_Speed_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Speed_StdDev"
+    "@id": "#exposure_efd.AT_salindex204_AirFlow_Speed_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Speed_Min"
+    "@id": "#exposure_efd.AT_salindex204_AirFlow_Speed_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Speed_Max"
+    "@id": "#exposure_efd.AT_salindex204_AirFlow_Speed_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salIndex204_AirFlow_SpeedStdDev_Mean"
+    "@id": "#exposure_efd.AT_salIndex204_AirFlow_SpeedStdDev_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  - name: "AT_salIndex204_AirFlow_SpeedStdDev_StdDev"
+    "@id": "#exposure_efd.AT_salIndex204_AirFlow_SpeedStdDev_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  - name: "AT_salIndex204_AirFlow_SpeedStdDev_Min"
+    "@id": "#exposure_efd.AT_salIndex204_AirFlow_SpeedStdDev_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  - name: "AT_salIndex204_AirFlow_SpeedStdDev_Max"
+    "@id": "#exposure_efd.AT_salIndex204_AirFlow_SpeedStdDev_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  - name: "AT_salindex204_AirFlow_Direction_Mean"
+    "@id": "#exposure_efd.AT_salindex204_AirFlow_Direction_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Direction_StdDev"
+    "@id": "#exposure_efd.AT_salindex204_AirFlow_Direction_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Direction_Min"
+    "@id": "#exposure_efd.AT_salindex204_AirFlow_Direction_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Direction_Max"
+    "@id": "#exposure_efd.AT_salindex204_AirFlow_Direction_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex205_AirFlow_Speed_Mean"
+    "@id": "#exposure_efd.AT_salindex205_AirFlow_Speed_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Speed_StdDev"
+    "@id": "#exposure_efd.AT_salindex205_AirFlow_Speed_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Speed_Min"
+    "@id": "#exposure_efd.AT_salindex205_AirFlow_Speed_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Speed_Max"
+    "@id": "#exposure_efd.AT_salindex205_AirFlow_Speed_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salIndex205_AirFlow_SpeedStdDev_Mean"
+    "@id": "#exposure_efd.AT_salIndex205_AirFlow_SpeedStdDev_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  - name: "AT_salIndex205_AirFlow_SpeedStdDev_StdDev"
+    "@id": "#exposure_efd.AT_salIndex205_AirFlow_SpeedStdDev_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  - name: "AT_salIndex205_AirFlow_SpeedStdDev_Min"
+    "@id": "#exposure_efd.AT_salIndex205_AirFlow_SpeedStdDev_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  - name: "AT_salIndex205_AirFlow_SpeedStdDev_Max"
+    "@id": "#exposure_efd.AT_salIndex205_AirFlow_SpeedStdDev_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  - name: "AT_salindex205_AirFlow_Direction_Mean"
+    "@id": "#exposure_efd.AT_salindex205_AirFlow_Direction_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Direction_StdDev"
+    "@id": "#exposure_efd.AT_salindex205_AirFlow_Direction_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Direction_Min"
+    "@id": "#exposure_efd.AT_salindex205_AirFlow_Direction_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Direction_Max"
+    "@id": "#exposure_efd.AT_salindex205_AirFlow_Direction_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salIndex201_TemperatureItem_0_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_0_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex201_TemperatureItem_0_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_0_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex201_TemperatureItem_0_Min"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_0_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex201_TemperatureItem_0_Max"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_0_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex201_TemperatureItem_1_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_1_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex201_TemperatureItem_1_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_1_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex201_TemperatureItem_1_Min"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_1_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex201_TemperatureItem_1_Max"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_1_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex201_TemperatureItem_2_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_2_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex201_TemperatureItem_2_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_2_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex201_TemperatureItem_2_Min"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_2_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex201_TemperatureItem_2_Max"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_2_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex201_TemperatureItem_3_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_3_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex201_TemperatureItem_3_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_3_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex201_TemperatureItem_3_Min"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_3_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex201_TemperatureItem_3_Max"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_3_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex201_TemperatureItem_4_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_4_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex201_TemperatureItem_4_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_4_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex201_TemperatureItem_4_Min"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_4_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex201_TemperatureItem_4_Max"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_4_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex201_TemperatureItem_5_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_5_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex201_TemperatureItem_5_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_5_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex201_TemperatureItem_5_Min"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_5_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex201_TemperatureItem_5_Max"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_5_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex201_TemperatureItem_6_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_6_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex201_TemperatureItem_6_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_6_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex201_TemperatureItem_6_Min"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_6_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex201_TemperatureItem_6_Max"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_6_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex201_TemperatureItem_7_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_7_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex201_TemperatureItem_7_StdDev"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_7_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex201_TemperatureItem_7_Min"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_7_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex201_TemperatureItem_7_Max"
+    "@id": "#exposure_efd.AT_salIndex201_TemperatureItem_7_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex301_TemperatureItem_0_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_0_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex301_TemperatureItem_0_StdDev"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_0_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex301_TemperatureItem_0_Min"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_0_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex301_TemperatureItem_0_Max"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_0_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex301_TemperatureItem_1_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_1_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex301_TemperatureItem_1_StdDev"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_1_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex301_TemperatureItem_1_Min"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_1_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex301_TemperatureItem_1_Max"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_1_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex301_TemperatureItem_2_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_2_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex301_TemperatureItem_2_StdDev"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_2_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex301_TemperatureItem_2_Min"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_2_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex301_TemperatureItem_2_Max"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_2_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex301_TemperatureItem_3_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_3_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex301_TemperatureItem_3_StdDev"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_3_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex301_TemperatureItem_3_Min"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_3_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex301_TemperatureItem_3_Max"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_3_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex301_TemperatureItem_4_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_4_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex301_TemperatureItem_4_StdDev"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_4_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex301_TemperatureItem_4_Min"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_4_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex301_TemperatureItem_4_Max"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_4_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex301_TemperatureItem_5_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_5_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex301_TemperatureItem_5_StdDev"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_5_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex301_TemperatureItem_5_Min"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_5_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex301_TemperatureItem_5_Max"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_5_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex301_TemperatureItem_6_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_6_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex301_TemperatureItem_6_StdDev"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_6_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex301_TemperatureItem_6_Min"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_6_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex301_TemperatureItem_6_Max"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_6_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex301_TemperatureItem_7_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_7_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex301_TemperatureItem_7_StdDev"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_7_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex301_TemperatureItem_7_Min"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_7_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex301_TemperatureItem_7_Max"
+    "@id": "#exposure_efd.AT_salIndex301_TemperatureItem_7_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_Azimuth_Calculated_Angle"
+    "@id": "#exposure_efd.AT_Azimuth_Calculated_Angle"
+    datatype: double
+    nullable: True
+    description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3),  approximately -280 to 280.
+  - name: "AT_Elevation_Calculated_Angle"
+    "@id": "#exposure_efd.AT_Elevation_Calculated_Angle"
+    datatype: double
+    nullable: True
+    description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  - name: "AT_DIMM_FWHM_Mean"
+    "@id": "#exposure_efd.AT_DIMM_FWHM_Mean"
+    datatype: double
+    nullable: True
+    description: Combined full width half maximum
+  - name: "AT_Azimuth_Mean"
+    "@id": "#exposure_efd.AT_Azimuth_Mean"
+    datatype: double
+    nullable: True
+    description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  - name: "AT_Elevation_Mean"
+    "@id": "#exposure_efd.AT_Elevation_Mean"
+    datatype: double
+    nullable: True
+    description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
+  - name: "AT_Hexapod_Position_x_Mean"
+    "@id": "#exposure_efd.AT_Hexapod_Position_x_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in x
+  - name: "AT_Hexapod_Position_x_Max"
+    "@id": "#exposure_efd.AT_Hexapod_Position_x_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in x
+  - name: "AT_Hexapod_Position_x_Min"
+    "@id": "#exposure_efd.AT_Hexapod_Position_x_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in x
+  - name: "AT_Hexapod_Position_y_Mean"
+    "@id": "#exposure_efd.AT_Hexapod_Position_y_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in y
+  - name: "AT_Hexapod_Position_y_Max"
+    "@id": "#exposure_efd.AT_Hexapod_Position_y_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in y
+  - name: "AT_Hexapod_Position_y_Min"
+    "@id": "#exposure_efd.AT_Hexapod_Position_y_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in y
+  - name: "AT_Hexapod_Position_z_Mean"
+    "@id": "#exposure_efd.AT_Hexapod_Position_z_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in z
+  - name: "AT_Hexapod_Position_2_Max"
+    "@id": "#exposure_efd.AT_Hexapod_Position_2_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in z
+  - name: "AT_Hexapod_Position_2_Min"
+    "@id": "#exposure_efd.AT_Hexapod_Position_2_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in z
+  - name: "AT_Hexapod_Position_u_Mean"
+    "@id": "#exposure_efd.AT_Hexapod_Position_u_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in u
+  - name: "AT_Hexapod_Position_u_Max"
+    "@id": "#exposure_efd.AT_Hexapod_Position_u_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in u
+  - name: "AT_Hexapod_Position_u_Min"
+    "@id": "#exposure_efd.AT_Hexapod_Position_u_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in u
+  - name: "AT_Hexapod_Position_v_Mean"
+    "@id": "#exposure_efd.AT_Hexapod_Position_v_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in v
+  - name: "AT_Hexapod_Position_v_Max"
+    "@id": "#exposure_efd.AT_Hexapod_Position_v_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in v
+  - name: "AT_Hexapod_Position_v_Min"
+    "@id": "#exposure_efd.AT_Hexapod_Position_v_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in v
+  - name: "AT_Hexapod_Position_w_Mean"
+    "@id": "#exposure_efd.AT_Hexapod_Position_w_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in w
+  - name: "AT_Hexapod_Position_w_Max"
+    "@id": "#exposure_efd.AT_Hexapod_Position_w_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in w
+  - name: "AT_Hexapod_Position_w_Min"
+    "@id": "#exposure_efd.AT_Hexapod_Position_w_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in w
+  - name: "AT_salIndex202_Acceleration_X_Mean"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_X_Mean"
+    datatype: double
+    nullable: True
+    description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_X_StdDev"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_X_StdDev"
+    datatype: double
+    nullable: True
+    description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_X_Min"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_X_Min"
+    datatype: double
+    nullable: True
+    description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_X_Max"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_X_Max"
+    datatype: double
+    nullable: True
+    description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndeY202_Acceleration_Y_Mean"
+    "@id": "#exposure_efd.AT_salIndeY202_Acceleration_Y_Mean"
+    datatype: double
+    nullable: True
+    description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Y_StdDev"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_Y_StdDev"
+    datatype: double
+    nullable: True
+    description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Y_Min"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_Y_Min"
+    datatype: double
+    nullable: True
+    description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Y_Max"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_Y_Max"
+    datatype: double
+    nullable: True
+    description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndeZ202_Acceleration_Z_Mean"
+    "@id": "#exposure_efd.AT_salIndeZ202_Acceleration_Z_Mean"
+    datatype: double
+    nullable: True
+    description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Z_StdDev"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_Z_StdDev"
+    datatype: double
+    nullable: True
+    description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Z_Min"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_Z_Min"
+    datatype: double
+    nullable: True
+    description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Z_Max"
+    "@id": "#exposure_efd.AT_salIndex202_Acceleration_Z_Max"
+    datatype: double
+    nullable: True
+    description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex201_Dewpoint_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Dewpoint_Mean"
+    datatype: double
+    nullable: True
+    description: Dew point in AuxTel-ESS02
+  - name: "AT_salIndex201_Relative_Humidity_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Relative_Humidity_Mean"
+    datatype: double
+    nullable: True
+    description: Relative humidity in AuxTel-ESS02
+  - name: "AT_salIndex201_Pressure_Item_0_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Pressure_Item_0_Mean"
+    datatype: double
+    nullable: True
+    description: Atmosferic pressure item 0 in AuxTel-ESS02
+  - name: "AT_salIndex201_Pressure_Item_1_Mean"
+    "@id": "#exposure_efd.AT_salIndex201_Pressure_Item_1_Mean"
+    datatype: double
+    nullable: True
+    description: Atmosferic pressure item 1 in AuxTel-ESS02
+  - name: "AT_salIndex301_Pressure_Item_0_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_Pressure_Item_0_Mean"
+    datatype: double
+    nullable: True
+    description: Atmosferic pressure item 0 in weather tower atmospheric pressure
+  - name: "AT_salIndex301_Pressure_Item_1_Mean"
+    "@id": "#exposure_efd.AT_salIndex301_Pressure_Item_1_Mean"
+    datatype: double
+    nullable: True
+    description: Atmosferic pressure item 1 in weather tower atmospheric pressure
+  - name: "AT_Pointing_Mount_Position_RA_Mean"
+    "@id": "#exposure_efd.AT_Pointing_Mount_Position_RA_Mean"
+    datatype: double
+    nullable: True
+    description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  - name: "AT_Pointing_Mount_Position_RA_StdDev"
+    "@id": "#exposure_efd.AT_Pointing_Mount_Position_RA_StdDev"
+    datatype: double
+    nullable: True
+    description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  - name: "AT_Pointing_Mount_Position_Dec_Mean"
+    "@id": "#exposure_efd.AT_Pointing_Mount_Position_Dec_Mean"
+    datatype: double
+    nullable: True
+    description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  - name: "AT_Pointing_Mount_Position_Dec_StdDev"
+    "@id": "#exposure_efd.AT_Pointing_Mount_Position_Dec_StdDev"
+    datatype: double
+    nullable: True
+    description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  - name: "AT_Pointing_Mount_Position_Sky_Angle_Mean"
+    "@id": "#exposure_efd.AT_Pointing_Mount_Position_Sky_Angle_Mean"
+    datatype: double
+    nullable: True
+    description: Calculated sky angle.
+  - name: "AT_Pointing_Mount_Position_Sky_Angle_StdDev"
+    "@id": "#exposure_efd.AT_Pointing_Mount_Position_Sky_Angle_StdDev"
+    datatype: double
+    nullable: True
+    description: Calculated sky angle.
+
+- name: visit1_efd
+  "@id": "#visit1_efd"
+  description: Transformed EFD topics by visit.
+  primaryKey:
+  - "#visit1_efd.visit_id"
+  - "#visit1_efd.instrument"
+  constraints:
+  - name: un_visit_id_instrument
+    "@id": "#visit1_efd.un_visit_id_instrument"
+    "@type": Unique
+    description: Ensure visit_id is unique.
+    columns:
+    - "#visit1_efd.visit_id"
+    - "#visit1_efd.instrument"
+  columns:
+  - name: visit_id
+    "@id": "#visit1_efd.visit_id"
+    datatype: long
+    description: Visit unique ID.
+  - name: instrument
+    "@id": "#visit1_efd.instrument"
+    datatype: char
+    length: 20
+    description: Instrument name.
+  - name: "AT_salIndex201_Sonic_Temperature_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Sonic_Temperature_Mean"
+    datatype: double
+    nullable: True
+    description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  - name: "AT_salIndex201_Sonic_Temperature_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_Sonic_Temperature_StdDev"
+    datatype: double
+    nullable: True
+    description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  - name: "AT_salIndex205_Sonic_Temperature_Mean"
+    "@id": "#visit1_efd.AT_salIndex205_Sonic_Temperature_Mean"
+    datatype: double
+    nullable: True
+    description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  - name: "AT_salIndex205_Sonic_Temperature_StdDev"
+    "@id": "#visit1_efd.AT_salIndex205_Sonic_Temperature_StdDev"
+    datatype: double
+    nullable: True
+    description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  - name: "AT_salIndex201_Wind_Speed_X_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_X_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_0_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_0_Min"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_0_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_0_Max"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_0_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_1_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_1_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_1_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_1_Min"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_1_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_1_Max"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_1_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_2_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_2_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_2_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_2_Min"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_2_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_2_Max"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_2_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_0_Mean"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_0_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_0_StdDev"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_0_Min"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_0_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_0_Max"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_0_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_1_Mean"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_1_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_1_StdDev"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_1_Min"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_1_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_1_Max"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_1_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_2_Mean"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_2_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_2_StdDev"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_2_Min"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_2_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_speedStdDev_2_Max"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_speedStdDev_2_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_Magnitude_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_Magnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_Magnitude_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_Magnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_Magnitude_Min"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_Magnitude_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_Magnitude_Max"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_Magnitude_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_MaxMagnitude_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_MaxMagnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salIndex201_Wind_Speed_MaxMagnitude_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_Wind_Speed_MaxMagnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_MaxMagnitude_Min"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_MaxMagnitude_Min"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salindex201_Wind_Speed_MaxMagnitude_Max"
+    "@id": "#visit1_efd.AT_salindex201_Wind_Speed_MaxMagnitude_Max"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  - name: "AT_salIndex204_Wind_Speed_0_Mean"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_0_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_0_StdDev"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_0_Min"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_0_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_0_Max"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_0_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_1_Mean"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_1_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_1_StdDev"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_1_Min"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_1_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_1_Max"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_1_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_2_Mean"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_2_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_2_StdDev"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_2_Min"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_2_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_2_Max"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_2_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_0_Mean"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_0_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_0_StdDev"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_0_Min"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_0_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_0_Max"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_0_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_1_Mean"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_1_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_1_StdDev"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_1_Min"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_1_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_1_Max"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_1_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_2_Mean"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_2_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_2_StdDev"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_2_Min"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_2_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_speedStdDev_2_Max"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_speedStdDev_2_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_Magnitude_Mean"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_Magnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_Magnitude_StdDev"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_Magnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_Magnitude_Min"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_Magnitude_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_Magnitude_Max"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_Magnitude_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_MaxMagnitude_Mean"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_MaxMagnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude (salIndex 204)
+  - name: "AT_salIndex204_Wind_Speed_MaxMagnitude_StdDev"
+    "@id": "#visit1_efd.AT_salIndex204_Wind_Speed_MaxMagnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_MaxMagnitude_Min"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_MaxMagnitude_Min"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude (salIndex 204)
+  - name: "AT_salindex204_Wind_Speed_MaxMagnitude_Max"
+    "@id": "#visit1_efd.AT_salindex204_Wind_Speed_MaxMagnitude_Max"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude (salIndex 204)
+  - name: "AT_salIndex205_Wind_Speed_0_Mean"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_0_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_0_StdDev"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_0_Min"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_0_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_0_Max"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_0_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_1_Mean"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_1_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_1_StdDev"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_1_Min"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_1_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_1_Max"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_1_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_2_Mean"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_2_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_2_StdDev"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_2_Min"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_2_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_2_Max"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_2_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_0_Mean"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_0_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_0_StdDev"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_0_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_0_Min"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_0_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_0_Max"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_0_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_1_Mean"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_1_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_1_StdDev"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_1_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_1_Min"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_1_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_1_Max"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_1_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_2_Mean"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_2_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_2_StdDev"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_2_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_2_Min"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_2_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_speedStdDev_2_Max"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_speedStdDev_2_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_Magnitude_Mean"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_Magnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_Magnitude_StdDev"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_Magnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_Magnitude_Min"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_Magnitude_Min"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_Magnitude_Max"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_Magnitude_Max"
+    datatype: double
+    nullable: True
+    description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_MaxMagnitude_Mean"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_MaxMagnitude_Mean"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salIndex205_Wind_Speed_MaxMagnitude_StdDev"
+    "@id": "#visit1_efd.AT_salIndex205_Wind_Speed_MaxMagnitude_StdDev"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_MaxMagnitude_Min"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_MaxMagnitude_Min"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex205_Wind_Speed_MaxMagnitude_Max"
+    "@id": "#visit1_efd.AT_salindex205_Wind_Speed_MaxMagnitude_Max"
+    datatype: double
+    nullable: True
+    description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  - name: "AT_salindex201_AirFlow_Speed_Mean"
+    "@id": "#visit1_efd.AT_salindex201_AirFlow_Speed_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Speed_StdDev"
+    "@id": "#visit1_efd.AT_salindex201_AirFlow_Speed_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Speed_Min"
+    "@id": "#visit1_efd.AT_salindex201_AirFlow_Speed_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Speed_Max"
+    "@id": "#visit1_efd.AT_salindex201_AirFlow_Speed_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salIndex201_AirFlow_SpeedStdDev_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_AirFlow_SpeedStdDev_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  - name: "AT_salIndex201_AirFlow_SpeedStdDev_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_AirFlow_SpeedStdDev_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  - name: "AT_salIndex201_AirFlow_SpeedStdDev_Min"
+    "@id": "#visit1_efd.AT_salIndex201_AirFlow_SpeedStdDev_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  - name: "AT_salIndex201_AirFlow_SpeedStdDev_Max"
+    "@id": "#visit1_efd.AT_salIndex201_AirFlow_SpeedStdDev_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 201). Not available for all sensor types.
+  - name: "AT_salindex201_AirFlow_Direction_Mean"
+    "@id": "#visit1_efd.AT_salindex201_AirFlow_Direction_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Direction_StdDev"
+    "@id": "#visit1_efd.AT_salindex201_AirFlow_Direction_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Direction_Min"
+    "@id": "#visit1_efd.AT_salindex201_AirFlow_Direction_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex201_AirFlow_Direction_Max"
+    "@id": "#visit1_efd.AT_salindex201_AirFlow_Direction_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 201)
+  - name: "AT_salindex204_AirFlow_Speed_Mean"
+    "@id": "#visit1_efd.AT_salindex204_AirFlow_Speed_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Speed_StdDev"
+    "@id": "#visit1_efd.AT_salindex204_AirFlow_Speed_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Speed_Min"
+    "@id": "#visit1_efd.AT_salindex204_AirFlow_Speed_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Speed_Max"
+    "@id": "#visit1_efd.AT_salindex204_AirFlow_Speed_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salIndex204_AirFlow_SpeedStdDev_Mean"
+    "@id": "#visit1_efd.AT_salIndex204_AirFlow_SpeedStdDev_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  - name: "AT_salIndex204_AirFlow_SpeedStdDev_StdDev"
+    "@id": "#visit1_efd.AT_salIndex204_AirFlow_SpeedStdDev_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  - name: "AT_salIndex204_AirFlow_SpeedStdDev_Min"
+    "@id": "#visit1_efd.AT_salIndex204_AirFlow_SpeedStdDev_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  - name: "AT_salIndex204_AirFlow_SpeedStdDev_Max"
+    "@id": "#visit1_efd.AT_salIndex204_AirFlow_SpeedStdDev_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  - name: "AT_salindex204_AirFlow_Direction_Mean"
+    "@id": "#visit1_efd.AT_salindex204_AirFlow_Direction_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Direction_StdDev"
+    "@id": "#visit1_efd.AT_salindex204_AirFlow_Direction_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Direction_Min"
+    "@id": "#visit1_efd.AT_salindex204_AirFlow_Direction_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex204_AirFlow_Direction_Max"
+    "@id": "#visit1_efd.AT_salindex204_AirFlow_Direction_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  - name: "AT_salindex205_AirFlow_Speed_Mean"
+    "@id": "#visit1_efd.AT_salindex205_AirFlow_Speed_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Speed_StdDev"
+    "@id": "#visit1_efd.AT_salindex205_AirFlow_Speed_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Speed_Min"
+    "@id": "#visit1_efd.AT_salindex205_AirFlow_Speed_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Speed_Max"
+    "@id": "#visit1_efd.AT_salindex205_AirFlow_Speed_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salIndex205_AirFlow_SpeedStdDev_Mean"
+    "@id": "#visit1_efd.AT_salIndex205_AirFlow_SpeedStdDev_Mean"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  - name: "AT_salIndex205_AirFlow_SpeedStdDev_StdDev"
+    "@id": "#visit1_efd.AT_salIndex205_AirFlow_SpeedStdDev_StdDev"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  - name: "AT_salIndex205_AirFlow_SpeedStdDev_Min"
+    "@id": "#visit1_efd.AT_salIndex205_AirFlow_SpeedStdDev_Min"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  - name: "AT_salIndex205_AirFlow_SpeedStdDev_Max"
+    "@id": "#visit1_efd.AT_salIndex205_AirFlow_SpeedStdDev_Max"
+    datatype: double
+    nullable: True
+    description: Standard deviation of wind speed estimated from quartiles in [] (salIndex 205). Not available for all sensor types.
+  - name: "AT_salindex205_AirFlow_Direction_Mean"
+    "@id": "#visit1_efd.AT_salindex205_AirFlow_Direction_Mean"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Direction_StdDev"
+    "@id": "#visit1_efd.AT_salindex205_AirFlow_Direction_StdDev"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Direction_Min"
+    "@id": "#visit1_efd.AT_salindex205_AirFlow_Direction_Min"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salindex205_AirFlow_Direction_Max"
+    "@id": "#visit1_efd.AT_salindex205_AirFlow_Direction_Max"
+    datatype: double
+    nullable: True
+    description: Median (mean for some sensors) wind speed in [] (salIndex 205)
+  - name: "AT_salIndex201_TemperatureItem_0_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_0_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex201_TemperatureItem_0_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_0_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex201_TemperatureItem_0_Min"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_0_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex201_TemperatureItem_0_Max"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_0_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex201_TemperatureItem_1_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_1_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex201_TemperatureItem_1_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_1_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex201_TemperatureItem_1_Min"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_1_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex201_TemperatureItem_1_Max"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_1_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex201_TemperatureItem_2_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_2_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex201_TemperatureItem_2_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_2_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex201_TemperatureItem_2_Min"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_2_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex201_TemperatureItem_2_Max"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_2_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex201_TemperatureItem_3_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_3_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex201_TemperatureItem_3_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_3_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex201_TemperatureItem_3_Min"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_3_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex201_TemperatureItem_3_Max"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_3_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex201_TemperatureItem_4_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_4_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex201_TemperatureItem_4_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_4_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex201_TemperatureItem_4_Min"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_4_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex201_TemperatureItem_4_Max"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_4_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex201_TemperatureItem_5_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_5_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex201_TemperatureItem_5_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_5_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex201_TemperatureItem_5_Min"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_5_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex201_TemperatureItem_5_Max"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_5_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex201_TemperatureItem_6_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_6_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex201_TemperatureItem_6_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_6_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex201_TemperatureItem_6_Min"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_6_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex201_TemperatureItem_6_Max"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_6_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex201_TemperatureItem_7_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_7_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex201_TemperatureItem_7_StdDev"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_7_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex201_TemperatureItem_7_Min"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_7_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex201_TemperatureItem_7_Max"
+    "@id": "#visit1_efd.AT_salIndex201_TemperatureItem_7_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex301_TemperatureItem_0_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_0_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex301_TemperatureItem_0_StdDev"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_0_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex301_TemperatureItem_0_Min"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_0_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex301_TemperatureItem_0_Max"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_0_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  - name: "AT_salIndex301_TemperatureItem_1_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_1_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex301_TemperatureItem_1_StdDev"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_1_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex301_TemperatureItem_1_Min"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_1_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex301_TemperatureItem_1_Max"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_1_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  - name: "AT_salIndex301_TemperatureItem_2_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_2_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex301_TemperatureItem_2_StdDev"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_2_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex301_TemperatureItem_2_Min"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_2_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex301_TemperatureItem_2_Max"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_2_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  - name: "AT_salIndex301_TemperatureItem_3_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_3_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex301_TemperatureItem_3_StdDev"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_3_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex301_TemperatureItem_3_Min"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_3_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex301_TemperatureItem_3_Max"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_3_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  - name: "AT_salIndex301_TemperatureItem_4_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_4_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex301_TemperatureItem_4_StdDev"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_4_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex301_TemperatureItem_4_Min"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_4_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex301_TemperatureItem_4_Max"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_4_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  - name: "AT_salIndex301_TemperatureItem_5_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_5_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex301_TemperatureItem_5_StdDev"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_5_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex301_TemperatureItem_5_Min"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_5_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex301_TemperatureItem_5_Max"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_5_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  - name: "AT_salIndex301_TemperatureItem_6_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_6_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex301_TemperatureItem_6_StdDev"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_6_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex301_TemperatureItem_6_Min"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_6_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex301_TemperatureItem_6_Max"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_6_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  - name: "AT_salIndex301_TemperatureItem_7_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_7_Mean"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex301_TemperatureItem_7_StdDev"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_7_StdDev"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex301_TemperatureItem_7_Min"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_7_Min"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_salIndex301_TemperatureItem_7_Max"
+    "@id": "#visit1_efd.AT_salIndex301_TemperatureItem_7_Max"
+    datatype: double
+    nullable: True
+    description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  - name: "AT_Azimuth_Calculated_Angle"
+    "@id": "#visit1_efd.AT_Azimuth_Calculated_Angle"
+    datatype: double
+    nullable: True
+    description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3),  approximately -280 to 280.
+  - name: "AT_Elevation_Calculated_Angle"
+    "@id": "#visit1_efd.AT_Elevation_Calculated_Angle"
+    datatype: double
+    nullable: True
+    description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  - name: "AT_DIMM_FWHM_Mean"
+    "@id": "#visit1_efd.AT_DIMM_FWHM_Mean"
+    datatype: double
+    nullable: True
+    description: Combined full width half maximum
+  - name: "AT_Azimuth_Mean"
+    "@id": "#visit1_efd.AT_Azimuth_Mean"
+    datatype: double
+    nullable: True
+    description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  - name: "AT_Elevation_Mean"
+    "@id": "#visit1_efd.AT_Elevation_Mean"
+    datatype: double
+    nullable: True
+    description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
+  - name: "AT_Hexapod_Position_x_Mean"
+    "@id": "#visit1_efd.AT_Hexapod_Position_x_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in x
+  - name: "AT_Hexapod_Position_x_Max"
+    "@id": "#visit1_efd.AT_Hexapod_Position_x_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in x
+  - name: "AT_Hexapod_Position_x_Min"
+    "@id": "#visit1_efd.AT_Hexapod_Position_x_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in x
+  - name: "AT_Hexapod_Position_y_Mean"
+    "@id": "#visit1_efd.AT_Hexapod_Position_y_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in y
+  - name: "AT_Hexapod_Position_y_Max"
+    "@id": "#visit1_efd.AT_Hexapod_Position_y_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in y
+  - name: "AT_Hexapod_Position_y_Min"
+    "@id": "#visit1_efd.AT_Hexapod_Position_y_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in y
+  - name: "AT_Hexapod_Position_z_Mean"
+    "@id": "#visit1_efd.AT_Hexapod_Position_z_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in z
+  - name: "AT_Hexapod_Position_2_Max"
+    "@id": "#visit1_efd.AT_Hexapod_Position_2_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in z
+  - name: "AT_Hexapod_Position_2_Min"
+    "@id": "#visit1_efd.AT_Hexapod_Position_2_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in z
+  - name: "AT_Hexapod_Position_u_Mean"
+    "@id": "#visit1_efd.AT_Hexapod_Position_u_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in u
+  - name: "AT_Hexapod_Position_u_Max"
+    "@id": "#visit1_efd.AT_Hexapod_Position_u_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in u
+  - name: "AT_Hexapod_Position_u_Min"
+    "@id": "#visit1_efd.AT_Hexapod_Position_u_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in u
+  - name: "AT_Hexapod_Position_v_Mean"
+    "@id": "#visit1_efd.AT_Hexapod_Position_v_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in v
+  - name: "AT_Hexapod_Position_v_Max"
+    "@id": "#visit1_efd.AT_Hexapod_Position_v_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in v
+  - name: "AT_Hexapod_Position_v_Min"
+    "@id": "#visit1_efd.AT_Hexapod_Position_v_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in v
+  - name: "AT_Hexapod_Position_w_Mean"
+    "@id": "#visit1_efd.AT_Hexapod_Position_w_Mean"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in w
+  - name: "AT_Hexapod_Position_w_Max"
+    "@id": "#visit1_efd.AT_Hexapod_Position_w_Max"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in w
+  - name: "AT_Hexapod_Position_w_Min"
+    "@id": "#visit1_efd.AT_Hexapod_Position_w_Min"
+    datatype: double
+    nullable: True
+    description: Auxiliary telescope hexapod reported position in w
+  - name: "AT_salIndex202_Acceleration_X_Mean"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_X_Mean"
+    datatype: double
+    nullable: True
+    description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_X_StdDev"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_X_StdDev"
+    datatype: double
+    nullable: True
+    description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_X_Min"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_X_Min"
+    datatype: double
+    nullable: True
+    description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_X_Max"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_X_Max"
+    datatype: double
+    nullable: True
+    description: Acceleration in x direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndeY202_Acceleration_Y_Mean"
+    "@id": "#visit1_efd.AT_salIndeY202_Acceleration_Y_Mean"
+    datatype: double
+    nullable: True
+    description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Y_StdDev"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_Y_StdDev"
+    datatype: double
+    nullable: True
+    description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Y_Min"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_Y_Min"
+    datatype: double
+    nullable: True
+    description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Y_Max"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_Y_Max"
+    datatype: double
+    nullable: True
+    description: Acceleration in y direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndeZ202_Acceleration_Z_Mean"
+    "@id": "#visit1_efd.AT_salIndeZ202_Acceleration_Z_Mean"
+    datatype: double
+    nullable: True
+    description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Z_StdDev"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_Z_StdDev"
+    datatype: double
+    nullable: True
+    description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Z_Min"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_Z_Min"
+    datatype: double
+    nullable: True
+    description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex202_Acceleration_Z_Max"
+    "@id": "#visit1_efd.AT_salIndex202_Acceleration_Z_Max"
+    datatype: double
+    nullable: True
+    description: Acceleration in z direction in AccelAuxTel-M2, AuxTel-Truss, AuxTel-M1
+  - name: "AT_salIndex201_Dewpoint_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Dewpoint_Mean"
+    datatype: double
+    nullable: True
+    description: Dew point in AuxTel-ESS02
+  - name: "AT_salIndex201_Relative_Humidity_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Relative_Humidity_Mean"
+    datatype: double
+    nullable: True
+    description: Relative humidity in AuxTel-ESS02
+  - name: "AT_salIndex201_Pressure_Item_0_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Pressure_Item_0_Mean"
+    datatype: double
+    nullable: True
+    description: Atmosferic pressure item 0 in AuxTel-ESS02
+  - name: "AT_salIndex201_Pressure_Item_1_Mean"
+    "@id": "#visit1_efd.AT_salIndex201_Pressure_Item_1_Mean"
+    datatype: double
+    nullable: True
+    description: Atmosferic pressure item 1 in AuxTel-ESS02
+  - name: "AT_salIndex301_Pressure_Item_0_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_Pressure_Item_0_Mean"
+    datatype: double
+    nullable: True
+    description: Atmosferic pressure item 0 in weather tower atmospheric pressure
+  - name: "AT_salIndex301_Pressure_Item_1_Mean"
+    "@id": "#visit1_efd.AT_salIndex301_Pressure_Item_1_Mean"
+    datatype: double
+    nullable: True
+    description: Atmosferic pressure item 1 in weather tower atmospheric pressure
+  - name: "AT_Pointing_Mount_Position_RA_Mean"
+    "@id": "#visit1_efd.AT_Pointing_Mount_Position_RA_Mean"
+    datatype: double
+    nullable: True
+    description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  - name: "AT_Pointing_Mount_Position_RA_StdDev"
+    "@id": "#visit1_efd.AT_Pointing_Mount_Position_RA_StdDev"
+    datatype: double
+    nullable: True
+    description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  - name: "AT_Pointing_Mount_Position_Dec_Mean"
+    "@id": "#visit1_efd.AT_Pointing_Mount_Position_Dec_Mean"
+    datatype: double
+    nullable: True
+    description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  - name: "AT_Pointing_Mount_Position_Dec_StdDev"
+    "@id": "#visit1_efd.AT_Pointing_Mount_Position_Dec_StdDev"
+    datatype: double
+    nullable: True
+    description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  - name: "AT_Pointing_Mount_Position_Sky_Angle_Mean"
+    "@id": "#visit1_efd.AT_Pointing_Mount_Position_Sky_Angle_Mean"
+    datatype: double
+    nullable: True
+    description: Calculated sky angle.
+  - name: "AT_Pointing_Mount_Position_Sky_Angle_StdDev"
+    "@id": "#visit1_efd.AT_Pointing_Mount_Position_Sky_Angle_StdDev"
+    datatype: double
+    nullable: True
+    description: Calculated sky angle.
+
+- name: transformed_efd_scheduler
+  "@id": "#transformed_efd_scheduler"
+  description: Transformed EFD scheduler.
+  primaryKey:
+  - "#transformed_efd_scheduler.id"
+  constraints:
+  - name: un_id
+    "@id": "#transformed_efd_scheduler.un_id"
+    "@type": Unique
+    description: Ensure id is unique.
+    columns:
+    - "#transformed_efd_scheduler.id"
+  columns:
+  - name: id
+    "@id": "#transformed_efd_scheduler.id"
+    datatype: long
+    description: Unique ID, auto-incremented
+  - name: start_time
+    "@id": "#transformed_efd_scheduler.start_time"
+    datatype: timestamp
+    description: Start time of the transformation interval, must be provided
+  - name: end_time
+    "@id": "#transformed_efd_scheduler.end_time"
+    datatype: timestamp
+    description: End time of the transformation interval, must be provided
+  - name: status
+    "@id": "#transformed_efd_scheduler.status"
+    datatype: char
+    length: 20
+    value: "pending"
+    description: Status of the process, default is 'pending'
+  - name: process_start_time
+    "@id": "#transformed_efd_scheduler.process_start_time"
+    datatype: timestamp
+    description: Timestamp when the process started
+  - name: process_end_time
+    "@id": "#transformed_efd_scheduler.process_end_time"
+    datatype: timestamp
+    description: Timestamp when the process ended
+  - name: process_exec_time
+    "@id": "#transformed_efd_scheduler.process_exec_time"
+    datatype: int
+    value: 0
+    description: Execution time of the process in seconds, default is 0
+  - name: exposures
+    "@id": "#transformed_efd_scheduler.exposures"
+    datatype: int
+    value: 0
+    description: Number of exposures processed, default is 0
+  - name: visits1
+    "@id": "#transformed_efd_scheduler.visits1"
+    datatype: int
+    value: 0
+    description: Number of visits recorded, default is 0
+  - name: retries
+    "@id": "#transformed_efd_scheduler.retries"
+    datatype: int
+    value: 0
+    description: Number of retries attempted, default is 0
+  - name: error
+    "@id": "#transformed_efd_scheduler.error"
+    datatype: text
+    description: "Error message, if any"
+  - name: created_at
+    "@id": "#transformed_efd_scheduler.created_at"
+    datatype: timestamp
+    value: 'CURRENT_TIMESTAMP'
+    description: Timestamp when the record was created, default is the current timestamp
