@@ -182,7 +182,7 @@ class Transform:
                     else:
                         data = [{"topic": topic["name"], "series": topic_series[fields]}]
 
-                    if "ExposureEFD" in column["tables"]:
+                    if "exposure_efd" in column["tables"]:
                         for exposure in exposures:
                             function_kwargs = column["function_args"] or {}
                             column_value = self.proccess_column_value(
@@ -195,7 +195,7 @@ class Transform:
 
                             result_exp[exposure["id"]][column["name"]] = column_value
 
-                    if "VisitEFD" in column["tables"]:
+                    if "visit1_efd" in column["tables"]:
                         for visit in visits:
                             function_kwargs = column["function_args"] or {}
                             column_value = self.proccess_column_value(
@@ -214,10 +214,10 @@ class Transform:
 
         df_exposures = pandas.DataFrame(results)
 
-        df_exposures.to_csv("exposures.csv")
         self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
 
-        exp_dao = ExposureEfdDao(db_uri=self.db_uri)
+        #TODO: Set schema by instrument
+        exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema="cdb_latiss")
         affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
         self.log.info(f"Database rows affected: {affected_rows}")
         del results
@@ -229,7 +229,7 @@ class Transform:
         df_visits = pandas.DataFrame(results)
         self.log.info(f"Visit results to be inserted into the database: {len(df_visits)}")
 
-        vis_dao = VisitEfdDao(db_uri=self.db_uri)
+        vis_dao = VisitEfdDao(db_uri=self.db_uri, schema="cdb_latiss")
         affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
         self.log.info(f"Database rows affected: {affected_rows}")
         del results

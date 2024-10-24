@@ -27,8 +27,7 @@ class ButlerDao:
             A list of dictionaries representing the resultset.
         """
         list_of_dicts = [r.toDict() for r in resultset]
-        sorted_list = sorted(list_of_dicts, key=lambda x: x["timespan"].begin)
-        return sorted_list
+        return list_of_dicts
 
     def query_dimension_to_dataframe(self, resultset) -> pandas.DataFrame:
         """
@@ -67,7 +66,7 @@ class ButlerDao:
 
         resultset = self.butler.registry.queryDimensionRecords(
             "exposure", where=where_clause, bind=dict(instr=instrument)
-        )
+        ).order_by("timespan.begin")
         return self.query_dimension_to_list(resultset)
 
     def visits_by_period(
@@ -95,6 +94,6 @@ class ButlerDao:
 
         resultset = self.butler.registry.queryDimensionRecords(
             "visit", where=where_clause, bind=dict(instr=instrument)
-        )
+        ).order_by("timespan.begin")
 
         return self.query_dimension_to_list(resultset)

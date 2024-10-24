@@ -6,25 +6,25 @@ from sqlalchemy.sql import and_, select
 class ExposureEfdDao(DBBase):
     """
     A class representing a Data Access Object (DAO) for accessing
-    ExposureEFD data.
+    exposure_efd data.
 
     Args:
         db_uri (str): The URI of the database.
 
     Attributes:
-        tbl: The table object representing the "ExposureEFD" table in the
+        tbl: The table object representing the "exposure_efd" table in the
         database.
 
     """
 
-    def __init__(self, db_uri: str):
-        super(ExposureEfdDao, self).__init__(db_uri)
+    def __init__(self, db_uri: str, schema: str):
+        super(ExposureEfdDao, self).__init__(db_uri, schema)
 
-        self.tbl = self.get_table("ExposureEFD", schema="cdb_latiss")
+        self.tbl = self.get_table("exposure_efd", schema=schema)
 
     def get_by_exposure_id(self, exposure_id: int):
         """
-        Retrieves rows from the "ExposureEFD" table based on exposure ID.
+        Retrieves rows from the "exposure_efd" table based on exposure ID.
 
         Args:
             exposure_id (int): The exposure ID.
@@ -42,7 +42,7 @@ class ExposureEfdDao(DBBase):
 
     def get_by_exposure_id_instrument(self, exposure_id: int, instrument: str):
         """
-        Retrieves rows from the "ExposureEFD" table based on exposure ID and
+        Retrieves rows from the "exposure_efd" table based on exposure ID and
         instrument.
 
         Args:
@@ -64,7 +64,7 @@ class ExposureEfdDao(DBBase):
 
     def count(self):
         """
-        Returns the count of rows in the "ExposureEFD" table.
+        Returns the count of rows in the "exposure_efd" table.
 
         Returns:
             int: The count of rows in the table.
@@ -74,7 +74,7 @@ class ExposureEfdDao(DBBase):
 
     def upsert(self, df: pandas.DataFrame, commit_every: int = 100) -> int:
         """
-        Upserts a DataFrame into the "ExposureEFD" table.
+        Upserts a DataFrame into the "exposure_efd" table.
 
         Args:
             df (pandas.DataFrame): The DataFrame to be upserted.

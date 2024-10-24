@@ -49,7 +49,7 @@ class Column(BaseModel):
       The name of the column.
     tables : Optional[List[str]], optional
       The list of tables that the column belongs to, by default
-      ["ExposureEFD", "VisitEFD"].
+      ["exposure_efd", "visit1_efd"].
     function : str
       The function applied to the column.
     function_args : Optional[Dict], optional
@@ -71,7 +71,7 @@ class Column(BaseModel):
     """
 
     name: str
-    tables: Optional[List[str]] = ["ExposureEFD", "VisitEFD"]
+    tables: Optional[List[str]] = ["exposure_efd", "visit1_efd"]
     function: str
     function_args: Optional[Dict] = None
     datatype: str
