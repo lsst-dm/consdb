@@ -66,16 +66,13 @@ class Transform:
         self.commit_every = commit_every
 
         self.log.info("----------- Transform -----------")
-        self.log.debug(f"DB URI: {self.db_uri}")
-        self.log.debug(f"EFD: {self.efd}")
-        self.log.debug(f"Configs Columns: {len(self.config['columns'])}")
 
     def process_interval(
         self,
         instrument: str,
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
-    ):
+    ) -> Dict[str, int]:
         """
         Process the given time interval for a specific instrument.
 
@@ -84,6 +81,7 @@ class Transform:
             start_time (astropy.time.Time): The start time of the interval.
             end_time (astropy.time.Time): The end time of the interval.
         """
+        count = {"exposures": 0, "visits1": 0}
 
         self.log.info(f"Proccessing interval {start_time} - {end_time}")
 
@@ -96,6 +94,10 @@ class Transform:
         visits = self.butler_dao.visits_by_period(instrument, start_time, end_time)
 
         self.log.info(f"Visits: {len(visits)}")
+
+        if len(exposures) == 0 and len(visits) == 0:
+            self.log.info("No exposures or visits found for the period.")
+            return count
 
         # Identifies the period that will be used to consult the topics
         topic_interval = self.get_topic_interval(start_time, end_time, exposures, visits)
@@ -216,9 +218,10 @@ class Transform:
 
         self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
 
-        #TODO: Set schema by instrument
+        # TODO: Set schema by instrument
         exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema="cdb_latiss")
         affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
+        count["exposures"] = affected_rows
         self.log.info(f"Database rows affected: {affected_rows}")
         del results
 
@@ -232,7 +235,10 @@ class Transform:
         vis_dao = VisitEfdDao(db_uri=self.db_uri, schema="cdb_latiss")
         affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
         self.log.info(f"Database rows affected: {affected_rows}")
+        count["visits1"] = affected_rows
         del results
+
+        return count
 
     def proccess_column_value(
         self,
