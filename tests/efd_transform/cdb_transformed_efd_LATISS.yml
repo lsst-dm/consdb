@@ -23,7 +23,7 @@ tables:
     datatype: long
     description: Exposure unique ID.
   - name: created_at
-    "@id": "#exposure.created_at"
+    "@id": "#exposure_efd.created_at"
     datatype: timestamp
     value: 'CURRENT_TIMESTAMP'
     description: Timestamp when the record was created, default is the current timestamp
@@ -1302,6 +1302,11 @@ tables:
     "@id": "#visit1_efd.visit_id"
     datatype: long
     description: Visit unique ID.
+  - name: created_at
+    "@id": "#visit1_efd.created_at"
+    datatype: timestamp
+    value: 'CURRENT_TIMESTAMP'
+    description: Timestamp when the record was created, default is the current timestamp
   - name: instrument
     "@id": "#visit1_efd.instrument"
     datatype: char
