@@ -286,6 +286,30 @@ class DBBase:
 
         return affected_rows
 
+    def execute_bulk_insert(self, tbl: Table, df: pandas.DataFrame, commit_every: int = 100) -> int:
+
+        # replace NaN for None
+        df = df.replace(numpy.nan, None)
+
+        # Convert the dataframe to a list of dicts
+        records = df.to_dict("records")
+
+        affected_rows = 0
+
+        for i in range(0, len(records), commit_every):
+            chunk = records[i : i + commit_every]
+
+            # Insert Statement using dialect insert
+            insert_stm = self.dialect.insert(tbl).values(chunk)
+
+            engine = self.get_db_engine()
+            with engine.connect() as con:
+                result = con.execute(insert_stm)
+                con.commit()
+                affected_rows += result.rowcount
+
+        return affected_rows
+
     def debug_query(self, stm, with_parameters=False) -> str:
         """
         Returns the SQL representation of the given statement for debugging
