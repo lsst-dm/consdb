@@ -20,9 +20,10 @@ class QueueManager:
     def __init__(
         self,
         db_uri: str,
+        schema: str,
         logger: logging.Logger,
     ):
-        self.dao = TransformdDao(db_uri)
+        self.dao = TransformdDao(db_uri, schema=schema)
         self.db_uri = db_uri
         self.log = logger
 
@@ -135,7 +136,7 @@ class QueueManager:
             tasks.append(task)
             affected_rows += 1
 
-        self.log.debug(f"Affected rows: {affected_rows}")
+        self.log.info(f"Created {affected_rows} new tasks.")
 
         return tasks
 

@@ -9,7 +9,7 @@ from sqlalchemy.sql import and_, select
 
 class TransformdDao(DBBase):
 
-    def __init__(self, db_uri: str):
+    def __init__(self, db_uri: str, schema: str):
         """
         Initialize the TransformdDao instance.
 
@@ -21,11 +21,11 @@ class TransformdDao(DBBase):
             This may be changed in the future to be passed as a parameter.
         - Awaiting changes from Rodrigo regarding the schema usage.
         """
-        super(TransformdDao, self).__init__(db_uri)
+        super(TransformdDao, self).__init__(db_uri, schema)
 
         # TODO utilizar o schema como parametro
         # aguardando alterações do rodrigo
-        self.tbl = self.get_table("transformd", schema="cdb_latiss")
+        self.tbl = self.get_table("transformed_efd_scheduler", schema=schema)
 
     def select_by_id(self, id: int) -> Dict:
         """
