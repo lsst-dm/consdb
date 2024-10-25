@@ -312,6 +312,16 @@ async def main() -> None:
             qm.dao.task_failed(task["id"], error=str(e))
         count_task += 1
 
+    # Check if there are more tasks to run
+    # If not, create new tasks
+    tasks = qm.recent_tasks_to_run()
+    if len(tasks) == 0:
+        log.info("No more tasks to run.")
+        qm.create_tasks(
+            process_interval=int(args.timedelta),
+            time_window=int(args.timewindow),
+        )
+
     log.info("======================================")
     log.info(f"Total Tasks: {count_task}")
     log.info(f"Processed Exposures: {count_exposures} (including overlaps)")
