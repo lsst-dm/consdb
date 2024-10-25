@@ -4,7 +4,7 @@
 # Real-time mode proccess 5 minuts of data
 python python/lsst/consdb/efd_transform/transform_efd.py \
     -i LATISS \
-    -r s3://rubin-summit-users/butler.yaml \
+    -r /repo/embargo_old \
     -d sqlite:///$PWD/tests/efd_transform/LATISS.db \
     -E usdf_efd \
     -c python/lsst/consdb/efd_transform/config_LATISS.yml \
@@ -14,8 +14,8 @@ python python/lsst/consdb/efd_transform/transform_efd.py \
 
 
 python python/lsst/consdb/efd_transform/transform_efd.py \
-    -i LATISS \
-    -r s3://rubin-summit-users/butler.yaml \
+    -i LSSTComCam \
+    -r /repo/embargo_new \
     -d sqlite:///$PWD/tests/efd_transform/LSSTComCam.db \
     -E usdf_efd \
     -c python/lsst/consdb/efd_transform/config_LSSTComCam.yml \
@@ -25,8 +25,8 @@ python python/lsst/consdb/efd_transform/transform_efd.py \
 
 
 python python/lsst/consdb/efd_transform/transform_efd.py \
-    -i LATISS \
-    -r s3://rubin-summit-users/butler.yaml \
+    -i LSSTComCamSim \
+    -r /repo/embargo_new \
     -d sqlite:///$PWD/tests/efd_transform/LSSTComCamSim.db \
     -E usdf_efd \
     -c python/lsst/consdb/efd_transform/config_LSSTComCamSim.yml \
