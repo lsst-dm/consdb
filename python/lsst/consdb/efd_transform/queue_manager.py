@@ -48,6 +48,7 @@ class QueueManager:
         end_time: Optional[Time] = None,
         process_interval: int = 5,
         time_window: int = 1,
+        status: str = "pending",
     ) -> list[dict]:
         """
         Create tasks based on the given time range and process interval.
@@ -125,6 +126,7 @@ class QueueManager:
             task = {
                 "start_time": t[0].datetime.replace(tzinfo=timezone.utc),
                 "end_time": t[1].datetime.replace(tzinfo=timezone.utc),
+                "status": status,
             }
             rows.append(task)
 
