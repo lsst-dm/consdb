@@ -248,6 +248,7 @@ async def main() -> None:
             end_time=end_time,
             process_interval=int(args.timedelta),
             time_window=int(args.timewindow),
+            status="idle",
         )
 
     else:
@@ -314,13 +315,14 @@ async def main() -> None:
 
     # Check if there are more tasks to run
     # If not, create new tasks
-    tasks = qm.recent_tasks_to_run()
-    if len(tasks) == 0:
-        log.info("No more tasks to run.")
-        qm.create_tasks(
-            process_interval=int(args.timedelta),
-            time_window=int(args.timewindow),
-        )
+    if start_time is None and end_time is None:
+        tasks = qm.recent_tasks_to_run()
+        if len(tasks) == 0:
+            log.info("No more tasks to run.")
+            qm.create_tasks(
+                process_interval=int(args.timedelta),
+                time_window=int(args.timewindow),
+            )
 
     log.info("======================================")
     log.info(f"Total Tasks: {count_task}")
