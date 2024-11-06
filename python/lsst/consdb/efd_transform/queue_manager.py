@@ -130,6 +130,9 @@ class QueueManager:
             }
             rows.append(task)
 
+        # TODO: Order tasks by start_time
+        # Usar um dataframe, ordenar e depois converter para lista de dicionários
+
         self.log.debug("Insert tasks into database")
         affected_rows = 0
         tasks = []
