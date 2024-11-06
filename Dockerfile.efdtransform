@@ -12,11 +12,13 @@ COPY --chown=lsst:lsst python/lsst/consdb/efd_transform ./consdb/efd_transform
 RUN mkdir data
 
 # TODO: SQLITE TEST DATABASE
-COPY --chown=lsst:lsst tests/efd_transform/test.db ./data/
+COPY --chown=lsst:lsst tests/efd_transform/LATISS.db ./data/
+COPY --chown=lsst:lsst tests/efd_transform/LSSTComCam.db ./data/
+COPY --chown=lsst:lsst tests/efd_transform/LSSTComCamSim.db ./data/
 
 # Environment variables that must be set:
 # ------------------------------
-ENV CONFIG_FILE="/opt/lsst/software/stack/consdb/efd_transform/config_LATISS.yaml"
+ENV CONFIG_FILE="/opt/lsst/software/stack/consdb/efd_transform/config_LATISS.yml"
 ENV INSTRUMENT="LATISS"
 
 # Buttler Access Variables
