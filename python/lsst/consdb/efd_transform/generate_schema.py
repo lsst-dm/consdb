@@ -2,6 +2,13 @@ import argparse
 
 from transform_efd import read_config
 
+schema_dict = {
+    "LATISS": "cdb_latiss",
+    "LSSTComCam": "cdb_lsstcomcam",
+    "LSSTComCamSim": "cdb_lsstcomcamsim",
+    "LSSTCam": "cdb_lsstcam",
+}
+
 
 def build_argparser() -> argparse.ArgumentParser:
     """
@@ -35,13 +42,13 @@ if __name__ == "__main__":
     args = parse.parse_args()
     config = read_config(args.config)
 
-    output = "cdb_transformed_efd_" + args.instrument + ".yml"
+    output = "cdb_transformed_efd_" + args.instrument + ".yaml"
 
     with open(output, "w") as f:
         # Generate the schema for the EFD transform.
         f.write("---\n")
-        f.write("name: cdb_latiss\n")
-        f.write('"@id": "#cdb_latiss"\n')
+        f.write(f"name: {schema_dict[args.instrument]}\n")
+        f.write(f'"@id": "#{schema_dict[args.instrument]}"\n')
         f.write(f"description: Transformed EFD Consolidated Database for {args.instrument}\n")
         f.write("tables:\n")
 
