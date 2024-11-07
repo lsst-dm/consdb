@@ -1,7 +1,7 @@
 ---
-name: cdb_latiss
-"@id": "#cdb_latiss"
-description: Transformed EFD Consolidated Database for LSSTComCam
+name: cdb_lsstcomcamsim
+"@id": "#cdb_lsstcomcamsim"
+description: Transformed EFD Consolidated Database for LSSTComCamSim
 tables:
 - name: exposure_efd
   "@id": "#exposure_efd"
