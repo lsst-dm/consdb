@@ -67,6 +67,23 @@ class Transform:
 
         self.log.info("----------- Transform -----------")
 
+    def get_schema_by_instrument(self, instrument: str) -> str:
+        """
+        Get the schema name for the given instrument.
+
+        Args:
+            instrument (str): The instrument name.
+
+        Returns:
+            str: The schema name.
+        """
+        schemas = {
+            "LATISS": "cdb_latiss",
+            "LSSTComCam": "cdb_lsstcomcam",
+            "LSSTComCamSim": "cdb_lsstcomcamsim",
+        }
+        return schemas[instrument]
+
     def process_interval(
         self,
         instrument: str,
@@ -218,8 +235,7 @@ class Transform:
 
         self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
 
-        # TODO: Set schema by instrument
-        exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema="cdb_latiss")
+        exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
         affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
         count["exposures"] = affected_rows
         self.log.info(f"Database rows affected: {affected_rows}")
@@ -232,7 +248,7 @@ class Transform:
         df_visits = pandas.DataFrame(results)
         self.log.info(f"Visit results to be inserted into the database: {len(df_visits)}")
 
-        vis_dao = VisitEfdDao(db_uri=self.db_uri, schema="cdb_latiss")
+        vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
         affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
         self.log.info(f"Database rows affected: {affected_rows}")
         count["visits1"] = affected_rows
