@@ -224,8 +224,7 @@ async def main() -> None:
     )
 
     # Instantiate the queue manager
-    # TODO: Set schema by instrument
-    qm = QueueManager(db_uri=consdb_url, schema="cdb_latiss", logger=log)
+    qm = QueueManager(db_uri=consdb_url, schema=tm.get_schema_by_instrument(args.instrument), logger=log)
 
     start_time = None
     if args.start_time is not None:
