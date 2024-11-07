@@ -191,13 +191,14 @@ async def main() -> None:
         log.debug(f"ConsDB connection: {consdb.get_con()}")
         log.debug("Postgres connection successful")
 
-        log.debug("Testing table exposure_efd")
+        log.debug("Testing LATISS table exposure_efd")
         expdao = ExposureEfdDao(consdb_url, "cdb_latiss")
         log.debug(f"exposure_efd table: {expdao.tbl}")
 
-        log.debug("Testing table visit1_efd")
+        log.debug("Testing LATISS table visit1_efd")
         visdao = VisitEfdDao(consdb_url, "cdb_latiss")
         log.debug(f"visit1_efd table: {visdao.tbl}")
+
     except Exception as e:
         log.error(f"Postgres connection failed: {e}")
         sys.exit(1)
