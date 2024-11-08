@@ -1,7 +1,7 @@
 ---
-name: cdb_latiss
-"@id": "#cdb_latiss"
-description: Transformed EFD Consolidated Database for LSSTComCamSim
+name: cdb_lsstcomcam
+"@id": "#cdb_lsstcomcam"
+description: Transformed EFD Consolidated Database for LSSTComCam
 tables:
 - name: exposure_efd
   "@id": "#exposure_efd"
@@ -3660,6 +3660,10 @@ tables:
     "@id": "#transformed_efd_scheduler.end_time"
     datatype: timestamp
     description: End time of the transformation interval, must be provided
+  - name: timewindow
+    "@id": "#transformed_efd_scheduler.timewindow"
+    datatype: int
+    description: Time window used to expand start and end times by, in minutes
   - name: status
     "@id": "#transformed_efd_scheduler.status"
     datatype: char
