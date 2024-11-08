@@ -168,7 +168,7 @@ if __name__ == "__main__":
         f.write("    description: End time of the transformation interval, must be provided\n")
         f.write("  - name: timewindow\n")
         f.write('    "@id": "#transformed_efd_scheduler.timewindow"\n')
-        f.write("    datatype: float\n")
+        f.write("    datatype: int\n")
         f.write("    description: Time window used to expand start and end times by, in minutes\n")
         f.write("  - name: status\n")
         f.write('    "@id": "#transformed_efd_scheduler.status"\n')

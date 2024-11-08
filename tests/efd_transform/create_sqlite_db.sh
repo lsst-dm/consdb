@@ -22,7 +22,7 @@ case "$INSTRUMENT" in
 esac
 
 # Set the configuration file based on the instrument
-CONFIG="config_${INSTRUMENT}.yml"
+CONFIG="config_${INSTRUMENT}.yaml"
 echo "Using configuration file: $CONFIG"
 
 # Navigate to the directory containing the schema generation script
@@ -34,19 +34,19 @@ echo "Generating schema for $INSTRUMENT..."
 python generate_schema.py --config "$CONFIG" --instrument "$INSTRUMENT"
 
 # Check if the schema generation was successful
-if [ ! -f "cdb_transformed_efd_${INSTRUMENT}.yml" ]; then
-  echo "Error: Failed to generate cdb_transformed_efd_${INSTRUMENT}.yml"
+if [ ! -f "cdb_transformed_efd_${INSTRUMENT}.yaml" ]; then
+  echo "Error: Failed to generate cdb_transformed_efd_${INSTRUMENT}.yaml"
   exit 1
 fi
-echo "Schema generated: cdb_transformed_efd_${INSTRUMENT}.yml"
+echo "Schema generated: cdb_transformed_efd_${INSTRUMENT}.yaml"
 
 # Remove the old transformed file in the test directory
 echo "Removing old transformed schema file (if any)..."
-rm -f ../../../../tests/efd_transform/cdb_transformed_efd_${INSTRUMENT}.yml
+rm -f ../../../../tests/efd_transform/cdb_transformed_efd_${INSTRUMENT}.yaml
 
 # Copy the new transformed file to the test directory
 echo "Copying the new transformed schema file to the test directory..."
-cp "cdb_transformed_efd_${INSTRUMENT}.yml" ../../../../tests/efd_transform/
+cp "cdb_transformed_efd_${INSTRUMENT}.yaml" ../../../../tests/efd_transform/
 
 # Navigate to the test directory
 echo "Navigating to the test directory..."
@@ -58,23 +58,9 @@ rm -f "${INSTRUMENT}.db"
 
 # Create the SQL file with Felis
 echo "Creating the SQL file with Felis..."
-felis create --dry-run --engine-url sqlite:/// "cdb_transformed_efd_${INSTRUMENT}.yml" > "${INSTRUMENT}.sql"
+felis create --dry-run --engine-url sqlite://// "cdb_transformed_efd_${INSTRUMENT}.yaml" > "${INSTRUMENT}-sqlite.sql"
+felis create --engine-url sqlite:///${INSTRUMENT}.db "cdb_transformed_efd_${INSTRUMENT}.yaml"
 
-# Check if the SQL file creation was successful
-if [ ! -f "${INSTRUMENT}.sql" ]; then
-  echo "Error: Failed to create ${INSTRUMENT}.sql"
-  exit 1
-fi
-echo "SQL file created: ${INSTRUMENT}.sql"
-
-# Load the SQL file into a new SQLite database
-echo "Loading SQL into the new SQLite database..."
-sqlite3 "${INSTRUMENT}.db" < "${INSTRUMENT}.sql"
-
-# Confirm successful completion
-if [ $? -eq 0 ]; then
-  echo "Database ${INSTRUMENT}.db created successfully."
-else
-  echo "Error: Failed to create the SQLite database."
-  exit 1
-fi
+# Create postgresql code for the database
+echo "Creating the SQL file with Felis for postgres..."
+felis create --dry-run --engine-url postgresql+psycopg2://username:password@localhost/database "cdb_transformed_efd_${INSTRUMENT}.yaml" > "${INSTRUMENT}-pg.sql"
