@@ -528,6 +528,7 @@ CREATE TABLE main.transformed_efd_scheduler (
 	id INTEGER NOT NULL,
 	start_time TIMESTAMP,
 	end_time TIMESTAMP,
+	timewindow INTEGER,
 	status CHAR(20) DEFAULT 'pending',
 	process_start_time TIMESTAMP,
 	process_end_time TIMESTAMP,
