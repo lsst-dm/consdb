@@ -3660,6 +3660,10 @@ tables:
     "@id": "#transformed_efd_scheduler.end_time"
     datatype: timestamp
     description: End time of the transformation interval, must be provided
+  - name: timewindow
+    "@id": "#transformed_efd_scheduler.timewindow"
+    datatype: int
+    description: Time window used to expand start and end times by, in minutes
   - name: status
     "@id": "#transformed_efd_scheduler.status"
     datatype: char
