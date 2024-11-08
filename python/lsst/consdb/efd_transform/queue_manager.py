@@ -126,6 +126,7 @@ class QueueManager:
             task = {
                 "start_time": t[0].datetime.replace(tzinfo=timezone.utc),
                 "end_time": t[1].datetime.replace(tzinfo=timezone.utc),
+                "timewindow": time_window,
                 "status": status,
             }
             rows.append(task)
