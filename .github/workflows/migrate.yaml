@@ -1,0 +1,79 @@
+name: Handle Migration Trigger
+
+on:
+  repository_dispatch:
+    types: [migration]
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'Branch name in sdm_schemas to migrate'
+        required: true
+
+jobs:
+  generate-migration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout consdb repo
+        uses: actions/checkout@v2
+        with:
+          path: consdb
+          fetch-depth: 0
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12.7'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip uv
+          uv pip install --system lsst-felis testing.postgresql alembic sqlalchemy pyyaml black
+
+      - name: Determine branch name
+        run: |
+          if [ -n "${{ github.event.inputs.branch_name }}" ]; then
+            echo "BRANCH_NAME=${{ github.event.inputs.branch_name }}" >> $GITHUB_ENV
+          elif [ -n "${{ github.event.client_payload.source_branch }}" ]; then
+            echo "BRANCH_NAME=${{ github.event.client_payload.source_branch }}" >> $GITHUB_ENV
+          else
+            echo "Error: No branch name provided." >&2
+            exit 1
+          fi
+          echo "Using sdm_schemas branch: ${{ env.BRANCH_NAME }}"
+
+      - name: Checkout sdm_schemas repo
+        uses: actions/checkout@v2
+        with:
+          repository: 'github.com/lsst/sdm_schemas'
+          ref: ${{ env.BRANCH_NAME }}
+          path: sdm_schemas
+          fetch-depth: 0
+
+      - name: Set sdm_schemas path in environment
+        run: |
+          echo "SDM_SCHEMAS_DIR=${GITHUB_WORKSPACE}/sdm_schemas" >> $GITHUB_ENV
+
+      - name: Run migration script
+        run: |
+          cd $GITHUB_WORKSPACE/consdb
+          python alembic-autogenerate.py ${{ env.BRANCH_NAME }}
+
+      - name: Commit migration changes
+        run: |
+          cd $GITHUB_WORKSPACE/consdb
+          git checkout -b ${{ env.BRANCH_NAME }}-migrate
+          git config --global user.email "jeremym@slac.stanford.edu"
+          git config --global user.name "Jeremy McCormick"
+          git add .
+          git commit -m "Migrate schema changes from ${{ env.BRANCH_NAME }}"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ env.BRANCH_NAME }}-migrate
+
+      - name: Create PR for migration
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Migrate schema changes from ${{ env.BRANCH_NAME }}"
+          body: "This PR migrates schema changes from ${{ env.BRANCH_NAME }} to the database."
+          branch: ${{ env.BRANCH_NAME }}-migrate
+          base: main
