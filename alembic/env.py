@@ -48,6 +48,14 @@ def include_name(name, type_, parent_names):
         return True
 
 
+def include_object(object, name, type_, reflected, compare_to):
+    if type_ == "table" and name in ["ccdvisit1", "visit1"]:
+        logger.info(f"Excluding table {object.schema}.{name}")
+        return False
+    else:
+        return True
+
+
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
@@ -80,6 +88,7 @@ def run_migrations_offline() -> None:
         dialect_opts={"paramstyle": "named"},
         include_schemas=True,
         include_name=include_name,
+        include_object=include_object,
         version_table=f"{schema_name}_version",
         version_table_schema="cdb",
     )
@@ -107,6 +116,7 @@ def run_migrations_online() -> None:
             target_metadata=target_metadata,
             include_schemas=True,
             include_name=include_name,
+            include_object=include_object,
             version_table=f"{schema_name}_version",
             version_table_schema="cdb",
         )
