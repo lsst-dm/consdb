@@ -42,7 +42,8 @@ alembic_ini_path = "alembic.ini"
 
 # Loop over each of the instruments
 pattern = os.environ["SDM_SCHEMAS_DIR"] + "/yml/cdb_*.yaml"
-instruments = [re.search(r"cdb_(.+)\.yaml$", file).group(1) for file in glob.glob(pattern)]
+# instruments = [re.search(r"cdb_(.+)\.yaml$", file).group(1) for file in glob.glob(pattern)]
+instruments = ["latiss", "lsstcam", "lsstcomcam", "lsstcomcamsim"]
 for instrument in instruments:
     # Set up a temporary PostgreSQL instance using testing.postgresql
     with setup_postgres_test_db() as instance:
