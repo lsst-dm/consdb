@@ -345,6 +345,8 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     info = dict()
     content = yaml.safe_load(resource.read())
 
+    fixup_columns: list[str] = []
+
     for header in content["PRIMARY"]:
         info[header["keyword"]] = header["value"]
     instrument_obj = instrument_dict[info["CONTRLLR"]]
@@ -352,8 +354,12 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     info["translator"] = instrument_obj.translator
     for column, column_def in KW_MAPPING.items():
         exposure_rec[column] = process_column(column_def, info)
+        if exposure_rec[column] is None:
+            fixup_columns.append(column)
     for column, column_def in instrument_obj.instrument_mapping.items():
         exposure_rec[column] = process_column(column_def, info)
+        if exposure_rec[column] is None:
+            fixup_columns.append(column)
 
     obs_info_obj = ObservationInfo(info, translator_class=instrument_obj.translator)
     obs_info = dict()
@@ -361,9 +367,11 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
         obs_info[keyword] = getattr(obs_info_obj, keyword)
     for field, keyword in OI_MAPPING.items():
         exposure_rec[field] = process_column(keyword, obs_info)
+        if exposure_rec[field] is None:
+            fixup_columns.append(column)
 
     # Add missing data as best we can
-    exposure_rec.update(Fixer(exposure_rec).updates)
+    exposure_rec.update(Fixer(info, obs_info, fixup_columns).updates)
 
     stmt = insert(instrument_obj.exposure_table).values(exposure_rec)
     if update:
