@@ -36,18 +36,20 @@ jobs:
       - name: Determine branch name and commit SHA
         run: |
           if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
-            echo "BRANCH_NAME=${{ github.event.client_payload.branch_name }}" >> $GITHUB_ENV
-            echo "COMMIT_SHA=${{ github.event.client_payload.commit_sha }}" >> $GITHUB_ENV
+            BRANCH_NAME=${{ github.event.client_payload.branch_name }}
+            COMMIT_SHA=${{ github.event.client_payload.commit_sha }}
           elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "BRANCH_NAME=${{ github.event.inputs.branch_name }}" >> $GITHUB_ENV
-            echo "COMMIT_SHA=${{ github.event.inputs.commit_sha }}" >> $GITHUB_ENV
+            BRANCH_NAME=${{ github.event.inputs.branch_name }}
+            COMMIT_SHA=${{ github.event.inputs.commit_sha }}
           fi
-          echo "Branch name: ${{ env.BRANCH_NAME }}"
-          echo "Commit SHA: ${{ env.COMMIT_SHA }}"
-          if [ -z "${{ env.BRANCH_NAME }}" ] || [ -z "${{ env.COMMIT_SHA }}" ]; then
+          echo "Branch name: $BRANCH_NAME"
+          echo "Commit SHA: $COMMIT_SHA"
+          if [ -z "$BRANCH_NAME" ] || [ -z "$COMMIT_SHA" ]; then
             echo "Error: Branch name and commit SHA must be provided." >&2
             exit 1
           fi
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
 
       - name: Check branch name
         run: |
@@ -60,11 +62,12 @@ jobs:
       - name: Set ticket name
         run: |
           TICKET_NAME=$(echo ${{ env.BRANCH_NAME }} | sed -E 's/tickets\/(DM-[0-9]+).*/\1/')
-          echo "TICKET_NAME=${TICKET_NAME}" >> $GITHUB_ENV
-          if [[ ! "${{ env.TICKET_NAME }}" =~ ^DM-[0-9]+$ ]]; then
-            echo "Error: TICKET_NAME does not match the expected pattern 'DM-[number]'." >&2
+          if [[ ! "${TICKET_NAME}" =~ ^DM-[0-9]+$ ]]; then
+            echo "Failed to get valid ticket name from: ${{ env.BRANCH_NAME }}" >&2
             exit 1
           fi
+          echo "TICKET_NAME=${TICKET_NAME}" >> $GITHUB_ENV
+          echo "Ticket name: $TICKET_NAME"
 
       - name: Checkout sdm_schemas repo
         uses: actions/checkout@v4
