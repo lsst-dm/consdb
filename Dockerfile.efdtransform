@@ -1,4 +1,4 @@
-ARG OBS_LSST_VERSION=w_2024_33
+ARG OBS_LSST_VERSION=w_2024_47
 FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
 USER lsst
 RUN source loadLSST.bash && mamba install aiokafka httpx
