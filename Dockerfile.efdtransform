@@ -1,4 +1,4 @@
-ARG OBS_LSST_VERSION=w_2024_33
+ARG OBS_LSST_VERSION=w_2024_47
 FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
 USER lsst
 RUN source loadLSST.bash && mamba install aiokafka httpx
@@ -24,6 +24,8 @@ ENV INSTRUMENT="LATISS"
 # Buttler Access Variables
 ENV BUTLER_REPO="s3://rubin-summit-users/butler.yaml"
 ENV S3_ENDPOINT_URL="https://s3dfrgw.slac.stanford.edu/"
+LSST_RESOURCES_S3_PROFILE_embargo="https://sdfembs3.sdf.slac.stanford.edu"
+
 # ENV AWS_ACCESS_KEY_ID="placeholder"
 # ENV AWS_SECRET_ACCESS_KEY="placeholder"
 ENV PGUSER="rubin"
