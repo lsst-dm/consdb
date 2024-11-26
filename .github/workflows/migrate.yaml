@@ -76,13 +76,11 @@ jobs:
           ref: ${{ env.COMMIT_SHA }}
           path: sdm_schemas
 
-      - name: Set sdm_schemas path in environment
-        run: |
-          echo "SDM_SCHEMAS_DIR=${GITHUB_WORKSPACE}/sdm_schemas" >> $GITHUB_ENV
-
       - name: Generate the migration scripts
-        working-directory: $GITHUB_WORKSPACE/consdb
+        working-directory: ${{ github.workspace }}/consdb
         run: |
+          export SDM_SCHEMAS_DIR=${{ github.workspace }}/sdm_schemas
+          echo "SDM_SCHEMAS_DIR=$SDM_SCHEMAS_DIR"
           python alembic-autogenerate.py ${{ env.TICKET_NAME }}
           if git diff --quiet; then
             echo "No changes detected."
