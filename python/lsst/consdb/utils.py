@@ -57,7 +57,7 @@ def setup_postgres() -> sqlalchemy.Engine:
     else:
         pg_url = os.environ["POSTGRES_URL"]
         logger.info(f"Using POSTGRES_URL {pg_url}")
-    engine = sqlalchemy.create_engine(pg_url, pool_recycle=3600)
+    engine = sqlalchemy.create_engine(pg_url, pool_pre_ping=True)
     if pg_url.startswith("sqlite:///"):
         # For unit tests
         start_pos = len("sqlite:///")
