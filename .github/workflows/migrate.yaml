@@ -81,7 +81,8 @@ jobs:
         run: |
           export SDM_SCHEMAS_DIR=${{ github.workspace }}/sdm_schemas
           echo "SDM_SCHEMAS_DIR=$SDM_SCHEMAS_DIR"
-          python alembic-autogenerate.py ${{ env.TICKET_NAME }}
+          MIGRATION_COMMENT=$(echo ${{ env.BRANCH_NAME }} | sed -E 's/^tickets\///')
+          python alembic-autogenerate.py $MIGRATION_COMMENT
           if git diff --quiet; then
             echo "No changes detected."
             exit 0
