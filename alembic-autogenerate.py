@@ -8,22 +8,18 @@
 #        setup -r /path/to/sdm_schemas
 # 2. From the root of the consdb git repo, invoke the script. Supply a
 #    revision message as the command line argument:
-#        python alembic-autogenerate.py this is my revision message "\n" \
-#            the message can span multiple lines "\n" \
-#            if desired
-# 3. Heed the message at the end to revise your auto-generated code as needed.
+#        python alembic-autogenerate.py DM-12345
+# 3. Revise your auto-generated code as needed.
 #
 
-import glob
 import os
-import re
 import sys
 
-from alembic.config import Config
-from alembic import command
+from felis.tests.postgresql import setup_postgres_test_db
 from sqlalchemy.sql import text
 
-from felis.tests.postgresql import setup_postgres_test_db
+from alembic import command
+from alembic.config import Config
 
 if len(sys.argv) <= 1:
     print(
@@ -42,7 +38,7 @@ alembic_ini_path = "alembic.ini"
 
 # Loop over each of the instruments
 pattern = os.environ["SDM_SCHEMAS_DIR"] + "/yml/cdb_*.yaml"
-instruments = [re.search(r"cdb_(.+)\.yaml$", file).group(1) for file in glob.glob(pattern)]
+instruments = ["latiss", "lsstcomcam", "lsstcomcamsim"]
 for instrument in instruments:
     # Set up a temporary PostgreSQL instance using testing.postgresql
     with setup_postgres_test_db() as instance:
@@ -67,11 +63,9 @@ for instrument in instruments:
 print(
     """
 ==========================================
- Don't forget to edit your migration
- files! You'll need to remove the visit1
- and ccdvisit1 tables, and you might need
- to shuffle data around to accomodate the
- new schema!
+ Don't forget to edit your migration files.
+ You might need to shuffle data around
+ to accommodate the new schema!
 ==========================================
 """
 )

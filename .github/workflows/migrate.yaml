@@ -1,0 +1,114 @@
+name: Generate migration scripts
+
+on:
+  repository_dispatch:
+    types: [migration]
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'Branch name in sdm_schemas to migrate'
+        required: true
+      commit_sha:
+        description: 'Commit SHA in sdm_schemas to migrate'
+        required: true
+
+jobs:
+  generate-migration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout consdb repo
+        uses: actions/checkout@v4
+        with:
+          path: consdb
+          fetch-depth: 0
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12.7'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip uv
+          uv pip install --system lsst-felis testing.postgresql alembic sqlalchemy pyyaml black psycopg2-binary
+
+      - name: Determine branch name and commit SHA
+        run: |
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            BRANCH_NAME=${{ github.event.client_payload.branch_name }}
+            COMMIT_SHA=${{ github.event.client_payload.commit_sha }}
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            BRANCH_NAME=${{ github.event.inputs.branch_name }}
+            COMMIT_SHA=${{ github.event.inputs.commit_sha }}
+          fi
+          echo "Branch name: $BRANCH_NAME"
+          echo "Commit SHA: $COMMIT_SHA"
+          if [ -z "$BRANCH_NAME" ] || [ -z "$COMMIT_SHA" ]; then
+            echo "Error: Branch name and commit SHA must be provided." >&2
+            exit 1
+          fi
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+
+      - name: Check branch name
+        run: |
+          if [[ ! "${{ env.BRANCH_NAME }}" =~ ^tickets/DM-[0-9]+(-[a-zA-Z0-9-]*)?$ ]]; then
+            echo "Bad branch name: ${{ env.BRANCH_NAME }}" >&2
+            echo "Error: Migrations are only generated for branches matching the pattern 'tickets/DM-[number](-[alphanumeric-]*)'." >&2
+            exit 1
+          fi
+
+      - name: Set ticket name
+        run: |
+          TICKET_NAME=$(echo ${{ env.BRANCH_NAME }} | sed -E 's/tickets\/(DM-[0-9]+).*/\1/')
+          if [[ ! "${TICKET_NAME}" =~ ^DM-[0-9]+$ ]]; then
+            echo "Failed to get valid ticket name from: ${{ env.BRANCH_NAME }}" >&2
+            exit 1
+          fi
+          echo "TICKET_NAME=${TICKET_NAME}" >> $GITHUB_ENV
+          echo "Ticket name: $TICKET_NAME"
+
+      - name: Checkout sdm_schemas repo
+        uses: actions/checkout@v4
+        with:
+          repository: lsst/sdm_schemas
+          ref: ${{ env.COMMIT_SHA }}
+          path: sdm_schemas
+
+      - name: Generate the migration scripts
+        working-directory: ${{ github.workspace }}/consdb
+        run: |
+          export SDM_SCHEMAS_DIR=${{ github.workspace }}/sdm_schemas
+          echo "SDM_SCHEMAS_DIR=$SDM_SCHEMAS_DIR"
+          MIGRATION_COMMENT=$(echo ${{ env.BRANCH_NAME }} | sed -E 's/^tickets\///')
+          python alembic-autogenerate.py $MIGRATION_COMMENT
+          if git diff --quiet; then
+            echo "No changes detected."
+            exit 0
+          fi
+
+      - name: Create PR for the migration
+        id: cpr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          path: consdb
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "${{ env.TICKET_NAME }}: Migrate schema changes"
+          commit-message: Migrate schema changes from ${{ env.TICKET_NAME }}
+          body: |
+            This PR migrates schema changes from [${{ env.TICKET_NAME }}](https://ls.st/${{ env.TICKET_NAME }}) to the database.
+
+            ## Checklist
+
+            - [ ] Verified the automatically generated migration scripts
+          branch: ${{ env.BRANCH_NAME }}-migrate
+          base: main
+          draft: true
+          labels: migration
+
+      - name: Check PR outputs
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          echo "Pull Request Number: ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL: ${{ steps.cpr.outputs.pull-request-url }}"

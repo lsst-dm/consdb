@@ -287,6 +287,50 @@ def test_schema_table(lsstcomcamsim, astropy_tables):
         assert column in result.keys()
 
 
+@pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
+def test_missing_primary_key(lsstcomcamsim):
+    client = lsstcomcamsim
+
+    response = client.post(
+        "/consdb/insert/latiss/exposure/obs/2024032100003",
+        json={
+            "values": {
+                "exposure_name": "AT_O_20240327_000002",
+                "controller": "O",
+                "day_obs": 20240327,
+                "seq_num": 2,
+            },
+        },
+    )
+    _assert_http_status(response, 200)
+    result = response.json()
+    assert result == {
+        "message": "Data inserted",
+        "table": "cdb_latiss.exposure",
+        "instrument": "latiss",
+        "obs_id": 2024032100003,
+    }
+
+    response = client.post(
+        "/consdb/insert/latiss/ccdexposure/obs/8675309",
+        json={
+            "values": {
+                "s_region": "testregion",
+                "exposure_id": 2024032100003,
+                "detector": 0,
+            },
+        },
+    )
+    _assert_http_status(response, 200)
+    result = response.json()
+    assert result == {
+        "message": "Data inserted",
+        "table": "cdb_latiss.ccdexposure",
+        "instrument": "latiss",
+        "obs_id": 8675309,
+    }
+
+
 def test_validate_unit():
     os.environ["POSTGRES_URL"] = "sqlite://"
     from lsst.consdb import pqserver

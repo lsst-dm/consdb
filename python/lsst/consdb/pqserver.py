@@ -777,7 +777,13 @@ def insert(
     # If needed, cross-reference day_obs and seq_num from the exposure table.
     if "day_obs" in table_obj.columns and "seq_num" in table_obj.columns:
         if "day_obs" not in valdict or "seq_num" not in valdict:
-            day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
+
+            primary_key = obs_id
+            for primary_key_name in ("obs_id", "exposure_id", "visit_id"):
+                if primary_key_name in valdict:
+                    primary_key = valdict[primary_key_name]
+
+            day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, primary_key)
             if "day_obs" not in valdict:
                 valdict["day_obs"] = day_obs
             if "seq_num" not in valdict:
@@ -853,7 +859,12 @@ def insert_multiple(
             # exposure table.
             if "day_obs" in table_obj.columns and "seq_num" in table_obj.columns:
                 if "day_obs" not in valdict or "seq_num" not in valdict:
-                    day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, obs_id)
+                    primary_key = obs_id
+                    for primary_key_name in ("obs_id", "exposure_id", "visit_id"):
+                        if primary_key_name in valdict:
+                            primary_key = valdict[primary_key_name]
+
+                    day_obs, seq_num = instrument_tables.get_day_obs_and_seq_num(instrument_l, primary_key)
                     if "day_obs" not in valdict:
                         valdict["day_obs"] = day_obs
                     if "seq_num" not in valdict:

@@ -1,4 +1,4 @@
-ARG OBS_LSST_VERSION=w_2024_32
+ARG OBS_LSST_VERSION=w_2024_46
 FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
 USER root
 
