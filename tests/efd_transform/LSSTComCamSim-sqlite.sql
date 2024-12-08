@@ -426,12 +426,12 @@ CREATE TABLE main.exposure_efd (
 
 CREATE TABLE main.exposure_efd_unpivoted (
 	exposure_id INTEGER NOT NULL, 
-	topic CHAR(255) NOT NULL, 
-	"column" CHAR(255) NOT NULL, 
+	property CHAR(255) NOT NULL, 
+	field CHAR(255) NOT NULL, 
 	value DOUBLE, 
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-	PRIMARY KEY (exposure_id, topic, "column"), 
-	CONSTRAINT un_exposure_topic_column UNIQUE (exposure_id, topic, "column")
+	PRIMARY KEY (exposure_id, property, field), 
+	CONSTRAINT un_exposure_property_field UNIQUE (exposure_id, property, field)
 )
 
 ;
@@ -855,12 +855,12 @@ CREATE TABLE main.visit1_efd (
 
 CREATE TABLE main.visit1_efd_unpivoted (
 	visit_id INTEGER NOT NULL, 
-	topic CHAR(255) NOT NULL, 
-	"column" CHAR(255) NOT NULL, 
+	property CHAR(255) NOT NULL, 
+	field CHAR(255) NOT NULL, 
 	value DOUBLE, 
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-	PRIMARY KEY (visit_id, topic, "column"), 
-	CONSTRAINT un_visit_topic_column UNIQUE (visit_id, topic, "column")
+	PRIMARY KEY (visit_id, property, field), 
+	CONSTRAINT un_visit_property_field UNIQUE (visit_id, property, field)
 )
 
 ;
