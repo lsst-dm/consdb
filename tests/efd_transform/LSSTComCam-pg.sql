@@ -846,8 +846,8 @@ COMMENT ON CONSTRAINT un_exposure_id_instrument ON cdb_lsstcomcam.exposure_efd I
 
 CREATE TABLE cdb_lsstcomcam.exposure_efd_unpivoted (
 	exposure_id INTEGER NOT NULL,
-	property CHAR(255) NOT NULL,
-	field CHAR(255) NOT NULL,
+	property CHAR(255) DEFAULT 'default_property' NOT NULL,
+	field CHAR(255) DEFAULT 'default_field' NOT NULL,
 	value DOUBLE PRECISION,
 	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (exposure_id, property, field),
@@ -1694,8 +1694,8 @@ COMMENT ON CONSTRAINT un_visit_id_instrument ON cdb_lsstcomcam.visit1_efd IS 'En
 
 CREATE TABLE cdb_lsstcomcam.visit1_efd_unpivoted (
 	visit_id INTEGER NOT NULL,
-	property CHAR(255) NOT NULL,
-	field CHAR(255) NOT NULL,
+	property CHAR(255) DEFAULT 'default_property' NOT NULL,
+	field CHAR(255) DEFAULT 'default_field' NOT NULL,
 	value DOUBLE PRECISION,
 	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (visit_id, property, field),
