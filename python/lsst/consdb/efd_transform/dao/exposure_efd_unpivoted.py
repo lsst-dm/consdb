@@ -1,6 +1,6 @@
 import pandas
 from dao.base import DBBase
-from sqlalchemy.sql import and_, select
+from sqlalchemy.sql import select
 
 
 class ExposureEfdUnpivotedDao(DBBase):
@@ -36,28 +36,6 @@ class ExposureEfdUnpivotedDao(DBBase):
 
         """
         stm = select(self.tbl.c).where(self.tbl.c.exposure_id == exposure_id)
-
-        rows = self.fetch_all_dict(stm)
-
-        return rows
-
-    def get_by_exposure_id_parameter(self, exposure_id: int, parameter: str):
-        """
-        Retrieves rows from the "exposure_efd_unpivoted" table based on
-        exposure ID and parameter.
-
-        Args:
-            exposure_id (int): The exposure ID.
-            parameter (str): The parameter name.
-
-        Returns:
-            list: A list of dictionaries representing the rows retrieved from
-                the table.
-
-        """
-        stm = select(self.tbl.c).where(
-            and_(self.tbl.c.exposure_id == exposure_id, self.tbl.c.parameter == parameter)
-        )
 
         rows = self.fetch_all_dict(stm)
 

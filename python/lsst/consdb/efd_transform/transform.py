@@ -295,7 +295,7 @@ class Transform:
                                     result_vis_unpivoted.append(
                                         {
                                             "visit_id": visit["id"],
-                                            "property": topic,
+                                            "property": column["name"],
                                             "field": col,
                                             "value": column_value,
                                         }
@@ -330,7 +330,7 @@ class Transform:
             )
             count["exposures_unpivoted"] = affected_rows
             self.log.info(f"Database rows affected: {affected_rows}")
-        # del result_exp_unpivoted
+        del result_exp_unpivoted
 
         # ingesting visit
         results = []

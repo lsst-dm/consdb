@@ -1,6 +1,6 @@
 import pandas
 from dao.base import DBBase
-from sqlalchemy.sql import and_, select
+from sqlalchemy.sql import select
 
 
 class VisitEfdUnpivotedDao(DBBase):
@@ -32,26 +32,6 @@ class VisitEfdUnpivotedDao(DBBase):
 
         """
         stm = select(self.tbl.c).where(self.tbl.c.visit_id == visit_id)
-
-        rows = self.fetch_all_dict(stm)
-
-        return rows
-
-    def get_by_visit_id_parameter(self, visit_id: int, parameter: str):
-        """
-        Retrieve rows from the table based on visit_id and parameter.
-
-        Args:
-            visit_id (int): The visit_id to filter the rows.
-            parameter (str): The parameter to filter the rows.
-
-        Returns:
-            list: A list of rows matching the visit_id and parameter.
-
-        """
-        stm = select(self.tbl.c).where(
-            and_(self.tbl.c.visit_id == visit_id, self.tbl.c.parameter == parameter)
-        )
 
         rows = self.fetch_all_dict(stm)
 
