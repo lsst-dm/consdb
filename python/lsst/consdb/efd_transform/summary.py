@@ -12,7 +12,7 @@ class Summary:
     def __init__(
         self,
         dataframe: pandas.DataFrame,
-        datatype: Optional[str] = None,  # Use None to let NumPy infer the dtype by default
+        datatype: Optional[str] = None,
     ):
         """
         Initialize Summary with a DataFrame of numeric and boolean values.
@@ -22,13 +22,15 @@ class Summary:
         if not isinstance(dataframe.index, pandas.DatetimeIndex):
             raise ValueError("The DataFrame index must be a DatetimeIndex.")
 
-        # Handle invalid values (NaN, pandas.NA) by dropping rows with any NaN or pandas.NA values
+        # Handle invalid values (NaN, pandas.NA) by dropping rows with
+        # any NaN or pandas.NA values
         dataframe = dataframe.dropna()
 
         # Infer object types if any, and handle nullable dtypes
-        dataframe = dataframe.convert_dtypes()  # Improved conversion of dtypes with pandas 2.x
+        dataframe = dataframe.convert_dtypes()
 
-        # Convert the DataFrame to a NumPy array, allowing NumPy to infer datatype if None is passed
+        # Convert the DataFrame to a NumPy array, allowing NumPy to infer
+        # datatype if None is passed
         self.values = dataframe.to_numpy(dtype=datatype) if datatype else dataframe.to_numpy()
         self.time = dataframe.index
 
@@ -74,7 +76,7 @@ class Summary:
         except Exception as e:
             print(f"Error occurred during RMS calculation: {str(e)}")
             return numpy.nan
-        
+
     def most_recent_value_in_last_minute(self, **kwargs) -> Union[float, int, bool]:
         """Find the most recent value in the last minute."""
         if len(self.time) == 0:

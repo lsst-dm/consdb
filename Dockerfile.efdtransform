@@ -24,7 +24,7 @@ ENV INSTRUMENT="LATISS"
 # Buttler Access Variables
 ENV BUTLER_REPO="s3://rubin-summit-users/butler.yaml"
 ENV S3_ENDPOINT_URL="https://s3dfrgw.slac.stanford.edu/"
-LSST_RESOURCES_S3_PROFILE_embargo="https://sdfembs3.sdf.slac.stanford.edu"
+ENV LSST_RESOURCES_S3_PROFILE_embargo="https://sdfembs3.sdf.slac.stanford.edu"
 
 # ENV AWS_ACCESS_KEY_ID="placeholder"
 # ENV AWS_SECRET_ACCESS_KEY="placeholder"
