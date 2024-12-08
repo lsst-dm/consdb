@@ -12,7 +12,7 @@ class Summary:
     def __init__(
         self,
         dataframe: pandas.DataFrame,
-        datatype: Optional[str] = None,  # Use None to let NumPy infer the dtype by default
+        datatype: Optional[str] = None,
     ):
         """
         Initialize Summary with a DataFrame of numeric and boolean values.
@@ -22,13 +22,15 @@ class Summary:
         if not isinstance(dataframe.index, pandas.DatetimeIndex):
             raise ValueError("The DataFrame index must be a DatetimeIndex.")
 
-        # Handle invalid values (NaN, pandas.NA) by dropping rows with any NaN or pandas.NA values
+        # Handle invalid values (NaN, pandas.NA) by dropping rows with
+        # any NaN or pandas.NA values
         dataframe = dataframe.dropna()
 
         # Infer object types if any, and handle nullable dtypes
-        dataframe = dataframe.convert_dtypes()  # Improved conversion of dtypes with pandas 2.x
+        dataframe = dataframe.convert_dtypes()
 
-        # Convert the DataFrame to a NumPy array, allowing NumPy to infer datatype if None is passed
+        # Convert the DataFrame to a NumPy array, allowing NumPy to infer
+        # datatype if None is passed
         self.values = dataframe.to_numpy(dtype=datatype) if datatype else dataframe.to_numpy()
         self.time = dataframe.index
 

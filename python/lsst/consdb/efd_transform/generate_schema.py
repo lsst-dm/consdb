@@ -36,7 +36,8 @@ def build_argparser() -> argparse.ArgumentParser:
 
 if __name__ == "__main__":
 
-    # run example: python generate_schema.py --config config.yml --instrument latiss
+    # run example:
+    # python generate_schema.py --config config.yml --instrument latiss
 
     parse = build_argparser()
     args = parse.parse_args()
