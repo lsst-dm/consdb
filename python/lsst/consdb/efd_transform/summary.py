@@ -16,7 +16,8 @@ class Summary:
     ):
         """
         Initialize Summary with a DataFrame of numeric and boolean values.
-        NaN/NA values are handled by dropping rows containing any missing values.
+        NaN/NA values are handled by dropping rows containing any missing 
+        values.
         """
         # Ensure the DataFrame index is a DatetimeIndex
         if not isinstance(dataframe.index, pandas.DatetimeIndex):
