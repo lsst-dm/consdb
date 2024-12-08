@@ -6,8 +6,10 @@ import numpy
 import pandas
 from dao.butler import ButlerDao
 from dao.exposure_efd import ExposureEfdDao
+from dao.exposure_efd_unpivoted import ExposureEfdUnpivotedDao
 from dao.influxdb import InfluxDbDao
 from dao.visit_efd import VisitEfdDao
+from dao.visit_efd_unpivoted import VisitEfdUnpivotedDao
 from lsst.daf.butler import Butler
 from summary import Summary
 
@@ -98,7 +100,7 @@ class Transform:
             start_time (astropy.time.Time): The start time of the interval.
             end_time (astropy.time.Time): The end time of the interval.
         """
-        count = {"exposures": 0, "visits1": 0}
+        count = {"exposures": 0, "visits1": 0, "exposures_unpivoted": 0, "visits1_unpivoted": 0}
 
         self.log.info(f"Proccessing interval {start_time} - {end_time}")
 
@@ -127,12 +129,16 @@ class Transform:
                 "instrument": instrument,
             }
 
+        result_exp_unpivoted = []
+
         result_vis = {}
         for visit in visits:
             result_vis[visit["id"]] = {
                 "visit_id": visit["id"],
                 "instrument": instrument,
             }
+
+        result_vis_unpivoted = []
 
         # map all topics and fields to perform a single query per topic
         # map all topics and fields to perform a single query per topic
@@ -165,7 +171,7 @@ class Transform:
             # query the topic
             self.log.info(f"Querying the Topic: {topic['name']}")
             topic_series = self.get_efd_values(topic, topic_interval, topic["is_packed"])
-
+            
             # process the columns in that topic:
             for column in topic["columns"]:
                 # self.log.debug(column)
@@ -190,7 +196,7 @@ class Transform:
                             valid_fields = [field for field in fields if field in filtered_df.columns]
 
                             if valid_fields:
-                                data = [{"topic": topic["name"], "series": filtered_df[valid_fields]}]
+                                data = [{"topic": topic["name"], "series": filtered_df[valid_fields].dropna()}]
                             else:
                                 self.log.warning(
                                     f"No valid fields found in filtered DataFrame for topic: {topic['name']}"
@@ -199,8 +205,8 @@ class Transform:
                         else:
                             data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
                     else:
-                        data = [{"topic": topic["name"], "series": topic_series[fields]}]
-
+                        data = [{"topic": topic["name"], "series": topic_series[fields].dropna()}]
+                    
                     if "exposure_efd" in column["tables"]:
                         for exposure in exposures:
                             function_kwargs = column["function_args"] or {}
@@ -213,6 +219,42 @@ class Transform:
                             )
 
                             result_exp[exposure["id"]][column["name"]] = column_value
+                    
+                    if "exposure_efd_unpivoted" in column["tables"]:
+                        for exposure in exposures:
+                            function_kwargs = column["function_args"] or {}
+                            series_df = data[0]["series"]
+                            
+                            for col in series_df.columns:
+                                new_topic = topic.copy()
+                                new_topic["fields"] = [col]
+                                new_topic["columns"][0]["topics"][0]["fields"] = [{'name':col}]
+                                new_data = [{"topic": new_topic, "series": series_df[[col]]}]
+                                
+                                # Safeguard processing
+                                column_value = self.proccess_column_value(
+                                    start_time=getattr(exposure["timespan"].begin, "utc", None),
+                                    end_time=getattr(exposure["timespan"].end, "utc", None),
+                                    topics=new_data,
+                                    transform_function=column.get("function"),
+                                    **function_kwargs,
+                                )
+                                
+                                # if col == 'annularZernikeCoeff0':
+                                #     print('*'.center(80, '*'))
+                                #     print(column_value)
+                                #     print(series_df[[col]])
+                                #     print('*'.center(80, '*'))
+                                    # print(new_data)
+                                
+                                # Append the processed result to the result_exp_unpivoted list
+                                if column_value:
+                                    result_exp_unpivoted.append({
+                                        "exposure_id": exposure["id"],
+                                        "topic": column["name"],
+                                        "column": col,
+                                        "value": column_value
+                                    })
 
                     if "visit1_efd" in column["tables"]:
                         for visit in visits:
@@ -227,33 +269,82 @@ class Transform:
 
                             result_vis[visit["id"]][column["name"]] = column_value
 
+                    if "visit1_efd_unpivoted" in column["tables"]:
+                        for visit in visits:
+                            function_kwargs = column["function_args"] or {}
+                            series_df = data[0]["series"]
+                            
+                            for col in series_df.columns:
+                                new_topic = topic.copy()
+                                new_topic["fields"] = [col]
+                                new_topic["columns"][0]["topics"][0]["fields"] = [{'name':col}]
+                                new_data = [{"topic": new_topic, "series": series_df[[col]]}]
+                                
+                                column_value = self.proccess_column_value(
+                                    start_time=getattr(visit["timespan"].begin, "utc", None),
+                                    end_time=getattr(visit["timespan"].end, "utc", None),
+                                    topics=new_data,
+                                    transform_function=column.get("function"),
+                                    **function_kwargs,
+                                )
+                                if column_value:
+                                    result_vis_unpivoted.append({
+                                        "visit_id": visit["id"],
+                                        "topic": topic,
+                                        "column": col,
+                                        "value": column_value
+                                    })
+        # ingesting exposure
         results = []
         for result_row in result_exp:
             results.append(result_exp[result_row])
-
+        
         df_exposures = pandas.DataFrame(results)
-
-        self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
-
-        exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
-        affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
-        count["exposures"] = affected_rows
-        self.log.info(f"Database rows affected: {affected_rows}")
+        
+        if not df_exposures.empty:
+            self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
+            exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
+            affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
+            count["exposures"] = affected_rows
+            self.log.info(f"Database rows affected: {affected_rows}")
         del results
 
+        
+        # ingesting exposure_unpivoted
+        df_exposures_unpivoted = pandas.DataFrame(result_exp_unpivoted)
+        # print(df_exposures_unpivoted)
+        self.log.info(f"Exposure unpivoted results to be inserted into the database: {len(df_exposures_unpivoted)}")
+        if not df_exposures_unpivoted.empty:
+            exp_unpivoted_dao = ExposureEfdUnpivotedDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
+            affected_rows = exp_unpivoted_dao.upsert(df=df_exposures_unpivoted, commit_every=self.commit_every)
+            count["exposures_unpivoted"] = affected_rows
+            self.log.info(f"Database rows affected: {affected_rows}")
+        # del result_exp_unpivoted
+        
+        # ingesting visit
         results = []
         for result_row in result_vis:
             results.append(result_vis[result_row])
 
         df_visits = pandas.DataFrame(results)
-        self.log.info(f"Visit results to be inserted into the database: {len(df_visits)}")
-
-        vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
-        affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
-        self.log.info(f"Database rows affected: {affected_rows}")
-        count["visits1"] = affected_rows
+        if not df_visits.empty:
+            self.log.info(f"Visit results to be inserted into the database: {len(df_visits)}")
+            vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
+            affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
+            self.log.info(f"Database rows affected: {affected_rows}")
+            count["visits1"] = affected_rows
         del results
 
+        # ingesting visit_unpivoted
+        df_visits_unpivoted = pandas.DataFrame(result_vis_unpivoted)
+        self.log.info(f"Visit unpivoted results to be inserted into the database: {len(df_visits_unpivoted)}")
+        if not df_visits_unpivoted.empty:
+            vis_unpivoted_dao = VisitEfdUnpivotedDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
+            affected_rows = vis_unpivoted_dao.upsert(df=df_visits_unpivoted, commit_every=self.commit_every)
+            self.log.info(f"Database rows affected: {affected_rows}")
+            count["visits1_unpivoted"] = affected_rows
+        # del result_vis_unpivoted
+        
         return count
 
     def proccess_column_value(
@@ -279,8 +370,9 @@ class Transform:
         Returns:
             The processed column value.
         """
+        
         values = self.topic_values_by_exposure(start_time, end_time, topics)
-
+        
         if not values.empty:
             column_value = Summary(values).apply(transform_function, **function_kwargs)
             return column_value
@@ -303,9 +395,10 @@ class Transform:
                               given time range, or an empty DataFrame if no
                               values match.
         """
-
+     
         start_time = pandas.Timestamp(start_time.to_datetime(), tz="UTC")
         end_time = pandas.Timestamp(end_time.to_datetime(), tz="UTC")
+        
 
         topics_values = []
 

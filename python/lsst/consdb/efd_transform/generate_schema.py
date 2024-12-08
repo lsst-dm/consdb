@@ -43,7 +43,7 @@ if __name__ == "__main__":
     config = read_config(args.config)
 
     output = "cdb_transformed_efd_" + args.instrument + ".yaml"
-
+    print(output)
     with open(output, "w") as f:
         # Generate the schema for the EFD transform.
         f.write("---\n")
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         f.write("    description: Instrument name.\n")
         # Iterate over columns in the config file
         for column in config["columns"]:
-            if "exposure_efd" in column["tables"]:
+            if "exposure_efd" in column["tables"] and not column.get("store_unpivoted", False):
                 column_name = column["name"]
                 f.write(f'  - name: "{column_name}"\n')
                 f.write(f'    "@id": "#exposure_efd.{column_name}"\n')
@@ -93,6 +93,55 @@ if __name__ == "__main__":
                 f.write("    nullable: True\n")
                 column_description = column["description"]
                 f.write(f"    description: {column_description}\n")
+        f.write("\n")
+
+        # Generate exposure_efd_unpivoted table
+        f.write("- name: exposure_efd_unpivoted\n")
+        f.write('  "@id": "#exposure_efd_unpivoted"\n')
+        f.write("  description: Unpivoted EFD exposure data.\n")
+        f.write("  primaryKey:\n")
+        f.write('  - "#exposure_efd_unpivoted.exposure_id"\n')
+        f.write('  - "#exposure_efd_unpivoted.topic"\n')
+        f.write('  - "#exposure_efd_unpivoted.column"\n')
+        f.write("  constraints:\n")
+        f.write("  - name: un_exposure_topic_column\n")
+        f.write('    "@id": "#exposure_efd_unpivoted.un_exposure_topic_column"\n')
+        f.write('    "@type": Unique\n')
+        f.write(
+            "    description: Ensure the combination of exposure_id, topic, and column is unique.\n"
+        )
+        f.write("    columns:\n")
+        f.write('    - "#exposure_efd_unpivoted.exposure_id"\n')
+        f.write('    - "#exposure_efd_unpivoted.topic"\n')
+        f.write('    - "#exposure_efd_unpivoted.column"\n')
+        f.write("  columns:\n")
+        f.write("  - name: exposure_id\n")
+        f.write('    "@id": "#exposure_efd_unpivoted.exposure_id"\n')
+        f.write("    datatype: int\n")
+        f.write("    nullable: False\n")
+        f.write("    description: Unique identifier for the exposure\n")
+        f.write("  - name: topic\n")
+        f.write('    "@id": "#exposure_efd_unpivoted.topic"\n')
+        f.write("    datatype: char\n")
+        f.write("    length: 255\n")
+        f.write("    nullable: False\n")
+        f.write("    description: Topic name for the unpivoted data\n")
+        f.write("  - name: column\n")
+        f.write('    "@id": "#exposure_efd_unpivoted.column"\n')
+        f.write("    datatype: char\n")
+        f.write("    length: 255\n")
+        f.write("    nullable: False\n")
+        f.write("    description: Column name for the unpivoted data\n")
+        f.write("  - name: value\n")
+        f.write('    "@id": "#exposure_efd_unpivoted.value"\n')
+        f.write("    datatype: double\n")
+        f.write("    nullable: True\n")
+        f.write("    description: Value corresponding to the parameter\n")
+        f.write("  - name: created_at\n")
+        f.write('    "@id": "#exposure_efd_unpivoted.created_at"\n')
+        f.write("    datatype: timestamp\n")
+        f.write("    value: 'CURRENT_TIMESTAMP'\n")
+        f.write("    description: Timestamp when the record was created, default is the current timestamp\n")
         f.write("\n")
 
         # Generate visit1_efd table.
@@ -127,7 +176,7 @@ if __name__ == "__main__":
         f.write("    description: Instrument name.\n")
         # Iterate over columns in the config file
         for column in config["columns"]:
-            if "visit1_efd" in column["tables"]:
+            if "visit1_efd" in column["tables"] and not column.get("store_unpivoted", False):
                 column_name = column["name"]
                 f.write(f'  - name: "{column_name}"\n')
                 f.write(f'    "@id": "#visit1_efd.{column_name}"\n')
@@ -136,6 +185,53 @@ if __name__ == "__main__":
                 f.write("    nullable: True\n")
                 column_description = column["description"]
                 f.write(f"    description: {column_description}\n")
+        f.write("\n")
+
+        # Generate visit1_efd_unpivoted table
+        f.write("- name: visit1_efd_unpivoted\n")
+        f.write('  "@id": "#visit1_efd_unpivoted"\n')
+        f.write("  description: Unpivoted EFD visit data.\n")
+        f.write("  primaryKey:\n")
+        f.write('  - "#visit1_efd_unpivoted.visit_id"\n')
+        f.write('  - "#visit1_efd_unpivoted.topic"\n')
+        f.write('  - "#visit1_efd_unpivoted.column"\n')
+        f.write("  constraints:\n")
+        f.write("  - name: un_visit_topic_column\n")
+        f.write('    "@id": "#visit1_efd_unpivoted.un_visit_topic_column"\n')
+        f.write('    "@type": Unique\n')
+        f.write("    description: Ensure the combination of visit_id, topic, and column is unique.\n")
+        f.write("    columns:\n")
+        f.write('    - "#visit1_efd_unpivoted.visit_id"\n')
+        f.write('    - "#visit1_efd_unpivoted.topic"\n')
+        f.write('    - "#visit1_efd_unpivoted.column"\n')
+        f.write("  columns:\n")
+        f.write("  - name: visit_id\n")
+        f.write('    "@id": "#visit1_efd_unpivoted.visit_id"\n')
+        f.write("    datatype: int\n")
+        f.write("    nullable: False\n")
+        f.write("    description: Unique identifier for the visit\n")
+        f.write("  - name: topic\n")
+        f.write('    "@id": "#visit1_efd_unpivoted.topic"\n')
+        f.write("    datatype: char\n")
+        f.write("    length: 255\n")
+        f.write("    nullable: False\n")
+        f.write("    description: Topic name for the unpivoted data\n")
+        f.write("  - name: column\n")
+        f.write('    "@id": "#visit1_efd_unpivoted.column"\n')
+        f.write("    datatype: char\n")
+        f.write("    length: 255\n")
+        f.write("    nullable: False\n")
+        f.write("    description: Column name for the unpivoted data\n")
+        f.write("  - name: value\n")
+        f.write('    "@id": "#visit1_efd_unpivoted.value"\n')
+        f.write("    datatype: double\n")
+        f.write("    nullable: True\n")
+        f.write("    description: Value corresponding to the parameter\n")
+        f.write("  - name: created_at\n")
+        f.write('    "@id": "#visit1_efd_unpivoted.created_at"\n')
+        f.write("    datatype: timestamp\n")
+        f.write("    value: 'CURRENT_TIMESTAMP'\n")
+        f.write("    description: Timestamp when the record was created, default is the current timestamp\n")
         f.write("\n")
 
         # Generate transformed_efd scheduler table.
