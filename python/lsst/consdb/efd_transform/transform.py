@@ -254,8 +254,8 @@ class Transform:
                                     result_exp_unpivoted.append(
                                         {
                                             "exposure_id": exposure["id"],
-                                            "topic": column["name"],
-                                            "column": col,
+                                            "property": column["name"],
+                                            "field": col,
                                             "value": column_value,
                                         }
                                     )
@@ -295,8 +295,8 @@ class Transform:
                                     result_vis_unpivoted.append(
                                         {
                                             "visit_id": visit["id"],
-                                            "topic": topic,
-                                            "column": col,
+                                            "property": topic,
+                                            "field": col,
                                             "value": column_value,
                                         }
                                     )
