@@ -46,30 +46,30 @@
 #     -l $PWD/tmp/transform.log
 
 
-python python/lsst/consdb/efd_transform/transform_efd.py \
-    -i LATISS \
-    -s 2024-10-17T12:00:00 \
-    -e 2024-10-18T12:00:00 \
-    -r s3://rubin-summit-users/butler.yaml \
-    -d sqlite:///$PWD/tests/efd_transform/LATISS.db \
-    -E usdf_efd \
-    -c python/lsst/consdb/efd_transform/config_LATISS.yaml \
-    -t 60 \
-    -w 1 \
-    -l $PWD/tmp/transform.log
-
-
 # python python/lsst/consdb/efd_transform/transform_efd.py \
-#     -i LSSTComCam \
-#     -s 2024-10-17T12:00:00 \
-#     -e 2024-10-18T12:00:00 \
+#     -i LATISS \
+#     -s 2024-12-03T12:00:00 \
+#     -e 2024-12-05T12:00:00 \
 #     -r /repo/embargo_new \
-#     -d sqlite:///$PWD/tests/efd_transform/LSSTComCam.db \
+#     -d sqlite:///$PWD/tests/efd_transform/LATISS.db \
 #     -E usdf_efd \
-#     -c python/lsst/consdb/efd_transform/config_LSSTComCam.yaml \
-#     -t 5 \
+#     -c python/lsst/consdb/efd_transform/config_LATISS.yaml \
+#     -t 60 \
 #     -w 1 \
 #     -l $PWD/tmp/transform.log
+
+
+python python/lsst/consdb/efd_transform/transform_efd.py \
+    -i LSSTComCam \
+    -s 2024-11-03T09:00:00 \
+    -e 2024-12-03T10:00:00 \
+    -r /repo/embargo_new \
+    -d sqlite:///$PWD/tests/efd_transform/LSSTComCam.db \
+    -E usdf_efd \
+    -c python/lsst/consdb/efd_transform/config_LSSTComCam.yaml \
+    -t 60 \
+    -w 5 \
+    -l $PWD/tmp/transform.log
 
 
 # python python/lsst/consdb/efd_transform/transform_efd.py \

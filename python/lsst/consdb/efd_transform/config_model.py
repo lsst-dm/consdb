@@ -1,6 +1,9 @@
 from typing import Dict, List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+
+TABLES = ["exposure_efd", "exposure_efd_unpivoted", "visit1_efd", "visit1_efd_unpivoted"]
+UNPIVOTED_TABLES = ["exposure_efd_unpivoted", "visit1_efd_unpivoted"]
 
 
 class Field(BaseModel):
@@ -49,7 +52,11 @@ class Column(BaseModel):
       The name of the column.
     tables : Optional[List[str]], optional
       The list of tables that the column belongs to, by default
-      ["exposure_efd", "visit1_efd"].
+      ["exposure_efd", "exposure_efd_unpivoted", "visit1_efd",
+       "visit1_efd_unpivoted"].
+    store_unpivoted : Optional[bool], optional
+      Specifies whether the column data should be stored as an
+      unpivoted array-like structure.
     function : str
       The function applied to the column.
     function_args : Optional[Dict], optional
@@ -71,7 +78,8 @@ class Column(BaseModel):
     """
 
     name: str
-    tables: Optional[List[str]] = ["exposure_efd", "visit1_efd"]
+    tables: Optional[List[str]] = TABLES
+    store_unpivoted: Optional[bool] = False
     function: str
     function_args: Optional[Dict] = None
     datatype: str
@@ -81,6 +89,22 @@ class Column(BaseModel):
     subset_field: Optional[str] = None
     subset_value: Optional[Union[str, int]] = None
     topics: List[Topic]
+
+    @validator("tables")
+    def validate_tables_when_unpivoted(cls, tables, values):
+        """
+        Validates that only allowed unpivoted tables are used when 'store_unpivoted' is True.
+        """
+        store_unpivoted = values.get("store_unpivoted")
+        if store_unpivoted:
+            # Ensure all tables are within the allowed unpivoted tables list
+            invalid_tables = [table for table in tables if table not in UNPIVOTED_TABLES]
+            if invalid_tables:
+                raise ValueError(
+                    f"When 'store_unpivoted' is True, only the following tables are allowed: {UNPIVOTED_TABLES}. "
+                    f"Invalid tables provided: {invalid_tables}"
+                )
+        return tables
 
 
 class ConfigModel(BaseModel):
