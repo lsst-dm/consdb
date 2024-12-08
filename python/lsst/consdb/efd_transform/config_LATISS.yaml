@@ -10,7 +10,7 @@ columns:
   topics:
   - name: lsst.sal.ATMCS.mount_AzEl_Encoders
     fields:
-    - name: azimuthCalculatedAngle 
+    - name: azimuthCalculatedAngle
 
 
 - name: at_mount_jitter_elevation
@@ -3368,7 +3368,7 @@ columns:
   topics:
   - name: lsst.sal.ATMCS.mount_AzEl_Encoders
     fields:
-    - name: azimuthCalculatedAngle 
+    - name: azimuthCalculatedAngle
 
 
 - name: at_elevation_calculated_angle
@@ -11171,5 +11171,3 @@ columns:
     - name: accelerationPSDX200
     - name: accelerationPSDY200
     - name: accelerationPSDZ200
-
-

@@ -93,7 +93,8 @@ class Column(BaseModel):
     @validator("tables")
     def validate_tables_when_unpivoted(cls, tables, values):
         """
-        Validates that only allowed unpivoted tables are used when 'store_unpivoted' is True.
+        Validates that only allowed unpivoted tables are used when
+        'store_unpivoted' is True.
         """
         store_unpivoted = values.get("store_unpivoted")
         if store_unpivoted:
@@ -101,7 +102,8 @@ class Column(BaseModel):
             invalid_tables = [table for table in tables if table not in UNPIVOTED_TABLES]
             if invalid_tables:
                 raise ValueError(
-                    f"When 'store_unpivoted' is True, only the following tables are allowed: {UNPIVOTED_TABLES}. "
+                    f"When 'store_unpivoted' is True, only the following "
+                    f"tables are allowed: {UNPIVOTED_TABLES}. "
                     f"Invalid tables provided: {invalid_tables}"
                 )
         return tables

@@ -80,7 +80,8 @@ class QueueManager:
         # If start time is None, get last task end time.
         if start_time is None:
             last_task = self.dao.select_last()
-            # If there is no previous task, then start is now - process interval.
+            # If there is no previous task, then start is now minus the
+            # process interval.
             if last_task is None:
                 start_time = (
                     datetime.now(tz=timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None)
@@ -132,7 +133,8 @@ class QueueManager:
             rows.append(task)
 
         # TODO: Order tasks by start_time
-        # Usar um dataframe, ordenar e depois converter para lista de dicionários
+        # Usar um dataframe, ordenar e depois converter para lista de
+        # dicionários
 
         self.log.debug("Insert tasks into database")
         affected_rows = 0
@@ -161,12 +163,13 @@ class QueueManager:
         process_interval : int
             The length of each processing interval in minutes.
         time_window : int
-            The length of the time window to expand each interval by, in minutes.
+            The length of the time window to expand each interval by,
+            in minutes.
         Returns:
         --------
         intervals : list of list of Time
-            A list of intervals, where each interval is represented as a list containing
-            the start and end times, expanded by the time window.
+            A list of intervals, where each interval is represented as a list
+            containing the start and end times, expanded by the time window.
         """
 
         proccess_interval_seconds = TimeDelta(process_interval * 60, format="sec")
