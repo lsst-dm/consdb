@@ -259,7 +259,7 @@ class InfluxDBClient:
             output[i0::n_used] = packed_dataframe[f"{base_field}{i}"]
             times[i0::n_used] = packed_dataframe[ref_timestamp_col] + i * dt
 
-            # Convert times to astropy Time and then to pandas timestamps in UTC
+        # Convert times to astropy Time and then to pandas timestamps in UTC
         timestamps = Time(times, format=fmt, scale=scale)
         result = pd.DataFrame({base_field: output, "time": times})
         result["time"] = pd.to_datetime(timestamps.utc.iso, errors="coerce", utc=True)

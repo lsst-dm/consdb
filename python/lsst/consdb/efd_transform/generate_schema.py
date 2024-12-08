@@ -36,7 +36,8 @@ def build_argparser() -> argparse.ArgumentParser:
 
 if __name__ == "__main__":
 
-    # run example: python generate_schema.py --config config.yml --instrument latiss
+    # run example:
+    # python generate_schema.py --config config.yml --instrument latiss
 
     parse = build_argparser()
     args = parse.parse_args()
@@ -107,9 +108,7 @@ if __name__ == "__main__":
         f.write("  - name: un_exposure_property_field\n")
         f.write('    "@id": "#exposure_efd_unpivoted.un_exposure_property_field"\n')
         f.write('    "@type": Unique\n')
-        f.write(
-            "    description: Ensure the combination of exposure_id, property, and field is unique.\n"
-        )
+        f.write("    description: Ensure the combination of exposure_id, property, and field is unique.\n")
         f.write("    columns:\n")
         f.write('    - "#exposure_efd_unpivoted.exposure_id"\n')
         f.write('    - "#exposure_efd_unpivoted.property"\n')

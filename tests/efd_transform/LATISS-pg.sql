@@ -1,9 +1,9 @@
 
 CREATE TABLE cdb_latiss.exposure_efd (
-	exposure_id BIGINT, 
-	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP, 
-	instrument CHAR(20), 
-	PRIMARY KEY (exposure_id, instrument), 
+	exposure_id BIGINT,
+	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+	instrument CHAR(20),
+	PRIMARY KEY (exposure_id, instrument),
 	CONSTRAINT un_exposure_id_instrument UNIQUE (exposure_id, instrument)
 )
 
@@ -15,12 +15,12 @@ COMMENT ON COLUMN cdb_latiss.exposure_efd.instrument IS 'Instrument name.';
 COMMENT ON CONSTRAINT un_exposure_id_instrument ON cdb_latiss.exposure_efd IS 'Ensure exposure_id is unique.';
 
 CREATE TABLE cdb_latiss.exposure_efd_unpivoted (
-	exposure_id INTEGER NOT NULL, 
-	property CHAR(255) NOT NULL, 
-	field CHAR(255) NOT NULL, 
-	value DOUBLE PRECISION, 
-	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP, 
-	PRIMARY KEY (exposure_id, property, field), 
+	exposure_id INTEGER NOT NULL,
+	property CHAR(255) NOT NULL,
+	field CHAR(255) NOT NULL,
+	value DOUBLE PRECISION,
+	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (exposure_id, property, field),
 	CONSTRAINT un_exposure_property_field UNIQUE (exposure_id, property, field)
 )
 
@@ -34,10 +34,10 @@ COMMENT ON COLUMN cdb_latiss.exposure_efd_unpivoted.created_at IS 'Timestamp whe
 COMMENT ON CONSTRAINT un_exposure_property_field ON cdb_latiss.exposure_efd_unpivoted IS 'Ensure the combination of exposure_id, property, and field is unique.';
 
 CREATE TABLE cdb_latiss.visit1_efd (
-	visit_id BIGINT, 
-	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP, 
-	instrument CHAR(20), 
-	PRIMARY KEY (visit_id, instrument), 
+	visit_id BIGINT,
+	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+	instrument CHAR(20),
+	PRIMARY KEY (visit_id, instrument),
 	CONSTRAINT un_visit_id_instrument UNIQUE (visit_id, instrument)
 )
 
@@ -49,12 +49,12 @@ COMMENT ON COLUMN cdb_latiss.visit1_efd.instrument IS 'Instrument name.';
 COMMENT ON CONSTRAINT un_visit_id_instrument ON cdb_latiss.visit1_efd IS 'Ensure visit_id is unique.';
 
 CREATE TABLE cdb_latiss.visit1_efd_unpivoted (
-	visit_id INTEGER NOT NULL, 
-	property CHAR(255) NOT NULL, 
-	field CHAR(255) NOT NULL, 
-	value DOUBLE PRECISION, 
-	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP, 
-	PRIMARY KEY (visit_id, property, field), 
+	visit_id INTEGER NOT NULL,
+	property CHAR(255) NOT NULL,
+	field CHAR(255) NOT NULL,
+	value DOUBLE PRECISION,
+	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (visit_id, property, field),
 	CONSTRAINT un_visit_property_field UNIQUE (visit_id, property, field)
 )
 
@@ -68,20 +68,20 @@ COMMENT ON COLUMN cdb_latiss.visit1_efd_unpivoted.created_at IS 'Timestamp when 
 COMMENT ON CONSTRAINT un_visit_property_field ON cdb_latiss.visit1_efd_unpivoted IS 'Ensure the combination of visit_id, property, and field is unique.';
 
 CREATE TABLE cdb_latiss.transformed_efd_scheduler (
-	id SERIAL NOT NULL, 
-	start_time TIMESTAMP WITHOUT TIME ZONE, 
-	end_time TIMESTAMP WITHOUT TIME ZONE, 
-	timewindow INTEGER, 
-	status CHAR(20) DEFAULT 'pending', 
-	process_start_time TIMESTAMP WITHOUT TIME ZONE, 
-	process_end_time TIMESTAMP WITHOUT TIME ZONE, 
-	process_exec_time INTEGER DEFAULT 0, 
-	exposures INTEGER DEFAULT 0, 
-	visits1 INTEGER DEFAULT 0, 
-	retries INTEGER DEFAULT 0, 
-	error TEXT, 
-	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP, 
-	PRIMARY KEY (id), 
+	id SERIAL NOT NULL,
+	start_time TIMESTAMP WITHOUT TIME ZONE,
+	end_time TIMESTAMP WITHOUT TIME ZONE,
+	timewindow INTEGER,
+	status CHAR(20) DEFAULT 'pending',
+	process_start_time TIMESTAMP WITHOUT TIME ZONE,
+	process_end_time TIMESTAMP WITHOUT TIME ZONE,
+	process_exec_time INTEGER DEFAULT 0,
+	exposures INTEGER DEFAULT 0,
+	visits1 INTEGER DEFAULT 0,
+	retries INTEGER DEFAULT 0,
+	error TEXT,
+	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (id),
 	CONSTRAINT un_id UNIQUE (id)
 )
 
