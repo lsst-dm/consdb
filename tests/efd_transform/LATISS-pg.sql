@@ -16,22 +16,22 @@ COMMENT ON CONSTRAINT un_exposure_id_instrument ON cdb_latiss.exposure_efd IS 'E
 
 CREATE TABLE cdb_latiss.exposure_efd_unpivoted (
 	exposure_id INTEGER NOT NULL, 
-	topic CHAR(255) NOT NULL, 
-	"column" CHAR(255) NOT NULL, 
+	property CHAR(255) NOT NULL, 
+	field CHAR(255) NOT NULL, 
 	value DOUBLE PRECISION, 
 	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP, 
-	PRIMARY KEY (exposure_id, topic, "column"), 
-	CONSTRAINT un_exposure_topic_column UNIQUE (exposure_id, topic, "column")
+	PRIMARY KEY (exposure_id, property, field), 
+	CONSTRAINT un_exposure_property_field UNIQUE (exposure_id, property, field)
 )
 
 ;
 COMMENT ON TABLE cdb_latiss.exposure_efd_unpivoted IS 'Unpivoted EFD exposure data.';
 COMMENT ON COLUMN cdb_latiss.exposure_efd_unpivoted.exposure_id IS 'Unique identifier for the exposure';
-COMMENT ON COLUMN cdb_latiss.exposure_efd_unpivoted.topic IS 'Topic name for the unpivoted data';
-COMMENT ON COLUMN cdb_latiss.exposure_efd_unpivoted."column" IS 'Column name for the unpivoted data';
+COMMENT ON COLUMN cdb_latiss.exposure_efd_unpivoted.property IS 'Property name for the unpivoted data';
+COMMENT ON COLUMN cdb_latiss.exposure_efd_unpivoted.field IS 'Field name for the unpivoted data';
 COMMENT ON COLUMN cdb_latiss.exposure_efd_unpivoted.value IS 'Value corresponding to the parameter';
 COMMENT ON COLUMN cdb_latiss.exposure_efd_unpivoted.created_at IS 'Timestamp when the record was created, default is the current timestamp';
-COMMENT ON CONSTRAINT un_exposure_topic_column ON cdb_latiss.exposure_efd_unpivoted IS 'Ensure the combination of exposure_id, topic, and column is unique.';
+COMMENT ON CONSTRAINT un_exposure_property_field ON cdb_latiss.exposure_efd_unpivoted IS 'Ensure the combination of exposure_id, property, and field is unique.';
 
 CREATE TABLE cdb_latiss.visit1_efd (
 	visit_id BIGINT, 
@@ -50,22 +50,22 @@ COMMENT ON CONSTRAINT un_visit_id_instrument ON cdb_latiss.visit1_efd IS 'Ensure
 
 CREATE TABLE cdb_latiss.visit1_efd_unpivoted (
 	visit_id INTEGER NOT NULL, 
-	topic CHAR(255) NOT NULL, 
-	"column" CHAR(255) NOT NULL, 
+	property CHAR(255) NOT NULL, 
+	field CHAR(255) NOT NULL, 
 	value DOUBLE PRECISION, 
 	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP, 
-	PRIMARY KEY (visit_id, topic, "column"), 
-	CONSTRAINT un_visit_topic_column UNIQUE (visit_id, topic, "column")
+	PRIMARY KEY (visit_id, property, field), 
+	CONSTRAINT un_visit_property_field UNIQUE (visit_id, property, field)
 )
 
 ;
 COMMENT ON TABLE cdb_latiss.visit1_efd_unpivoted IS 'Unpivoted EFD visit data.';
 COMMENT ON COLUMN cdb_latiss.visit1_efd_unpivoted.visit_id IS 'Unique identifier for the visit';
-COMMENT ON COLUMN cdb_latiss.visit1_efd_unpivoted.topic IS 'Topic name for the unpivoted data';
-COMMENT ON COLUMN cdb_latiss.visit1_efd_unpivoted."column" IS 'Column name for the unpivoted data';
+COMMENT ON COLUMN cdb_latiss.visit1_efd_unpivoted.property IS 'Property name for the unpivoted data';
+COMMENT ON COLUMN cdb_latiss.visit1_efd_unpivoted.field IS 'Field name for the unpivoted data';
 COMMENT ON COLUMN cdb_latiss.visit1_efd_unpivoted.value IS 'Value corresponding to the parameter';
 COMMENT ON COLUMN cdb_latiss.visit1_efd_unpivoted.created_at IS 'Timestamp when the record was created, default is the current timestamp';
-COMMENT ON CONSTRAINT un_visit_topic_column ON cdb_latiss.visit1_efd_unpivoted IS 'Ensure the combination of visit_id, topic, and column is unique.';
+COMMENT ON CONSTRAINT un_visit_property_field ON cdb_latiss.visit1_efd_unpivoted IS 'Ensure the combination of visit_id, property, and field is unique.';
 
 CREATE TABLE cdb_latiss.transformed_efd_scheduler (
 	id SERIAL NOT NULL, 
