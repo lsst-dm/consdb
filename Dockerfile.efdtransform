@@ -12,9 +12,9 @@ COPY --chown=lsst:lsst python/lsst/consdb/efd_transform ./consdb/efd_transform
 RUN mkdir data
 
 # TODO: SQLITE TEST DATABASE
-COPY --chown=lsst:lsst tests/efd_transform/LATISS.db ./data/
-COPY --chown=lsst:lsst tests/efd_transform/LSSTComCam.db ./data/
-COPY --chown=lsst:lsst tests/efd_transform/LSSTComCamSim.db ./data/
+COPY --chown=lsst:lsst tmp/efd_transform/LATISS.db ./data/
+COPY --chown=lsst:lsst tmp/efd_transform/LSSTComCam.db ./data/
+COPY --chown=lsst:lsst tmp/efd_transform/LSSTComCamSim.db ./data/
 
 # Environment variables that must be set:
 # ------------------------------
