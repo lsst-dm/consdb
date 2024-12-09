@@ -1887,6 +1887,126 @@ tables:
     datatype: float
     nullable: True
     description: Calculate M1M3 stress computed RSS the stress contribution of each bending mode.
+  - name: "mt_salindex104_acceleration_x_mean"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_x_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_acceleration_x_stddev"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_x_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_acceleration_x_min"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_x_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_acceleration_x_max"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_x_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_acceleration_y_mean"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_y_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_acceleration_y_stddev"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_y_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_acceleration_y_min"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_y_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_acceleration_y_max"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_y_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_acceleration_z_mean"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_z_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_acceleration_z_stddev"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_z_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_acceleration_z_min"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_z_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_acceleration_z_max"
+    "@id": "#exposure_efd.mt_salindex104_acceleration_z_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_accelerationpsd_x_mean"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_x_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_accelerationpsd_x_stddev"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_x_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_accelerationpsd_x_min"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_x_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_accelerationpsd_x_max"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_x_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_accelerationpsd_y_mean"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_y_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_accelerationpsd_y_stddev"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_y_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_accelerationpsd_y_min"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_y_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_accelerationpsd_y_max"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_y_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_accelerationpsd_z_mean"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_z_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_accelerationpsd_z_stddev"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_z_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_accelerationpsd_z_min"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_z_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_accelerationpsd_z_max"
+    "@id": "#exposure_efd.mt_salindex104_accelerationpsd_z_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
   - name: "mt_salIndex104_m1m3_accelerometer_0_mean"
     "@id": "#exposure_efd.mt_salIndex104_m1m3_accelerometer_0_mean"
     datatype: float
@@ -2127,26 +2247,26 @@ tables:
   columns:
   - name: exposure_id
     "@id": "#exposure_efd_unpivoted.exposure_id"
-    datatype: int
+    datatype: long
     nullable: False
     description: Unique identifier for the exposure
   - name: property
     "@id": "#exposure_efd_unpivoted.property"
-    datatype: char
-    length: 255
+    datatype: string
+    length: 64
     nullable: False
     value: default_property
     description: Property name for the unpivoted data
   - name: field
     "@id": "#exposure_efd_unpivoted.field"
-    datatype: char
-    length: 255
+    datatype: string
+    length: 32
     nullable: False
     value: default_field
     description: Field name for the unpivoted data
   - name: value
     "@id": "#exposure_efd_unpivoted.value"
-    datatype: double
+    datatype: float
     nullable: True
     description: Value corresponding to the parameter
   - name: created_at
@@ -3999,6 +4119,126 @@ tables:
     datatype: float
     nullable: True
     description: Calculate M1M3 stress computed RSS the stress contribution of each bending mode.
+  - name: "mt_salindex104_acceleration_x_mean"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_x_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_acceleration_x_stddev"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_x_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_acceleration_x_min"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_x_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_acceleration_x_max"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_x_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_acceleration_y_mean"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_y_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_acceleration_y_stddev"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_y_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_acceleration_y_min"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_y_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_acceleration_y_max"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_y_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_acceleration_z_mean"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_z_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_acceleration_z_stddev"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_z_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_acceleration_z_min"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_z_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_acceleration_z_max"
+    "@id": "#visit1_efd.mt_salindex104_acceleration_z_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_accelerationpsd_x_mean"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_x_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_accelerationpsd_x_stddev"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_x_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_accelerationpsd_x_min"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_x_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_accelerationpsd_x_max"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_x_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in x direction.
+  - name: "mt_salindex104_accelerationpsd_y_mean"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_y_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_accelerationpsd_y_stddev"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_y_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_accelerationpsd_y_min"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_y_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_accelerationpsd_y_max"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_y_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in y direction.
+  - name: "mt_salindex104_accelerationpsd_z_mean"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_z_mean"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_accelerationpsd_z_stddev"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_z_stddev"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_accelerationpsd_z_min"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_z_min"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
+  - name: "mt_salindex104_accelerationpsd_z_max"
+    "@id": "#visit1_efd.mt_salindex104_accelerationpsd_z_max"
+    datatype: float
+    nullable: True
+    description: Acceleration in z direction.
   - name: "mt_salIndex104_m1m3_accelerometer_0_mean"
     "@id": "#visit1_efd.mt_salIndex104_m1m3_accelerometer_0_mean"
     datatype: float
@@ -4239,26 +4479,26 @@ tables:
   columns:
   - name: visit_id
     "@id": "#visit1_efd_unpivoted.visit_id"
-    datatype: int
+    datatype: long
     nullable: False
     description: Unique identifier for the visit
   - name: property
     "@id": "#visit1_efd_unpivoted.property"
-    datatype: char
-    length: 255
+    datatype: string
+    length: 64
     nullable: False
     value: default_property
     description: Property name for the unpivoted data
   - name: field
     "@id": "#visit1_efd_unpivoted.field"
-    datatype: char
-    length: 255
+    datatype: string
+    length: 32
     nullable: False
     value: default_field
     description: Field name for the unpivoted data
   - name: value
     "@id": "#visit1_efd_unpivoted.value"
-    datatype: double
+    datatype: float
     nullable: True
     description: Value corresponding to the parameter
   - name: created_at
