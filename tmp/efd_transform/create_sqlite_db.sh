@@ -42,15 +42,15 @@ echo "Schema generated: cdb_transformed_efd_${INSTRUMENT}.yaml"
 
 # Remove the old transformed file in the test directory
 echo "Removing old transformed schema file (if any)..."
-rm -f ../../../../tests/efd_transform/cdb_transformed_efd_${INSTRUMENT}.yaml
+rm -f ../../../../tmp/efd_transform/cdb_transformed_efd_${INSTRUMENT}.yaml
 
 # Copy the new transformed file to the test directory
 echo "Copying the new transformed schema file to the test directory..."
-cp "cdb_transformed_efd_${INSTRUMENT}.yaml" ../../../../tests/efd_transform/
+cp "cdb_transformed_efd_${INSTRUMENT}.yaml" ../../../../tmp/efd_transform/
 
 # Navigate to the test directory
 echo "Navigating to the test directory..."
-cd ../../../../tests/efd_transform/ || exit
+cd ../../../../tmp/efd_transform/ || exit
 
 # Remove the old database file for the instrument
 echo "Removing old database file (if any)..."

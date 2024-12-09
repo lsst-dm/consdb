@@ -374,6 +374,30 @@ CREATE TABLE cdb_lsstcomcam.exposure_efd (
 	m2_hexapod_aos_corrections_z FLOAT,
 	m2_stress FLOAT,
 	m1m3_stress FLOAT,
+	mt_salindex104_acceleration_x_mean FLOAT,
+	mt_salindex104_acceleration_x_stddev FLOAT,
+	mt_salindex104_acceleration_x_min FLOAT,
+	mt_salindex104_acceleration_x_max FLOAT,
+	mt_salindex104_acceleration_y_mean FLOAT,
+	mt_salindex104_acceleration_y_stddev FLOAT,
+	mt_salindex104_acceleration_y_min FLOAT,
+	mt_salindex104_acceleration_y_max FLOAT,
+	mt_salindex104_acceleration_z_mean FLOAT,
+	mt_salindex104_acceleration_z_stddev FLOAT,
+	mt_salindex104_acceleration_z_min FLOAT,
+	mt_salindex104_acceleration_z_max FLOAT,
+	mt_salindex104_accelerationpsd_x_mean FLOAT,
+	mt_salindex104_accelerationpsd_x_stddev FLOAT,
+	mt_salindex104_accelerationpsd_x_min FLOAT,
+	mt_salindex104_accelerationpsd_x_max FLOAT,
+	mt_salindex104_accelerationpsd_y_mean FLOAT,
+	mt_salindex104_accelerationpsd_y_stddev FLOAT,
+	mt_salindex104_accelerationpsd_y_min FLOAT,
+	mt_salindex104_accelerationpsd_y_max FLOAT,
+	mt_salindex104_accelerationpsd_z_mean FLOAT,
+	mt_salindex104_accelerationpsd_z_stddev FLOAT,
+	mt_salindex104_accelerationpsd_z_min FLOAT,
+	mt_salindex104_accelerationpsd_z_max FLOAT,
 	"mt_salIndex104_m1m3_accelerometer_0_mean" FLOAT,
 	"mt_salIndex104_m1m3_accelerometer_0_stddev" FLOAT,
 	"mt_salIndex104_m1m3_accelerometer_0_max" FLOAT,
@@ -798,6 +822,30 @@ COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.m2_hexapod_aos_corrections_y IS 'Y
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.m2_hexapod_aos_corrections_z IS 'Z position offset.';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.m2_stress IS 'Calculate M2 stress computed RSS the stress contribution of each bending mode.';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.m1m3_stress IS 'Calculate M1M3 stress computed RSS the stress contribution of each bending mode.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_x_mean IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_x_stddev IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_x_min IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_x_max IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_y_mean IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_y_stddev IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_y_min IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_y_max IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_z_mean IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_z_stddev IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_z_min IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_acceleration_z_max IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_x_mean IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_x_stddev IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_x_min IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_x_max IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_y_mean IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_y_stddev IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_y_min IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_y_max IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_z_mean IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_z_stddev IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_z_min IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex104_accelerationpsd_z_max IS 'Acceleration in z direction.';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd."mt_salIndex104_m1m3_accelerometer_0_mean" IS 'Accelerometer data.';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd."mt_salIndex104_m1m3_accelerometer_0_stddev" IS 'Accelerometer data.';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd."mt_salIndex104_m1m3_accelerometer_0_max" IS 'Accelerometer data.';
@@ -845,10 +893,10 @@ COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd."mt_salIndex104_m1m3_angular_accel
 COMMENT ON CONSTRAINT un_exposure_id_instrument ON cdb_lsstcomcam.exposure_efd IS 'Ensure exposure_id is unique.';
 
 CREATE TABLE cdb_lsstcomcam.exposure_efd_unpivoted (
-	exposure_id INTEGER NOT NULL,
-	property CHAR(255) DEFAULT 'default_property' NOT NULL,
-	field CHAR(255) DEFAULT 'default_field' NOT NULL,
-	value DOUBLE PRECISION,
+	exposure_id BIGINT NOT NULL,
+	property VARCHAR(64) DEFAULT 'default_property' NOT NULL,
+	field VARCHAR(32) DEFAULT 'default_field' NOT NULL,
+	value FLOAT,
 	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (exposure_id, property, field),
 	CONSTRAINT un_exposure_property_field UNIQUE (exposure_id, property, field)
@@ -1230,6 +1278,30 @@ CREATE TABLE cdb_lsstcomcam.visit1_efd (
 	m2_hexapod_aos_corrections_z FLOAT,
 	m2_stress FLOAT,
 	m1m3_stress FLOAT,
+	mt_salindex104_acceleration_x_mean FLOAT,
+	mt_salindex104_acceleration_x_stddev FLOAT,
+	mt_salindex104_acceleration_x_min FLOAT,
+	mt_salindex104_acceleration_x_max FLOAT,
+	mt_salindex104_acceleration_y_mean FLOAT,
+	mt_salindex104_acceleration_y_stddev FLOAT,
+	mt_salindex104_acceleration_y_min FLOAT,
+	mt_salindex104_acceleration_y_max FLOAT,
+	mt_salindex104_acceleration_z_mean FLOAT,
+	mt_salindex104_acceleration_z_stddev FLOAT,
+	mt_salindex104_acceleration_z_min FLOAT,
+	mt_salindex104_acceleration_z_max FLOAT,
+	mt_salindex104_accelerationpsd_x_mean FLOAT,
+	mt_salindex104_accelerationpsd_x_stddev FLOAT,
+	mt_salindex104_accelerationpsd_x_min FLOAT,
+	mt_salindex104_accelerationpsd_x_max FLOAT,
+	mt_salindex104_accelerationpsd_y_mean FLOAT,
+	mt_salindex104_accelerationpsd_y_stddev FLOAT,
+	mt_salindex104_accelerationpsd_y_min FLOAT,
+	mt_salindex104_accelerationpsd_y_max FLOAT,
+	mt_salindex104_accelerationpsd_z_mean FLOAT,
+	mt_salindex104_accelerationpsd_z_stddev FLOAT,
+	mt_salindex104_accelerationpsd_z_min FLOAT,
+	mt_salindex104_accelerationpsd_z_max FLOAT,
 	"mt_salIndex104_m1m3_accelerometer_0_mean" FLOAT,
 	"mt_salIndex104_m1m3_accelerometer_0_stddev" FLOAT,
 	"mt_salIndex104_m1m3_accelerometer_0_max" FLOAT,
@@ -1646,6 +1718,30 @@ COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.m2_hexapod_aos_corrections_y IS 'Y p
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.m2_hexapod_aos_corrections_z IS 'Z position offset.';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.m2_stress IS 'Calculate M2 stress computed RSS the stress contribution of each bending mode.';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.m1m3_stress IS 'Calculate M1M3 stress computed RSS the stress contribution of each bending mode.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_x_mean IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_x_stddev IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_x_min IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_x_max IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_y_mean IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_y_stddev IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_y_min IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_y_max IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_z_mean IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_z_stddev IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_z_min IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_acceleration_z_max IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_x_mean IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_x_stddev IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_x_min IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_x_max IS 'Acceleration in x direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_y_mean IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_y_stddev IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_y_min IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_y_max IS 'Acceleration in y direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_z_mean IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_z_stddev IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_z_min IS 'Acceleration in z direction.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex104_accelerationpsd_z_max IS 'Acceleration in z direction.';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd."mt_salIndex104_m1m3_accelerometer_0_mean" IS 'Accelerometer data.';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd."mt_salIndex104_m1m3_accelerometer_0_stddev" IS 'Accelerometer data.';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd."mt_salIndex104_m1m3_accelerometer_0_max" IS 'Accelerometer data.';
@@ -1693,10 +1789,10 @@ COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd."mt_salIndex104_m1m3_angular_acceler
 COMMENT ON CONSTRAINT un_visit_id_instrument ON cdb_lsstcomcam.visit1_efd IS 'Ensure visit_id is unique.';
 
 CREATE TABLE cdb_lsstcomcam.visit1_efd_unpivoted (
-	visit_id INTEGER NOT NULL,
-	property CHAR(255) DEFAULT 'default_property' NOT NULL,
-	field CHAR(255) DEFAULT 'default_field' NOT NULL,
-	value DOUBLE PRECISION,
+	visit_id BIGINT NOT NULL,
+	property VARCHAR(64) DEFAULT 'default_property' NOT NULL,
+	field VARCHAR(32) DEFAULT 'default_field' NOT NULL,
+	value FLOAT,
 	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (visit_id, property, field),
 	CONSTRAINT un_visit_property_field UNIQUE (visit_id, property, field)
