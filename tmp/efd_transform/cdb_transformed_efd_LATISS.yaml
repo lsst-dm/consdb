@@ -52,26 +52,26 @@ tables:
   columns:
   - name: exposure_id
     "@id": "#exposure_efd_unpivoted.exposure_id"
-    datatype: int
+    datatype: long
     nullable: False
     description: Unique identifier for the exposure
   - name: property
     "@id": "#exposure_efd_unpivoted.property"
-    datatype: char
-    length: 255
+    datatype: string
+    length: 64
     nullable: False
     value: default_property
     description: Property name for the unpivoted data
   - name: field
     "@id": "#exposure_efd_unpivoted.field"
-    datatype: char
-    length: 255
+    datatype: string
+    length: 32
     nullable: False
     value: default_field
     description: Field name for the unpivoted data
   - name: value
     "@id": "#exposure_efd_unpivoted.value"
-    datatype: double
+    datatype: float
     nullable: True
     description: Value corresponding to the parameter
   - name: created_at
@@ -129,26 +129,26 @@ tables:
   columns:
   - name: visit_id
     "@id": "#visit1_efd_unpivoted.visit_id"
-    datatype: int
+    datatype: long
     nullable: False
     description: Unique identifier for the visit
   - name: property
     "@id": "#visit1_efd_unpivoted.property"
-    datatype: char
-    length: 255
+    datatype: string
+    length: 64
     nullable: False
     value: default_property
     description: Property name for the unpivoted data
   - name: field
     "@id": "#visit1_efd_unpivoted.field"
-    datatype: char
-    length: 255
+    datatype: string
+    length: 32
     nullable: False
     value: default_field
     description: Field name for the unpivoted data
   - name: value
     "@id": "#visit1_efd_unpivoted.value"
-    datatype: double
+    datatype: float
     nullable: True
     description: Value corresponding to the parameter
   - name: created_at
