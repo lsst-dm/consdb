@@ -127,7 +127,7 @@ class InstrumentTables:
         self.timestamp_columns = dict()
         for instrument in self.instrument_list:
             md = sqlalchemy.MetaData(schema=f"cdb_{instrument}")
-            md.reflect(engine)
+            md.reflect(engine, views=True)
             self.table_names.update([str(table) for table in md.tables])
             self.schemas[instrument] = md
             self.obs_id_column[instrument] = dict()
