@@ -21,10 +21,13 @@
 
 # The main application factory for consdb.pqserver.
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
 from safir.middleware.x_forwarded import XForwardedMiddleware
+from sqlalchemy.exc import SQLAlchemyError
 
 from .config import config
+from .exceptions import BadValueException, UnknownInstrumentException
 from .handlers.external import external_router
 from .handlers.internal import internal_router
 
@@ -45,3 +48,20 @@ app.include_router(external_router, prefix=config.url_prefix)
 
 # Add the middleware
 app.add_middleware(XForwardedMiddleware)
+
+
+@app.exception_handler(UnknownInstrumentException)
+def unknown_instrument_exception_handler(request: Request, exc: UnknownInstrumentException):
+    return JSONResponse(content=exc.to_dict(), status_code=status.HTTP_404_NOT_FOUND)
+
+
+@app.exception_handler(BadValueException)
+def bad_value_exception_handler(request: Request, exc: BadValueException):
+    exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
+    return JSONResponse(content=exc.to_dict(), status_code=status.HTTP_404_NOT_FOUND)
+
+
+@app.exception_handler(SQLAlchemyError)
+def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
+    content = {"message": str(exc)}
+    return JSONResponse(content=content, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

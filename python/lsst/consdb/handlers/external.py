@@ -92,15 +92,14 @@ def add_flexible_metadata_key(
     """Add a key to a flexible metadata table."""
 
     schema_table = instrument_table.get_flexible_metadata_schema(obs_type)
-    new_entry = schema_table(
+    insert_stmt = schema_table.insert().values(
         key=data.key,
         dtype=data.dtype.value,
         doc=data.doc,
         unit=data.unit,
         ucd=data.ucd,
     )
-    logger.debug(f"Inserting: {new_entry}")
-    db.add(new_entry)
+    db.execute(insert_stmt)
     db.commit()
     # Update cached copy without re-querying database.
     instrument_table.flexible_metadata_schemas[obs_type.lower()][data.key] = [
@@ -157,9 +156,9 @@ def get_flexible_metadata(
     schema = instrument_table.flexible_metadata_schemas[obs_type]
     result = dict()
 
-    query = db.query(table.key, table.value).filter(table.c.obs_id == obs_id)
+    query = db.query(table.c.key, table.c.value).filter(table.c.obs_id == obs_id)
     if len(k) > 0:
-        query = query.filter(table.key.in_(k))
+        query = query.filter(table.c.key.in_(k))
     rows = query.all()
     for key, value in rows:
         if key not in schema:
