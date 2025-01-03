@@ -2,6 +2,7 @@
 
 import logging
 import re
+import sys
 from pydantic import Field
 from pydantic_settings import BaseSettings, validator
 
@@ -67,6 +68,14 @@ class Configuration(BaseSettings):
 
     @validator("log_config")
     def configure_logging(self, log_config):
+        logging.basicConfig(
+            level=logging.INFO,
+            format="{levelname} {asctime} {name} ({filename}:{lineno}) - {message}",
+            style="{",
+            stream=sys.stderr,
+            force=True,
+        )
+
         # Set up logging using the logspec field
         # One-line "component=LEVEL" logging specification parser.
         for component, level in re.findall(r"(?:([\w.]*)=)?(\w+)", log_config):
