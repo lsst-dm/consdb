@@ -21,6 +21,7 @@
 
 from enum import StrEnum
 import logging
+from typing import Generator
 
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
@@ -98,10 +99,17 @@ class ObsIdColname(StrEnum):
 class InstrumentTable:
     """The column information for all tables in ConsDB schemas."""
 
-    def __init__(self, *, engine: sqlalchemy.Engine, db: Session, instrument: str, logger: logging.Logger):
+    def __init__(
+        self,
+        *,
+        engine: sqlalchemy.Engine,
+        get_db: Generator[Session, None, None],
+        instrument: str,
+        logger: logging.Logger,
+    ):
         self.instrument = instrument.lower()
         self.logger = logger
-        self.db = db
+        self.get_db = get_db
 
         self.table_names = set()
         self.schemas = dict()
@@ -140,7 +148,8 @@ class InstrumentTable:
                 stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
                 self.logger.debug(str(stmt))
                 schema = dict()
-                for row in self.db.execute(stmt):
+                db = next(self.get_db())
+                for row in db.execute(stmt):
                     schema[row[0]] = row[1:]
                 self.flexible_metadata_schemas[obs_type] = schema
 
@@ -177,7 +186,8 @@ class InstrumentTable:
             exposure_table.c.exposure_id == exposure_id
         )
 
-        query_result = self.db.execute(query).first()
+        db = next(self.get_db())
+        query_result = db.execute(query).first()
 
         if not query_result:
             raise BadValueException(f"Exposure ID: {exposure_id} - no such exposure ID")
@@ -188,7 +198,8 @@ class InstrumentTable:
         schema_table = self.get_flexible_metadata_schema(obs_type)
         stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
         self.logger.debug(str(stmt))
-        for row in self.db.execute(stmt):
+        db = next(self.get_db())
+        for row in db.execute(stmt):
             schema[row[0]] = row[1:]
         self.flexible_metadata_schemas[obs_type] = schema
 

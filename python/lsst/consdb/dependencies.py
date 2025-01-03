@@ -99,7 +99,7 @@ def get_instrument_table(instrument: str):
         instrument_table = instrument_tables[instrument]
     else:
         instrument_table = InstrumentTable(
-            engine=engine, instrument=instrument, db=next(get_db()), logger=logger
+            engine=engine, instrument=instrument, get_db=get_db, logger=logger
         )
         instrument_tables[instrument] = instrument_table
 
