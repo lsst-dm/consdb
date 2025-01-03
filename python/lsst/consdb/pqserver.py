@@ -22,20 +22,13 @@
 # The main application factory for consdb.pqserver.
 
 from fastapi import FastAPI
-from safir.logging import configure_logging
-from safir.middleware.x_forwareded import XForwardedMiddleware
+from safir.middleware.x_forwarded import XForwardedMiddleware
 
 from .config import config
 from .handlers.external import external_router
 from .handlers.internal import internal_router
 
 __all__ = ["app", "config"]
-
-configure_logging(
-    profile=config.profile,
-    log_level=config.log_level,
-    name=config.logger_name,
-)
 
 app = FastAPI(
     title="consdb-pqserver",

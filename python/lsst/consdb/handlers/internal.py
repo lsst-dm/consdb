@@ -19,11 +19,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from safir.metadata import get_metadata
 
 from ..cdb_schema import AllowedFlexTypeEnum, ObsTypeEnum
 from ..config import config
+from ..dependencies import get_instrument_list
 from ..models import IndexResponseModel
 
 internal_router = APIRouter()
@@ -36,7 +37,9 @@ internal_router = APIRouter()
     include_in_schema=False,
     summary="Application metadata",
 )
-def internal_root() -> IndexResponseModel:
+def internal_root(
+    instrument_list: list[str] = Depends(get_instrument_list),
+) -> IndexResponseModel:
     """Root URL for liveness checks.
 
     Returns
@@ -45,17 +48,17 @@ def internal_root() -> IndexResponseModel:
         JSON response with a list of instruments, observation types, and
         data types.
     """
-    global instrument_tables
 
     metadata = get_metadata(
         package_name="consdb",
         application_name=config.name,
     )
 
-    return IndexResponseModel.parse_obj(
+    assert instrument_list is not None
+    return IndexResponseModel.model_validate(
         {
-            **metadata.dict(),
-            "instruments": instrument_tables.instrument_list,
+            **metadata.model_dump(),
+            "instruments": instrument_list,
             "obs_types": [o.value for o in ObsTypeEnum],
             "dtypes": [d.value for d in AllowedFlexTypeEnum],
         }

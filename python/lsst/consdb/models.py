@@ -24,7 +24,8 @@ from pydantic import BaseModel, Field, field_validator
 from safir.metadata import Metadata
 from typing import Any
 
-from .cdb_schema import AllowedFlexType, AllowedFlexTypeEnum, InstrumentName, ObservationIdType, ObsTypeEnum
+from .cdb_schema import AllowedFlexType, AllowedFlexTypeEnum, ObservationIdType, ObsTypeEnum
+from .dependencies import InstrumentName
 
 
 class IndexResponseModel(Metadata):
@@ -45,7 +46,8 @@ class AddKeyRequestModel(BaseModel):
     )
 
     @field_validator("unit")
-    def validate_unit(self, v: str):
+    @classmethod
+    def validate_unit(cls, v: str, values):
         try:
             _ = astropy.units.Unit(v)
         except ValueError:
@@ -53,7 +55,8 @@ class AddKeyRequestModel(BaseModel):
         return v
 
     @field_validator("ucd")
-    def validate_ucd(self, v: str):
+    @classmethod
+    def validate_ucd(cls, v: str, values):
         if not astropy.io.votable.ucd.check_ucd(v):
             raise ValueError(f"'{v}' is not a valid IVOA UCD.")
         return v

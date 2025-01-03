@@ -21,16 +21,13 @@
 
 from enum import StrEnum
 import logging
-from typing import Annotated
 
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 from sqlalchemy.orm import Session
-from fastapi import Path
 from packaging.version import Version
-from pydantic import AfterValidator
 
-from .exceptions import BadValueException, UnknownInstrumentException
+from .exceptions import BadValueException
 
 
 class ObsTypeEnum(StrEnum):
@@ -101,9 +98,10 @@ class ObsIdColname(StrEnum):
 class InstrumentTable:
     """The column information for all tables in ConsDB schemas."""
 
-    def __init__(self, db: Session, instrument: str, logger: logging.Logger):
+    def __init__(self, *, engine: sqlalchemy.Engine, db: Session, instrument: str, logger: logging.Logger):
         self.instrument = instrument.lower()
         self.logger = logger
+        self.db = db
 
         self.table_names = set()
         self.schemas = dict()
@@ -112,7 +110,7 @@ class InstrumentTable:
         self.timestamp_columns = dict()
 
         md = sqlalchemy.MetaData(schema=f"cdb_{self.instrument}")
-        md.reflect(db)
+        md.reflect(engine)
         self.table_names.update([str(table) for table in md.tables])
         self.schemas = md
         self.obs_id_column = dict()
@@ -303,16 +301,3 @@ class InstrumentTable:
             ]
             raise BadValueException("observation type", obs_type, obs_type_list)
         return view_name
-
-
-def validate_instrument_name(
-    instrument: str = Path(description="Must be a valid instrument name (e.g., ``LATISS``)"),
-) -> str:
-    global instrument_tables
-    instrument_lower = instrument.lower()
-    if instrument_lower not in [i.lower() for i in instrument_tables.instrument_list]:
-        raise UnknownInstrumentException(instrument)
-    return instrument
-
-
-InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]

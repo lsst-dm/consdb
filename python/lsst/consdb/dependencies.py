@@ -21,8 +21,11 @@
 
 import logging
 
-from fastapi import Request
-from sqlalchemy import create_engine, inspect, sessionmaker
+from fastapi import Path, Request
+from pydantic import AfterValidator
+from sqlalchemy import create_engine, inspect
+from sqlalchemy.orm import sessionmaker
+from typing import Annotated
 
 from .config import config
 from .cdb_schema import InstrumentTable
@@ -42,15 +45,17 @@ def get_engine():
     if _database_url is None:
         try:
             _database_url = config.database_url
+            print(f"{_database_url=}")
         except ValueError:
             log = logging.getLogger(__name__)
             log.warning("Database URL was not available.")
             raise
 
     if _engine is None:
-        _engine = create_engine(_database_url)
+        _engine = create_engine(config.database_url)
 
     return _engine
+
 
 def get_db():
     global _SessionLocal
@@ -65,8 +70,8 @@ def get_db():
         db.close()
 
 
-def get_logger(request: Request | None = None):
-    endpoint_name = request.url.path if request is not None else None
+def get_logger(request: Request):
+    endpoint_name = request.url.path
     return logging.getLogger(endpoint_name)
 
 
@@ -79,7 +84,7 @@ def get_instrument_table(instrument: str):
     global instrument_tables
 
     instrument = instrument.lower()
-    logger = get_logger()
+    logger = logging.getLogger()
     engine = get_engine()
 
     # Check whether the instrument name is valid
@@ -93,7 +98,40 @@ def get_instrument_table(instrument: str):
     if instrument in instrument_tables:
         instrument_table = instrument_tables[instrument]
     else:
-        instrument_table = InstrumentTable(instrument, engine, logger)
+        instrument_table = InstrumentTable(
+            engine=engine, instrument=instrument, db=next(get_db()), logger=logger
+        )
         instrument_tables[instrument] = instrument_table
 
     return instrument_table
+
+
+def get_instrument_list():
+    global instrument_list
+    if instrument_list is None:
+        inspector = inspect(get_engine())
+        instrument_list = [name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")]
+
+    return instrument_list
+
+
+def validate_instrument_name(
+    instrument: str = Path(description="Must be a valid instrument name (e.g., ``LATISS``)"),
+) -> str:
+    print(f"validate_instrument_name({instrument=})")
+    instrument_lower = instrument.lower()
+    if instrument_lower not in [i.lower() for i in get_instrument_list()]:
+        raise UnknownInstrumentException(instrument)
+    return instrument
+
+
+InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]
+
+
+def reset_dependencies():
+    global _database_url, _engine, _SessionLocal, instrument_table, instrument_list
+    _database_url = None
+    _engine = None
+    _SessionLocal = None
+    instrument_table = None
+    instrument_list = None

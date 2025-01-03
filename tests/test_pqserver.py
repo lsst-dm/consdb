@@ -14,6 +14,8 @@ from felis.db.utils import DatabaseContext
 from felis.metadata import MetaDataBuilder
 from felis.tests.postgresql import setup_postgres_test_db
 from lsst.consdb import pqserver
+from lsst.consdb.config import config
+from lsst.consdb.dependencies import reset_dependencies, validate_instrument_name
 from requests import Response
 
 
@@ -29,6 +31,7 @@ def astropy_tables(scope="module"):
 
 @pytest.fixture
 def lsstcomcamsim(request, astropy_tables, scope="module"):
+    reset_dependencies()
     schema_name = request.param if hasattr(request, "param") else "cdb_lsstcomcamsim"
     data_path = Path(__file__).parent / "lsstcomcamsim"
 
@@ -40,6 +43,9 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
     md = MetaDataBuilder(schema).build()
 
     with setup_postgres_test_db() as instance:
+        os.environ["POSTGRES_URL"] = instance.url
+        config.postgres_url = instance.url
+
         context = DatabaseContext(md, instance.engine)
         context.initialize()
         context.create_all()
@@ -103,9 +109,6 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
                 # Insert rows into the SQL table
                 connection.execute(sql_table.insert(), rows)
 
-        pqserver.engine = instance.engine
-        pqserver.instrument_tables = pqserver.InstrumentTables()
-
         yield TestClient(pqserver.app)
 
 
@@ -116,10 +119,8 @@ def app(db, scope="module"):
 
     pqserver.engine = utils.setup_postgres()
     pqserver.instrument_tables = pqserver.InstrumentTables()
-    try:
-        yield pqserver.app
-    finally:
-        pqserver.engine.dispose()
+
+    yield pqserver.app
 
 
 def test_root(lsstcomcamsim):
@@ -174,10 +175,14 @@ def test_insert_multiple(lsstcomcamsim):
             "emulated": False,
         },
     }
+    response = lsstcomcamsim.get("/consdb")
+    print(response.json())
+    print(validate_instrument_name("lsstcomcamsim"))
     response = lsstcomcamsim.post(
         "/consdb/insert/lsstcomcamsim/exposure",
         json={"obs_dict": data},
     )
+    print(f"{response.json()=}")
     _assert_http_status(response, 200)
     result = response.json()
     assert "Data inserted" in result["message"]
@@ -332,29 +337,37 @@ def test_missing_primary_key(lsstcomcamsim):
 
 
 def test_validate_unit():
-    os.environ["POSTGRES_URL"] = "sqlite://"
-    from lsst.consdb import pqserver
+    from lsst.consdb import models
 
-    assert pqserver.AddKeyRequestModel.validate_unit("s") == "s"
-    assert pqserver.AddKeyRequestModel.validate_unit("km/s") == "km/s"
-    assert pqserver.AddKeyRequestModel.validate_unit("km s-1") == "km s-1"
+    model = models.AddKeyRequestModel(key="foo", dtype="float", unit="s")
+    assert model.unit == "s"
 
-    with pytest.raises(ValueError):
-        pqserver.AddKeyRequestModel.validate_unit("tacos / s")
+    model = models.AddKeyRequestModel(key="foo", dtype="float", unit="km/s")
+    assert model.unit == "km/s"
+
+    model = models.AddKeyRequestModel(key="foo", dtype="float", unit="km s-1")
+    assert model.unit == "km s-1"
+
+    with pytest.raises(ValueError) as exc_info:
+        models.AddKeyRequestModel(key="foo", dtype="float", unit="tacos / s")
+    assert "unit" in str(exc_info.value)
 
 
 def test_validate_ucd():
-    os.environ["POSTGRES_URL"] = "sqlite://"
-    from lsst.consdb import pqserver
+    from lsst.consdb import models
 
-    assert pqserver.AddKeyRequestModel.validate_ucd("this.is.a.valid.ucd")
-    assert pqserver.AddKeyRequestModel.validate_ucd("THIS-ONE.IS.TOO")
+    model = models.AddKeyRequestModel(key="foo", dtype="float", ucd="this.is.a.valid.ucd")
+    assert model.ucd == "this.is.a.valid.ucd"
+    model = models.AddKeyRequestModel(key="foo", dtype="float", ucd="THIS-ONE.IS.TOO")
+    assert model.ucd == "THIS-ONE.IS.TOO"
 
-    with pytest.raises(ValueError):
-        pqserver.AddKeyRequestModel.validate_ucd("but this is not")
+    with pytest.raises(ValueError) as exc_info:
+        models.AddKeyRequestModel(key="foo", dtype="float", ucd="but this is not")
+    assert "ucd" in str(exc_info.value)
 
-    with pytest.raises(ValueError):
-        pqserver.AddKeyRequestModel.validate_ucd("neither#is@this[one]!")
+    with pytest.raises(ValueError) as exc_info:
+        models.AddKeyRequestModel(key="foo", dtype="float", ucd="neither#is@this[one]!")
+    assert "ucd" in str(exc_info.value)
 
 
 @pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)

@@ -3,27 +3,30 @@
 import logging
 import re
 import sys
-from pydantic import Field
-from pydantic_settings import BaseSettings, validator
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings
 
 __all__ = ["Configuration", "config"]
 
 
 class Configuration(BaseSettings):
     """Configuration for consdb."""
+    name: str = Field("pqserver", title="Application name")
 
-    url_prefix: str = Field("consdb", title="URL prefix")
+    version: str = Field("noversion", title="Application version number")
+
+    url_prefix: str = Field("/consdb", title="URL prefix")
 
     db_host: str = Field("localhost", title="The hostname for the SQL database.")
 
-    db_user: str = Field(None, title="The database username for the SQL database.")
+    db_user: str | None = Field(None, title="The database username for the SQL database.")
 
-    db_pass: str = Field(None, title="The SQL database password.")
+    db_pass: str | None = Field(None, title="The SQL database password.")
 
-    db_name: str = Field(None, title="The name of the SQL database to connect to.")
+    db_name: str | None = Field(None, title="The name of the SQL database to connect to.")
 
     log_config: str = Field(
-        None,
+        "",
         title="Log levels",
         description="""Log levels.
 
@@ -37,9 +40,9 @@ class Configuration(BaseSettings):
         """,
     )
 
-    postgres_url: str = Field(None, title="Database URL set by POSTGRES_URL.")
+    postgres_url: str | None = Field(None, title="Database URL set by POSTGRES_URL.")
 
-    consdb_url: str = Field(None, title="Database URL set by CONSDB_URL")
+    consdb_url: str | None = Field(None, title="Database URL set by CONSDB_URL")
 
     @property
     def database_url(self) -> str:
@@ -64,10 +67,11 @@ class Configuration(BaseSettings):
             self.postgres_url = url
             return url
 
-        raise ValueError("Database connection info not specified.")
+        return "ERROR DATABASE CONNECTION NOT SPECIFIED"
 
-    @validator("log_config")
-    def configure_logging(self, log_config):
+    @field_validator("log_config")
+    @classmethod
+    def configure_logging(cls, log_config, values):
         logging.basicConfig(
             level=logging.INFO,
             format="{levelname} {asctime} {name} ({filename}:{lineno}) - {message}",
@@ -83,6 +87,8 @@ class Configuration(BaseSettings):
                 # Specially handle "." as a component to mean the lsst root
                 component = "lsst"
             logging.getLogger(component).setLevel(level)
+
+        return log_config
 
 
 config = Configuration()

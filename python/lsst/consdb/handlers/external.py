@@ -32,13 +32,13 @@ from packaging.version import Version
 from ..cdb_schema import (
     AllowedFlexType,
     AllowedFlexTypeEnum,
-    InstrumentName,
     InstrumentTable,
     ObservationIdType,
     ObsTypeEnum,
     convert_to_flex_type,
 )
-from ..dependencies import get_db, get_logger, get_instrument_list, get_instrument_table
+from ..config import config
+from ..dependencies import get_db, get_logger, get_instrument_list, get_instrument_table, InstrumentName
 from ..exceptions import BadValueException
 from ..models import (
     AddKeyRequestModel,
@@ -68,6 +68,8 @@ def external_root(
     """Application root URL /consdb/."""
 
     return IndexResponseModel(
+        name=config.name,
+        version=config.version,
         instruments=instrument_list,
         obs_types=[o.value for o in ObsTypeEnum],
         dtypes=[d.value for d in AllowedFlexTypeEnum],
@@ -75,7 +77,7 @@ def external_root(
 
 
 @external_router.post(
-    "/consdb/flex/{instrument}/{obs_type}/addkey",
+    "/flex/{instrument}/{obs_type}/addkey",
     summary="Add a flexible metadata key",
     description="Add a flexible metadata key for the specified instrument and obs_type.",
 )
@@ -116,7 +118,7 @@ def add_flexible_metadata_key(
 
 
 @external_router.get(
-    "/consdb/flex/{instrument}/{obs_type}/schema",
+    "/flex/{instrument}/{obs_type}/schema",
     summary="Get all flexible metadata keys",
     description="Flex schema for the given instrument and observation type.",
 )
@@ -137,7 +139,7 @@ def get_flexible_metadata_keys(
 
 
 @external_router.get(
-    "/consdb/flex/{instrument}/{obs_type}/obs/{obs_id}",
+    "/flex/{instrument}/{obs_type}/obs/{obs_id}",
     description="Flex schema for the given instrument and observation type.",
 )
 def get_flexible_metadata(
@@ -168,7 +170,7 @@ def get_flexible_metadata(
     return result
 
 
-@external_router.post("/consdb/flex/{instrument}/{obs_type}/obs/{obs_id}")
+@external_router.post("/flex/{instrument}/{obs_type}/obs/{obs_id}")
 def insert_flexible_metadata(
     instrument: InstrumentName,
     obs_type: ObsTypeEnum,
@@ -237,7 +239,7 @@ def insert_flexible_metadata(
 
 
 @external_router.post(
-    "/consdb/insert/{instrument}/{table}/obs/{obs_id}",
+    "/insert/{instrument}/{table}/obs/{obs_id}",
     summary="Insert data row",
 )
 def insert(
@@ -294,7 +296,7 @@ def insert(
 
 
 @external_router.post(
-    "/consdb/insert/{instrument}/{table}",
+    "/insert/{instrument}/{table}",
     summary="Insert multiple data rows",
 )
 def insert_multiple(
@@ -379,7 +381,7 @@ def insert_multiple(
 
 
 @external_router.get(
-    "/consdb/query/{instrument}/{obs_type}/obs/{obs_id}",
+    "/query/{instrument}/{obs_type}/obs/{obs_id}",
     summary="Get all metadata",
     description="Get all metadata for a given observation.",
 )
@@ -429,7 +431,7 @@ def get_all_metadata(
     return result
 
 
-@external_router.post("/consdb/query")
+@external_router.post("/query")
 def query(
     data: QueryRequestModel = Body(title="SQL query string"),
     db: Session = Depends(get_db),
@@ -469,7 +471,7 @@ def query(
     )
 
 
-@external_router.get("/consdb/schema")
+@external_router.get("/schema")
 def list_instruments(
     instrument_list: list[str] = Depends(get_instrument_list),
 ) -> list[str]:
@@ -478,7 +480,7 @@ def list_instruments(
     return instrument_list
 
 
-@external_router.get("/consdb/schema/{instrument}")
+@external_router.get("/schema/{instrument}")
 def list_table(
     instrument: InstrumentName,
     instrument_table: InstrumentTable = Depends(get_instrument_table),
@@ -489,7 +491,7 @@ def list_table(
     return list(schema.tables.keys())
 
 
-@external_router.get("/consdb/schema/{instrument}/{table}")
+@external_router.get("/schema/{instrument}/{table}")
 def schema(
     instrument: InstrumentName = Path(description="Instrument name"),
     table: str = Path(description="Table name to retrieve schema"),

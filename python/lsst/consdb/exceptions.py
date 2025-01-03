@@ -21,8 +21,6 @@
 
 from typing import Any
 
-from .dependencies import instrument_list
-
 
 class BadValueException(Exception):
     """Exception raised for an invalid value.
@@ -89,5 +87,4 @@ class UnknownInstrumentException(Exception):
         return {
             "message": "Unknown instrument",
             "value": self.instrument,
-            "valid": instrument_list if instrument_list is not None else [],
         }
