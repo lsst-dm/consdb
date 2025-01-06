@@ -8,3 +8,5 @@ doxygen.conf
 # Sphinx products
 _build
 py-api
+
+*.DS_Store
