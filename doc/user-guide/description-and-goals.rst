@@ -2,4 +2,4 @@
 Description and Goals
 ######################
 
-https://dmtn-227.lsst.io/
+`Our data management technote (227) <https://dmtn-227.lsst.io/>`__

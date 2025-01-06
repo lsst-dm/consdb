@@ -7,7 +7,7 @@ Structure
 
 - ConsDB content must relate to exposures or visits or observations structured like exposures.  General time series should go in the Engineering and Facilities Database (EFD).
 - ConsDB content should generally be scalar values.  Large amounts of data, especially arrays or images or cubes, should generally go into the Large File Annex (LFA).
-- Avoid arrays expressed as individual columns (e.g. ``something0``, ``something1``, ``something2``) where possible, as this increases the number of columns drastically (and there is `a limit <https://www.postgresql.org/docs/current/limits.html>`_), makes it hard to query (``SELECT`` clauses need to list all of these individually, and ``WHERE`` clauses may need to include large ``OR`` or ``AND`` conditions), and potentially requires a lot of database storage space.
+- Avoid arrays expressed as individual columns (e.g. ``something0``, ``something1``, ``something2``) where possible, as this increases the number of columns drastically (and there is `a limit <https://www.postgresql.org/docs/current/limits.html>`__), makes it hard to query (``SELECT`` clauses need to list all of these individually, and ``WHERE`` clauses may need to include large ``OR`` or ``AND`` conditions), and potentially requires a lot of database storage space.
 - Columns should be named in all lowercase with underscore (``_``) separators, also known as "snake_case".
 
 Data sources
