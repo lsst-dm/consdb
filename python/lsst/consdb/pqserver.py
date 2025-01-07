@@ -57,7 +57,6 @@ def unknown_instrument_exception_handler(request: Request, exc: UnknownInstrumen
 
 @app.exception_handler(BadValueException)
 def bad_value_exception_handler(request: Request, exc: BadValueException):
-    exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
     return JSONResponse(content=exc.to_dict(), status_code=status.HTTP_404_NOT_FOUND)
 
 

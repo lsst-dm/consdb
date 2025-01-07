@@ -3,6 +3,7 @@
 import logging
 import re
 import sys
+
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
@@ -11,6 +12,7 @@ __all__ = ["Configuration", "config"]
 
 class Configuration(BaseSettings):
     """Configuration for consdb."""
+
     name: str = Field("pqserver", title="Application name")
 
     version: str = Field("noversion", title="Application version number")

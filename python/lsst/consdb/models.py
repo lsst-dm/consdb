@@ -19,10 +19,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Any
+
 import astropy
 from pydantic import BaseModel, Field, field_validator
 from safir.metadata import Metadata
-from typing import Any
 
 from .cdb_schema import AllowedFlexType, AllowedFlexTypeEnum, ObservationIdType, ObsTypeEnum
 from .dependencies import InstrumentName

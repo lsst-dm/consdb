@@ -25,9 +25,9 @@ from typing import Any
 import astropy
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
-from sqlalchemy.orm import Session
 from fastapi import APIRouter, Body, Depends, Path, Query
 from packaging.version import Version
+from sqlalchemy.orm import Session
 
 from ..cdb_schema import (
     AllowedFlexType,
@@ -38,7 +38,7 @@ from ..cdb_schema import (
     convert_to_flex_type,
 )
 from ..config import config
-from ..dependencies import get_db, get_logger, get_instrument_list, get_instrument_table, InstrumentName
+from ..dependencies import InstrumentName, get_db, get_instrument_list, get_instrument_table, get_logger
 from ..exceptions import BadValueException
 from ..models import (
     AddKeyRequestModel,
@@ -52,6 +52,13 @@ from ..models import (
     QueryRequestModel,
     QueryResponseModel,
 )
+
+# Check SQLAlchemy version
+required_version = (2, 0, 0)
+current_version = tuple(map(int, sqlalchemy.__version__.split(".")[:3]))
+assert (
+    current_version >= required_version
+), f"SQLAlchemy version must be >= 2.0.0, but found {sqlalchemy.__version__}"
 
 external_router = APIRouter()
 """FastAPI router for all external handlers."""
@@ -221,9 +228,7 @@ def insert_flexible_metadata(
                     index_elements=["day_obs", "seq_num", "key"], set_={"value": value_str}
                 )
             else:
-                stmt = stmt.on_conflict_do_update(
-                    index_elements=["obs_id", "key"], set_={"value": value_str}
-                )
+                stmt = stmt.on_conflict_do_update(index_elements=["obs_id", "key"], set_={"value": value_str})
 
         logger.debug(str(stmt))
         _ = db.execute(stmt)
@@ -355,20 +360,21 @@ def insert_multiple(
                 timestamp = astropy.time.Time(timestamp, format="isot", scale="tai")
                 valdict[column] = timestamp.to_datetime()
 
-        stmt: sqlalchemy.sql.dml.Insert
-        stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict)
-        if u != 0:
-            stmt = stmt.on_conflict_do_update(index_elements=[obs_id_colname], set_=valdict)
+    bulk_data.append(valdict)
 
     try:
         if bulk_data:
-            db.execute(insert(table_obj).values(bulk_data))
+            stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(bulk_data)
+            if u != 0:
+                # Specify update behavior for conflicts
+                update_dict = {col: stmt.excluded[col] for col in table_obj.columns.keys()}
+                stmt = stmt.on_conflict_do_update(index_elements=[obs_id_colname], set_=update_dict)
 
+            db.execute(stmt)
         db.commit()
-
     except Exception:
         db.rollback()
-        logger.exception("Failed to insert data")
+        logger.exception("Failed to insert or update data")
         raise
 
     return InsertMultipleResponseModel(
@@ -455,14 +461,10 @@ def query(
     columns = []
     rows = []
 
-    cursor = db.exec_driver_sql(data.query)
-    first = True
-    for row in cursor:
-        logger.debug(row)
-        if first:
-            columns.extend(row.keys())
-            first = False
-        rows.append(list(row))
+    with db.connection() as connection:
+        result = connection.exec_driver_sql(data.query)
+        columns = result.keys()
+        rows = [list(row) for row in result]
 
     return QueryResponseModel(
         columns=columns,

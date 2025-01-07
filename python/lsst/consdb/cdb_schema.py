@@ -19,14 +19,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from enum import StrEnum
 import logging
+from enum import StrEnum
 from typing import Generator
 
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
-from sqlalchemy.orm import Session
 from packaging.version import Version
+from sqlalchemy.orm import Session
 
 from .exceptions import BadValueException
 

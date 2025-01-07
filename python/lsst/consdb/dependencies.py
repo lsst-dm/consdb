@@ -20,15 +20,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from typing import Annotated
 
 from fastapi import Path, Request
 from pydantic import AfterValidator
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
-from typing import Annotated
 
-from .config import config
 from .cdb_schema import InstrumentTable
+from .config import config
 from .exceptions import UnknownInstrumentException
 
 __all__ = ["get_logger", "get_db"]
@@ -98,9 +98,7 @@ def get_instrument_table(instrument: str):
     if instrument in instrument_tables:
         instrument_table = instrument_tables[instrument]
     else:
-        instrument_table = InstrumentTable(
-            engine=engine, instrument=instrument, get_db=get_db, logger=logger
-        )
+        instrument_table = InstrumentTable(engine=engine, instrument=instrument, get_db=get_db, logger=logger)
         instrument_tables[instrument] = instrument_table
 
     return instrument_table

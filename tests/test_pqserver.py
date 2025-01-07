@@ -490,11 +490,12 @@ def test_flexible_metadata(lsstcomcamsim):
     assert result == {"baz": 2.71828}
 
     response = client.post("/consdb/flex/latiss/exposure/obs/7024052800003", json={})
-    _assert_http_status(response, 404)
-    result = response.json()
-    assert "Validation error" in result["message"]
-    assert result["detail"][0]["type"] == "missing"
-    assert "values" in result["detail"][0]["loc"]
+    _assert_http_status(response, 422)
+    result = response.json()["detail"][0]
+    assert "Field required" in result["msg"]
+    assert result["type"] == "missing"
+    assert "values" in result["loc"]
+    assert "body" in result["loc"]
 
     response = client.post(
         "/consdb/insert/latiss/exposure/obs/2024032100003",
