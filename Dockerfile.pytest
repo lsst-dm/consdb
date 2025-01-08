@@ -7,7 +7,7 @@ RUN yum install -y postgresql-server postgresql && rmdir /usr/local/bin && ln -s
 
 USER lsst
 RUN source loadLSST.bash && mamba install -y aiokafka httpx
-RUN source loadLSST.bash && pip install kafkit aiokafka httpx pytest-asyncio testing.postgresql lsst-felis
+RUN source loadLSST.bash && pip install kafkit aiokafka httpx pytest-asyncio testing.postgresql lsst-felis safir
 
 WORKDIR /home/lsst/
 
