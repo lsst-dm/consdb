@@ -393,7 +393,7 @@ def test_flexible_metadata(lsstcomcamsim):
     assert result == {
         "message": "Key added to flexible metadata",
         "key": "bar2",
-        "instrument": "LATISS",
+        "instrument": "latiss",
         "obs_type": "exposure",
     }
 

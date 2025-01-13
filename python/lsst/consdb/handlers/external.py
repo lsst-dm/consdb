@@ -251,8 +251,7 @@ def insert(
 ) -> InsertDataResponse:
     """Insert or update column/value pairs in a ConsDB table."""
 
-    instrument_l = instrument.lower()
-    schema = f"cdb_{instrument_l}."
+    schema = f"cdb_{instrument}."
     table_name = table.lower()
     if not table.lower().startswith(schema):
         table_name = schema + table_name
@@ -316,13 +315,12 @@ def insert_multiple(
         Raised if instrument or observation type is invalid.
     """
 
-    instrument_l = instrument.lower()
-    schema = f"cdb_{instrument_l}."
+    schema = f"cdb_{instrument}."
     table_name = table.lower()
     if not table.lower().startswith(schema):
         table_name = schema + table_name
     table_obj = instrument_table.schemas.tables[table_name]
-    table_name = f"cdb_{instrument_l}." + table.lower()
+    table_name = f"cdb_{instrument}." + table.lower()
     obs_id_colname = instrument_table.obs_id_column[table_name]
 
     timestamp_columns = instrument_table.get_timestamp_columns(table_name)
@@ -513,10 +511,9 @@ def schema(
         Raised if instrument is invalid.
     """
 
-    instrument_l = instrument.lower()
     schema = instrument_table.schemas
-    if not table.startswith(f"cdb_{instrument_l}."):
-        table = f"cdb_{instrument_l}.{table}"
+    if not table.startswith(f"cdb_{instrument}."):
+        table = f"cdb_{instrument}.{table}"
     table = table.lower()
     if table not in schema.tables:
         raise BadValueException("table", table, list(schema.tables.keys()))

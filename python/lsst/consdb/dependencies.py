@@ -118,7 +118,7 @@ def validate_instrument_name(
     instrument_lower = instrument.lower()
     if instrument_lower not in [i.lower() for i in get_instrument_list()]:
         raise UnknownInstrumentException(instrument)
-    return instrument
+    return instrument_lower
 
 
 InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]
