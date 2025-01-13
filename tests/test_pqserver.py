@@ -15,7 +15,7 @@ from felis.metadata import MetaDataBuilder
 from felis.tests.postgresql import setup_postgres_test_db
 from lsst.consdb import pqserver
 from lsst.consdb.config import config
-from lsst.consdb.dependencies import reset_dependencies, validate_instrument_name
+from lsst.consdb.dependencies import reset_dependencies
 from requests import Response
 
 
