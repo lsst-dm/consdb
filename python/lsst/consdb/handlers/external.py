@@ -53,13 +53,6 @@ from ..models import (
     QueryResponseModel,
 )
 
-# Check SQLAlchemy version
-required_version = (2, 0, 0)
-current_version = tuple(map(int, sqlalchemy.__version__.split(".")[:3]))
-assert (
-    current_version >= required_version
-), f"SQLAlchemy version must be >= 2.0.0, but found {sqlalchemy.__version__}"
-
 external_router = APIRouter()
 """FastAPI router for all external handlers."""
 
