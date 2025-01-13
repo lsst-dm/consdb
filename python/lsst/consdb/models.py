@@ -72,23 +72,6 @@ class AddKeyResponseModel(BaseModel):
     obs_type: ObsTypeEnum = Field(title="The observation type that owns the new key")
 
 
-class FlexMetadataSchemaResponseModel(BaseModel):
-    schema_: dict[str, tuple[AllowedFlexTypeEnum, str, str | None, str | None]] = Field(
-        title="""
-            Dictionary containing each flex key name
-            and its associated data type, documentation, unit, and UCD
-        """,
-        alias="schema",
-    )
-
-
-class FlexibleMetadataInfo(BaseModel):
-    dtype: str = Field(title="Data type for the key")
-    doc: str = Field(title="Documentation string for the key")
-    unit: str | None = Field(None, title="Unit for value")
-    ucd: str | None = Field(None, title="IVOA Unified Content Descriptor")
-
-
 class InsertDataModel(BaseModel):
     """This model can be used for either flex or regular data."""
 
