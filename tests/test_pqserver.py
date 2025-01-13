@@ -176,13 +176,10 @@ def test_insert_multiple(lsstcomcamsim):
         },
     }
     response = lsstcomcamsim.get("/consdb")
-    print(response.json())
-    print(validate_instrument_name("lsstcomcamsim"))
     response = lsstcomcamsim.post(
         "/consdb/insert/lsstcomcamsim/exposure",
         json={"obs_dict": data},
     )
-    print(f"{response.json()=}")
     _assert_http_status(response, 200)
     result = response.json()
     assert "Data inserted" in result["message"]

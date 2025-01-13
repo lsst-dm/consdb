@@ -45,7 +45,6 @@ def get_engine():
     if _database_url is None:
         try:
             _database_url = config.database_url
-            print(f"{_database_url=}")
         except ValueError:
             log = logging.getLogger(__name__)
             log.warning("Database URL was not available.")
@@ -116,7 +115,6 @@ def get_instrument_list():
 def validate_instrument_name(
     instrument: str = Path(description="Must be a valid instrument name (e.g., ``LATISS``)"),
 ) -> str:
-    print(f"validate_instrument_name({instrument=})")
     instrument_lower = instrument.lower()
     if instrument_lower not in [i.lower() for i in get_instrument_list()]:
         raise UnknownInstrumentException(instrument)
