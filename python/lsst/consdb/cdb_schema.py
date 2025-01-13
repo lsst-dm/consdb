@@ -97,7 +97,7 @@ class ObsIdColname(StrEnum):
 
 
 class InstrumentTable:
-    """The column information for all tables in ConsDB schemas."""
+    """The column information for a single table in ConsDB schemas."""
 
     def __init__(
         self,
