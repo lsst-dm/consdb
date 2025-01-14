@@ -20,7 +20,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from fastapi import APIRouter, Depends
-from safir.metadata import get_metadata
 
 from ..cdb_schema import AllowedFlexTypeEnum, ObsTypeEnum
 from ..config import config
@@ -49,15 +48,14 @@ def internal_root(
         data types.
     """
 
-    metadata = get_metadata(
-        package_name="consdb",
-        application_name=config.name,
-    )
-
     assert instrument_list is not None
     return IndexResponseModel.model_validate(
         {
-            **metadata.model_dump(),
+            "name": config.name,
+            "version": "0.0.0",  # TODO: insert an actual version number
+            "description": "A web interface to the Rubin Observatory Consolidated Database.",
+            "repository_url": "https://github.com/lsst-db/consdb",
+            "documentation_url": "https://consdb.lsst.io/index.html",
             "instruments": instrument_list,
             "obs_types": [o.value for o in ObsTypeEnum],
             "dtypes": [d.value for d in AllowedFlexTypeEnum],
