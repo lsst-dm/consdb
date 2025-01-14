@@ -1,4 +1,8 @@
 FROM python:3.11
+
+ARG GITHUB_TAG
+ENV VERSION=${GITHUB_TAG}
+
 RUN pip install fastapi safir astropy uvicorn gunicorn sqlalchemy psycopg2
 WORKDIR /
 COPY \

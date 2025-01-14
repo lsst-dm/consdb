@@ -15,7 +15,7 @@ class Configuration(BaseSettings):
 
     name: str = Field("pqserver", title="Application name")
 
-    version: str = Field("noversion", title="Application version number")
+    version: str | None = Field(None, title="Application version number")
 
     url_prefix: str = Field("/consdb", title="URL prefix")
 
@@ -45,6 +45,18 @@ class Configuration(BaseSettings):
     postgres_url: str | None = Field(None, title="Database URL set by POSTGRES_URL.")
 
     consdb_url: str | None = Field(None, title="Database URL set by CONSDB_URL")
+
+    description: str | None = Field(
+        "A web interface to the Rubin Observatory Consolidated Database.", title="Application description."
+    )
+
+    repository_url: str | None = Field(
+        "https://github.com/lsst-dm/consdb", title="Source repository for this code."
+    )
+
+    documentation_url: str | None = Field(
+        "https://consdb.lsst.io/index.html", title="URL for documentation of this project."
+    )
 
     @property
     def database_url(self) -> str:

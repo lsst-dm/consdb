@@ -18,6 +18,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Extract Git Tag or Branch
+      id: git_info
+      run: |
+        if [[ "${{ github.ref_type }}" == "tag" ]]; then
+          echo "GIT_TAG=${{ github.ref_name }}" >> $GITHUB_TAG
+        else
+          echo "GIT_TAG=noversion" >> $GITHUB_TAG
+        fi
+
     - name: Build hinfo
       uses: lsst-sqre/build-and-push-to-ghcr@v1
       with:
@@ -31,3 +40,5 @@ jobs:
         image: ${{ github.repository }}-pq
         github_token: ${{ secrets.GITHUB_TOKEN }}
         dockerfile: Dockerfile.pqserver
+        build-args: |
+          GITHUB_TAG=${{ env.GITHUB_TAG }}

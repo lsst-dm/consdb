@@ -70,6 +70,9 @@ def external_root(
     return IndexResponseModel(
         name=config.name,
         version=config.version,
+        description=config.description,
+        repository_url=config.repository_url,
+        documentation_url=config.documentation_url,
         instruments=instrument_list,
         obs_types=[o.value for o in ObsTypeEnum],
         dtypes=[d.value for d in AllowedFlexTypeEnum],

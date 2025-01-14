@@ -52,10 +52,10 @@ def internal_root(
     return IndexResponseModel.model_validate(
         {
             "name": config.name,
-            "version": "0.0.0",  # TODO: insert an actual version number
-            "description": "A web interface to the Rubin Observatory Consolidated Database.",
-            "repository_url": "https://github.com/lsst-db/consdb",
-            "documentation_url": "https://consdb.lsst.io/index.html",
+            "version": config.version,
+            "description": config.description,
+            "repository_url": config.repository_url,
+            "documentation_url": config.documentation_url,
             "instruments": instrument_list,
             "obs_types": [o.value for o in ObsTypeEnum],
             "dtypes": [d.value for d in AllowedFlexTypeEnum],
