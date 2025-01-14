@@ -15,7 +15,7 @@ class Configuration(BaseSettings):
 
     name: str = Field("pqserver", title="Application name")
 
-    version: str | None = Field(None, title="Application version number")
+    version: str = Field("NOVERSION", title="Application version number")
 
     url_prefix: str = Field("/consdb", title="URL prefix")
 
