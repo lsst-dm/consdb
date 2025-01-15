@@ -92,7 +92,7 @@ def get_instrument_table(instrument: str):
         instrument_list = [name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")]
 
     if instrument not in [i.lower() for i in instrument_list]:
-        raise UnknownInstrumentException(instrument)
+        raise UnknownInstrumentException(instrument, instrument_list)
 
     if instrument in instrument_tables:
         instrument_table = instrument_tables[instrument]
@@ -117,7 +117,7 @@ def validate_instrument_name(
 ) -> str:
     instrument_lower = instrument.lower()
     if instrument_lower not in [i.lower() for i in get_instrument_list()]:
-        raise UnknownInstrumentException(instrument)
+        raise UnknownInstrumentException(instrument, instrument_list)
     return instrument_lower
 
 

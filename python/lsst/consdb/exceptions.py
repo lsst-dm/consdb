@@ -73,8 +73,9 @@ class UnknownInstrumentException(Exception):
 
     status_code = 404
 
-    def __init__(self, instrument: str):
+    def __init__(self, instrument: str, instrument_list: list[str]):
         self.instrument = instrument
+        self.instrument_list = instrument_list
 
     def to_dict(self) -> dict[str, Any]:
         """Convert the exception to a dictionary for JSON conversion.
@@ -86,5 +87,6 @@ class UnknownInstrumentException(Exception):
         """
         return {
             "message": "Unknown instrument",
+            "valid": self.instrument_list,
             "value": self.instrument,
         }
