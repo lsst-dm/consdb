@@ -7,7 +7,8 @@ from astropy.time import Time
 
 class Summary:
     """
-    Class to summarize and analyze numeric time-series data with a DatetimeIndex.
+    Class to summarize and analyze numeric time-series data with a
+    DatetimeIndex.
 
     Attributes:
         data_array (np.ndarray): The numeric values of the DataFrame.
@@ -27,14 +28,20 @@ class Summary:
         Initializes the Summary class with a pandas DataFrame.
 
         Args:
-            dataframe (pd.DataFrame): A DataFrame with a DatetimeIndex and numeric or boolean data.
-            exposure_start (Time): Start of the exposure period as an astropy.time.Time object.
-            exposure_end (Time): End of the exposure period as an astropy.time.Time object.
-            datatype (Optional[str]): Desired NumPy dtype for the data conversion.
+            dataframe (pd.DataFrame): A DataFrame with a DatetimeIndex
+                and numeric or boolean data.
+            exposure_start (Time): Start of the exposure period as an
+                astropy.time.Time object.
+            exposure_end (Time): End of the exposure period as an
+                astropy.time.Time object.
+            datatype (Optional[str]): Desired NumPy dtype for the data
+                conversion.
 
         Raises:
-            ValueError: If the DataFrame index is not a DatetimeIndex or contains invalid data types.
-            ValueError: If exposure times are invalid or not compatible with the DataFrame index.
+            ValueError: If the DataFrame index is not a DatetimeIndex or
+                contains invalid data types.
+            ValueError: If exposure times are invalid or not compatible
+                with the DataFrame index.
         """
         if not isinstance(dataframe.index, pd.DatetimeIndex):
             raise ValueError("The DataFrame index must be a DatetimeIndex.")
@@ -107,7 +114,8 @@ class Summary:
         Find the most recent value within the last minute of the exposure_end.
 
         Returns:
-            Optional[Union[float, int, bool]]: The most recent value in the last minute or None if not found.
+            Optional[Union[float, int, bool]]: The most recent value in the
+                last minute or None if not found.
         """
         try:
             # Convert exposure_end (astropy Time) to pandas Timestamp
@@ -130,7 +138,8 @@ class Summary:
             **kwargs: Additional keyword arguments.
 
         Returns:
-            Result of the transformation method or None if the method is not callable.
+            Result of the transformation method or None if the method is not
+                callable.
         """
         if self.data_array.size == 0 or np.all(np.isnan(self._get_numeric_values())):
             return None
