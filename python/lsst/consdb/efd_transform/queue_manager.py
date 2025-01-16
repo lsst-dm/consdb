@@ -105,7 +105,7 @@ class QueueManager:
             if start_time > end_time:
                 end_time = start_time + proccess_interval_seconds
 
-        ## start and end times computed before generating the interval list
+        # start and end times computed before generating the interval list
         # self.log.debug(f"Current time: {now}")
         # self.log.debug(f"Start time: {start_time}")
         # self.log.debug(f"End time: {end_time}")
