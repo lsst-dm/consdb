@@ -7,7 +7,7 @@ RUN yum install -y postgresql-server postgresql && rmdir /usr/local/bin && ln -s
 
 USER lsst
 RUN source loadLSST.bash && mamba install -y aiokafka httpx
-RUN source loadLSST.bash && pip install kafkit aiokafka httpx pytest-asyncio testing.postgresql lsst-felis safir
+RUN source loadLSST.bash && pip install kafkit aiokafka httpx pytest-asyncio pytest-cov pytest-html testing.postgresql lsst-felis safir
 
 WORKDIR /home/lsst/
 
@@ -15,4 +15,8 @@ COPY --chown=lsst .  ./consdb/
 WORKDIR /home/lsst/consdb/
 RUN source /opt/lsst/software/stack/loadLSST.bash && pip install -e .
 
-ENTRYPOINT [ "/bin/bash", "-c", "source /opt/lsst/software/stack/loadLSST.bash; setup obs_lsst; setup felis; pytest ."  ]
+USER root
+RUN mkdir -p /home/lsst/consdb/pytest_reports && chown lsst:lsst /home/lsst/consdb/pytest_reports
+USER lsst
+
+ENTRYPOINT [ "/bin/bash", "-c", "source /opt/lsst/software/stack/loadLSST.bash; setup obs_lsst; setup felis; pytest --cov=./ --cov-report=html:/home/lsst/consdb/pytest_reports/htmlcov --html=pytest_reports/pytest_report.html --self-contained-html ."  ]
