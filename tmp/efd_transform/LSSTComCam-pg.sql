@@ -13,8 +13,8 @@ CREATE TABLE cdb_lsstcomcam.exposure_efd (
 	mt_elevation_encoder_absolute_position_3_rms_jitter FLOAT,
 	mt_salindex110_sonic_temperature_mean FLOAT,
 	mt_salindex110_sonic_temperature_stddev FLOAT,
-	at_salindex110_sonic_temperature_stddev_mean FLOAT,
-	at_salindex110_sonic_temperature_stddev_stddev FLOAT,
+	mt_salindex110_sonic_temperature_stddev_mean FLOAT,
+	mt_salindex110_sonic_temperature_stddev_stddev FLOAT,
 	mt_salindex110_wind_speed_0_mean FLOAT,
 	mt_salindex110_wind_speed_0_stddev FLOAT,
 	mt_salindex110_wind_speed_0_min FLOAT,
@@ -461,8 +461,8 @@ COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_elevation_encoder_absolute_posi
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_elevation_encoder_absolute_position_3_rms_jitter IS 'RMS after 4th order polynomial fit of Elevation absolute position read by each encoder head.';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex110_sonic_temperature_mean IS 'Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex110_sonic_temperature_stddev IS 'Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.';
-COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.at_salindex110_sonic_temperature_stddev_mean IS 'Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.';
-COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.at_salindex110_sonic_temperature_stddev_stddev IS 'Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex110_sonic_temperature_stddev_mean IS 'Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.';
+COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex110_sonic_temperature_stddev_stddev IS 'Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex110_wind_speed_0_mean IS 'Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex110_wind_speed_0_stddev IS 'Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)';
 COMMENT ON COLUMN cdb_lsstcomcam.exposure_efd.mt_salindex110_wind_speed_0_min IS 'Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)';
@@ -917,8 +917,8 @@ CREATE TABLE cdb_lsstcomcam.visit1_efd (
 	instrument CHAR(20),
 	mt_salindex110_sonic_temperature_mean FLOAT,
 	mt_salindex110_sonic_temperature_stddev FLOAT,
-	at_salindex110_sonic_temperature_stddev_mean FLOAT,
-	at_salindex110_sonic_temperature_stddev_stddev FLOAT,
+	mt_salindex110_sonic_temperature_stddev_mean FLOAT,
+	mt_salindex110_sonic_temperature_stddev_stddev FLOAT,
 	mt_salindex110_wind_speed_0_mean FLOAT,
 	mt_salindex110_wind_speed_0_stddev FLOAT,
 	mt_salindex110_wind_speed_0_min FLOAT,
@@ -1357,8 +1357,8 @@ COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.created_at IS 'Timestamp when the re
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.instrument IS 'Instrument name.';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex110_sonic_temperature_mean IS 'Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex110_sonic_temperature_stddev IS 'Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.';
-COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.at_salindex110_sonic_temperature_stddev_mean IS 'Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.';
-COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.at_salindex110_sonic_temperature_stddev_stddev IS 'Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex110_sonic_temperature_stddev_mean IS 'Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.';
+COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex110_sonic_temperature_stddev_stddev IS 'Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex110_wind_speed_0_mean IS 'Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex110_wind_speed_0_stddev IS 'Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)';
 COMMENT ON COLUMN cdb_lsstcomcam.visit1_efd.mt_salindex110_wind_speed_0_min IS 'Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)';
