@@ -1,51 +1,46 @@
 ARG OBS_LSST_VERSION=w_2024_47
 FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
 USER lsst
-RUN source loadLSST.bash && mamba install aiokafka httpx
+
+# Install Python dependencies
+RUN source loadLSST.bash && mamba install aiokafka==0.7.2 httpx==0.23.0
 RUN source loadLSST.bash && pip install \
     kafkit==0.2.1 \
     lsst_efd_client==0.12.0
 
-# Python code
-COPY --chown=lsst:lsst python/lsst/consdb/efd_transform ./consdb/efd_transform
+# Copy Python code (including the lsst module structure)
+COPY --chown=lsst:lsst python/lsst /opt/lsst/software/stack/lsst
 
-RUN mkdir data
+# Copy SQLite test databases
+COPY --chown=lsst:lsst tmp/efd_transform/LATISS.db /opt/lsst/software/stack/data/LATISS.db
+COPY --chown=lsst:lsst tmp/efd_transform/LSSTComCam.db /opt/lsst/software/stack/data/LSSTComCam.db
+COPY --chown=lsst:lsst tmp/efd_transform/LSSTComCamSim.db /opt/lsst/software/stack/data/LSSTComCamSim.db
 
-# TODO: SQLITE TEST DATABASE
-COPY --chown=lsst:lsst tmp/efd_transform/LATISS.db ./data/
-COPY --chown=lsst:lsst tmp/efd_transform/LSSTComCam.db ./data/
-COPY --chown=lsst:lsst tmp/efd_transform/LSSTComCamSim.db ./data/
-
-# Environment variables that must be set:
-# ------------------------------
-ENV CONFIG_FILE="/opt/lsst/software/stack/consdb/efd_transform/config_LATISS.yml"
+# Set environment variables
+ENV CONFIG_FILE="/opt/lsst/software/stack/lsst/consdb/efd_transform/config_LATISS.yml"
 ENV INSTRUMENT="LATISS"
-
-# Buttler Access Variables
 ENV BUTLER_REPO="s3://rubin-summit-users/butler.yaml"
 ENV S3_ENDPOINT_URL="https://s3dfrgw.slac.stanford.edu/"
 ENV LSST_RESOURCES_S3_PROFILE_embargo="https://sdfembs3.sdf.slac.stanford.edu"
-
-# ENV AWS_ACCESS_KEY_ID="placeholder"
-# ENV AWS_SECRET_ACCESS_KEY="placeholder"
 ENV PGUSER="rubin"
-# ENV PGPASSWORD="placeholder"
-
-# USDF EFD API access Variables
 ENV EFD="usdf_efd"
 ENV EFD_USERNAME="efdreader"
-# ENV EFD_PASSWORD="placeholder"
-
-# Consdb Transform DATABASE Variables
 ENV CONSDB_URL="sqlite:////opt/lsst/software/stack/data/test.db"
-
-# Processing time interval in minutes
 ENV TIMEDELTA="5"
-
 ENV LOG_FILE="/opt/lsst/software/stack/data/transform.log"
 
-CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./consdb/efd_transform/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -r \"$BUTLER_REPO\" -d \"$CONSDB_URL\"  -E \"$EFD\" -t \"$TIMEDELTA\" -l \"$LOG_FILE\""]
+# Export PYTHONPATH dynamically during container runtime
+RUN echo "export PYTHONPATH=/opt/lsst/software/stack:$PYTHONPATH" >> /home/lsst/.bashrc
 
+CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python ./lsst/consdb/efd_transform/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -r \"$BUTLER_REPO\" -d \"$CONSDB_URL\" -E \"$EFD\" -t \"$TIMEDELTA\" -l \"$LOG_FILE\""]
 
-# Exemple of command used to execute transform_efd with docker
-# docker run --rm -it --volume $PWD/data:/opt/lsst/software/stack/data  -e CONFIG_FILE=config_LATISS.yaml -e ...  consdb/efd_transform:latest
+# Example:
+# docker run --rm -it \
+#     --volume $PWD/data:/opt/lsst/software/stack/data \
+#     -e CONFIG_FILE=/opt/lsst/software/stack/lsst/consdb/efd_transform/config_LATISS.yml \
+#     -e INSTRUMENT=LATISS \
+#     -e BUTLER_REPO=s3://rubin-summit-users/butler.yaml \
+#     -e EFD=usdf_efd \
+#     -e CONSDB_URL=sqlite:////opt/lsst/software/stack/data/test.db \
+#     -e TIMEDELTA=5 \
+#     consdb/efd_transform:latest
