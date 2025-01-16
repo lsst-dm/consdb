@@ -144,7 +144,7 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex110_sonic_temperature_stddev_mean
+- name: mt_salindex110_sonic_temperature_stddev_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -160,7 +160,7 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex110_sonic_temperature_stddev_stddev
+- name: mt_salindex110_sonic_temperature_stddev_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
