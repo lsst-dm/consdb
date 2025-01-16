@@ -1,5 +1,5 @@
 import pandas
-from dao.base import DBBase
+from lsst.consdb.efd_transform.dao.base import DBBase
 from sqlalchemy.sql import and_, select
 
 
