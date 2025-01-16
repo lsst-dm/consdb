@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from astropy.time import Time, TimeDelta
-from dao.transformd import TransformdDao
+from lsst.consdb.efd_transform.dao.transformd import TransformdDao
 
 
 class QueueManager:
@@ -71,8 +71,6 @@ class QueueManager:
                 'start_time' and 'end_time' for a task.
         """
 
-        now = datetime.now(tz=timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None)
-
         proccess_interval_seconds = TimeDelta(process_interval * 60, format="sec")
 
         time_window_seconds = TimeDelta(time_window * 60, format="sec")
@@ -107,11 +105,12 @@ class QueueManager:
             if start_time > end_time:
                 end_time = start_time + proccess_interval_seconds
 
-        self.log.debug(f"Current time: {now}")
-        self.log.debug(f"Start time: {start_time}")
-        self.log.debug(f"End time: {end_time}")
-        self.log.debug(f"Process interval: {process_interval} minutes")
-        self.log.debug(f"Time window: {time_window} minutes")
+        ## start and end times computed before generating the interval list
+        # self.log.debug(f"Current time: {now}")
+        # self.log.debug(f"Start time: {start_time}")
+        # self.log.debug(f"End time: {end_time}")
+        # self.log.debug(f"Process interval: {process_interval} minutes")
+        # self.log.debug(f"Time window: {time_window} minutes")
 
         # If diference between start and end is less than process interval,
         # create_time_intervals return an empty list.

@@ -1,6 +1,6 @@
 import argparse
 
-from transform_efd import read_config
+from lsst.consdb.efd_transform.transform_efd import read_config
 
 schema_dict = {
     "LATISS": "cdb_latiss",

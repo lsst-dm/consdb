@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import Dict, Optional
 
 import pandas
-from dao.base import DBBase
+from lsst.consdb.efd_transform.dao.base import DBBase
 from sqlalchemy import desc
 from sqlalchemy.sql import and_, select
 
