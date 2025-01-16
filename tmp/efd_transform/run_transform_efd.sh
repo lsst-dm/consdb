@@ -62,12 +62,12 @@
 python python/lsst/consdb/efd_transform/transform_efd.py \
     -i LSSTComCam \
     -s 2024-12-01T00:00:00 \
-    -e 2024-12-02T02:00:00 \
+    -e 2024-12-01T01:00:00 \
     -r /repo/embargo_new \
     -d sqlite:///$PWD/tmp/efd_transform/LSSTComCam.db \
     -E usdf_efd \
     -c python/lsst/consdb/efd_transform/config_LSSTComCam.yaml \
-    -t 10 \
+    -t 30 \
     -w 1 \
     -l $PWD/tmp/transform.log
 
