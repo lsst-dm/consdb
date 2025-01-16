@@ -1,6 +1,6 @@
 columns:
 - name: at_mount_jitter_azimuth
-  tables: ["exposure"]
+  tables: ["exposure_efd"]
   function: rms_from_polynomial_fit
   function_args: {"degree": 4, "fit_basis": "index"}
   datatype: float
@@ -14,7 +14,7 @@ columns:
 
 
 - name: at_mount_jitter_elevation
-  tables: ["exposure"]
+  tables: ["exposure_efd"]
   function: rms_from_polynomial_fit
   function_args: {"degree": 4, "fit_basis": "index"}
   datatype: float
@@ -28,7 +28,7 @@ columns:
 
 
 - name: at_mount_jitter_nasmyth
-  tables: ["exposure"]
+  tables: ["exposure_efd"]
   function: rms_from_polynomial_fit
   function_args: {"degree": 4, "fit_basis": "index"}
   datatype: float
@@ -42,7 +42,7 @@ columns:
 
 
 - name: at_salindex201_sonic_temperature_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -58,7 +58,7 @@ columns:
 
 
 - name: at_salindex201_sonic_temperature_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -75,7 +75,7 @@ columns:
 
 
 - name: at_salindex201_sonic_temperature_stddev_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -91,7 +91,7 @@ columns:
 
 
 - name: at_salindex201_sonic_temperature_stddev_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -108,7 +108,7 @@ columns:
 
 
 - name: at_salindex205_sonic_temperature_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -124,7 +124,7 @@ columns:
 
 
 - name: at_salindex205_sonic_temperature_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -141,7 +141,7 @@ columns:
 
 
 - name: at_salindex205_sonic_temperature_stddev_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -157,7 +157,7 @@ columns:
 
 
 - name: at_salindex205_sonic_temperature_stddev_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -174,7 +174,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -190,7 +190,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_0_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -207,7 +207,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_0_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -223,7 +223,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_0_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -239,7 +239,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -255,7 +255,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_1_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -272,7 +272,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_1_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -288,7 +288,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_1_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -304,7 +304,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_2_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -320,7 +320,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_2_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -337,7 +337,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_2_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -353,7 +353,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_2_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -369,7 +369,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -385,7 +385,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_0_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -402,7 +402,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_0_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -418,7 +418,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_0_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -434,7 +434,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -450,7 +450,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_1_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -467,7 +467,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_1_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -483,7 +483,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_1_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -499,7 +499,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_2_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -515,7 +515,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_2_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -532,7 +532,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_2_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -548,7 +548,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_speedstddev_2_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -564,7 +564,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_magnitude_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -580,7 +580,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_magnitude_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -597,7 +597,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_magnitude_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -613,7 +613,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_magnitude_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -629,7 +629,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_maxmagnitude_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -645,7 +645,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_maxmagnitude_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -662,7 +662,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_maxmagnitude_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -678,7 +678,7 @@ columns:
 
 
 - name: at_salindex201_wind_speed_maxmagnitude_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -694,7 +694,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -710,7 +710,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_0_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -727,7 +727,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_0_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -743,7 +743,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_0_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -759,7 +759,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -775,7 +775,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_1_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -792,7 +792,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_1_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -808,7 +808,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_1_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -824,7 +824,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_2_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -840,7 +840,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_2_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -857,7 +857,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_2_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -873,7 +873,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_2_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -889,7 +889,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -905,7 +905,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_0_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -922,7 +922,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_0_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -938,7 +938,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_0_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -954,7 +954,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -970,7 +970,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_1_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -987,7 +987,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_1_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1003,7 +1003,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_1_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1019,7 +1019,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_2_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1035,7 +1035,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_2_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1052,7 +1052,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_2_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1068,7 +1068,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_speedstddev_2_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1084,7 +1084,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_magnitude_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1100,7 +1100,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_magnitude_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1117,7 +1117,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_magnitude_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1133,7 +1133,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_magnitude_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1149,7 +1149,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_maxmagnitude_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1165,7 +1165,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_maxmagnitude_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1182,7 +1182,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_maxmagnitude_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1198,7 +1198,7 @@ columns:
 
 
 - name: at_salindex204_wind_speed_maxmagnitude_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1214,7 +1214,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1230,7 +1230,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_0_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1247,7 +1247,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_0_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1263,7 +1263,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_0_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1279,7 +1279,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1295,7 +1295,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_1_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1312,7 +1312,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_1_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1328,7 +1328,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_1_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1344,7 +1344,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_2_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1360,7 +1360,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_2_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1377,7 +1377,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_2_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1393,7 +1393,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_2_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1409,7 +1409,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1425,7 +1425,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_0_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1442,7 +1442,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_0_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1458,7 +1458,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_0_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1474,7 +1474,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1490,7 +1490,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_1_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1507,7 +1507,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_1_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1523,7 +1523,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_1_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1539,7 +1539,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_2_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1555,7 +1555,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_2_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1572,7 +1572,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_2_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1588,7 +1588,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_speedstddev_2_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1604,7 +1604,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_magnitude_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1620,7 +1620,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_magnitude_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1637,7 +1637,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_magnitude_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1653,7 +1653,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_magnitude_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1669,7 +1669,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_maxmagnitude_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1685,7 +1685,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_maxmagnitude_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1702,7 +1702,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_maxmagnitude_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1718,7 +1718,7 @@ columns:
 
 
 - name: at_salindex205_wind_speed_maxmagnitude_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1734,7 +1734,7 @@ columns:
 
 
 - name: at_salindex201_airflow_speed_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1750,7 +1750,7 @@ columns:
 
 
 - name: at_salindex201_airflow_speed_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1767,7 +1767,7 @@ columns:
 
 
 - name: at_salindex201_airflow_speed_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1783,7 +1783,7 @@ columns:
 
 
 - name: at_salindex201_airflow_speed_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1799,7 +1799,7 @@ columns:
 
 
 - name: at_salindex201_airflow_speedstddev_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1815,7 +1815,7 @@ columns:
 
 
 - name: at_salindex201_airflow_speedstddev_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1832,7 +1832,7 @@ columns:
 
 
 - name: at_salindex201_airflow_speedstddev_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1848,7 +1848,7 @@ columns:
 
 
 - name: at_salindex201_airflow_speedstddev_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1864,7 +1864,7 @@ columns:
 
 
 - name: at_salindex201_airflow_direction_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1880,7 +1880,7 @@ columns:
 
 
 - name: at_salindex201_airflow_direction_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1897,7 +1897,7 @@ columns:
 
 
 - name: at_salindex201_airflow_direction_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1913,7 +1913,7 @@ columns:
 
 
 - name: at_salindex201_airflow_direction_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1929,7 +1929,7 @@ columns:
 
 
 - name: at_salindex204_airflow_speed_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -1945,7 +1945,7 @@ columns:
 
 
 - name: at_salindex204_airflow_speed_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -1962,7 +1962,7 @@ columns:
 
 
 - name: at_salindex204_airflow_speed_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -1978,7 +1978,7 @@ columns:
 
 
 - name: at_salindex204_airflow_speed_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -1994,7 +1994,7 @@ columns:
 
 
 - name: at_salindex204_airflow_speedstddev_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -2010,7 +2010,7 @@ columns:
 
 
 - name: at_salindex204_airflow_speedstddev_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2027,7 +2027,7 @@ columns:
 
 
 - name: at_salindex204_airflow_speedstddev_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -2043,7 +2043,7 @@ columns:
 
 
 - name: at_salindex204_airflow_speedstddev_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -2059,7 +2059,7 @@ columns:
 
 
 - name: at_salindex204_airflow_direction_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -2075,7 +2075,7 @@ columns:
 
 
 - name: at_salindex204_airflow_direction_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2092,7 +2092,7 @@ columns:
 
 
 - name: at_salindex204_airflow_direction_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -2108,7 +2108,7 @@ columns:
 
 
 - name: at_salindex204_airflow_direction_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -2124,7 +2124,7 @@ columns:
 
 
 - name: at_salindex205_airflow_speed_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -2140,7 +2140,7 @@ columns:
 
 
 - name: at_salindex205_airflow_speed_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2157,7 +2157,7 @@ columns:
 
 
 - name: at_salindex205_airflow_speed_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -2173,7 +2173,7 @@ columns:
 
 
 - name: at_salindex205_airflow_speed_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -2189,7 +2189,7 @@ columns:
 
 
 - name: at_salindex205_airflow_speedstddev_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -2205,7 +2205,7 @@ columns:
 
 
 - name: at_salindex205_airflow_speedstddev_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2222,7 +2222,7 @@ columns:
 
 
 - name: at_salindex205_airflow_speedstddev_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -2238,7 +2238,7 @@ columns:
 
 
 - name: at_salindex205_airflow_speedstddev_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -2254,7 +2254,7 @@ columns:
 
 
 - name: at_salindex205_airflow_direction_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s
@@ -2270,7 +2270,7 @@ columns:
 
 
 - name: at_salindex205_airflow_direction_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2287,7 +2287,7 @@ columns:
 
 
 - name: at_salindex205_airflow_direction_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s
@@ -2303,7 +2303,7 @@ columns:
 
 
 - name: at_salindex205_airflow_direction_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s
@@ -2319,7 +2319,7 @@ columns:
 
 
 - name: at_salindex201_temperature_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2335,7 +2335,7 @@ columns:
 
 
 - name: at_salindex201_temperature_0_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2352,7 +2352,7 @@ columns:
 
 
 - name: at_salindex201_temperature_0_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2368,7 +2368,7 @@ columns:
 
 
 - name: at_salindex201_temperature_0_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2384,7 +2384,7 @@ columns:
 
 
 - name: at_salindex201_temperature_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2400,7 +2400,7 @@ columns:
 
 
 - name: at_salindex201_temperature_1_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2417,7 +2417,7 @@ columns:
 
 
 - name: at_salindex201_temperature_1_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2433,7 +2433,7 @@ columns:
 
 
 - name: at_salindex201_temperature_1_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2449,7 +2449,7 @@ columns:
 
 
 - name: at_salindex201_temperature_2_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2465,7 +2465,7 @@ columns:
 
 
 - name: at_salindex201_temperature_2_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2482,7 +2482,7 @@ columns:
 
 
 - name: at_salindex201_temperature_2_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2498,7 +2498,7 @@ columns:
 
 
 - name: at_salindex201_temperature_2_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2514,7 +2514,7 @@ columns:
 
 
 - name: at_salindex201_temperature_3_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2530,7 +2530,7 @@ columns:
 
 
 - name: at_salindex201_temperature_3_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2547,7 +2547,7 @@ columns:
 
 
 - name: at_salindex201_temperature_3_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2563,7 +2563,7 @@ columns:
 
 
 - name: at_salindex201_temperature_3_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2579,7 +2579,7 @@ columns:
 
 
 - name: at_salindex201_temperature_4_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2595,7 +2595,7 @@ columns:
 
 
 - name: at_salindex201_temperature_4_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2612,7 +2612,7 @@ columns:
 
 
 - name: at_salindex201_temperature_4_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2628,7 +2628,7 @@ columns:
 
 
 - name: at_salindex201_temperature_4_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2644,7 +2644,7 @@ columns:
 
 
 - name: at_salindex201_temperature_5_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2660,7 +2660,7 @@ columns:
 
 
 - name: at_salindex201_temperature_5_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2677,7 +2677,7 @@ columns:
 
 
 - name: at_salindex201_temperature_5_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2693,7 +2693,7 @@ columns:
 
 
 - name: at_salindex201_temperature_5_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2709,7 +2709,7 @@ columns:
 
 
 - name: at_salindex201_temperature_6_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2725,7 +2725,7 @@ columns:
 
 
 - name: at_salindex201_temperature_6_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2742,7 +2742,7 @@ columns:
 
 
 - name: at_salindex201_temperature_6_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2758,7 +2758,7 @@ columns:
 
 
 - name: at_salindex201_temperature_6_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2774,7 +2774,7 @@ columns:
 
 
 - name: at_salindex201_temperature_7_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2790,7 +2790,7 @@ columns:
 
 
 - name: at_salindex201_temperature_7_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2807,7 +2807,7 @@ columns:
 
 
 - name: at_salindex201_temperature_7_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2823,7 +2823,7 @@ columns:
 
 
 - name: at_salindex201_temperature_7_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2839,7 +2839,7 @@ columns:
 
 
 - name: at_salindex301_temperature_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2855,7 +2855,7 @@ columns:
 
 
 - name: at_salindex301_temperature_0_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2872,7 +2872,7 @@ columns:
 
 
 - name: at_salindex301_temperature_0_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2888,7 +2888,7 @@ columns:
 
 
 - name: at_salindex301_temperature_0_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2904,7 +2904,7 @@ columns:
 
 
 - name: at_salindex301_temperature_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2920,7 +2920,7 @@ columns:
 
 
 - name: at_salindex301_temperature_1_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -2937,7 +2937,7 @@ columns:
 
 
 - name: at_salindex301_temperature_1_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -2953,7 +2953,7 @@ columns:
 
 
 - name: at_salindex301_temperature_1_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -2969,7 +2969,7 @@ columns:
 
 
 - name: at_salindex301_temperature_2_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -2985,7 +2985,7 @@ columns:
 
 
 - name: at_salindex301_temperature_2_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -3002,7 +3002,7 @@ columns:
 
 
 - name: at_salindex301_temperature_2_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -3018,7 +3018,7 @@ columns:
 
 
 - name: at_salindex301_temperature_2_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -3034,7 +3034,7 @@ columns:
 
 
 - name: at_salindex301_temperature_3_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -3050,7 +3050,7 @@ columns:
 
 
 - name: at_salindex301_temperature_3_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -3067,7 +3067,7 @@ columns:
 
 
 - name: at_salindex301_temperature_3_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -3083,7 +3083,7 @@ columns:
 
 
 - name: at_salindex301_temperature_3_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -3099,7 +3099,7 @@ columns:
 
 
 - name: at_salindex301_temperature_4_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -3115,7 +3115,7 @@ columns:
 
 
 - name: at_salindex301_temperature_4_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -3132,7 +3132,7 @@ columns:
 
 
 - name: at_salindex301_temperature_4_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -3148,7 +3148,7 @@ columns:
 
 
 - name: at_salindex301_temperature_4_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -3164,7 +3164,7 @@ columns:
 
 
 - name: at_salindex301_temperature_5_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -3180,7 +3180,7 @@ columns:
 
 
 - name: at_salindex301_temperature_5_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -3197,7 +3197,7 @@ columns:
 
 
 - name: at_salindex301_temperature_5_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -3213,7 +3213,7 @@ columns:
 
 
 - name: at_salindex301_temperature_5_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -3229,7 +3229,7 @@ columns:
 
 
 - name: at_salindex301_temperature_6_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -3245,7 +3245,7 @@ columns:
 
 
 - name: at_salindex301_temperature_6_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -3262,7 +3262,7 @@ columns:
 
 
 - name: at_salindex301_temperature_6_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -3278,7 +3278,7 @@ columns:
 
 
 - name: at_salindex301_temperature_6_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -3294,7 +3294,7 @@ columns:
 
 
 - name: at_salindex301_temperature_7_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -3310,7 +3310,7 @@ columns:
 
 
 - name: at_salindex301_temperature_7_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -3327,7 +3327,7 @@ columns:
 
 
 - name: at_salindex301_temperature_7_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: Celsius
@@ -3343,7 +3343,7 @@ columns:
 
 
 - name: at_salindex301_temperature_7_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: Celsius
@@ -3359,7 +3359,7 @@ columns:
 
 
 - name: at_azimuth_calculated_angle
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: unitless
@@ -3372,7 +3372,7 @@ columns:
 
 
 - name: at_elevation_calculated_angle
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: unitless
@@ -3385,7 +3385,7 @@ columns:
 
 
 - name: at_dimm_fwhm_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: arcsec
@@ -3398,7 +3398,7 @@ columns:
 
 
 - name: at_azimuth_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: degree
@@ -3411,7 +3411,7 @@ columns:
 
 
 - name: at_elevation_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: degree
@@ -3424,7 +3424,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_x_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: mm
@@ -3437,7 +3437,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_x_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: mm
@@ -3450,7 +3450,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_x_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: mm
@@ -3463,7 +3463,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_y_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: mm
@@ -3476,7 +3476,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_y_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: mm
@@ -3489,7 +3489,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_y_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: mm
@@ -3502,7 +3502,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_z_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: mm
@@ -3515,7 +3515,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_z_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: mm
@@ -3528,7 +3528,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_z_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: mm
@@ -3541,7 +3541,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_u_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: mm
@@ -3554,7 +3554,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_u_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: mm
@@ -3567,7 +3567,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_u_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: mm
@@ -3580,7 +3580,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_v_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: mm
@@ -3593,7 +3593,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_v_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: mm
@@ -3606,7 +3606,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_v_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: mm
@@ -3619,7 +3619,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_w_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: mm
@@ -3632,7 +3632,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_w_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: mm
@@ -3645,7 +3645,7 @@ columns:
 
 
 - name: at_hexapod_reported_position_w_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: mm
@@ -3658,7 +3658,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_x_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
@@ -4073,7 +4073,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_x_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -4489,7 +4489,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_x_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s2
@@ -4904,7 +4904,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_x_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s2
@@ -5319,7 +5319,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_y_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
@@ -5734,7 +5734,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_y_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -6150,7 +6150,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_y_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s2
@@ -6565,7 +6565,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_y_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s2
@@ -6980,7 +6980,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_z_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
@@ -7395,7 +7395,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_z_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -7811,7 +7811,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_z_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s2
@@ -8226,7 +8226,7 @@ columns:
 
 
 - name: at_salindex202_acceleration_z_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s2
@@ -8641,7 +8641,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_x_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
@@ -8857,7 +8857,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_x_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -9074,7 +9074,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_x_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s2
@@ -9290,7 +9290,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_x_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s2
@@ -9506,7 +9506,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_y_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
@@ -9722,7 +9722,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_y_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -9939,7 +9939,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_y_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s2
@@ -10155,7 +10155,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_y_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s2
@@ -10371,7 +10371,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_z_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
@@ -10587,7 +10587,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_z_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
@@ -10804,7 +10804,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_z_min
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
   unit: m/s2
@@ -11020,7 +11020,7 @@ columns:
 
 
 - name: at_salindex202_accelerationpsd_z_max
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s2
@@ -11236,7 +11236,7 @@ columns:
 
 
 - name: at_salindex201_dewpoint_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
@@ -11252,7 +11252,7 @@ columns:
 
 
 - name: at_salindex201_relative_humidity_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: percent
@@ -11268,7 +11268,7 @@ columns:
 
 
 - name: at_salindex201_pressure_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Pa
@@ -11284,7 +11284,7 @@ columns:
 
 
 - name: at_salindex201_pressure_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Pa
@@ -11300,7 +11300,7 @@ columns:
 
 
 - name: at_salindex301_pressure_0_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Pa
@@ -11316,7 +11316,7 @@ columns:
 
 
 - name: at_salindex301_pressure_1_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Pa
@@ -11332,7 +11332,7 @@ columns:
 
 
 - name: at_pointing_mount_position_ra_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: degree
@@ -11345,7 +11345,7 @@ columns:
 
 
 - name: at_pointing_mount_position_ra_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   datatype: float
   unit: degree
@@ -11358,7 +11358,7 @@ columns:
 
 
 - name: at_pointing_mount_position_dec_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: degree
@@ -11371,7 +11371,7 @@ columns:
 
 
 - name: at_pointing_mount_position_dec_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   datatype: float
   unit: degree
@@ -11384,7 +11384,7 @@ columns:
 
 
 - name: at_pointing_mount_position_sky_angle_mean
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: degree
@@ -11397,7 +11397,7 @@ columns:
 
 
 - name: at_pointing_mount_position_sky_angle_stddev
-  tables: ["exposure","visit"]
+  tables: ["exposure_efd","visit1_efd"]
   function: stddev
   datatype: float
   unit: degree
