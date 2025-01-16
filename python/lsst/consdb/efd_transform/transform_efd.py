@@ -10,12 +10,12 @@ import astropy.time
 
 # import lsst_efd_client
 import yaml
-from config_model import ConfigModel
-from dao.influxdb import InfluxDbDao
+from lsst.consdb.efd_transform.config_model import ConfigModel
+from lsst.consdb.efd_transform.dao.influxdb import InfluxDbDao
+from lsst.consdb.efd_transform.queue_manager import QueueManager
+from lsst.consdb.efd_transform.transform import Transform
 from lsst.daf.butler import Butler
 from pydantic import ValidationError
-from queue_manager import QueueManager
-from transform import Transform
 
 # from sqlalchemy import create_engine
 
