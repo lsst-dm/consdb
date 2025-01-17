@@ -71,7 +71,10 @@ def convert_to_flex_type(ty: AllowedFlexTypeEnum, v: str) -> AllowedFlexType:
     if ty.value == "bool":  # Special case
         return v.lower() in ("true", "t", "1")
     m = [t for t in AllowedFlexType.__args__ if t.__name__ == ty.value]
-    assert len(m) == 1
+
+    if len(m) != 1:
+        raise ValueError(f"Invalid type {ty.value} for conversion")
+
     return m[0](v)
 
 

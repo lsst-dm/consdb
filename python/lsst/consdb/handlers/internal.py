@@ -48,7 +48,6 @@ def internal_root(
         data types.
     """
 
-    assert instrument_list is not None
     return IndexResponseModel.model_validate(
         {
             "name": config.name,

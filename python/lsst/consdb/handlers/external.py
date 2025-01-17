@@ -25,7 +25,7 @@ from typing import Any
 import astropy
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
-from fastapi import APIRouter, Body, Depends, Path, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
 from packaging.version import Version
 from sqlalchemy.orm import Session
 
@@ -388,7 +388,7 @@ def get_all_metadata(
     instrument: InstrumentName,
     obs_type: ObsTypeEnum,
     obs_id: ObservationIdType,
-    flex: int | None = Query(0, title="Include flexible metadata"),
+    flex: bool = Query(False, title="Include flexible metadata"),
     db: Session = Depends(get_db),
     logger: logging.Logger = Depends(get_logger),
     instrument_table: InstrumentTable = Depends(get_instrument_table),
@@ -403,7 +403,7 @@ def get_all_metadata(
         Name of the observation type (e.g. ``Exposure``).
     obs_id: `int`
         Unique observation identifier.
-    flex: `str`
+    flex: bool
         Include flexible metadata if set to "1" (URL query parameter).
 
     Returns
@@ -422,9 +422,13 @@ def get_all_metadata(
     obs_id_column = instrument_table.obs_id_column[view_name]
     result = dict()
 
-    rows = db.query(view).filter(view.c[obs_id_column] == obs_id).all()
-    assert len(rows) == 1
-    if flex != 0:
+    row = db.query(view).filter(view.c[obs_id_column] == obs_id).one_or_none()
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Observation {obs_id} not found.")
+
+    result = dict(row)
+
+    if flex:
         flex_result = get_flexible_metadata(instrument, obs_type, obs_id)
         result.update(flex_result)
     return result
