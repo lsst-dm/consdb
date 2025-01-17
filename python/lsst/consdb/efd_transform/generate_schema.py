@@ -1,3 +1,5 @@
+"""Facilitates the generation of db schemas based on instrument configuration file."""
+
 import argparse
 
 from lsst.consdb.efd_transform.transform_efd import read_config
@@ -11,13 +13,16 @@ schema_dict = {
 
 
 def build_argparser() -> argparse.ArgumentParser:
-    """
-    Build the argument parser for the script.
+    """Build the argument parser for the script.
 
-    Returns:
+    Returns
+    -------
         argparse.ArgumentParser: The argument parser object.
+
     """
-    parser = argparse.ArgumentParser(description="Generate the schema for the EFD transform.")
+    parser = argparse.ArgumentParser(
+        description="Generate the schema for the EFD transform."
+    )
     parser.add_argument(
         "--config",
         type=str,
@@ -50,7 +55,8 @@ if __name__ == "__main__":
         f.write("---\n")
         f.write(f"name: {schema_dict[args.instrument]}\n")
         f.write(f'"@id": "#{schema_dict[args.instrument]}"\n')
-        f.write(f"description: Transformed EFD Consolidated Database for {args.instrument}\n")
+        f.write("description: Transformed EFD Consolidated Database ")
+        f.write("for {args.instrument}\n")
         f.write("tables:\n")
 
         # Generate exposure_efd table.
@@ -77,7 +83,8 @@ if __name__ == "__main__":
         f.write('    "@id": "#exposure_efd.created_at"\n')
         f.write("    datatype: timestamp\n")
         f.write("    value: 'CURRENT_TIMESTAMP'\n")
-        f.write("    description: Timestamp when the record was created, default is the current timestamp\n")
+        f.write("    description: Timestamp when the record was created, ")
+        f.write("default is the current timestamp\n")
         f.write("  - name: instrument\n")
         f.write('    "@id": "#exposure_efd.instrument"\n')
         f.write("    datatype: char\n")
@@ -85,7 +92,9 @@ if __name__ == "__main__":
         f.write("    description: Instrument name.\n")
         # Iterate over columns in the config file
         for column in config["columns"]:
-            if "exposure_efd" in column["tables"] and not column.get("store_unpivoted", False):
+            if "exposure_efd" in column["tables"] and not column.get(
+                "store_unpivoted", False
+            ):
                 column_name = column["name"]
                 f.write(f'  - name: "{column_name}"\n')
                 f.write(f'    "@id": "#exposure_efd.{column_name}"\n')
@@ -108,7 +117,8 @@ if __name__ == "__main__":
         f.write("  - name: un_exposure_property_field\n")
         f.write('    "@id": "#exposure_efd_unpivoted.un_exposure_property_field"\n')
         f.write('    "@type": Unique\n')
-        f.write("    description: Ensure the combination of exposure_id, property, and field is unique.\n")
+        f.write("    description: Ensure the combination of exposure_id, ")
+        f.write("property, and field is unique.\n")
         f.write("    columns:\n")
         f.write('    - "#exposure_efd_unpivoted.exposure_id"\n')
         f.write('    - "#exposure_efd_unpivoted.property"\n')
@@ -142,7 +152,8 @@ if __name__ == "__main__":
         f.write('    "@id": "#exposure_efd_unpivoted.created_at"\n')
         f.write("    datatype: timestamp\n")
         f.write("    value: 'CURRENT_TIMESTAMP'\n")
-        f.write("    description: Timestamp when the record was created, default is the current timestamp\n")
+        f.write("    description: Timestamp when the record was created, ")
+        f.write("default is the current timestamp\n")
         f.write("\n")
 
         # Generate visit1_efd table.
@@ -169,7 +180,8 @@ if __name__ == "__main__":
         f.write('    "@id": "#visit1_efd.created_at"\n')
         f.write("    datatype: timestamp\n")
         f.write("    value: 'CURRENT_TIMESTAMP'\n")
-        f.write("    description: Timestamp when the record was created, default is the current timestamp\n")
+        f.write("    description: Timestamp when the record was created, ")
+        f.write("default is the current timestamp\n")
         f.write("  - name: instrument\n")
         f.write('    "@id": "#visit1_efd.instrument"\n')
         f.write("    datatype: char\n")
@@ -177,7 +189,9 @@ if __name__ == "__main__":
         f.write("    description: Instrument name.\n")
         # Iterate over columns in the config file
         for column in config["columns"]:
-            if "visit1_efd" in column["tables"] and not column.get("store_unpivoted", False):
+            if "visit1_efd" in column["tables"] and not column.get(
+                "store_unpivoted", False
+            ):
                 column_name = column["name"]
                 f.write(f'  - name: "{column_name}"\n')
                 f.write(f'    "@id": "#visit1_efd.{column_name}"\n')
@@ -200,7 +214,8 @@ if __name__ == "__main__":
         f.write("  - name: un_visit_property_field\n")
         f.write('    "@id": "#visit1_efd_unpivoted.un_visit_property_field"\n')
         f.write('    "@type": Unique\n')
-        f.write("    description: Ensure the combination of visit_id, property, and field is unique.\n")
+        f.write("    description: Ensure the combination of visit_id, ")
+        f.write("property, and field is unique.\n")
         f.write("    columns:\n")
         f.write('    - "#visit1_efd_unpivoted.visit_id"\n')
         f.write('    - "#visit1_efd_unpivoted.property"\n')
@@ -234,7 +249,8 @@ if __name__ == "__main__":
         f.write('    "@id": "#visit1_efd_unpivoted.created_at"\n')
         f.write("    datatype: timestamp\n")
         f.write("    value: 'CURRENT_TIMESTAMP'\n")
-        f.write("    description: Timestamp when the record was created, default is the current timestamp\n")
+        f.write("    description: Timestamp when the record was created, ")
+        f.write("default is the current timestamp\n")
         f.write("\n")
 
         # Generate transformed_efd scheduler table.
@@ -260,15 +276,18 @@ if __name__ == "__main__":
         f.write("  - name: start_time\n")
         f.write('    "@id": "#transformed_efd_scheduler.start_time"\n')
         f.write("    datatype: timestamp\n")
-        f.write("    description: Start time of the transformation interval, must be provided\n")
+        f.write("    description: Start time of the transformation interval, ")
+        f.write("must be provided\n")
         f.write("  - name: end_time\n")
         f.write('    "@id": "#transformed_efd_scheduler.end_time"\n')
         f.write("    datatype: timestamp\n")
-        f.write("    description: End time of the transformation interval, must be provided\n")
+        f.write("    description: End time of the transformation interval, ")
+        f.write("must be provided\n")
         f.write("  - name: timewindow\n")
         f.write('    "@id": "#transformed_efd_scheduler.timewindow"\n')
         f.write("    datatype: int\n")
-        f.write("    description: Time window used to expand start and end times by, in minutes\n")
+        f.write("    description: Time window used to expand start and end")
+        f.write("times by, in minutes\n")
         f.write("  - name: status\n")
         f.write('    "@id": "#transformed_efd_scheduler.status"\n')
         f.write("    datatype: char\n")
@@ -287,7 +306,8 @@ if __name__ == "__main__":
         f.write('    "@id": "#transformed_efd_scheduler.process_exec_time"\n')
         f.write("    datatype: int\n")
         f.write("    value: 0\n")
-        f.write("    description: Execution time of the process in seconds, default is 0\n")
+        f.write("    description: Execution time of the process in seconds, ")
+        f.write("default is 0\n")
         f.write("  - name: exposures\n")
         f.write('    "@id": "#transformed_efd_scheduler.exposures"\n')
         f.write("    datatype: int\n")
@@ -311,6 +331,7 @@ if __name__ == "__main__":
         f.write('    "@id": "#transformed_efd_scheduler.created_at"\n')
         f.write("    datatype: timestamp\n")
         f.write("    value: 'CURRENT_TIMESTAMP'\n")
-        f.write("    description: Timestamp when the record was created, default is the current timestamp\n")
+        f.write("    description: Timestamp when the record was created, ")
+        f.write("default is the current timestamp\n")
 
     f.close()
