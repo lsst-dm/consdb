@@ -1,3 +1,5 @@
+"""Provides functions and utilities for transformed EFD."""
+
 import logging
 from typing import Any, Dict, List, Union
 
@@ -15,10 +17,10 @@ from lsst.daf.butler import Butler
 
 
 class Transform:
-    """
-    A class that represents a data transformation process.
+    """A class that represents a data transformation process.
 
     Args:
+    ----
         butler (Butler): The Butler object for accessing data.
         db_uri (str): The database connection string.
         efd (lsst_efd_client.EfdClient): The EFD client for accessing EFD data.
@@ -27,6 +29,7 @@ class Transform:
         logger (logging.Logger): The logger object for logging messages.
 
     Attributes:
+    ----------
         log (logging.Logger): The logger object for logging messages.
         butler_dao (ButlerDao): The DAO object for accessing data using the
                                 Butler.
@@ -34,6 +37,7 @@ class Transform:
         efd (lsst_efd_client.EfdClient): The EFD client for accessing EFD data.
         config (dict[str, Any]): The configuration for the transformation
                                  process.
+
     """
 
     def __init__(
@@ -45,10 +49,10 @@ class Transform:
         logger: logging.Logger,
         commit_every: int = 100,
     ):
-        """
-        Initializes a new instance of the Transform class.
+        """Initialize new instance of the Transform class.
 
         Args:
+        ----
             butler (Butler): The Butler object for accessing data.
             db_uri (str): The database connection string.
             efd (dao.InfluxDbDao): The EFD client for accessing
@@ -59,6 +63,7 @@ class Transform:
                 messages.
             commit_every (int, optional): The number of records to commit
                 to the database at once. Defaults to 100.
+
         """
         self.log = logger
         self.butler_dao = ButlerDao(butler)
@@ -70,14 +75,16 @@ class Transform:
         self.log.info("----------- Transform -----------")
 
     def get_schema_by_instrument(self, instrument: str) -> str:
-        """
-        Get the schema name for the given instrument.
+        """Get the schema name for the given instrument.
 
         Args:
+        ----
             instrument (str): The instrument name.
 
         Returns:
+        -------
             str: The schema name.
+
         """
         schemas = {
             "LATISS": "cdb_latiss",
@@ -92,15 +99,21 @@ class Transform:
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
     ) -> Dict[str, int]:
-        """
-        Process the given time interval for a specific instrument.
+        """Process the given time interval for a specific instrument.
 
         Args:
+        ----
             instrument (str): The instrument name.
             start_time (astropy.time.Time): The start time of the interval.
             end_time (astropy.time.Time): The end time of the interval.
+
         """
-        count = {"exposures": 0, "visits1": 0, "exposures_unpivoted": 0, "visits1_unpivoted": 0}
+        count = {
+            "exposures": 0,
+            "visits1": 0,
+            "exposures_unpivoted": 0,
+            "visits1_unpivoted": 0,
+        }
 
         self.log.info(f"Proccessing interval {start_time} - {end_time}")
 
@@ -157,14 +170,20 @@ class Transform:
                     topics_columns_map[topic]["fields"].append(field["name"])
 
                 # remove duplicate fields per topic
-                topics_columns_map[topic]["fields"] = list(set(topics_columns_map[topic]["fields"]))
+                topics_columns_map[topic]["fields"] = list(
+                    set(topics_columns_map[topic]["fields"])
+                )
 
                 # Append packed_series to the list
-                topics_columns_map[topic]["packed_series"].append(column["packed_series"])
+                topics_columns_map[topic]["packed_series"].append(
+                    column["packed_series"]
+                )
                 topics_columns_map[topic]["columns"].append(column)
 
             # Add a new key to store if any series is packed
-            topics_columns_map[topic]["is_packed"] = any(topics_columns_map[topic]["packed_series"])
+            topics_columns_map[topic]["is_packed"] = any(
+                topics_columns_map[topic]["packed_series"]
+            )
 
         # Iterates over topic to perform the transformation
         for key, topic in topics_columns_map.items():
@@ -183,31 +202,56 @@ class Transform:
                         subset_field = str(column["subset_field"])
                         subset_value = str(column["subset_value"])
 
-                        if subset_field in topic_series and not topic_series[subset_field].empty:
-                            # Ensure both the column and subset_value are of the same type
-                            topic_series[subset_field] = topic_series[subset_field].fillna("").astype(str)
+                        if (
+                            subset_field in topic_series
+                            and not topic_series[subset_field].empty
+                        ):
+                            # Ensure both the column and subset_value are of same type
+                            topic_series[subset_field] = (
+                                topic_series[subset_field].fillna("").astype(str)
+                            )
                             subset_value = str(subset_value)
 
                             # Filter the DataFrame
-                            filtered_df = topic_series.loc[topic_series[subset_field] == subset_value]
+                            filtered_df = topic_series.loc[
+                                topic_series[subset_field] == subset_value
+                            ]
 
                             # Verify which fields exist in the filtered DataFrame
                             fields.remove(subset_field)
-                            valid_fields = [field for field in fields if field in filtered_df.columns]
+                            valid_fields = [
+                                field for field in fields if field in filtered_df.columns
+                            ]
 
                             if valid_fields:
                                 data = [
-                                    {"topic": topic["name"], "series": filtered_df[valid_fields].dropna()}
+                                    {
+                                        "topic": topic["name"],
+                                        "series": filtered_df[valid_fields].dropna(),
+                                    }
                                 ]
                             else:
                                 self.log.warning(
-                                    f"No valid fields found in filtered DataFrame for topic: {topic['name']}"
+                                    f"No valid fields found in filtered DataFrame "
+                                    f"for topic: {topic['name']}"
                                 )
-                                data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
+                                data = [
+                                    {
+                                        "topic": topic["name"],
+                                        "series": pandas.DataFrame(),
+                                    }
+                                ]
                         else:
-                            data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
+                            data = [
+                                {"topic": topic["name"], "series": pandas.DataFrame()}
+                            ]
                     else:
-                        data = [{"topic": topic["name"], "series": topic_series[fields].dropna()}]
+                        data = [
+                            {
+                                "topic": topic["name"],
+                                "series": topic_series[fields].dropna(),
+                            }
+                        ]
 
                     if "exposure_efd" in column["tables"]:
                         for exposure in exposures:
@@ -230,13 +274,21 @@ class Transform:
                             for col in series_df.columns:
                                 new_topic = topic.copy()
                                 new_topic["fields"] = [col]
-                                new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
-                                new_data = [{"topic": new_topic, "series": series_df[[col]]}]
+                                new_topic["columns"][0]["topics"][0]["fields"] = [
+                                    {"name": col}
+                                ]
+                                new_data = [
+                                    {"topic": new_topic, "series": series_df[[col]]}
+                                ]
 
                                 # Safeguard processing
                                 column_value = self.proccess_column_value(
-                                    start_time=getattr(exposure["timespan"].begin, "utc", None),
-                                    end_time=getattr(exposure["timespan"].end, "utc", None),
+                                    start_time=getattr(
+                                        exposure["timespan"].begin, "utc", None
+                                    ),
+                                    end_time=getattr(
+                                        exposure["timespan"].end, "utc", None
+                                    ),
                                     topics=new_data,
                                     transform_function=column.get("function"),
                                     **function_kwargs,
@@ -249,7 +301,8 @@ class Transform:
                                 #     print('*'.center(80, '*'))
                                 # print(new_data)
 
-                                # Append the processed result to the result_exp_unpivoted list
+                                # Append the processed result to the
+                                # result_exp_unpivoted list
                                 if column_value:
                                     result_exp_unpivoted.append(
                                         {
@@ -281,11 +334,17 @@ class Transform:
                             for col in series_df.columns:
                                 new_topic = topic.copy()
                                 new_topic["fields"] = [col]
-                                new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
-                                new_data = [{"topic": new_topic, "series": series_df[[col]]}]
+                                new_topic["columns"][0]["topics"][0]["fields"] = [
+                                    {"name": col}
+                                ]
+                                new_data = [
+                                    {"topic": new_topic, "series": series_df[[col]]}
+                                ]
 
                                 column_value = self.proccess_column_value(
-                                    start_time=getattr(visit["timespan"].begin, "utc", None),
+                                    start_time=getattr(
+                                        visit["timespan"].begin, "utc", None
+                                    ),
                                     end_time=getattr(visit["timespan"].end, "utc", None),
                                     topics=new_data,
                                     transform_function=column.get("function"),
@@ -308,9 +367,15 @@ class Transform:
         df_exposures = pandas.DataFrame(results)
 
         if not df_exposures.empty:
-            self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
-            exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
-            affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
+            self.log.info(
+                f"Exposure results to be inserted into the database: {len(df_exposures)}"
+            )
+            exp_dao = ExposureEfdDao(
+                db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument)
+            )
+            affected_rows = exp_dao.upsert(
+                df=df_exposures, commit_every=self.commit_every
+            )
             count["exposures"] = affected_rows
             self.log.info(f"Database rows affected: {affected_rows}")
         del results
@@ -319,7 +384,8 @@ class Transform:
         df_exposures_unpivoted = pandas.DataFrame(result_exp_unpivoted)
         # print(df_exposures_unpivoted)
         self.log.info(
-            f"Exposure unpivoted results to be inserted into the database: {len(df_exposures_unpivoted)}"
+            f"Exposure unpivoted results to be inserted into the database: "
+            f"{len(df_exposures_unpivoted)}"
         )
         if not df_exposures_unpivoted.empty:
             exp_unpivoted_dao = ExposureEfdUnpivotedDao(
@@ -339,8 +405,12 @@ class Transform:
 
         df_visits = pandas.DataFrame(results)
         if not df_visits.empty:
-            self.log.info(f"Visit results to be inserted into the database: {len(df_visits)}")
-            vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
+            self.log.info(
+                f"Visit results to be inserted into the database: {len(df_visits)}"
+            )
+            vis_dao = VisitEfdDao(
+                db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument)
+            )
             affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
             self.log.info(f"Database rows affected: {affected_rows}")
             count["visits1"] = affected_rows
@@ -348,12 +418,17 @@ class Transform:
 
         # ingesting visit_unpivoted
         df_visits_unpivoted = pandas.DataFrame(result_vis_unpivoted)
-        self.log.info(f"Visit unpivoted results to be inserted into the database: {len(df_visits_unpivoted)}")
+        self.log.info(
+            f"Visit unpivoted results to be inserted into the database: "
+            f"{len(df_visits_unpivoted)}"
+        )
         if not df_visits_unpivoted.empty:
             vis_unpivoted_dao = VisitEfdUnpivotedDao(
                 db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument)
             )
-            affected_rows = vis_unpivoted_dao.upsert(df=df_visits_unpivoted, commit_every=self.commit_every)
+            affected_rows = vis_unpivoted_dao.upsert(
+                df=df_visits_unpivoted, commit_every=self.commit_every
+            )
             self.log.info(f"Database rows affected: {affected_rows}")
             count["visits1_unpivoted"] = affected_rows
         # del result_vis_unpivoted
@@ -368,11 +443,10 @@ class Transform:
         transform_function,
         **function_kwargs,
     ) -> Any:
-        """
-        Process the column value for a given time range and topics using an
-        aggregation function.
+        """Process column values given a time range, topic, and aggregation function.
 
         Args:
+        ----
             start_time (astropy.time.Time): The start time of the time range.
             end_time (astropy.time.Time): The end time of the time range.
             topics: The topics to retrieve values from.
@@ -381,15 +455,16 @@ class Transform:
               transform function.
 
         Returns:
+        -------
             The processed column value.
-        """
 
+        """
         values = self.topic_values_by_exposure(start_time, end_time, topics)
 
         if not values.empty:
-            column_value = Summary(dataframe=values, exposure_start=start_time, exposure_end=end_time).apply(
-                transform_function, **function_kwargs
-            )
+            column_value = Summary(
+                dataframe=values, exposure_start=start_time, exposure_end=end_time
+            ).apply(transform_function, **function_kwargs)
             return column_value
 
         return None
@@ -397,20 +472,21 @@ class Transform:
     def topic_values_by_exposure(
         self, start_time: astropy.time.Time, end_time: astropy.time.Time, topics
     ) -> pandas.DataFrame:
-        """
-        Retrieve topic values for a given time range.
+        """Retrieve topic values for a given time range.
 
         Args:
+        ----
             start_time (astropy.time.Time): The start time of the range.
             end_time (astropy.time.Time): The end time of the range.
             topics (list): A list of topics.
 
         Returns:
+        -------
             pandas.DataFrame: A DataFrame containing the topic values for the
                               given time range, or an empty DataFrame if no
                               values match.
-        """
 
+        """
         start_time = pandas.Timestamp(start_time.to_datetime(), tz="UTC")
         end_time = pandas.Timestamp(end_time.to_datetime(), tz="UTC")
 
@@ -419,7 +495,9 @@ class Transform:
         for topic in topics:
             topic_table = topic["series"]
             if not topic_table.empty:
-                values = topic_table.loc[(topic_table.index > start_time) & (topic_table.index < end_time)]
+                values = topic_table.loc[
+                    (topic_table.index > start_time) & (topic_table.index < end_time)
+                ]
                 if not values.empty:
                     topics_values.append(values)
 
@@ -433,52 +511,66 @@ class Transform:
         return result
 
     def concatenate_arrays(
-        self, input_data: Union[List[float], List[List[float]], numpy.ndarray, List[numpy.ndarray]]
+        self,
+        input_data: Union[
+            List[float], List[List[float]], numpy.ndarray, List[numpy.ndarray]
+        ],
     ) -> numpy.ndarray:
-        """
-        Concatenates values from a list or list of lists or a numpy array
-        or list of numpy arrays, returning a single flat numpy array.
+        """Concatenate values from list, list of lists or a numpy array.
 
         Args:
-            input_data (Union[List[float], List[List[float]],
-                        numpy.ndarray, List[numpy.ndarray]]):
-                Input data, can be a list of floats or list of lists of
-                floats or a numpy array or list of numpy arrays.
+        ----
+            input_data: Input data, which can be one of the following:
+                - A list of floats
+                - A list of lists of floats
+                - A numpy array
+                - A list of numpy arrays
 
         Returns:
+        -------
             numpy.ndarray: Concatenated flat numpy array.
 
         Raises:
+        ------
             TypeError: If the input data is not a list or list of lists or
-                       a numpy array or list of numpy arrays.
+                    a numpy array or list of numpy arrays.
+
         """
         if isinstance(input_data, numpy.ndarray):
             return numpy.concatenate(input_data.flat)
         elif isinstance(input_data, list):
             flat_arrays = [
-                numpy.array(arr).flat if isinstance(arr, numpy.ndarray) else numpy.array(arr).flatten()
+                (
+                    numpy.array(arr).flat
+                    if isinstance(arr, numpy.ndarray)
+                    else numpy.array(arr).flatten()
+                )
                 for arr in input_data
             ]
             return numpy.concatenate(flat_arrays)
         else:
             raise TypeError(
-                "Input data must be a list or list of lists or a numpy array or list of numpy arrays."
+                "Input data must be a list or list of lists or a numpy array "
+                "or list of numpy arrays."
             )
 
     def topics_by_column(self, column, topic_interval, packed_series) -> List[dict]:
-        """
-        Retrieves the EFD topics and their corresponding series for a
-        given column.
+        """Retrieve EFD topics and their corresponding series for a given column.
 
         Args:
+        ----
             column (dict): The column containing the topics.
-            topic_interval: The interval for retrieving the topic series.
+            topic_interval (List[astropy.time.Time]): Start and end times of
+                the query interval.
+            packed_series (bool, optional): Query packed time-series if True.
+                Defaults to False.
 
         Returns:
+        -------
             list[dict]: A list of dictionaries, where each dictionary
                         contains the topic name and its series.
-        """
 
+        """
         data = []
         for topic in column["topics"]:
             topic_series = self.get_efd_values(topic, topic_interval, packed_series)
@@ -488,9 +580,28 @@ class Transform:
         return data
 
     def get_efd_values(
-        self, topic: Dict[str, Any], topic_interval: List[astropy.time.Time], packed_series: bool = False
+        self,
+        topic: Dict[str, Any],
+        topic_interval: List[astropy.time.Time],
+        packed_series: bool = False,
     ) -> pandas.DataFrame:
+        """Query EFD values for a topic within a specified time interval.
 
+        Args:
+        ----
+            topic (Dict[str, Any]): Topic details, including name, fields,
+                and optional window.
+            topic_interval (List[astropy.time.Time]): Start and end times of
+                the query interval.
+            packed_series (bool, optional): Query packed time-series if True.
+                Defaults to False.
+
+        Returns:
+        -------
+            pandas.DataFrame: Queried data as a DataFrame, or an empty DataFrame
+                if no data is found.
+
+        """
         start = topic_interval[0].utc  # Start time of the interval in UTC
         end = topic_interval[1].utc  # End time of the interval in UTC
         window = astropy.time.TimeDelta(
@@ -512,7 +623,11 @@ class Transform:
                 if packed_series:
                     # Query packed time series for the current chunk of fields
                     series = self.efd.select_packed_time_series(
-                        topic["name"], chunk, start - window, end + window, ref_timestamp_scale="utc"
+                        topic["name"],
+                        chunk,
+                        start - window,
+                        end + window,
+                        ref_timestamp_scale="utc",
                     )
                 else:
                     # Query regular time series for the current chunk of fields
@@ -548,21 +663,21 @@ class Transform:
         exposures: List[dict],
         visits: List[dict],
     ) -> List[astropy.time.Time]:
-        """
-        Get the topic interval based on the given start and end times,
-        exposures, and visits.
+        """Get the topic interval based on the given start and end times.
 
         Args:
+        ----
             start_time (astropy.time.Time): The start time of the interval.
             end_time (astropy.time.Time): The end time of the interval.
             exposures (list[dict]): A list of exposure dictionaries.
             visits (list[dict]): A list of visit dictionaries.
 
         Returns:
+        -------
             list[astropy.time.Time]: A list containing the minimum and maximum
                                      topic times.
-        """
 
+        """
         min_topic_time = start_time
         max_topic_time = end_time
 
