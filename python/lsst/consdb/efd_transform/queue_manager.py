@@ -100,31 +100,21 @@ class QueueManager:
             # process interval.
             if last_task is None:
                 start_time = (
-                    datetime.now(tz=timezone.utc)
-                    .replace(second=0, microsecond=0)
-                    .replace(tzinfo=None)
+                    datetime.now(tz=timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None)
                 )
                 start_time = (
-                    Time(start_time.isoformat(), format="isot", scale="utc")
-                    - proccess_interval_seconds
+                    Time(start_time.isoformat(), format="isot", scale="utc") - proccess_interval_seconds
                 )
             # Otherwise, start is the last task end time - time window.
             else:
                 start_time = last_task["end_time"]
-                start_time = (
-                    Time(start_time.isoformat(), format="isot", scale="utc")
-                    - time_window_seconds
-                )
+                start_time = Time(start_time.isoformat(), format="isot", scale="utc") - time_window_seconds
 
         if end_time is None:
             # Considering that in real-time execution, the final time must be
             # at most now. It is necessary to subtract the time window to
             # ensure that the last task is less than now.
-            end_time = (
-                datetime.now(tz=timezone.utc)
-                .replace(second=0, microsecond=0)
-                .replace(tzinfo=None)
-            )
+            end_time = datetime.now(tz=timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None)
             end_time = Time(end_time.isoformat(), format="isot", scale="utc")
             end_time = end_time - time_window_seconds
             # allows creating tasks for the future.
@@ -283,9 +273,7 @@ class QueueManager:
 
         # Ensure that the task's end time is not greater than the current time.
         if task is not None and task["end_time"] > datetime.now(timezone.utc):
-            self.log.debug(
-                f"Task end time {task['end_time']} is in the future. Skipping task."
-            )
+            self.log.debug(f"Task end time {task['end_time']} is in the future. Skipping task.")
             return None
 
         return task
