@@ -1,3 +1,9 @@
+"""Handles the transformation of EFD data using configurable models.
+
+Includes functionalities for managing data queues, retrieving configurations, and
+transforming data.
+"""
+
 import argparse
 import asyncio
 import logging
@@ -21,16 +27,18 @@ from pydantic import ValidationError
 
 
 def get_logger(path: str, debug: bool = True) -> logging.Logger:
-    """
-    Create and configure a logger object.
+    """Create and configure a logger object.
 
     Args:
+    ----
         path (str): The path to the log file.
         debug (bool, optional): Flag indicating whether to enable debug mode.
         Defaults to True.
 
     Returns:
+    -------
         logging.Logger: The configured logger object.
+
     """
     # File Handler
     logfile = Path(path)
@@ -56,14 +64,17 @@ def get_logger(path: str, debug: bool = True) -> logging.Logger:
 
 
 def build_argparser() -> argparse.ArgumentParser:
-    """
-    Build the argument parser for the script.
+    """Build the argument parser for the script.
 
-    Returns:
+    Returns
+    -------
         argparse.ArgumentParser: The argument parser object.
+
     """
     parser = argparse.ArgumentParser(description="Summarize EFD topics in a time range")
-    parser.add_argument("-c", "--config", dest="config_name", required=True, help="config YAML")
+    parser.add_argument(
+        "-c", "--config", dest="config_name", required=True, help="config YAML"
+    )
     parser.add_argument(
         "-i",
         "--instrument",
@@ -137,16 +148,18 @@ def build_argparser() -> argparse.ArgumentParser:
 
 
 def read_config(config_name: str) -> Dict[str, Any]:
-    """
-    Reads a configuration file and returns the configuration as a dictionary.
+    """Read configuration file and returns the configuration as a dictionary.
 
     Args:
+    ----
         config_name (str): The name of the configuration file.
 
     Returns:
+    -------
         dict: The configuration as a dictionary.
 
     Raises:
+    ------
         ValidationError: If the configuration file is invalid.
 
     """
@@ -162,8 +175,7 @@ def read_config(config_name: str) -> Dict[str, Any]:
 
 
 async def main() -> None:
-    """
-    Entry point of the program.
+    """Entry point of the program.
 
     This function performs the main logic of the program, including parsing
     command line arguments, setting up logging, creating necessary objects,
@@ -220,16 +232,27 @@ async def main() -> None:
 
     # Instantiate the main class transform
     tm = Transform(
-        butler=butler, db_uri=consdb_url, efd=efd, config=config, logger=log, commit_every=commit_every
+        butler=butler,
+        db_uri=consdb_url,
+        efd=efd,
+        config=config,
+        logger=log,
+        commit_every=commit_every,
     )
 
     # Instantiate the queue manager
-    qm = QueueManager(db_uri=consdb_url, schema=tm.get_schema_by_instrument(args.instrument), logger=log)
+    qm = QueueManager(
+        db_uri=consdb_url,
+        schema=tm.get_schema_by_instrument(args.instrument),
+        logger=log,
+    )
 
     start_time = None
     if args.start_time is not None:
         start_time = datetime.fromisoformat(args.start_time)
-        start_time = astropy.time.Time(start_time.isoformat(), format="isot", scale="utc")
+        start_time = astropy.time.Time(
+            start_time.isoformat(), format="isot", scale="utc"
+        )
 
     end_time = None
     if args.end_time is not None:
@@ -285,25 +308,33 @@ async def main() -> None:
         log.info("----------------------------------------------------------")
         log.info(f"Next Task: ID: {task['id']}")
         log.info(
-            f"Current Time: {datetime.now(tz=timezone.utc).replace(tzinfo=None).isoformat(timespec='seconds')}"
+            f"Current Time: "
+            f"{datetime.now(tz=timezone.utc).replace(tzinfo=None).isoformat(timespec='seconds')}"
         )
         log.info(
-            f"Task Start: {task['start_time']} End: {task['end_time']} = {task['end_time'] - task['start_time']}"
+            f"Task Start: {task['start_time']} End: {task['end_time']} = "
+            f"{task['end_time'] - task['start_time']}"
         )
 
         qm.dao.task_started(task["id"])
         try:
             process_count = tm.process_interval(
                 args.instrument,
-                start_time=astropy.time.Time(task["start_time"].isoformat(), format="isot", scale="utc"),
-                end_time=astropy.time.Time(task["end_time"].isoformat(), format="isot", scale="utc"),
+                start_time=astropy.time.Time(
+                    task["start_time"].isoformat(), format="isot", scale="utc"
+                ),
+                end_time=astropy.time.Time(
+                    task["end_time"].isoformat(), format="isot", scale="utc"
+                ),
             )
 
             count_exposures += process_count["exposures"]
             count_visits1 += process_count["visits1"]
 
             qm.dao.task_update_counts(
-                task["id"], exposures=process_count["exposures"], visits1=process_count["visits1"]
+                task["id"],
+                exposures=process_count["exposures"],
+                visits1=process_count["visits1"],
             )
 
             qm.dao.task_completed(task["id"])

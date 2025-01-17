@@ -1,3 +1,5 @@
+"""Provides tools for managing queues and scheduling workflows for data processing."""
+
 import logging
 import math
 from datetime import datetime, timezone
@@ -8,13 +10,15 @@ from lsst.consdb.efd_transform.dao.transformd import TransformdDao
 
 
 class QueueManager:
-    """
-    Manages the creation, retrieval, and execution of tasks in a queue.
-    Attributes:
+    """Manages the creation, retrieval, and execution of tasks in a queue.
+
+    Attributes
+    ----------
         db_uri (str): The database URI.
         log (logging.Logger): Logger for logging messages.
         dao (TransformdDao): Data Access Object for interacting with the
             database.
+
     """
 
     def __init__(
@@ -23,6 +27,15 @@ class QueueManager:
         schema: str,
         logger: logging.Logger,
     ):
+        """Initialize the `QueueManager`.
+
+        Args:
+        ----
+            db_uri (str): The URI of the database.
+            schema (str): The schema name in the database.
+            logger (Logger): Logger instance for logging queue operations.
+
+        """
         self.dao = TransformdDao(db_uri, schema=schema)
         self.db_uri = db_uri
         self.log = logger
@@ -50,14 +63,16 @@ class QueueManager:
         time_window: int = 1,
         status: str = "pending",
     ) -> list[dict]:
-        """
-        Create tasks based on the given time range and process interval.
+        """Create tasks based on the given time range and process interval.
+
         This method generates tasks within the specified time range, divided by
         the process interval. If the start time is not provided, it will use
         the end time of the last task from the database, or the current time
         minus the process interval if no previous tasks exist. If the end time
         is not provided, it will use the current time minus the time window.
+
         Args:
+        ----
             start_time (Optional[Time]): The start time for the tasks.
                 Defaults to None.
             end_time (Optional[Time]): The end time for the tasks.
@@ -66,11 +81,14 @@ class QueueManager:
                 Defaults to 5.
             time_window (int): The time window in minutes to look back from
                 the end time. Defaults to 1.
+            status (str): The processing status of the task.
+
         Returns:
+        -------
             list[dict]: A list of dictionaries, each containing the
                 'start_time' and 'end_time' for a task.
-        """
 
+        """
         proccess_interval_seconds = TimeDelta(process_interval * 60, format="sec")
 
         time_window_seconds = TimeDelta(time_window * 60, format="sec")
@@ -82,21 +100,31 @@ class QueueManager:
             # process interval.
             if last_task is None:
                 start_time = (
-                    datetime.now(tz=timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None)
+                    datetime.now(tz=timezone.utc)
+                    .replace(second=0, microsecond=0)
+                    .replace(tzinfo=None)
                 )
                 start_time = (
-                    Time(start_time.isoformat(), format="isot", scale="utc") - proccess_interval_seconds
+                    Time(start_time.isoformat(), format="isot", scale="utc")
+                    - proccess_interval_seconds
                 )
             # Otherwise, start is the last task end time - time window.
             else:
                 start_time = last_task["end_time"]
-                start_time = Time(start_time.isoformat(), format="isot", scale="utc") - time_window_seconds
+                start_time = (
+                    Time(start_time.isoformat(), format="isot", scale="utc")
+                    - time_window_seconds
+                )
 
         if end_time is None:
             # Considering that in real-time execution, the final time must be
             # at most now. It is necessary to subtract the time window to
             # ensure that the last task is less than now.
-            end_time = datetime.now(tz=timezone.utc).replace(second=0, microsecond=0).replace(tzinfo=None)
+            end_time = (
+                datetime.now(tz=timezone.utc)
+                .replace(second=0, microsecond=0)
+                .replace(tzinfo=None)
+            )
             end_time = Time(end_time.isoformat(), format="isot", scale="utc")
             end_time = end_time - time_window_seconds
             # allows creating tasks for the future.
@@ -150,11 +178,10 @@ class QueueManager:
     def create_time_intervals(
         self, start_time: Time, end_time: Time, process_interval: int, time_window: int
     ):
-        """
-        Create a list of time intervals between a start and end time,
-        with each interval expanded by a specified time window.
-        Parameters:
-        -----------
+        """Create time intervals between a start and end time.
+
+        Args:
+        ----
         start_time : Time
             The starting time for the intervals.
         end_time : Time
@@ -164,13 +191,14 @@ class QueueManager:
         time_window : int
             The length of the time window to expand each interval by,
             in minutes.
+
         Returns:
-        --------
+        -------
         intervals : list of list of Time
             A list of intervals, where each interval is represented as a list
             containing the start and end times, expanded by the time window.
-        """
 
+        """
         proccess_interval_seconds = TimeDelta(process_interval * 60, format="sec")
         time_window_seconds = TimeDelta(time_window * 60, format="sec")
 
@@ -191,34 +219,37 @@ class QueueManager:
         return intervals
 
     def recent_tasks_to_run(self, limit: Optional[int] = None) -> list[dict]:
-        """
-        Retrieve a list of recent tasks to run.
+        """Retrieve list of recent tasks to run.
 
         This method fetches recent tasks from the database up to the specified
         limit.
         The tasks are selected based on the current UTC time.
 
         Args:
+        ----
             limit (Optional[int]): The maximum number of tasks to retrieve.
             If None, all recent tasks are retrieved.
 
         Returns:
+        -------
             list[dict]: A list of dictionaries, each representing a task.
-        """
 
+        """
         end_time = datetime.now(timezone.utc)
 
         tasks = self.dao.select_recent(end_time, limit)
         return tasks
 
     def next_task_to_run(
-        self, start_time: Optional[Time] = None, end_time: Optional[Time] = None, time_window: int = 1
+        self,
+        start_time: Optional[Time] = None,
+        end_time: Optional[Time] = None,
+        time_window: int = 1,
     ) -> Optional[dict]:
-        """
-        Retrieve the next task to run within a specified time window.
+        """Retrieve next task to run within a specified time window.
 
-        Parameters:
-        -----------
+        Args:
+        ----
         start_time : Optional[Time]
             The start time from which to begin searching for the next task.
             If provided, the search will start from this time minus
@@ -231,13 +262,13 @@ class QueueManager:
             Default is 1 minute.
 
         Returns:
-        --------
+        -------
         Optional[dict]
             A dictionary representing the next task to run,
             or None if no suitable task is found or if the task's end time
             is in the future.
-        """
 
+        """
         time_window_seconds = TimeDelta(time_window * 60, format="sec")
 
         if start_time is not None:
@@ -252,7 +283,9 @@ class QueueManager:
 
         # Ensure that the task's end time is not greater than the current time.
         if task is not None and task["end_time"] > datetime.now(timezone.utc):
-            self.log.debug(f"Task end time {task['end_time']} is in the future. Skipping task.")
+            self.log.debug(
+                f"Task end time {task['end_time']} is in the future. Skipping task."
+            )
             return None
 
         return task
