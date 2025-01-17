@@ -78,9 +78,7 @@ class Column(BaseModel):
         """
         # Here 'model' is an instance of 'Column'
         if model.store_unpivoted:
-            invalid_tables = [
-                table for table in model.tables if table not in UNPIVOTED_TABLES
-            ]
+            invalid_tables = [table for table in model.tables if table not in UNPIVOTED_TABLES]
             if invalid_tables:
                 raise ValueError(
                     f"When 'store_unpivoted' is True, only {UNPIVOTED_TABLES} "

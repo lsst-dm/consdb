@@ -141,9 +141,7 @@ class TransformdDao(DBBase):
                 id,
                 {
                     "status": "running",
-                    "process_start_time": datetime.now(timezone.utc).replace(
-                        tzinfo=timezone.utc
-                    ),
+                    "process_start_time": datetime.now(timezone.utc).replace(tzinfo=timezone.utc),
                     "process_end_time": None,
                     "process_exec_time": 0,
                     "exposures": 0,
@@ -272,9 +270,7 @@ class TransformdDao(DBBase):
         except Exception as e:
             raise Exception(f"Error updating task retries: {e}")
 
-    def select_next(
-        self, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None
-    ) -> Dict:
+    def select_next(self, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None) -> Dict:
         """Select the next pending record within the specified time range.
 
         Args:
@@ -298,12 +294,7 @@ class TransformdDao(DBBase):
         if end_time is not None:
             clauses.append(self.tbl.c.end_time <= end_time)
 
-        stm = (
-            select(self.tbl.c)
-            .where(and_(*clauses))
-            .order_by(self.tbl.c.start_time)
-            .limit(1)
-        )
+        stm = select(self.tbl.c).where(and_(*clauses)).order_by(self.tbl.c.start_time).limit(1)
 
         # print(self.debug_query(stm, with_parameters=True))
         return self.fetch_one_dict(stm)
@@ -326,9 +317,7 @@ class TransformdDao(DBBase):
         # print(self.debug_query(stm, with_parameters=True))
         return self.fetch_one_dict(stm)
 
-    def select_recent(
-        self, end_time: datetime, limit: Optional[int] = None
-    ) -> list[Dict]:
+    def select_recent(self, end_time: datetime, limit: Optional[int] = None) -> list[Dict]:
         """Select recent records.
 
         Args:
