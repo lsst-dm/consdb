@@ -72,9 +72,7 @@ def build_argparser() -> argparse.ArgumentParser:
 
     """
     parser = argparse.ArgumentParser(description="Summarize EFD topics in a time range")
-    parser.add_argument(
-        "-c", "--config", dest="config_name", required=True, help="config YAML"
-    )
+    parser.add_argument("-c", "--config", dest="config_name", required=True, help="config YAML")
     parser.add_argument(
         "-i",
         "--instrument",
@@ -250,9 +248,7 @@ async def main() -> None:
     start_time = None
     if args.start_time is not None:
         start_time = datetime.fromisoformat(args.start_time)
-        start_time = astropy.time.Time(
-            start_time.isoformat(), format="isot", scale="utc"
-        )
+        start_time = astropy.time.Time(start_time.isoformat(), format="isot", scale="utc")
 
     end_time = None
     if args.end_time is not None:
@@ -320,12 +316,8 @@ async def main() -> None:
         try:
             process_count = tm.process_interval(
                 args.instrument,
-                start_time=astropy.time.Time(
-                    task["start_time"].isoformat(), format="isot", scale="utc"
-                ),
-                end_time=astropy.time.Time(
-                    task["end_time"].isoformat(), format="isot", scale="utc"
-                ),
+                start_time=astropy.time.Time(task["start_time"].isoformat(), format="isot", scale="utc"),
+                end_time=astropy.time.Time(task["end_time"].isoformat(), format="isot", scale="utc"),
             )
 
             count_exposures += process_count["exposures"]

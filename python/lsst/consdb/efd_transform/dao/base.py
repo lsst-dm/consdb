@@ -109,9 +109,7 @@ class DBBase:
             metadata.reflect(engine)
 
             if schema is not None and self.dialect == postgresql:
-                tbl = Table(
-                    tablename, metadata, autoload_with=self.get_con(), schema=schema
-                )
+                tbl = Table(tablename, metadata, autoload_with=self.get_con(), schema=schema)
             else:
                 tbl = Table(tablename, metadata, autoload_with=self.get_con())
             return tbl
@@ -237,9 +235,7 @@ class DBBase:
             stm = func.count().select().select_from(table)
             return con.scalar(stm)
 
-    def execute_upsert(
-        self, tbl: Table, df: pandas.DataFrame, commit_every: int = 100
-    ) -> int:
+    def execute_upsert(self, tbl: Table, df: pandas.DataFrame, commit_every: int = 100) -> int:
         """Execute an upsert operation on the given table using the provided DataFrame.
 
         Args:
@@ -273,9 +269,7 @@ class DBBase:
         # List of columns without primary keys.
         # These columns will be updated in case of conflict.
         update_cols = [
-            c.name
-            for c in tbl.c
-            if c not in list(tbl.primary_key.columns) and c.name in insert_cols
+            c.name for c in tbl.c if c not in list(tbl.primary_key.columns) and c.name in insert_cols
         ]
 
         # Convert the dataframe to a list of dicts
@@ -306,9 +300,7 @@ class DBBase:
 
         return affected_rows
 
-    def execute_bulk_insert(
-        self, tbl: Table, df: pandas.DataFrame, commit_every: int = 100
-    ) -> int:
+    def execute_bulk_insert(self, tbl: Table, df: pandas.DataFrame, commit_every: int = 100) -> int:
         """Insert data in bulk into the specified table using the provided DataFrame.
 
         Args:

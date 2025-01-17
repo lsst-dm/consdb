@@ -170,20 +170,14 @@ class Transform:
                     topics_columns_map[topic]["fields"].append(field["name"])
 
                 # remove duplicate fields per topic
-                topics_columns_map[topic]["fields"] = list(
-                    set(topics_columns_map[topic]["fields"])
-                )
+                topics_columns_map[topic]["fields"] = list(set(topics_columns_map[topic]["fields"]))
 
                 # Append packed_series to the list
-                topics_columns_map[topic]["packed_series"].append(
-                    column["packed_series"]
-                )
+                topics_columns_map[topic]["packed_series"].append(column["packed_series"])
                 topics_columns_map[topic]["columns"].append(column)
 
             # Add a new key to store if any series is packed
-            topics_columns_map[topic]["is_packed"] = any(
-                topics_columns_map[topic]["packed_series"]
-            )
+            topics_columns_map[topic]["is_packed"] = any(topics_columns_map[topic]["packed_series"])
 
         # Iterates over topic to perform the transformation
         for key, topic in topics_columns_map.items():
@@ -202,26 +196,17 @@ class Transform:
                         subset_field = str(column["subset_field"])
                         subset_value = str(column["subset_value"])
 
-                        if (
-                            subset_field in topic_series
-                            and not topic_series[subset_field].empty
-                        ):
+                        if subset_field in topic_series and not topic_series[subset_field].empty:
                             # Ensure both the column and subset_value are of same type
-                            topic_series[subset_field] = (
-                                topic_series[subset_field].fillna("").astype(str)
-                            )
+                            topic_series[subset_field] = topic_series[subset_field].fillna("").astype(str)
                             subset_value = str(subset_value)
 
                             # Filter the DataFrame
-                            filtered_df = topic_series.loc[
-                                topic_series[subset_field] == subset_value
-                            ]
+                            filtered_df = topic_series.loc[topic_series[subset_field] == subset_value]
 
                             # Verify which fields exist in the filtered DataFrame
                             fields.remove(subset_field)
-                            valid_fields = [
-                                field for field in fields if field in filtered_df.columns
-                            ]
+                            valid_fields = [field for field in fields if field in filtered_df.columns]
 
                             if valid_fields:
                                 data = [
@@ -242,9 +227,7 @@ class Transform:
                                     }
                                 ]
                         else:
-                            data = [
-                                {"topic": topic["name"], "series": pandas.DataFrame()}
-                            ]
+                            data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
                     else:
                         data = [
                             {
@@ -274,21 +257,13 @@ class Transform:
                             for col in series_df.columns:
                                 new_topic = topic.copy()
                                 new_topic["fields"] = [col]
-                                new_topic["columns"][0]["topics"][0]["fields"] = [
-                                    {"name": col}
-                                ]
-                                new_data = [
-                                    {"topic": new_topic, "series": series_df[[col]]}
-                                ]
+                                new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
+                                new_data = [{"topic": new_topic, "series": series_df[[col]]}]
 
                                 # Safeguard processing
                                 column_value = self.proccess_column_value(
-                                    start_time=getattr(
-                                        exposure["timespan"].begin, "utc", None
-                                    ),
-                                    end_time=getattr(
-                                        exposure["timespan"].end, "utc", None
-                                    ),
+                                    start_time=getattr(exposure["timespan"].begin, "utc", None),
+                                    end_time=getattr(exposure["timespan"].end, "utc", None),
                                     topics=new_data,
                                     transform_function=column.get("function"),
                                     **function_kwargs,
@@ -334,17 +309,11 @@ class Transform:
                             for col in series_df.columns:
                                 new_topic = topic.copy()
                                 new_topic["fields"] = [col]
-                                new_topic["columns"][0]["topics"][0]["fields"] = [
-                                    {"name": col}
-                                ]
-                                new_data = [
-                                    {"topic": new_topic, "series": series_df[[col]]}
-                                ]
+                                new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
+                                new_data = [{"topic": new_topic, "series": series_df[[col]]}]
 
                                 column_value = self.proccess_column_value(
-                                    start_time=getattr(
-                                        visit["timespan"].begin, "utc", None
-                                    ),
+                                    start_time=getattr(visit["timespan"].begin, "utc", None),
                                     end_time=getattr(visit["timespan"].end, "utc", None),
                                     topics=new_data,
                                     transform_function=column.get("function"),
@@ -367,15 +336,9 @@ class Transform:
         df_exposures = pandas.DataFrame(results)
 
         if not df_exposures.empty:
-            self.log.info(
-                f"Exposure results to be inserted into the database: {len(df_exposures)}"
-            )
-            exp_dao = ExposureEfdDao(
-                db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument)
-            )
-            affected_rows = exp_dao.upsert(
-                df=df_exposures, commit_every=self.commit_every
-            )
+            self.log.info(f"Exposure results to be inserted into the database: {len(df_exposures)}")
+            exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
+            affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
             count["exposures"] = affected_rows
             self.log.info(f"Database rows affected: {affected_rows}")
         del results
@@ -384,8 +347,7 @@ class Transform:
         df_exposures_unpivoted = pandas.DataFrame(result_exp_unpivoted)
         # print(df_exposures_unpivoted)
         self.log.info(
-            f"Exposure unpivoted results to be inserted into the database: "
-            f"{len(df_exposures_unpivoted)}"
+            f"Exposure unpivoted results to be inserted into the database: " f"{len(df_exposures_unpivoted)}"
         )
         if not df_exposures_unpivoted.empty:
             exp_unpivoted_dao = ExposureEfdUnpivotedDao(
@@ -405,12 +367,8 @@ class Transform:
 
         df_visits = pandas.DataFrame(results)
         if not df_visits.empty:
-            self.log.info(
-                f"Visit results to be inserted into the database: {len(df_visits)}"
-            )
-            vis_dao = VisitEfdDao(
-                db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument)
-            )
+            self.log.info(f"Visit results to be inserted into the database: {len(df_visits)}")
+            vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument))
             affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
             self.log.info(f"Database rows affected: {affected_rows}")
             count["visits1"] = affected_rows
@@ -419,16 +377,13 @@ class Transform:
         # ingesting visit_unpivoted
         df_visits_unpivoted = pandas.DataFrame(result_vis_unpivoted)
         self.log.info(
-            f"Visit unpivoted results to be inserted into the database: "
-            f"{len(df_visits_unpivoted)}"
+            f"Visit unpivoted results to be inserted into the database: " f"{len(df_visits_unpivoted)}"
         )
         if not df_visits_unpivoted.empty:
             vis_unpivoted_dao = VisitEfdUnpivotedDao(
                 db_uri=self.db_uri, schema=self.get_schema_by_instrument(instrument)
             )
-            affected_rows = vis_unpivoted_dao.upsert(
-                df=df_visits_unpivoted, commit_every=self.commit_every
-            )
+            affected_rows = vis_unpivoted_dao.upsert(df=df_visits_unpivoted, commit_every=self.commit_every)
             self.log.info(f"Database rows affected: {affected_rows}")
             count["visits1_unpivoted"] = affected_rows
         # del result_vis_unpivoted
@@ -462,9 +417,9 @@ class Transform:
         values = self.topic_values_by_exposure(start_time, end_time, topics)
 
         if not values.empty:
-            column_value = Summary(
-                dataframe=values, exposure_start=start_time, exposure_end=end_time
-            ).apply(transform_function, **function_kwargs)
+            column_value = Summary(dataframe=values, exposure_start=start_time, exposure_end=end_time).apply(
+                transform_function, **function_kwargs
+            )
             return column_value
 
         return None
@@ -495,9 +450,7 @@ class Transform:
         for topic in topics:
             topic_table = topic["series"]
             if not topic_table.empty:
-                values = topic_table.loc[
-                    (topic_table.index > start_time) & (topic_table.index < end_time)
-                ]
+                values = topic_table.loc[(topic_table.index > start_time) & (topic_table.index < end_time)]
                 if not values.empty:
                     topics_values.append(values)
 
@@ -512,9 +465,7 @@ class Transform:
 
     def concatenate_arrays(
         self,
-        input_data: Union[
-            List[float], List[List[float]], numpy.ndarray, List[numpy.ndarray]
-        ],
+        input_data: Union[List[float], List[List[float]], numpy.ndarray, List[numpy.ndarray]],
     ) -> numpy.ndarray:
         """Concatenate values from list, list of lists or a numpy array.
 
@@ -540,18 +491,13 @@ class Transform:
             return numpy.concatenate(input_data.flat)
         elif isinstance(input_data, list):
             flat_arrays = [
-                (
-                    numpy.array(arr).flat
-                    if isinstance(arr, numpy.ndarray)
-                    else numpy.array(arr).flatten()
-                )
+                (numpy.array(arr).flat if isinstance(arr, numpy.ndarray) else numpy.array(arr).flatten())
                 for arr in input_data
             ]
             return numpy.concatenate(flat_arrays)
         else:
             raise TypeError(
-                "Input data must be a list or list of lists or a numpy array "
-                "or list of numpy arrays."
+                "Input data must be a list or list of lists or a numpy array " "or list of numpy arrays."
             )
 
     def topics_by_column(self, column, topic_interval, packed_series) -> List[dict]:

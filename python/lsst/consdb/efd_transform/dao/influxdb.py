@@ -101,9 +101,7 @@ class InfluxDBClient:
         """
         try:
             # data = self.query(f'SHOW FIELD KEYS FROM "{topic_name}"')
-            data = self.query(
-                f'SHOW FIELD KEYS FROM "{self.database_name}"."autogen"."{topic_name}" '
-            )
+            data = self.query(f'SHOW FIELD KEYS FROM "{self.database_name}"."autogen"."{topic_name}" ')
             field_keys = []
             if "results" in data:
                 for result in data["results"]:
@@ -145,17 +143,12 @@ class InfluxDBClient:
         n = None
         for bfield in base_fields:
             for f in fields:
-                if (
-                    f.startswith(bfield) and f[len(bfield) :].isdigit()
-                ):  # Check prefix is complete
+                if f.startswith(bfield) and f[len(bfield) :].isdigit():  # Check prefix is complete
                     ret.setdefault(bfield, []).append(f)
             if n is None:
                 n = len(ret[bfield])
             if n != len(ret[bfield]):
-                raise ValueError(
-                    f"Field lengths do not agree for "
-                    f"{bfield}: {n} vs. {len(ret[bfield])}"
-                )
+                raise ValueError(f"Field lengths do not agree for " f"{bfield}: {n} vs. {len(ret[bfield])}")
 
             def sorter(prefix, val):
                 return int(val[len(prefix) :])
@@ -247,18 +240,13 @@ class InfluxDBClient:
 
         """
         packed_fields = [
-            k
-            for k in packed_dataframe.keys()
-            if k.startswith(base_field) and k[len(base_field) :].isdigit()
+            k for k in packed_dataframe.keys() if k.startswith(base_field) and k[len(base_field) :].isdigit()
         ]
-        packed_fields = sorted(
-            packed_fields, key=lambda k: int(k[len(base_field) :])
-        )  # sort by pack ID
+        packed_fields = sorted(packed_fields, key=lambda k: int(k[len(base_field) :]))  # sort by pack ID
         npack = len(packed_fields)
         if npack % stride != 0:
             raise RuntimeError(
-                "Stride must be a factor of the number of packed fields: "
-                f"{stride} v. {npack}"
+                "Stride must be a factor of the number of packed fields: " f"{stride} v. {npack}"
             )
         packed_len = len(packed_dataframe)
         n_used = npack // stride  # number of raw fields being used
@@ -269,8 +257,7 @@ class InfluxDBClient:
             dt = 0
         else:
             dt = (
-                packed_dataframe[ref_timestamp_col].iloc[1]
-                - packed_dataframe[ref_timestamp_col].iloc[0]
+                packed_dataframe[ref_timestamp_col].iloc[1] - packed_dataframe[ref_timestamp_col].iloc[0]
             ) / npack
         for i in range(0, npack, stride):
             i0 = i // stride
@@ -411,9 +398,7 @@ class InfluxDBClient:
 
         return result
 
-    def build_time_range_query(
-        self, topic_name, fields, start, end, index=None, use_old_csc_indexing=False
-    ):
+    def build_time_range_query(self, topic_name, fields, start, end, index=None, use_old_csc_indexing=False):
         """Build a query based on a time range.
 
         Parameters
@@ -452,10 +437,7 @@ class InfluxDBClient:
             start_str = start.isot
             end_str = end.isot
         else:
-            raise TypeError(
-                "The second time argument must be the time stamp for the end "
-                "or a time delta."
-            )
+            raise TypeError("The second time argument must be the time stamp for the end " "or a time delta.")
         index_str = ""
         if index:
             if use_old_csc_indexing:
@@ -522,9 +504,7 @@ class InfluxDBClient:
             A `~pandas.DataFrame` containing the results of the query.
 
         """
-        query = self.build_time_range_query(
-            topic_name, fields, start, end, index, use_old_csc_indexing
-        )
+        query = self.build_time_range_query(topic_name, fields, start, end, index, use_old_csc_indexing)
         response = self.query(query)
 
         if "series" not in response["results"][0]:
@@ -670,6 +650,4 @@ class InfluxDbDao(InfluxDBClient):
         path = os.getenv("EFD_PATH", "/influxdb-enterprise-data/")
         url = urljoin(f"https://{host}:{port}", f"{path}")
 
-        super(InfluxDbDao, self).__init__(
-            url, database_name=database_name, username=user, password=password
-        )
+        super(InfluxDbDao, self).__init__(url, database_name=database_name, username=user, password=password)
