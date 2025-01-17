@@ -1,3 +1,9 @@
+"""Provides the `InfluxDBClient` and `InfluxDbDao` classes.
+
+These classes support operations such as querying time-series data, retrieving field
+keys, and unpacking packed dataframes.
+"""
+
 import os
 from functools import partial
 from urllib.parse import urljoin
@@ -24,6 +30,7 @@ class InfluxDBClient:
         The username to authenticate with.
     password : str, optional
         The password to authenticate with.
+
     """
 
     def __init__(
@@ -33,8 +40,7 @@ class InfluxDBClient:
         username: str | None = None,
         password: str | None = None,
     ) -> None:
-        """
-        Initialize the InfluxDBClient class.
+        """Initialize the InfluxDBClient class.
 
         Parameters
         ----------
@@ -46,14 +52,14 @@ class InfluxDBClient:
             The username to authenticate with.
         password : str, optional
             The password to authenticate with.
+
         """
         self.url = url
         self.database_name = database_name
         self.auth = (username, password) if username and password else None
 
     def query(self, query: str) -> dict:
-        """
-        Send a query to the InfluxDB API and retrieve the result.
+        """Send a query to the InfluxDB API and retrieve the result.
 
         Parameters
         ----------
@@ -69,6 +75,7 @@ class InfluxDBClient:
         ------
         Exception
             If an error occurs during the request to the InfluxDB API.
+
         """
         params = {"db": self.database_name, "q": query}
         try:
@@ -79,8 +86,7 @@ class InfluxDBClient:
             raise Exception(f"An error occurred: {exc}") from exc
 
     def get_fields(self, topic_name):
-        """
-        Retrieve the field keys for a given topic from the InfluxDB database.
+        """Retrieve the field keys for a given topic from the InfluxDB database.
 
         Parameters
         ----------
@@ -91,10 +97,13 @@ class InfluxDBClient:
         -------
         list or None
             A list of field keys if successful, or None if an error occurs.
+
         """
         try:
             # data = self.query(f'SHOW FIELD KEYS FROM "{topic_name}"')
-            data = self.query(f'SHOW FIELD KEYS FROM "{self.database_name}"."autogen"."{topic_name}" ')
+            data = self.query(
+                f'SHOW FIELD KEYS FROM "{self.database_name}"."autogen"."{topic_name}" '
+            )
             field_keys = []
             if "results" in data:
                 for result in data["results"]:
@@ -109,9 +118,7 @@ class InfluxDBClient:
             return None
 
     def _make_fields(self, fields, base_fields):
-        """
-        Helper method to construct a dictionary of fields grouped by their base
-        field names.
+        """Construct dictionary of fields grouped by their base field names.
 
         This function was adapted from the original implementation found at
         [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
@@ -132,17 +139,23 @@ class InfluxDBClient:
         tuple
             A tuple containing the dictionary of grouped fields and the number
             of grouped fields.
+
         """
         ret = {}
         n = None
         for bfield in base_fields:
             for f in fields:
-                if f.startswith(bfield) and f[len(bfield) :].isdigit():  # Check prefix is complete
+                if (
+                    f.startswith(bfield) and f[len(bfield) :].isdigit()
+                ):  # Check prefix is complete
                     ret.setdefault(bfield, []).append(f)
             if n is None:
                 n = len(ret[bfield])
             if n != len(ret[bfield]):
-                raise ValueError(f"Field lengths do not agree for {bfield}: {n} vs. {len(ret[bfield])}")
+                raise ValueError(
+                    f"Field lengths do not agree for "
+                    f"{bfield}: {n} vs. {len(ret[bfield])}"
+                )
 
             def sorter(prefix, val):
                 return int(val[len(prefix) :])
@@ -152,8 +165,7 @@ class InfluxDBClient:
         return ret, n
 
     def make_fields(self, fields: str, base_fields: [str, bytes]):
-        """
-        Construct a list of fields based on provided base field names.
+        """Construct a list of fields based on provided base field names.
 
         This function was adapted from the original implementation found at
         [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
@@ -173,6 +185,7 @@ class InfluxDBClient:
         -------
         list
             A list of expanded field names.
+
         """
         if isinstance(base_fields, str):
             base_fields = [
@@ -198,8 +211,7 @@ class InfluxDBClient:
         fmt="unix_tai",
         scale="tai",
     ):
-        """Select fields that are time samples and unpack them into a
-        dataframe.
+        """Select fields that are time samples and unpack them into a dataframe.
 
         This function was adapted from the original implementation found at
         [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
@@ -232,16 +244,21 @@ class InfluxDBClient:
         -------
         result : `pandas.DataFrame`
             A `pandas.DataFrame` containing the results of the query.
-        """
 
+        """
         packed_fields = [
-            k for k in packed_dataframe.keys() if k.startswith(base_field) and k[len(base_field) :].isdigit()
+            k
+            for k in packed_dataframe.keys()
+            if k.startswith(base_field) and k[len(base_field) :].isdigit()
         ]
-        packed_fields = sorted(packed_fields, key=lambda k: int(k[len(base_field) :]))  # sort by pack ID
+        packed_fields = sorted(
+            packed_fields, key=lambda k: int(k[len(base_field) :])
+        )  # sort by pack ID
         npack = len(packed_fields)
         if npack % stride != 0:
             raise RuntimeError(
-                "Stride must be a factor of the number of packed fields: " f"{stride} v. {npack}"
+                "Stride must be a factor of the number of packed fields: "
+                f"{stride} v. {npack}"
             )
         packed_len = len(packed_dataframe)
         n_used = npack // stride  # number of raw fields being used
@@ -252,7 +269,8 @@ class InfluxDBClient:
             dt = 0
         else:
             dt = (
-                packed_dataframe[ref_timestamp_col].iloc[1] - packed_dataframe[ref_timestamp_col].iloc[0]
+                packed_dataframe[ref_timestamp_col].iloc[1]
+                - packed_dataframe[ref_timestamp_col].iloc[0]
             ) / npack
         for i in range(0, npack, stride):
             i0 = i // stride
@@ -279,8 +297,7 @@ class InfluxDBClient:
         ref_timestamp_fmt="unix_tai",
         ref_timestamp_scale="tai",
     ):
-        """
-        Merge packed time series data into a single DataFrame.
+        """Merge packed time series data into a single DataFrame.
 
         This function was adapted from the original implementation found at
         [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
@@ -310,6 +327,7 @@ class InfluxDBClient:
         -------
         result : `pandas.DataFrame`
             A `pandas.DataFrame` containing the merged time series data.
+
         """
         if result.empty:
             return result
@@ -340,8 +358,7 @@ class InfluxDBClient:
             return x
 
     def _to_dataframe(self, response: dict) -> pd.DataFrame:
-        """
-        Convert an InfluxDB query response to a Pandas DataFrame.
+        """Convert an InfluxDB query response to a Pandas DataFrame.
 
         Parameters
         ----------
@@ -362,6 +379,7 @@ class InfluxDBClient:
         ------
         KeyError
             If the response does not contain the expected structure.
+
         """
         # One query submitted at a time
         statement = response["results"][0]
@@ -393,7 +411,9 @@ class InfluxDBClient:
 
         return result
 
-    def build_time_range_query(self, topic_name, fields, start, end, index=None, use_old_csc_indexing=False):
+    def build_time_range_query(
+        self, topic_name, fields, start, end, index=None, use_old_csc_indexing=False
+    ):
         """Build a query based on a time range.
 
         Parameters
@@ -418,6 +438,7 @@ class InfluxDBClient:
         -------
         query : `str`
             A string containing the constructed query statement.
+
         """
         if not isinstance(start, Time):
             raise TypeError("The first time argument must be a time stamp")
@@ -431,7 +452,10 @@ class InfluxDBClient:
             start_str = start.isot
             end_str = end.isot
         else:
-            raise TypeError("The second time argument must be the time stamp for the end " "or a time delta.")
+            raise TypeError(
+                "The second time argument must be the time stamp for the end "
+                "or a time delta."
+            )
         index_str = ""
         if index:
             if use_old_csc_indexing:
@@ -440,7 +464,8 @@ class InfluxDBClient:
             else:
                 index_name = "salIndex"
             index_str = f" AND {index_name} = {index}"
-        timespan = f"time >= '{start_str}Z' AND time <= '{end_str}Z'{index_str}"  # influxdb demands last Z
+        # influxdb demands last Z
+        timespan = f"time >= '{start_str}Z' AND time <= '{end_str}Z'{index_str}"
 
         if isinstance(fields, str):
             fields = [
@@ -454,7 +479,8 @@ class InfluxDBClient:
 
         # Build query here
         return (
-            f'SELECT {", ".join(fields)} FROM "{self.database_name}"."autogen"."{topic_name}" '
+            f'SELECT {", ".join(fields)} '
+            f'FROM "{self.database_name}"."autogen"."{topic_name}" '
             f"WHERE {timespan}"
         )
 
@@ -467,8 +493,7 @@ class InfluxDBClient:
         index=None,
         use_old_csc_indexing=False,
     ):
-        """
-        Select time series data from InfluxDB based on a time range.
+        """Select time series data from InfluxDB based on a time range.
 
         This function queries specific fields from the InfluxDB database
         within a defined time range.
@@ -495,8 +520,11 @@ class InfluxDBClient:
         -------
         result : `pandas.DataFrame`
             A `~pandas.DataFrame` containing the results of the query.
+
         """
-        query = self.build_time_range_query(topic_name, fields, start, end, index, use_old_csc_indexing)
+        query = self.build_time_range_query(
+            topic_name, fields, start, end, index, use_old_csc_indexing
+        )
         response = self.query(query)
 
         if "series" not in response["results"][0]:
@@ -516,8 +544,7 @@ class InfluxDBClient:
         ref_timestamp_scale="tai",
         use_old_csc_indexing=False,
     ):
-        """Select fields that are time samples and unpack them into a
-        dataframe.
+        """Select fields that are time samples and unpack them into a dataframe.
 
         This function was adapted from the original implementation found at
         [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
@@ -569,6 +596,7 @@ class InfluxDBClient:
         -------
         result : `pandas.DataFrame`
             A `~pandas.DataFrame` containing the results of the query.
+
         """
         fields = self.get_fields(topic_name)
         field_list = self.make_fields(fields, base_fields)
@@ -593,13 +621,30 @@ class InfluxDBClient:
 
 
 class InfluxDbDao(InfluxDBClient):
+    """A specialized extension of `InfluxDBClient`.
+
+    This class provides streamlined access to EFD data, leveraging environment
+    variables or a credentials service for authentication. It facilitates querying
+    and managing time-series data with minimal configuration.
+
+    Attributes
+    ----------
+    efd_name : str
+        The name of the EFD instance to connect to.
+    database_name : str
+        The name of the InfluxDB database to query.
+    creds_service : str
+        The URL of the credentials service used for authentication.
+
+    """
 
     def __init__(
-        self, efd_name: str, database_name="efd", creds_service="https://roundtable.lsst.codes/segwarides/"
+        self,
+        efd_name: str,
+        database_name="efd",
+        creds_service="https://roundtable.lsst.codes/segwarides/",
     ):
-        """
-        Initialize the InfluxDbDao class, which extends the InfluxDBClient
-        class.
+        """Initialize the InfluxDbDao class, which extends the InfluxDBClient class.
 
         Parameters
         ----------
@@ -611,6 +656,7 @@ class InfluxDbDao(InfluxDBClient):
         creds_service : str, optional
             The URL of the credentials service to use for authentication.
             Default is "https://roundtable.lsst.codes/segwarides/".
+
         """
         # auth = NotebookAuth(service_endpoint=creds_service)
         # host, schema_registry_url, port, user,
@@ -624,4 +670,6 @@ class InfluxDbDao(InfluxDBClient):
         path = os.getenv("EFD_PATH", "/influxdb-enterprise-data/")
         url = urljoin(f"https://{host}:{port}", f"{path}")
 
-        super(InfluxDbDao, self).__init__(url, database_name=database_name, username=user, password=password)
+        super(InfluxDbDao, self).__init__(
+            url, database_name=database_name, username=user, password=password
+        )
