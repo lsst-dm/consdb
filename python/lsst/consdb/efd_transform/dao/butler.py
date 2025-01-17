@@ -77,8 +77,7 @@ class ButlerDao:
 
         """
         where_clause = (
-            f"instrument=instr and exposure.timespan OVERLAPS "
-            f"(T'{start_time}/utc', T'{end_time}/utc')"
+            f"instrument=instr and exposure.timespan OVERLAPS " f"(T'{start_time}/utc', T'{end_time}/utc')"
         )
 
         resultset = self.butler.registry.queryDimensionRecords(
@@ -106,8 +105,7 @@ class ButlerDao:
 
         """
         where_clause = (
-            f"instrument=instr and visit.timespan OVERLAPS "
-            f"(T'{start_time}/utc', T'{end_time}/utc')"
+            f"instrument=instr and visit.timespan OVERLAPS " f"(T'{start_time}/utc', T'{end_time}/utc')"
         )
 
         resultset = self.butler.registry.queryDimensionRecords(

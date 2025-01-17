@@ -53,15 +53,11 @@ class Summary:
         if not isinstance(exposure_start, Time) or not isinstance(exposure_end, Time):
             raise ValueError("Exposure times must be astropy.time.Time objects.")
         if exposure_start >= exposure_end:
-            raise ValueError(
-                "Exposure start time must be earlier than exposure end time."
-            )
+            raise ValueError("Exposure start time must be earlier than exposure end time.")
 
         df_time = Time(dataframe.index.to_pydatetime())
         if exposure_start > df_time[-1] or exposure_end < df_time[0]:
-            raise ValueError(
-                "The DataFrame index must encompass the exposure time range."
-            )
+            raise ValueError("The DataFrame index must encompass the exposure time range.")
 
         dataframe = dataframe.dropna().convert_dtypes()
         if not all(
@@ -70,9 +66,7 @@ class Summary:
         ):
             raise ValueError("All columns in the DataFrame must be numeric or boolean.")
 
-        self.data_array = (
-            dataframe.to_numpy(dtype=datatype) if datatype else dataframe.to_numpy()
-        )
+        self.data_array = dataframe.to_numpy(dtype=datatype) if datatype else dataframe.to_numpy()
         self.timestamps = dataframe.index
         self.exposure_start = exposure_start
         self.exposure_end = exposure_end

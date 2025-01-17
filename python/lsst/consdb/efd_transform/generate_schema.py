@@ -20,9 +20,7 @@ def build_argparser() -> argparse.ArgumentParser:
         argparse.ArgumentParser: The argument parser object.
 
     """
-    parser = argparse.ArgumentParser(
-        description="Generate the schema for the EFD transform."
-    )
+    parser = argparse.ArgumentParser(description="Generate the schema for the EFD transform.")
     parser.add_argument(
         "--config",
         type=str,
@@ -92,9 +90,7 @@ if __name__ == "__main__":
         f.write("    description: Instrument name.\n")
         # Iterate over columns in the config file
         for column in config["columns"]:
-            if "exposure_efd" in column["tables"] and not column.get(
-                "store_unpivoted", False
-            ):
+            if "exposure_efd" in column["tables"] and not column.get("store_unpivoted", False):
                 column_name = column["name"]
                 f.write(f'  - name: "{column_name}"\n')
                 f.write(f'    "@id": "#exposure_efd.{column_name}"\n')
@@ -189,9 +185,7 @@ if __name__ == "__main__":
         f.write("    description: Instrument name.\n")
         # Iterate over columns in the config file
         for column in config["columns"]:
-            if "visit1_efd" in column["tables"] and not column.get(
-                "store_unpivoted", False
-            ):
+            if "visit1_efd" in column["tables"] and not column.get("store_unpivoted", False):
                 column_name = column["name"]
                 f.write(f'  - name: "{column_name}"\n')
                 f.write(f'    "@id": "#visit1_efd.{column_name}"\n')
