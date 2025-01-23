@@ -85,7 +85,6 @@ def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
 
     instrument = instrument.lower()
     logger = logging.getLogger()
-    engine = get_engine()
 
     # Check whether the instrument name is valid
     if instrument_list is None:
