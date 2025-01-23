@@ -22,9 +22,10 @@
 import logging
 from typing import Annotated
 
-from fastapi import Path, Request
+from fastapi import Depends, Path, Request
 from pydantic import AfterValidator
 from sqlalchemy import create_engine, inspect
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
 from .cdb_schema import InstrumentTable
@@ -78,7 +79,7 @@ instrument_tables: dict[str, InstrumentTable] = dict()
 instrument_list: list[str] | None = None
 
 
-def get_instrument_table(instrument: str):
+def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
     global instrument_list
     global instrument_tables
 
