@@ -37,6 +37,8 @@ __all__ = ["get_logger", "get_db"]
 _database_url = None
 _engine = None
 _SessionLocal = None
+_instrument_tables: dict[str, InstrumentTable] = dict()
+_instrument_list: list[str] | None = None
 
 
 def get_engine():
@@ -75,37 +77,33 @@ def get_logger(request: Request):
     return logging.getLogger(endpoint_name)
 
 
-instrument_tables: dict[str, InstrumentTable] = dict()
-instrument_list: list[str] | None = None
-
-
 def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
-    global instrument_list
-    global instrument_tables
+    global _instrument_list
+    global _instrument_tables
 
     instrument = instrument.lower()
     logger = logging.getLogger()
 
     # Check whether the instrument name is valid
-    if instrument_list is None:
+    if _instrument_list is None:
         inspector = inspect(engine)
         instrument_list = [name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")]
 
     if instrument not in [i.lower() for i in instrument_list]:
         raise UnknownInstrumentException(instrument, instrument_list)
 
-    if instrument in instrument_tables:
-        instrument_table = instrument_tables[instrument]
+    if instrument in _instrument_tables:
+        instrument_table = _instrument_tables[instrument]
     else:
         instrument_table = InstrumentTable(engine=engine, instrument=instrument, get_db=get_db, logger=logger)
-        instrument_tables[instrument] = instrument_table
+        _instrument_tables[instrument] = instrument_table
 
     return instrument_table
 
 
 def get_instrument_list():
-    global instrument_list
-    if instrument_list is None:
+    global _instrument_list
+    if _instrument_list is None:
         inspector = inspect(get_engine())
         instrument_list = [name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")]
 
@@ -116,7 +114,8 @@ def validate_instrument_name(
     instrument: str = Path(description="Must be a valid instrument name (e.g., ``LATISS``)"),
 ) -> str:
     instrument_lower = instrument.lower()
-    if instrument_lower not in [i.lower() for i in get_instrument_list()]:
+    instrument_list = get_instrument_list()
+    if instrument_lower not in [i.lower() for i in instrument_list]:
         raise UnknownInstrumentException(instrument, instrument_list)
     return instrument_lower
 
@@ -125,9 +124,9 @@ InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]
 
 
 def reset_dependencies():
-    global _database_url, _engine, _SessionLocal, instrument_table, instrument_list
+    global _database_url, _engine, _SessionLocal, _instrument_tables, _instrument_list
     _database_url = None
     _engine = None
     _SessionLocal = None
-    instrument_table = None
-    instrument_list = None
+    _instrument_tables = dict()
+    _instrument_list = None
