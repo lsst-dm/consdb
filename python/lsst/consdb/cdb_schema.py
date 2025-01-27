@@ -137,8 +137,9 @@ class InstrumentTable:
             # Compile the list of obs id column names for
             # each table.
             for col_name in ObsIdColname:
-                # If there are multiple observation ID columns in a table, this breaks ties by
-                # selecting the first one found based on the ordering defined in the ObsIdColname enum.
+                # If there are multiple observation ID columns in a table,
+                # this breaks ties by selecting the first one found based
+                # on the ordering defined in the ObsIdColname enum.
                 col_name = col_name.value
                 if col_name in md.tables[table].columns:
                     self.obs_id_column[table] = col_name
