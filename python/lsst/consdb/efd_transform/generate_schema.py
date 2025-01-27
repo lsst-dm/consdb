@@ -54,7 +54,7 @@ if __name__ == "__main__":
         f.write(f"name: {schema_dict[args.instrument]}\n")
         f.write(f'"@id": "#{schema_dict[args.instrument]}"\n')
         f.write("description: Transformed EFD Consolidated Database ")
-        f.write("for {args.instrument}\n")
+        f.write(f"for {args.instrument}\n")
         f.write("tables:\n")
 
         # Generate exposure_efd table.
@@ -321,6 +321,9 @@ if __name__ == "__main__":
         f.write('    "@id": "#transformed_efd_scheduler.error"\n')
         f.write("    datatype: text\n")
         f.write('    description: "Error message, if any"\n')
+        f.write("  - name: butler_repo\n")
+        f.write('    "@id": "#transformed_efd_scheduler.butler_repo"\n')
+        f.write("    datatype: text\n")
         f.write("  - name: created_at\n")
         f.write('    "@id": "#transformed_efd_scheduler.created_at"\n')
         f.write("    datatype: timestamp\n")
