@@ -49,14 +49,15 @@
 python python/lsst/consdb/efd_transform/transform_efd.py \
     -i LATISS \
     -s 2024-09-30T18:00:00 \
-    -e 2024-10-03T19:00:00 \
+    -e 2024-09-30T19:30:00 \
     -r /repo/embargo_old \
     -d sqlite:///$PWD/tmp/efd_transform/LATISS.db \
     -E usdf_efd \
     -c python/lsst/consdb/efd_transform/config_LATISS.yaml \
-    -t 60 \
+    -t 30 \
     -w 1 \
-    -l $PWD/tmp/transform.log
+    -l $PWD/tmp/transform.log \
+    -m job \
 
 
 # python python/lsst/consdb/efd_transform/transform_efd.py \

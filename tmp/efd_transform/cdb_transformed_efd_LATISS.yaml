@@ -2832,7 +2832,7 @@ tables:
   - name: timewindow
     "@id": "#transformed_efd_scheduler.timewindow"
     datatype: int
-    description: Time window used to expand start and end times by, in minutes
+    description: Time window used to expand start and endtimes by, in minutes
   - name: status
     "@id": "#transformed_efd_scheduler.status"
     datatype: char
@@ -2871,6 +2871,9 @@ tables:
     "@id": "#transformed_efd_scheduler.error"
     datatype: text
     description: "Error message, if any"
+  - name: butler_repo
+    "@id": "#transformed_efd_scheduler.butler_repo"
+    datatype: text
   - name: created_at
     "@id": "#transformed_efd_scheduler.created_at"
     datatype: timestamp
