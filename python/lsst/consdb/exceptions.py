@@ -62,31 +62,16 @@ class BadValueException(Exception):
         return data
 
 
-class UnknownInstrumentException(Exception):
+class UnknownInstrumentException(BadValueException):
     """Exception raised for an unknown instrument.
 
     Parameters
     ----------
     instrument: `str`
         Name of the unknown instrument.
+    instrument_list: `list[str]`
+        List of valid instrument names.
     """
 
-    status_code = 404
-
     def __init__(self, instrument: str, instrument_list: list[str]):
-        self.instrument = instrument
-        self.instrument_list = instrument_list
-
-    def to_dict(self) -> dict[str, Any]:
-        """Convert the exception to a dictionary for JSON conversion.
-
-        Returns
-        -------
-        json_dict: `dict` [ `str`, `Any` ]
-            Dictionary with a message and the unknown instrument name.
-        """
-        return {
-            "message": "Unknown instrument",
-            "valid": self.instrument_list,
-            "value": self.instrument,
-        }
+        super().__init__(kind="instrument", value=instrument, valid=instrument_list)
