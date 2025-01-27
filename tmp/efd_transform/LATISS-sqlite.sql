@@ -585,6 +585,7 @@ CREATE TABLE main.transformed_efd_scheduler (
 	visits1 INTEGER DEFAULT 0,
 	retries INTEGER DEFAULT 0,
 	error TEXT,
+	butler_repo TEXT,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (id),
 	CONSTRAINT un_id UNIQUE (id)

@@ -1820,6 +1820,7 @@ CREATE TABLE cdb_lsstcomcamsim.transformed_efd_scheduler (
 	visits1 INTEGER DEFAULT 0,
 	retries INTEGER DEFAULT 0,
 	error TEXT,
+	butler_repo TEXT,
 	created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (id),
 	CONSTRAINT un_id UNIQUE (id)
@@ -1830,7 +1831,7 @@ COMMENT ON TABLE cdb_lsstcomcamsim.transformed_efd_scheduler IS 'Transformed EFD
 COMMENT ON COLUMN cdb_lsstcomcamsim.transformed_efd_scheduler.id IS 'Unique ID, auto-incremented';
 COMMENT ON COLUMN cdb_lsstcomcamsim.transformed_efd_scheduler.start_time IS 'Start time of the transformation interval, must be provided';
 COMMENT ON COLUMN cdb_lsstcomcamsim.transformed_efd_scheduler.end_time IS 'End time of the transformation interval, must be provided';
-COMMENT ON COLUMN cdb_lsstcomcamsim.transformed_efd_scheduler.timewindow IS 'Time window used to expand start and end times by, in minutes';
+COMMENT ON COLUMN cdb_lsstcomcamsim.transformed_efd_scheduler.timewindow IS 'Time window used to expand start and endtimes by, in minutes';
 COMMENT ON COLUMN cdb_lsstcomcamsim.transformed_efd_scheduler.status IS 'Status of the process, default is ''pending''';
 COMMENT ON COLUMN cdb_lsstcomcamsim.transformed_efd_scheduler.process_start_time IS 'Timestamp when the process started';
 COMMENT ON COLUMN cdb_lsstcomcamsim.transformed_efd_scheduler.process_end_time IS 'Timestamp when the process ended';
