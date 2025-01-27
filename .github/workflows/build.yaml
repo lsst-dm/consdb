@@ -15,22 +15,33 @@ jobs:
       contents: read
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Build hinfo
-      uses: lsst-sqre/build-and-push-to-ghcr@v1
-      with:
-        image: ${{ github.repository }}-hinfo
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        dockerfile: Dockerfile.hinfo
+      - name: Extract Git Tag or Branch
+        id: git_info
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "GITHUB_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "GITHUB_TAG=noversion" >> $GITHUB_ENV
+          fi
 
-    - name: Build pqserver
-      uses: lsst-sqre/build-and-push-to-ghcr@v1
-      with:
-        image: ${{ github.repository }}-pq
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        dockerfile: Dockerfile.pqserver
+      - name: Build hinfo
+        uses: lsst-sqre/build-and-push-to-ghcr@v1
+        with:
+          image: ${{ github.repository }}-hinfo
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: Dockerfile.hinfo
+
+      - name: Build pqserver
+        uses: lsst-sqre/build-and-push-to-ghcr@v1
+        with:
+          image: ${{ github.repository }}-pq
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: Dockerfile.pqserver
+          build-args: |
+            GITHUB_TAG=${{ env.GITHUB_TAG }}
 
     - name: Build efdtransform
       uses: lsst-sqre/build-and-push-to-ghcr@v1
