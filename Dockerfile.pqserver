@@ -1,7 +1,24 @@
 FROM python:3.11
+
+ARG GITHUB_TAG
+ENV VERSION=${GITHUB_TAG}
+
 RUN pip install fastapi safir astropy uvicorn gunicorn sqlalchemy psycopg2
 WORKDIR /
-COPY python/lsst/consdb/__init__.py python/lsst/consdb/pqserver.py python/lsst/consdb/utils.py /consdb_pq/
+COPY \
+    python/lsst/consdb/__init__.py \
+    python/lsst/consdb/pqserver.py \
+    python/lsst/consdb/cdb_schema.py \
+    python/lsst/consdb/config.py \
+    python/lsst/consdb/dependencies.py \
+    python/lsst/consdb/exceptions.py \
+    python/lsst/consdb/models.py \
+    /consdb_pq/
+COPY \
+    python/lsst/consdb/handlers/external.py \
+    python/lsst/consdb/handlers/internal.py \
+    /consdb_pq/handlers/
+
 # Environment variables that must be set:
 # DB_HOST DB_PASS DB_USER DB_NAME or POSTGRES_URL
 
