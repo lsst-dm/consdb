@@ -1,16 +1,27 @@
-"""Provides the `TransformdDao` class.
-
-This class supports operations such as querying records, inserting data, and
-updating task statuses for transformed scheduler data.
-"""
-
 from datetime import datetime, timezone
-from typing import Dict, Optional
+from typing import Dict, List, Optional, TypedDict
 
 import pandas
 from lsst.consdb.efd_transform.dao.base import DBBase
 from sqlalchemy import desc
 from sqlalchemy.sql import and_, select
+
+
+class Task(TypedDict):
+    """Typed dictionary representing a task record."""
+
+    id: int
+    status: str
+    start_time: datetime
+    end_time: datetime
+    process_start_time: Optional[datetime]
+    process_end_time: Optional[datetime]
+    process_exec_time: float
+    exposures: int
+    visits1: int
+    retries: int
+    error: Optional[str]
+    butler_repo: Optional[str]
 
 
 class TransformdDao(DBBase):
@@ -27,21 +38,29 @@ class TransformdDao(DBBase):
         ----
         db_uri (str): The database URI for connecting to the database.
         schema (str): The schema name in the database.
-
-        Notes:
-        -----
-        - The schema is currently hardcoded as "cdb_latiss".
-            This may be changed in the future to be passed as a parameter.
-        - Awaiting changes from Rodrigo regarding the schema usage.
-
         """
-        super(TransformdDao, self).__init__(db_uri, schema)
-
-        # TODO utilizar o schema como parametro
-        # aguardando alterações do rodrigo
+        super().__init__(db_uri, schema)
         self.tbl = self.get_table("transformed_efd_scheduler", schema=schema)
 
-    def select_by_id(self, id: int) -> Dict:
+    def _update_task_status(self, id: int, status: str, **kwargs) -> None:
+        """Helper method to update task status and related fields.
+
+        Args:
+        ----
+            id (int): The ID of the task to update.
+            status (str): The new status of the task.
+            **kwargs: Additional fields to update.
+
+        Raises:
+        ------
+            Exception: If there is an error updating the task.
+        """
+        try:
+            self.update(id, {"status": status, **kwargs})
+        except Exception as e:
+            raise Exception(f"Error updating task to {status} status: {e}")
+
+    def select_by_id(self, id: int) -> Task:
         """Select record from the table by its ID.
 
         Args:
@@ -50,11 +69,9 @@ class TransformdDao(DBBase):
 
         Returns:
         -------
-            Dict: A dictionary representing the selected record.
-
+            Task: A dictionary representing the selected record.
         """
         stm = select(self.tbl.c).where(and_(self.tbl.c.id == id))
-
         return self.fetch_one_dict(stm)
 
     def count(self) -> int:
@@ -63,7 +80,6 @@ class TransformdDao(DBBase):
         Returns
         -------
             int: The count of rows in the table.
-
         """
         return self.execute_count(self.tbl)
 
@@ -72,19 +88,17 @@ class TransformdDao(DBBase):
 
         Args:
         ----
-        df (pandas.DataFrame): The DataFrame containing the data to be
-            inserted.
+        df (pandas.DataFrame): The DataFrame containing the data to be inserted.
         commit_every (int, optional): The number of rows to insert before
             committing the transaction. Defaults to 100.
 
         Returns:
         -------
             int: The number of affected rows.
-
         """
         return self.execute_bulk_insert(tbl=self.tbl, df=df, commit_every=commit_every)
 
-    def insert(self, data: Dict) -> Dict:
+    def insert(self, data: Dict) -> Task:
         """Insert row into the "transformd" table.
 
         Args:
@@ -93,8 +107,7 @@ class TransformdDao(DBBase):
 
         Returns:
         -------
-            dict: The inserted row.
-
+            Task: The inserted row.
         """
         stm = self.tbl.insert().values(**data)
         engine = self.get_db_engine()
@@ -115,7 +128,6 @@ class TransformdDao(DBBase):
         Returns:
         -------
             int: The number of affected rows.
-
         """
         stm = self.tbl.update().where(self.tbl.c.id == id).values(**data)
         engine = self.get_db_engine()
@@ -124,36 +136,20 @@ class TransformdDao(DBBase):
             con.commit()
             return result.rowcount
 
-    def task_started(self, id: int):
-        """Update status of a task to 'running' and sets the process start time.
+    def task_started(self, id: int) -> None:
+        """Update status of a task to 'running' and sets the process start time."""
+        self._update_task_status(
+            id,
+            "running",
+            process_start_time=datetime.now(timezone.utc).replace(tzinfo=timezone.utc),
+            process_end_time=None,
+            process_exec_time=0,
+            exposures=0,
+            visits1=0,
+            error=None,
+        )
 
-        Args:
-        ----
-        id (int): The unique identifier of the task to be updated.
-
-        Raises:
-        ------
-        Exception: If there is an error updating the task status.
-
-        """
-        try:
-            self.update(
-                id,
-                {
-                    "status": "running",
-                    "process_start_time": datetime.now(timezone.utc).replace(tzinfo=timezone.utc),
-                    "process_end_time": None,
-                    "process_exec_time": 0,
-                    "exposures": 0,
-                    "visits1": 0,
-                    "error": None,
-                },
-            )
-
-        except Exception as e:
-            raise Exception(f"Error updating task to running status: {e}")
-
-    def task_update_counts(self, id: int, exposures: int, visits1: int):
+    def task_update_counts(self, id: int, exposures: int, visits1: int) -> None:
         """Update task counts for a given task ID, exposures, and visits.
 
         Args:
@@ -161,90 +157,40 @@ class TransformdDao(DBBase):
             id (int): The ID of the task to update.
             exposures (int): The number of exposures to set for the task.
             visits1 (int): The number of visits to set for the task.
-
         """
-        try:
-            self.update(
-                id,
-                {
-                    "status": "failed",
-                    "exposures": exposures,
-                    "visits1": visits1,
-                },
-            )
-        except Exception as e:
-            raise Exception(f"Error updating task counts: {e}")
+        self._update_task_status(id, "failed", exposures=exposures, visits1=visits1)
 
-    def task_completed(self, id: int):
-        """Mark task as completed by updating its status and execution time.
+    def task_completed(self, id: int) -> None:
+        """Mark task as completed by updating its status and execution time."""
+        row = self.select_by_id(id)
+        process_start_time = row["process_start_time"].replace(tzinfo=timezone.utc)
+        process_end_time = datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
+        exec_time = process_end_time - process_start_time
 
-        Args:
-        ----
-            id (int): The unique identifier of the task to be marked as
-            completed.
+        self._update_task_status(
+            id,
+            "completed",
+            process_end_time=process_end_time,
+            process_exec_time=exec_time.total_seconds(),
+            error=None,
+        )
 
-        Raises:
-        ------
-            Exception: If there is an error updating the task status.
+    def task_failed(self, id: int, error: str) -> None:
+        """Mark task as failed in the database and updates relevant fields."""
+        row = self.select_by_id(id)
+        process_start_time = row["process_start_time"].replace(tzinfo=timezone.utc)
+        process_end_time = datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
+        exec_time = process_end_time - process_start_time
 
-        """
-        try:
-            row = self.select_by_id(id)
+        self._update_task_status(
+            id,
+            "failed",
+            process_end_time=process_end_time,
+            process_exec_time=exec_time.total_seconds(),
+            error=error,
+        )
 
-            process_start_time = row["process_start_time"].replace(tzinfo=timezone.utc)
-            process_end_time = datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
-            exec_time = process_end_time - process_start_time
-
-            self.update(
-                id,
-                {
-                    "status": "completed",
-                    "process_end_time": process_end_time,
-                    "process_exec_time": exec_time.total_seconds(),
-                    "error": None,
-                },
-            )
-        except Exception as e:
-            raise Exception(f"Error updating task to completed status: {e}")
-
-    def task_failed(self, id: int, error: str):
-        """Mark task as failed in the database and updates relevant fields.
-
-        This method retrieves a task by its ID, calculates the execution time,
-        and updates the task's status to 'failed' along with the process end
-        time, execution time, and error message. If an error occurs during this
-        process, an exception is raised with a descriptive message.
-
-        Args:
-        ----
-            id (int): The unique identifier of the task.
-            error (str): The error message describing why the task failed.
-
-        Raises:
-        ------
-            Exception: If there is an error updating the task status.
-
-        """
-        try:
-            row = self.select_by_id(id)
-
-            process_start_time = row["process_start_time"].replace(tzinfo=timezone.utc)
-            process_end_time = datetime.now(timezone.utc).replace(tzinfo=timezone.utc)
-            exec_time = process_end_time - process_start_time
-
-            self.update(
-                id,
-                {
-                    "status": "failed",
-                    "process_end_time": process_end_time,
-                    "process_exec_time": exec_time.total_seconds(),
-                    "error": error,
-                },
-            )
-        except Exception as e:
-            raise Exception(f"Error updating task to failed status: {e}")
-
-    def task_retries_increment(self, id: int):
+    def task_retries_increment(self, id: int) -> None:
         """Increment the retry count for a task identified by its ID.
 
         Args:
@@ -254,23 +200,12 @@ class TransformdDao(DBBase):
         Raises:
         ------
             Exception: If there is an error updating the task retries.
-
         """
-        try:
-            row = self.select_by_id(id)
-            retries = row["retries"] + 1
+        row = self.select_by_id(id)
+        retries = row["retries"] + 1
+        self.update(id, {"retries": retries})
 
-            self.update(
-                id,
-                {
-                    "retries": retries,
-                    # last retry time
-                },
-            )
-        except Exception as e:
-            raise Exception(f"Error updating task retries: {e}")
-
-    def select_next(self, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None) -> Dict:
+    def select_next(self, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None) -> Task:
         """Select the next pending record within the specified time range.
 
         Args:
@@ -282,42 +217,28 @@ class TransformdDao(DBBase):
 
         Returns:
         -------
-            Dict: A dictionary representing the next pending record that
+            Task: A dictionary representing the next pending record that
                 matches the criteria.
-
         """
-        clauses = [
-            self.tbl.c.status == "pending",
-        ]
+        query = select(self.tbl.c).where(self.tbl.c.status == "pending")
         if start_time is not None:
-            clauses.append(self.tbl.c.start_time >= start_time)
+            query = query.where(self.tbl.c.start_time >= start_time)
         if end_time is not None:
-            clauses.append(self.tbl.c.end_time <= end_time)
+            query = query.where(self.tbl.c.end_time <= end_time)
+        query = query.order_by(self.tbl.c.start_time).limit(1)
+        return self.fetch_one_dict(query)
 
-        stm = select(self.tbl.c).where(and_(*clauses)).order_by(self.tbl.c.start_time).limit(1)
-
-        # print(self.debug_query(stm, with_parameters=True))
-        return self.fetch_one_dict(stm)
-
-    def select_last(self) -> Dict:
+    def select_last(self) -> Task:
         """Select last record from the table based on the 'end_time' column.
-
-        This method constructs a SQL query to select the last record from the
-        table associated with this DAO (Data Access Object).
-        The selection is ordered by the 'end_time' column in descending order
-        and limited to one record.
 
         Returns
         -------
-            Dict: A dictionary representing the last record in the table.
-
+            Task: A dictionary representing the last record in the table.
         """
         stm = select(self.tbl.c).order_by(desc(self.tbl.c.end_time)).limit(1)
-
-        # print(self.debug_query(stm, with_parameters=True))
         return self.fetch_one_dict(stm)
 
-    def select_recent(self, end_time: datetime, limit: Optional[int] = None) -> list[Dict]:
+    def select_recent(self, end_time: datetime, limit: Optional[int] = None) -> List[Task]:
         """Select recent records.
 
         Args:
@@ -328,18 +249,59 @@ class TransformdDao(DBBase):
 
         Returns:
         -------
-            list[Dict]: A list of dictionaries representing the selected
+            List[Task]: A list of dictionaries representing the selected
                 records.
-
         """
-        stm = (
+        query = (
             select(self.tbl.c)
             .where(and_(self.tbl.c.status == "pending", self.tbl.c.end_time <= end_time))
             .order_by(desc(self.tbl.c.end_time))
         )
-
         if limit is not None:
-            stm = stm.limit(limit)
+            query = query.limit(limit)
+        return self.fetch_all_dict(query)
 
-        # print(self.debug_query(stm, with_parameters=True))
-        return self.fetch_all_dict(stm)
+    def select_queued(self, butler_repo: str, status: str) -> List[Task]:
+        """Select task created but queued.
+
+        Args:
+        ----
+            butler_repo (str): The bulter repository relative to the task
+            status (str): The status (pending/idle).
+
+
+        Returns:
+        -------
+            Task: A dictionary representing the next pending record that
+                matches the criteria.
+        """
+        query = select(self.tbl.c).where(
+            and_(self.tbl.c.status == status, self.tbl.c.butler_repo == butler_repo)
+        )
+        return self.fetch_all_dict(query)
+
+    def select_failed(self, butler_repo: str, max_retries: Optional[int] = None) -> List[Task]:
+        """Select failed tasks
+
+        Args:
+        ----
+            butler_repo (str): The bulter repository relative to the task
+            max_retries (Optional[int]): Maximum retries of failed task
+
+        Returns:
+        -------
+            Task: A dictionary representing the next pending record that
+                matches the criteria.
+        """
+        if max_retries:
+            query = select(self.tbl.c).where(
+                and_(
+                    self.tbl.c.status == "failed",
+                    self.tbl.c.retries <= max_retries,
+                    self.tbl.c.butler_repo == butler_repo,
+                )
+            )
+        else:
+            query = select(self.tbl.c).where(self.tbl.c.status == "failed")
+
+        return self.fetch_all_dict(query)
