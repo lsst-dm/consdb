@@ -124,8 +124,6 @@ class InstrumentTable:
         md.reflect(engine)
         self.table_names.update([str(table) for table in md.tables])
         self.schemas = md
-        self.obs_id_column = dict()
-        self.flexible_metadata_schemas = dict()
         for table in md.tables:
             # Find all timestamp columns in the table
             self.timestamp_columns[table] = set(
@@ -136,25 +134,24 @@ class InstrumentTable:
                 ]
             )
 
+            # Compile the list of obs id column names for
+            # each table.
             for col_name in ObsIdColname:
+                # If there are multiple observation ID columns in a table,
+                # this breaks ties by selecting the first one found based
+                # on the ordering defined in the ObsIdColname enum.
                 col_name = col_name.value
                 if col_name in md.tables[table].columns:
                     self.obs_id_column[table] = col_name
                     break
 
         for obs_type in ObsTypeEnum:
-            obs_type = obs_type.value
+            obs_type = obs_type.value.lower()
             table_name = f"cdb_{self.instrument}.{obs_type}_flexdata"
             schema_table_name = table_name + "_schema"
             if table_name in md.tables and schema_table_name in md.tables:
-                schema_table = md.tables[schema_table_name]
-                stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
-                self.logger.debug(str(stmt))
-                schema = dict()
-                db = next(self.get_db())
-                for row in db.execute(stmt):
-                    schema[row[0]] = row[1:]
-                self.flexible_metadata_schemas[obs_type] = schema
+                self.flexible_metadata_schemas[obs_type] = None
+                self.refresh_flexible_metadata_schema(obs_type)
 
     def get_timestamp_columns(self, table: str) -> set[str]:
         """Returns a set containing all timestamp columns.
