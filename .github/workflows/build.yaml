@@ -43,9 +43,9 @@ jobs:
           build-args: |
             GITHUB_TAG=${{ env.GITHUB_TAG }}
 
-    - name: Build efdtransform
-      uses: lsst-sqre/build-and-push-to-ghcr@v1
-      with:
-        image: ${{ github.repository }}-efdtransform
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        dockerfile: Dockerfile.efdtransform
+      - name: Build efdtransform
+        uses: lsst-sqre/build-and-push-to-ghcr@v1
+        with:
+          image: ${{ github.repository }}-efdtransform
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: Dockerfile.efdtransform
