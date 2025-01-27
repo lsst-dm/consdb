@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  local-db:
+    image: postgres:15
+    container_name: local-db
+    env_file:
+    - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - consdb
+
+
+  pqserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.pqserver
+      args:
+        GITHUB_TAG: ${GITHUB_TAG}
+    container_name: pqserver
+    environment:
+      POSTGRES_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@local-db:5432/${POSTGRES_DB}
+    depends_on:
+      - local-db
+    ports:
+      - "8000:8000"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - consdb
+
+  #hinfo:
+    #build:
+      #context: .
+      #dockerfile: Dockerfile.hinfo
+    #container_name: hinfo
+    #ports:
+      #- "8001:8001"
+
+volumes:
+  postgres_data:
+
+networks:
+  consdb:
