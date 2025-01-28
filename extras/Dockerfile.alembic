@@ -3,7 +3,7 @@ FROM python:3.12-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV CONSDB_URL="postgresql://postgres:${POSTGRES_PASSWORD:-qY3n29w0uuap}@172.17.0.1:5432/postgres"
+ENV CONSDB_URL=""
 ENV SDM_SCHEMAS_DIR="/sdm_schemas"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
