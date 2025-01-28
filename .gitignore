@@ -33,3 +33,9 @@ htmlcov
 .tox
 .venv
 .vscode
+
+# extras build products
+.env
+extras/pgadmin-data
+extras/pgadmin-cfg
+extras/pgdata
