@@ -52,7 +52,7 @@
 #     /sdf/data/rubin/offline/s3-tmp-backup/
 #
 # Environment Variables:
-# - REFERENCE_CONSDB: Defines the directory context for building the "refapp"
+# - REFERENCE_PQSERV: Defines the directory context for building the "refapp"
 #   service.
 #   By default, it points to "../../consdb", probably giving you two identical
 #   copies of pqserver, but can be overridden to use a different location.
@@ -275,7 +275,7 @@ services:
   refapp:
     # A reference instance of the pqserver app for comparison purposes
     build:
-      context: ${REFERENCE_CONSDB:-../../consdb}
+      context: ${REFERENCE_PQSERV:-../../consdb}
       dockerfile: Dockerfile.pqserver
     ports:
       - 8889:8080
