@@ -34,8 +34,8 @@ htmlcov
 .venv
 .vscode
 
-# extras build products
+# docker build products
 .env
-extras/pgadmin-data
-extras/pgadmin-cfg
-extras/pgdata
+docker/pgadmin-data
+docker/pgadmin-cfg
+docker/pgdata
