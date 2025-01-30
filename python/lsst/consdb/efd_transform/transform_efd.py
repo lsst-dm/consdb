@@ -274,9 +274,9 @@ async def handle_cronjob(qm: QueueManager, log: logging.Logger, args):
         tasks = qm.recent_tasks_to_run(margin_seconds=-60)
 
     # check for failed tasks and add them to the processing queue again
-    failed_tasks = qm.failed_tasks(args.repo, max_retries=3)
+    # failed_tasks = qm.failed_tasks(args.repo, max_retries=3)
 
-    tasks += failed_tasks
+    # tasks += failed_tasks
 
     return tasks
 
