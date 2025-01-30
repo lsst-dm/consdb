@@ -20,7 +20,7 @@ class Summary:
 
 # TODO add all summarizing functions
 def gen_mean(
-    config: dict[str, Any]
+    config: dict[str, Any],
 ) -> Callable[[pandas.DataFrame, astropy.time.Time, astropy.time.Time], Summary]:
     def do(series: pandas.DataFrame, start: astropy.time.Time, end: astropy.time.Time) -> Summary:
         return Summary()

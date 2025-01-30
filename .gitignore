@@ -33,3 +33,9 @@ htmlcov
 .tox
 .venv
 .vscode
+
+# docker build products
+.env
+docker/pgadmin-data
+docker/pgadmin-cfg
+docker/pgdata
