@@ -223,7 +223,6 @@ async def handle_job(qm: QueueManager, log: logging.Logger, args, start_time, en
         start_time: Start time as Astropy Time.
         end_time: End time as Astropy Time.
     """
-    print(args)
     if args.resume:
         log.info("Resuming queued tasks.")
         tasks = qm.waiting_tasks(args.repo, "idle")
@@ -237,6 +236,8 @@ async def handle_job(qm: QueueManager, log: logging.Logger, args, start_time, en
             status="idle",
             butler_repo=args.repo,
         )
+        # include pending tasks in the processing queue
+        tasks += qm.waiting_tasks(args.repo, "idle")
 
     # check for failed tasks and add them to the processing queue again
     failed_tasks = qm.failed_tasks(args.repo, max_retries=3)
