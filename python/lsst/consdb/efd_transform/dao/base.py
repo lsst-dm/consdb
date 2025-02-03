@@ -241,10 +241,8 @@ class DBBase:
         Args:
         ----
             tbl (Table): The table object representing the database table.
-            df (pandas.DataFrame): The DataFrame containing the data to be
-                upserted.
-            commit_every (int, optional): The number of records to commit at
-                once. Defaults to 100.
+            df (pandas.DataFrame): The DataFrame containing the data to be upserted.
+            commit_every (int, optional): The number of records to commit at once. Defaults to 100.
 
         Returns:
         -------
@@ -252,16 +250,16 @@ class DBBase:
 
         Raises:
         ------
-            None
-
+            ValueError: If the DataFrame is missing primary key columns or if there are no columns to update.
         """
-        # Based on these solutions
-        # https://docs.sqlalchemy.org/en/20/orm/queryguide/dml.html#orm-upsert-statements
-        # https://docs.sqlalchemy.org/en/20/_modules/examples/performance/bulk_inserts.html
-        # https://stackoverflow.com/a/55357460/24123418
-
-        # replace NaN for None
+        # Replace NaN with None for SQL compatibility
         df = df.replace(numpy.nan, None)
+
+        # Validate that the DataFrame includes all primary key columns
+        pk_columns = {c.name for c in tbl.primary_key.columns}
+        if not pk_columns.issubset(df.columns):
+            missing_cols = pk_columns - set(df.columns)
+            raise ValueError(f"DataFrame is missing primary key columns: {missing_cols}")
 
         # List of all columns that will be used in the insert
         insert_cols = df.columns.to_list()
@@ -272,9 +270,12 @@ class DBBase:
             c.name for c in tbl.c if c not in list(tbl.primary_key.columns) and c.name in insert_cols
         ]
 
+        # Ensure update_cols is not empty
+        if not update_cols:
+            raise ValueError("No columns to update. Ensure the DataFrame includes non-primary-key columns.")
+
         # Convert the dataframe to a list of dicts
         records = df.to_dict("records")
-
         affected_rows = 0
 
         for i in range(0, len(records), commit_every):
@@ -284,14 +285,12 @@ class DBBase:
             insert_stm = self.dialect.insert(tbl).values(chunk)
 
             # Update Statement using in case of conflict makes an update.
-            # IMPORTANT: The dialect must be compatible with
-            # on_conflict_do_update.
             upsert_stm = insert_stm.on_conflict_do_update(
-                index_elements=tbl.primary_key.columns,
+                index_elements=tbl.primary_key.columns,  # Use primary key for conflict detection
                 set_={k: getattr(insert_stm.excluded, k) for k in update_cols},
             )
-            # print(self.debug_query(upsert_stm, True))
 
+            # Execute the upsert statement
             engine = self.get_db_engine()
             with engine.connect() as con:
                 result = con.execute(upsert_stm)

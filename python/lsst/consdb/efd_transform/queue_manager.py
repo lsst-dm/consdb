@@ -111,14 +111,22 @@ class QueueManager:
 
         rows = []
         for t in intervals:
-            task = {
-                "start_time": t[0].to_datetime(timezone=timezone.utc),
-                "end_time": t[1].to_datetime(timezone=timezone.utc),
-                "timewindow": time_window,
-                "status": status,
-                "butler_repo": butler_repo,
-            }
-            rows.append(task)
+
+            # Check if task already exists and is idle to avoid duplicates
+            if self.check_existing_task_by_interval(t[0], t[1], butler_repo, "idle"):
+                self.log.debug(
+                    f"Task already exists and is idle for interval {t[0]} to {t[1]}. "
+                    f" Skipping task creation."
+                )
+            else:
+                task = {
+                    "start_time": t[0].to_datetime(timezone=timezone.utc),
+                    "end_time": t[1].to_datetime(timezone=timezone.utc),
+                    "timewindow": time_window,
+                    "status": status,
+                    "butler_repo": butler_repo,
+                }
+                rows.append(task)
 
         # Insert tasks into the database
         self.log.debug("Inserting tasks into the database")
@@ -279,3 +287,49 @@ class QueueManager:
             task = [d.update({"retry": True}) or d for d in task]
 
         return task
+
+    def get_task_by_interval(
+        self, start_time: Time, end_time: Time, butler_repo: str, status: str
+    ) -> Optional[dict]:
+        """Get task by interval
+
+        Args:
+        ----
+            start_time (Time): The start time for the task
+            end_time (Time): The end time for the task
+            butler_repo (str): The butler repository relative to the task
+            status (str): The status of the task to query
+
+        Returns:
+        -------
+            Optional[dict]: A dictionary representing the task.
+            If no task is found, returns `None`.
+        """
+        start_time = start_time.to_datetime(timezone.utc)
+        end_time = end_time.to_datetime(timezone.utc)
+        task = self.dao.get_task_by_interval(start_time, end_time, butler_repo, status)
+        return task
+
+    def check_existing_task_by_interval(
+        self, start_time: Time, end_time: Time, butler_repo: str, status: str
+    ) -> bool:
+        """Verifiy existing task by interval
+
+        Args:
+        ----
+            start_time (Time): The start time for the task
+            end_time (Time): The end time for the task
+            butler_repo (str): The butler repository relative to the task
+            status (str): The status of the task to query
+
+        Returns:
+        -------
+            bool: True if task exists, False otherwise
+
+        """
+
+        task = self.get_task_by_interval(start_time, end_time, butler_repo, status)
+        if task:
+            return True
+
+        return False

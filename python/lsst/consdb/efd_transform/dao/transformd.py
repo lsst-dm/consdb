@@ -305,3 +305,29 @@ class TransformdDao(DBBase):
             query = select(self.tbl.c).where(self.tbl.c.status == "failed")
 
         return self.fetch_all_dict(query)
+
+    def get_task_by_interval(
+        self, start_time: datetime, end_time: datetime, butler_repo: str, status: str
+    ) -> Task:
+        """Check if there is an existing task within the specified time range.
+
+        Args:
+        ----
+            start_time (datetime): The start time to filter records.
+            end_time (datetime): The end time to filter records.
+            butler_repo (str): The butler repository to filter records.
+            status (str): The status to filter records.
+
+        Returns:
+        -------
+            Task: A dictionary representing the existing task that matches the criteria.
+        """
+        query = select(self.tbl.c).where(
+            and_(
+                self.tbl.c.start_time == start_time,
+                self.tbl.c.end_time == end_time,
+                self.tbl.c.butler_repo == butler_repo,
+                self.tbl.c.status == status,
+            )
+        )
+        return self.fetch_one_dict(query)
