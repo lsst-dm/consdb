@@ -1,11 +1,13 @@
 """Provides functions and utilities for transformed EFD."""
 
 import logging
+import sys
 from typing import Any, Dict, List, Union
 
 import astropy.time
 import numpy
 import pandas
+import psutil
 from lsst.consdb.efd_transform.dao.butler import ButlerDao
 from lsst.consdb.efd_transform.dao.exposure_efd import ExposureEfdDao
 from lsst.consdb.efd_transform.dao.exposure_efd_unpivoted import ExposureEfdUnpivotedDao
@@ -154,7 +156,6 @@ class Transform:
         result_vis_unpivoted = []
 
         # map all topics and fields to perform a single query per topic
-        # map all topics and fields to perform a single query per topic
         topics_columns_map = {}
         for column in self.config["columns"]:
             for values in column["topics"]:
@@ -184,6 +185,12 @@ class Transform:
             # query the topic
             self.log.info(f"Querying the Topic: {topic['name']}")
             topic_series = self.get_efd_values(topic, topic_interval, topic["is_packed"])
+
+            # debug memory usage and available memory
+            memory_usage = sys.getsizeof(topic_series)
+            self.log.info(f"   Size of query: {memory_usage/(1024*2):.1f} Mb")
+            free_memory = psutil.virtual_memory().available
+            self.log.info(f"   Available memory: {free_memory/(1024*3):.1f} Gb")
 
             # process the columns in that topic:
             for column in topic["columns"]:
