@@ -2,6 +2,7 @@ import asyncio
 import os
 import random
 import re
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Sequence
@@ -560,6 +561,65 @@ def get_instrument_dict(instrument: str) -> dict:
     return instrument_dict
 
 
+async def wait_for_resource(resource, timeout=600):
+    """Wait for a resource to become available.
+
+    Waits for the resource to become available,
+    but stops after `timeout` seconds.
+
+    Parameters
+    ----------
+    resource : Resource
+        The resource to wait for.
+
+    timeout : float
+        The wait time in seconds.
+
+    Returns
+    -------
+    bool
+        True if the resource is available after waiting, or
+        False if the resource remains unavailable.
+    """
+    start_time = time.time()
+    while not resource.exists():
+        if time.time() - start_time > timeout:
+            logger.warning(f"Timeout reached while waiting for {resource}. Skipping.")
+            return False
+        await asyncio.sleep(random.uniform(0.1, 2.0))
+    return True
+
+
+async def handle_message(message, instrument_dict):
+    """Handles the received Kafka message.
+
+    This function processes a Kafka message by transforming
+    the attached URL to a location on s3, waits for a file
+    to appear at that location, and then processes the
+    file so by committing it to the database.
+
+    Parameters
+    ----------
+    message : dict[str, Any]
+        The received Kafka message.
+
+    instrument_dict : dict[str, Instrument]
+        A dictionary mapping a controller type to its metadata.
+    """
+    url = message["url"]
+    # Replace local HTTP access URL with generic S3 access URL.
+    url = re.sub(r"https://s3\.\w+\.lsst\.org/", "s3://", url)
+    if bucket_prefix:
+        url = re.sub(r"s3://", "s3://" + bucket_prefix, url)
+    resource = ResourcePath(url)
+
+    if await wait_for_resource(resource):
+        process_resource(resource, instrument_dict)
+        logger.info(f"Processed {url}")
+    else:
+        logger.warning(f"Skipping {url} due to timeout.")
+
+
 async def main() -> None:
     """Handle Header Service largeFileObjectAvailable messages."""
     global logger, instrument, bucket_prefix, TOPIC_MAPPING
@@ -590,17 +650,7 @@ async def main() -> None:
             async for msg in consumer:
                 message = (await deserializer.deserialize(msg.value))["message"]
                 logger.debug(f"Received message {message}")
-                url = message["url"]
-                # Replace local HTTP access URL with generic S3 access URL.
-                url = re.sub(r"https://s3\.\w+\.lsst\.org/", "s3://", url)
-                if bucket_prefix:
-                    url = re.sub(r"s3://", "s3://" + bucket_prefix, url)
-                resource = ResourcePath(url)
-                logger.info(f"Waiting for {url}")
-                while not resource.exists():
-                    await asyncio.sleep(random.uniform(0.1, 2.0))
-                process_resource(resource, instrument_dict)
-                logger.info(f"Processed {url}")
+                asyncio.create_task(handle_message(message, instrument_dict))
         finally:
             await consumer.stop()
 
