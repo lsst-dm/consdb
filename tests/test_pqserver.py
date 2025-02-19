@@ -109,6 +109,12 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
                 # Insert rows into the SQL table
                 connection.execute(sql_table.insert(), rows)
 
+        with instance.engine.begin() as connection:
+            connection.exec_driver_sql(
+                f"DROP TABLE IF EXISTS {schema_name}.visit1;"
+                f" CREATE VIEW {schema_name}.visit1 AS SELECT * FROM {schema_name}.exposure;"
+            )
+
         yield TestClient(pqserver.app)
 
 
@@ -268,6 +274,7 @@ def test_schema_instrument(lsstcomcamsim):
         "exposure_flexdata_schema",
         "ccdexposure_flexdata",
         "ccdexposure_flexdata_schema",
+        "visit1",
     ]
     tables = [f"cdb_lsstcomcamsim.{t}" for t in tables]
     for t in tables:
