@@ -2,7 +2,6 @@ import asyncio
 import os
 import random
 import re
-import time
 from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Sequence
@@ -564,30 +563,15 @@ def get_instrument_dict(instrument: str) -> dict:
 async def wait_for_resource(resource, timeout=600):
     """Wait for a resource to become available.
 
-    Waits for the resource to become available,
-    but stops after `timeout` seconds.
+    Returns if and when `resource.exists()`.
 
     Parameters
     ----------
     resource : Resource
         The resource to wait for.
-
-    timeout : float
-        The wait time in seconds.
-
-    Returns
-    -------
-    bool
-        True if the resource is available after waiting, or
-        False if the resource remains unavailable.
     """
-    start_time = time.time()
     while not resource.exists():
-        if time.time() - start_time > timeout:
-            logger.warning(f"Timeout reached while waiting for {resource}. Skipping.")
-            return False
         await asyncio.sleep(random.uniform(0.1, 2.0))
-    return True
 
 
 async def handle_message(message, instrument_dict):
@@ -613,17 +597,18 @@ async def handle_message(message, instrument_dict):
         url = re.sub(r"s3://", "s3://" + bucket_prefix, url)
     resource = ResourcePath(url)
 
-    if await wait_for_resource(resource):
+    try:
+        asyncio.wait_for(wait_for_resource(resource), timeout=60)
         process_resource(resource, instrument_dict)
-        logger.info(f"Processed {url}")
-    else:
-        logger.warning(f"Skipping {url} due to timeout.")
+    except asyncio.TimeoutError:
+        logger.warning(f"Timeout reached while waiting for {url}. Skipping.")
 
 
 async def main() -> None:
     """Handle Header Service largeFileObjectAvailable messages."""
     global logger, instrument, bucket_prefix, TOPIC_MAPPING
 
+    handler_task_set = set()
     instrument_dict = get_instrument_dict(instrument)
 
     topic = f"lsst.sal.{TOPIC_MAPPING[instrument]}.logevent_largeFileObjectAvailable"
@@ -650,9 +635,15 @@ async def main() -> None:
             async for msg in consumer:
                 message = (await deserializer.deserialize(msg.value))["message"]
                 logger.debug(f"Received message {message}")
-                asyncio.create_task(handle_message(message, instrument_dict))
+                task = asyncio.create_task(handle_message(message, instrument_dict))
+                handler_task_set.add(task)
+                task.add_done_callback(handler_task_set.discard)
         finally:
             await consumer.stop()
+
+    while handler_task_set:
+        logger.debug("Waiting for background tasks to finish...")
+        asyncio.sleep(5)
 
 
 if __name__ == "__main__":
