@@ -64,4 +64,4 @@ def test_process_resource(pg_engine):
 
     elstart = _header_lookup(header, "ELSTART")
     elend = _header_lookup(header, "ELEND")
-    assert 0.5 * (elstart + elend) == row.zenith_distance
+    assert 0.5 * (elstart + elend) == row.altitude
