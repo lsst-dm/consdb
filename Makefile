@@ -47,10 +47,3 @@ up:
 .PHONY: down
 down:
 	$(DOCKER_COMPOSE) down
-.PHONY: db-shell
-db-shell:
-    docker-compose -f $(DOCKER_COMPOSE) exec local-db psql -U postgres
-
-.PHONY: schema
-schema:
-	felis create --engine-url postgresql+psycopg2://username:password@localhost/database schema.yaml

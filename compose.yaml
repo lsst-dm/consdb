@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   local-db:
     image: postgres:15
