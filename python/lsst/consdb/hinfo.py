@@ -560,7 +560,7 @@ def get_instrument_dict(instrument: str) -> dict:
     return instrument_dict
 
 
-async def wait_for_resource(resource, timeout=600):
+async def wait_for_resource(resource):
     """Wait for a resource to become available.
 
     Returns if and when `resource.exists()`.
