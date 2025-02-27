@@ -53,7 +53,7 @@ jobs:
 
       - name: Check branch name
         run: |
-          if [[ ! "${{ env.BRANCH_NAME }}" =~ ^tickets/DM-[0-9]+(-[a-zA-Z0-9-]*)?$ ]]; then
+          if [[ ! "${{ env.BRANCH_NAME }}" =~ ^tickets/DM-[0-9]+([a-zA-Z0-9-]*)?$ ]]; then
             echo "Bad branch name: ${{ env.BRANCH_NAME }}" >&2
             echo "Error: Migrations are only generated for branches matching the pattern 'tickets/DM-[number](-[alphanumeric-]*)'." >&2
             exit 1
