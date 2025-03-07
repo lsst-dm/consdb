@@ -598,7 +598,7 @@ async def handle_message(message, instrument_dict):
     resource = ResourcePath(url)
 
     try:
-        asyncio.wait_for(wait_for_resource(resource), timeout=60)
+        await asyncio.wait_for(wait_for_resource(resource), timeout=60)
         process_resource(resource, instrument_dict)
     except asyncio.TimeoutError:
         logger.warning(f"Timeout reached while waiting for {url}. Skipping.")
