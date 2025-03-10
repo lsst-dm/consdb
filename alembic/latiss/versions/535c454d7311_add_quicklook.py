@@ -577,6 +577,12 @@ def upgrade() -> None:
         existing_nullable=True,
         schema="cdb_latiss",
     )
+
+    # Need to drop and re-create visit1 view before dropping columns
+    op.execute("DROP VIEW IF EXISTS cdb_latiss.visit1")
+    op.execute("DROP VIEW IF EXISTS cdb_latiss.ccdvisit1")
+    op.execute("DROP VIEW IF EXISTS cdb_latiss.exposure_wide_view")
+
     op.drop_column("exposure", "shutter_close_end", schema="cdb_latiss")
     op.drop_column("exposure", "shutter_close_begin", schema="cdb_latiss")
     op.drop_column("exposure", "shutter_open_begin", schema="cdb_latiss")
