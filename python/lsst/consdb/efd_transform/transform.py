@@ -242,99 +242,101 @@ class Transform:
                                 "series": topic_series[fields].dropna(),
                             }
                         ]
+                else:
+                    data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
 
-                    if "exposure_efd" in column["tables"]:
-                        for exposure in exposures:
-                            function_kwargs = column["function_args"] or {}
+                if "exposure_efd" in column["tables"]:
+                    for exposure in exposures:
+                        function_kwargs = column["function_args"] or {}
+                        column_value = self.proccess_column_value(
+                            start_time=exposure["timespan"].begin.utc,
+                            end_time=exposure["timespan"].end.utc,
+                            topics=data,
+                            transform_function=column["function"],
+                            **function_kwargs,
+                        )
+
+                        result_exp[exposure["id"]][column["name"]] = column_value
+
+                if "exposure_efd_unpivoted" in column["tables"]:
+                    for exposure in exposures:
+                        function_kwargs = column["function_args"] or {}
+                        series_df = data[0]["series"]
+
+                        for col in series_df.columns:
+                            new_topic = topic.copy()
+                            new_topic["fields"] = [col]
+                            new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
+                            new_data = [{"topic": new_topic, "series": series_df[[col]]}]
+
+                            # Safeguard processing
                             column_value = self.proccess_column_value(
-                                start_time=exposure["timespan"].begin.utc,
-                                end_time=exposure["timespan"].end.utc,
-                                topics=data,
-                                transform_function=column["function"],
+                                start_time=getattr(exposure["timespan"].begin, "utc", None),
+                                end_time=getattr(exposure["timespan"].end, "utc", None),
+                                topics=new_data,
+                                transform_function=column.get("function"),
                                 **function_kwargs,
                             )
 
-                            result_exp[exposure["id"]][column["name"]] = column_value
+                            # if col == 'annularZernikeCoeff0':
+                            #     print('*'.center(80, '*'))
+                            #     print(column_value)
+                            #     print(series_df[[col]])
+                            #     print('*'.center(80, '*'))
+                            # print(new_data)
 
-                    if "exposure_efd_unpivoted" in column["tables"]:
-                        for exposure in exposures:
-                            function_kwargs = column["function_args"] or {}
-                            series_df = data[0]["series"]
-
-                            for col in series_df.columns:
-                                new_topic = topic.copy()
-                                new_topic["fields"] = [col]
-                                new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
-                                new_data = [{"topic": new_topic, "series": series_df[[col]]}]
-
-                                # Safeguard processing
-                                column_value = self.proccess_column_value(
-                                    start_time=getattr(exposure["timespan"].begin, "utc", None),
-                                    end_time=getattr(exposure["timespan"].end, "utc", None),
-                                    topics=new_data,
-                                    transform_function=column.get("function"),
-                                    **function_kwargs,
+                            # Append the processed result to the
+                            # result_exp_unpivoted list
+                            if column_value:
+                                result_exp_unpivoted.append(
+                                    {
+                                        "exposure_id": exposure["id"],
+                                        "property": column["name"],
+                                        "field": col,
+                                        "value": column_value,
+                                    }
                                 )
 
-                                # if col == 'annularZernikeCoeff0':
-                                #     print('*'.center(80, '*'))
-                                #     print(column_value)
-                                #     print(series_df[[col]])
-                                #     print('*'.center(80, '*'))
-                                # print(new_data)
+                if "visit1_efd" in column["tables"]:
+                    for visit in visits:
+                        function_kwargs = column["function_args"] or {}
+                        column_value = self.proccess_column_value(
+                            start_time=visit["timespan"].begin.utc,
+                            end_time=visit["timespan"].end.utc,
+                            topics=data,
+                            transform_function=column["function"],
+                            **function_kwargs,
+                        )
 
-                                # Append the processed result to the
-                                # result_exp_unpivoted list
-                                if column_value:
-                                    result_exp_unpivoted.append(
-                                        {
-                                            "exposure_id": exposure["id"],
-                                            "property": column["name"],
-                                            "field": col,
-                                            "value": column_value,
-                                        }
-                                    )
+                        result_vis[visit["id"]][column["name"]] = column_value
 
-                    if "visit1_efd" in column["tables"]:
-                        for visit in visits:
-                            function_kwargs = column["function_args"] or {}
+                if "visit1_efd_unpivoted" in column["tables"]:
+                    for visit in visits:
+                        function_kwargs = column["function_args"] or {}
+                        series_df = data[0]["series"]
+
+                        for col in series_df.columns:
+                            new_topic = topic.copy()
+                            new_topic["fields"] = [col]
+                            new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
+                            new_data = [{"topic": new_topic, "series": series_df[[col]]}]
+
                             column_value = self.proccess_column_value(
-                                start_time=visit["timespan"].begin.utc,
-                                end_time=visit["timespan"].end.utc,
-                                topics=data,
-                                transform_function=column["function"],
+                                start_time=getattr(visit["timespan"].begin, "utc", None),
+                                end_time=getattr(visit["timespan"].end, "utc", None),
+                                topics=new_data,
+                                transform_function=column.get("function"),
                                 **function_kwargs,
                             )
-
-                            result_vis[visit["id"]][column["name"]] = column_value
-
-                    if "visit1_efd_unpivoted" in column["tables"]:
-                        for visit in visits:
-                            function_kwargs = column["function_args"] or {}
-                            series_df = data[0]["series"]
-
-                            for col in series_df.columns:
-                                new_topic = topic.copy()
-                                new_topic["fields"] = [col]
-                                new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
-                                new_data = [{"topic": new_topic, "series": series_df[[col]]}]
-
-                                column_value = self.proccess_column_value(
-                                    start_time=getattr(visit["timespan"].begin, "utc", None),
-                                    end_time=getattr(visit["timespan"].end, "utc", None),
-                                    topics=new_data,
-                                    transform_function=column.get("function"),
-                                    **function_kwargs,
+                            if column_value:
+                                result_vis_unpivoted.append(
+                                    {
+                                        "visit_id": visit["id"],
+                                        "property": column["name"],
+                                        "field": col,
+                                        "value": column_value,
+                                    }
                                 )
-                                if column_value:
-                                    result_vis_unpivoted.append(
-                                        {
-                                            "visit_id": visit["id"],
-                                            "property": column["name"],
-                                            "field": col,
-                                            "value": column_value,
-                                        }
-                                    )
         # ingesting exposure
         results = []
         for result_row in result_exp:
@@ -394,7 +396,6 @@ class Transform:
             self.log.info(f"Database rows affected: {affected_rows}")
             count["visits1_unpivoted"] = affected_rows
         # del result_vis_unpivoted
-
         return count
 
     def proccess_column_value(
