@@ -33,3 +33,7 @@ htmlcov
 .tox
 .venv
 .vscode
+.env
+
+# local testing
+local_testing/
