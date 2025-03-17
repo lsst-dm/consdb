@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from astropy.time import Time, TimeDelta
-from lsst.consdb.efd_transform.queue_manager import QueueManager
+from lsst.consdb.transformed_efd.queue_manager import QueueManager
 
 # Mock logger
 mock_logger = MagicMock()

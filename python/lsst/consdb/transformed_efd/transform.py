@@ -1,20 +1,17 @@
 """Provides functions and utilities for transformed EFD."""
 
 import logging
-import sys
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 import astropy.time
-import numpy
 import pandas
-import psutil
-from lsst.consdb.efd_transform.dao.butler import ButlerDao
-from lsst.consdb.efd_transform.dao.exposure_efd import ExposureEfdDao
-from lsst.consdb.efd_transform.dao.exposure_efd_unpivoted import ExposureEfdUnpivotedDao
-from lsst.consdb.efd_transform.dao.influxdb import InfluxDbDao
-from lsst.consdb.efd_transform.dao.visit_efd import VisitEfdDao
-from lsst.consdb.efd_transform.dao.visit_efd_unpivoted import VisitEfdUnpivotedDao
-from lsst.consdb.efd_transform.summary import Summary
+from lsst.consdb.transformed_efd.dao.butler import ButlerDao
+from lsst.consdb.transformed_efd.dao.exposure_efd import ExposureEfdDao
+from lsst.consdb.transformed_efd.dao.exposure_efd_unpivoted import ExposureEfdUnpivotedDao
+from lsst.consdb.transformed_efd.dao.influxdb import InfluxDbDao
+from lsst.consdb.transformed_efd.dao.visit_efd import VisitEfdDao
+from lsst.consdb.transformed_efd.dao.visit_efd_unpivoted import VisitEfdUnpivotedDao
+from lsst.consdb.transformed_efd.summary import Summary
 from lsst.daf.butler import Butler
 
 
@@ -89,11 +86,30 @@ class Transform:
 
         """
         schemas = {
-            "LATISS": "cdb_latiss",
-            "LSSTComCam": "cdb_lsstcomcam",
-            "LSSTComCamSim": "cdb_lsstcomcamsim",
+            "latiss": "efd_latiss",
+            "lsstcomcam": "efd_lsstcomcam",
+            "lsstcomcamsim": "efd_lsstcomcamsim",
         }
         return schemas[instrument]
+
+    def get_instrument(self, instrument: str) -> str:
+        """Get the schema name for the given instrument.
+
+        Args:
+        ----
+            instrument (str): The instrument name.
+
+        Returns:
+        -------
+            str: The instrument name.
+
+        """
+        instruments = {
+            "latiss": "LATISS",
+            "lsstcomcam": "LSSTComCam",
+            "lsstcomcamsim": "LSSTComCamSim",
+        }
+        return instruments[instrument]
 
     def process_interval(
         self,
@@ -120,12 +136,12 @@ class Transform:
         self.log.info(f"Proccessing interval {start_time} - {end_time}")
 
         # Retrieves all exposures for the period
-        exposures = self.butler_dao.exposures_by_period(instrument, start_time, end_time)
+        exposures = self.butler_dao.exposures_by_period(self.get_instrument(instrument), start_time, end_time)
 
         self.log.info(f"Exposures: {len(exposures)}")
 
         # Retrieves all visits for the period
-        visits = self.butler_dao.visits_by_period(instrument, start_time, end_time)
+        visits = self.butler_dao.visits_by_period(self.get_instrument(instrument), start_time, end_time)
 
         self.log.info(f"Visits: {len(visits)}")
 
@@ -141,7 +157,6 @@ class Transform:
         for exposure in exposures:
             result_exp[exposure["id"]] = {
                 "exposure_id": exposure["id"],
-                "instrument": instrument,
             }
 
         result_exp_unpivoted = []
@@ -150,7 +165,6 @@ class Transform:
         for visit in visits:
             result_vis[visit["id"]] = {
                 "visit_id": visit["id"],
-                "instrument": instrument,
             }
 
         result_vis_unpivoted = []
@@ -186,11 +200,11 @@ class Transform:
             self.log.info(f"Querying the Topic: {topic['name']}")
             topic_series = self.get_efd_values(topic, topic_interval, topic["is_packed"])
 
-            # debug memory usage and available memory
-            memory_usage = sys.getsizeof(topic_series)
-            self.log.info(f"   Size of query: {memory_usage/(1024*2):.1f} Mb")
-            free_memory = psutil.virtual_memory().available
-            self.log.info(f"   Available memory: {free_memory/(1024*3):.1f} Gb")
+            # # debug memory usage and available memory
+            # memory_usage = sys.getsizeof(topic_series)
+            # self.log.info(f"   Size of query: {memory_usage/(1024*2):.1f} Mb")
+            # free_memory = psutil.virtual_memory().available
+            # self.log.info(f"   Available memory: {free_memory/(1024*3):.1f} Gb")
 
             # process the columns in that topic:
             for column in topic["columns"]:
@@ -470,43 +484,6 @@ class Transform:
             result = pandas.DataFrame()  # Return an empty DataFrame
 
         return result
-
-    def concatenate_arrays(
-        self,
-        input_data: Union[List[float], List[List[float]], numpy.ndarray, List[numpy.ndarray]],
-    ) -> numpy.ndarray:
-        """Concatenate values from list, list of lists or a numpy array.
-
-        Args:
-        ----
-            input_data: Input data, which can be one of the following:
-                - A list of floats
-                - A list of lists of floats
-                - A numpy array
-                - A list of numpy arrays
-
-        Returns:
-        -------
-            numpy.ndarray: Concatenated flat numpy array.
-
-        Raises:
-        ------
-            TypeError: If the input data is not a list or list of lists or
-                    a numpy array or list of numpy arrays.
-
-        """
-        if isinstance(input_data, numpy.ndarray):
-            return numpy.concatenate(input_data.flat)
-        elif isinstance(input_data, list):
-            flat_arrays = [
-                (numpy.array(arr).flat if isinstance(arr, numpy.ndarray) else numpy.array(arr).flatten())
-                for arr in input_data
-            ]
-            return numpy.concatenate(flat_arrays)
-        else:
-            raise TypeError(
-                "Input data must be a list or list of lists or a numpy array " "or list of numpy arrays."
-            )
 
     def topics_by_column(self, column, topic_interval, packed_series) -> List[dict]:
         """Retrieve EFD topics and their corresponding series for a given column.
