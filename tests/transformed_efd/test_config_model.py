@@ -1,5 +1,5 @@
 import pytest
-from lsst.consdb.efd_transform.config_model import TABLES, Column, ConfigModel, Field, Topic
+from lsst.consdb.transformed_efd.config_model import TABLES, Column, ConfigModel, Field, Topic
 from pydantic import ValidationError
 
 

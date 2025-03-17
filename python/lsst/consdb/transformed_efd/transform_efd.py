@@ -14,10 +14,10 @@ from typing import Any, Dict, Optional
 
 import yaml
 from astropy.time import Time, TimeDelta
-from lsst.consdb.efd_transform.config_model import ConfigModel
-from lsst.consdb.efd_transform.dao.influxdb import InfluxDbDao
-from lsst.consdb.efd_transform.queue_manager import QueueManager
-from lsst.consdb.efd_transform.transform import Transform
+from lsst.consdb.transformed_efd.config_model import ConfigModel
+from lsst.consdb.transformed_efd.dao.influxdb import InfluxDbDao
+from lsst.consdb.transformed_efd.queue_manager import QueueManager
+from lsst.consdb.transformed_efd.transform import Transform
 from lsst.daf.butler import Butler
 from pydantic import ValidationError
 

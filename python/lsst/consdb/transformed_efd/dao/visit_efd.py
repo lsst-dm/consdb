@@ -1,7 +1,7 @@
 """Defines the `VisitEfdDao` class."""
 
 import pandas
-from lsst.consdb.efd_transform.dao.base import DBBase
+from lsst.consdb.transformed_efd.dao.base import DBBase
 from sqlalchemy.sql import and_, select
 
 
@@ -44,27 +44,6 @@ class VisitEfdDao(DBBase):
 
         """
         stm = select(self.tbl.c).where(and_(self.tbl.c.visit_id == visit_id))
-
-        rows = self.fetch_all_dict(stm)
-
-        return rows
-
-    def get_by_visit_id_instrument(self, visit_id: int, instrument: str):
-        """Retrieve rows from the table based on visit_id and instrument.
-
-        Args:
-        ----
-            visit_id (int): The visit_id to filter the rows.
-            instrument (str): The instrument to filter the rows.
-
-        Returns:
-        -------
-            list: A list of rows matching the visit_id and instrument.
-
-        """
-        stm = select(self.tbl.c).where(
-            and_(self.tbl.c.visit_id == visit_id, self.tbl.c.instrument == instrument)
-        )
 
         rows = self.fetch_all_dict(stm)
 

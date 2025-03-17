@@ -1,7 +1,7 @@
 """Provides the `ExposureEfdDao` class."""
 
 import pandas
-from lsst.consdb.efd_transform.dao.base import DBBase
+from lsst.consdb.transformed_efd.dao.base import DBBase
 from sqlalchemy.sql import and_, select
 
 
@@ -44,31 +44,6 @@ class ExposureEfdDao(DBBase):
 
         """
         stm = select(self.tbl.c).where(and_(self.tbl.c.exposure_id == exposure_id))
-
-        rows = self.fetch_all_dict(stm)
-
-        return rows
-
-    def get_by_exposure_id_instrument(self, exposure_id: int, instrument: str):
-        """Retrieve row from "exposure_efd" table based on exposure ID and instrument.
-
-        Args:
-        ----
-            exposure_id (int): The exposure ID.
-            instrument (str): The instrument name.
-
-        Returns:
-        -------
-            list: A list of dictionaries representing the rows retrieved from
-                the table.
-
-        """
-        stm = select(self.tbl.c).where(
-            and_(
-                self.tbl.c.exposure_id == exposure_id,
-                self.tbl.c.instrument == instrument,
-            )
-        )
 
         rows = self.fetch_all_dict(stm)
 
