@@ -81,16 +81,8 @@ def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
     global _instrument_list
     global _instrument_tables
 
-    instrument = instrument.lower()
+    instrument = validate_instrument_name(instrument)
     logger = logging.getLogger()
-
-    # Check whether the instrument name is valid
-    if _instrument_list is None:
-        inspector = inspect(engine)
-        instrument_list = [name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")]
-
-    if instrument not in [i.lower() for i in instrument_list]:
-        raise UnknownInstrumentException(instrument, instrument_list)
 
     if instrument in _instrument_tables:
         instrument_table = _instrument_tables[instrument]

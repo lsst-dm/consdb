@@ -174,12 +174,12 @@ KW_MAPPING: dict[str, str | Sequence] = {
     "azimuth_start": "AZSTART",
     "azimuth_end": "AZEND",
     "azimuth": (mean, "AZSTART", "AZEND"),
-    "altitude_start": (ninety_minus, "ELSTART"),
-    "altitude_end": (ninety_minus, "ELEND"),
-    "altitude": (mean, (ninety_minus, "ELSTART"), (ninety_minus, "ELEND")),
-    "zenith_distance_start": "ELSTART",
-    "zenith_distance_end": "ELEND",
-    "zenith_distance": (mean, "ELSTART", "ELEND"),
+    "altitude_start": "ELSTART",
+    "altitude_end": "ELEND",
+    "altitude": (mean, "ELSTART", "ELEND"),
+    "zenith_distance_start": (ninety_minus, "ELSTART"),
+    "zenith_distance_end": (ninety_minus, "ELEND"),
+    "zenith_distance": (mean, (ninety_minus, "ELSTART"), (ninety_minus, "ELEND")),
     "exp_midpt": (tai_mean, "DATE-BEG", "DATE-END"),
     "exp_midpt_mjd": (mean, "MJD-BEG", "MJD-END"),
     "obs_start": (tai_convert, "DATE-BEG"),
@@ -560,10 +560,55 @@ def get_instrument_dict(instrument: str) -> dict:
     return instrument_dict
 
 
+async def wait_for_resource(resource):
+    """Wait for a resource to become available.
+
+    Returns if and when `resource.exists()`.
+
+    Parameters
+    ----------
+    resource : Resource
+        The resource to wait for.
+    """
+    while not resource.exists():
+        await asyncio.sleep(random.uniform(0.1, 2.0))
+
+
+async def handle_message(message, instrument_dict):
+    """Handles the received Kafka message.
+
+    This function processes a Kafka message by transforming
+    the attached URL to a location on s3, waits for a file
+    to appear at that location, and then processes the
+    file so by committing it to the database.
+
+    Parameters
+    ----------
+    message : dict[str, Any]
+        The received Kafka message.
+
+    instrument_dict : dict[str, Instrument]
+        A dictionary mapping a controller type to its metadata.
+    """
+    url = message["url"]
+    # Replace local HTTP access URL with generic S3 access URL.
+    url = re.sub(r"https://s3\.\w+\.lsst\.org/", "s3://", url)
+    if bucket_prefix:
+        url = re.sub(r"s3://", "s3://" + bucket_prefix, url)
+    resource = ResourcePath(url)
+
+    try:
+        await asyncio.wait_for(wait_for_resource(resource), timeout=60)
+        process_resource(resource, instrument_dict)
+    except asyncio.TimeoutError:
+        logger.warning(f"Timeout reached while waiting for {url}. Skipping.")
+
+
 async def main() -> None:
     """Handle Header Service largeFileObjectAvailable messages."""
     global logger, instrument, bucket_prefix, TOPIC_MAPPING
 
+    handler_task_set = set()
     instrument_dict = get_instrument_dict(instrument)
 
     topic = f"lsst.sal.{TOPIC_MAPPING[instrument]}.logevent_largeFileObjectAvailable"
@@ -590,19 +635,15 @@ async def main() -> None:
             async for msg in consumer:
                 message = (await deserializer.deserialize(msg.value))["message"]
                 logger.debug(f"Received message {message}")
-                url = message["url"]
-                # Replace local HTTP access URL with generic S3 access URL.
-                url = re.sub(r"https://s3\.\w+\.lsst\.org/", "s3://", url)
-                if bucket_prefix:
-                    url = re.sub(r"s3://", "s3://" + bucket_prefix, url)
-                resource = ResourcePath(url)
-                logger.info(f"Waiting for {url}")
-                while not resource.exists():
-                    await asyncio.sleep(random.uniform(0.1, 2.0))
-                process_resource(resource, instrument_dict)
-                logger.info(f"Processed {url}")
+                task = asyncio.create_task(handle_message(message, instrument_dict))
+                handler_task_set.add(task)
+                task.add_done_callback(handler_task_set.discard)
         finally:
             await consumer.stop()
+
+    while handler_task_set:
+        logger.debug("Waiting for background tasks to finish...")
+        asyncio.sleep(5)
 
 
 if __name__ == "__main__":

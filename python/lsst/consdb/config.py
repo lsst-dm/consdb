@@ -81,7 +81,7 @@ class Configuration(BaseSettings):
             self.postgres_url = url
             return url
 
-        return "ERROR DATABASE CONNECTION NOT SPECIFIED"
+        raise ValueError("Database connection not specified")
 
     @field_validator("log_config")
     @classmethod
