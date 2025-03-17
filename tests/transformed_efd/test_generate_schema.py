@@ -2,7 +2,7 @@ import sys
 from unittest.mock import mock_open, patch
 
 import pytest
-from lsst.consdb.efd_transform.generate_schema import build_argparser, schema_dict
+from lsst.consdb.transformed_efd.generate_schema import build_argparser, schema_dict
 
 # Mocked configuration data
 mock_config = {

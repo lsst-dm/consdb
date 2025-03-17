@@ -10,7 +10,7 @@ from datetime import timezone
 from typing import List, Optional
 
 from astropy.time import Time, TimeDelta
-from lsst.consdb.efd_transform.dao.transformd import TransformdDao
+from lsst.consdb.transformed_efd.dao.transformd import TransformdDao
 
 
 class QueueManager:

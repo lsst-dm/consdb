@@ -1,7 +1,7 @@
 """Defines the `ExposureEfdUnpivotedDao` class."""
 
 import pandas
-from lsst.consdb.efd_transform.dao.base import DBBase
+from lsst.consdb.transformed_efd.dao.base import DBBase
 from sqlalchemy.sql import select
 
 

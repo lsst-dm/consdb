@@ -1,22 +1,21 @@
 ---
-name: cdb_lsstcomcam
-"@id": "#cdb_lsstcomcam"
-description: Transformed EFD Consolidated Database for LSSTComCam
+name: efd_lsstcomcam
+"@id": "#efd_lsstcomcam"
+description: Transformed EFD Consolidated Database for lsstcomcam
 tables:
+
 - name: exposure_efd
   "@id": "#exposure_efd"
   description: Transformed EFD topics by exposure.
   primaryKey:
   - "#exposure_efd.exposure_id"
-  - "#exposure_efd.instrument"
   constraints:
-  - name: un_exposure_id_instrument
-    "@id": "#exposure_efd.un_exposure_id_instrument"
+  - name: un_exposure_id
+    "@id": "#exposure_efd.un_exposure_id"
     "@type": Unique
     description: Ensure exposure_id is unique.
     columns:
     - "#exposure_efd.exposure_id"
-    - "#exposure_efd.instrument"
   columns:
   - name: exposure_id
     "@id": "#exposure_efd.exposure_id"
@@ -26,12 +25,7 @@ tables:
     "@id": "#exposure_efd.created_at"
     datatype: timestamp
     value: 'CURRENT_TIMESTAMP'
-    description: Timestamp when the record was created, default is the current timestamp
-  - name: instrument
-    "@id": "#exposure_efd.instrument"
-    datatype: char
-    length: 20
-    description: Instrument name.
+    description: Timestamp when the record was created, default is current timestamp
   - name: "mt_azimuth_encoder_absolute_position_0_rms_jitter"
     "@id": "#exposure_efd.mt_azimuth_encoder_absolute_position_0_rms_jitter"
     datatype: float
@@ -2239,7 +2233,7 @@ tables:
   - name: un_exposure_property_field
     "@id": "#exposure_efd_unpivoted.un_exposure_property_field"
     "@type": Unique
-    description: Ensure the combination of exposure_id, property, and field is unique.
+    description: Ensure combination of exposure_id, property, and field is unique.
     columns:
     - "#exposure_efd_unpivoted.exposure_id"
     - "#exposure_efd_unpivoted.property"
@@ -2256,14 +2250,14 @@ tables:
     length: 64
     nullable: False
     value: default_property
-    description: Property name for the unpivoted data
+    description: Property name for unpivoted data
   - name: field
     "@id": "#exposure_efd_unpivoted.field"
     datatype: string
     length: 32
     nullable: False
     value: default_field
-    description: Field name for the unpivoted data
+    description: Field name for unpivoted data
   - name: value
     "@id": "#exposure_efd_unpivoted.value"
     datatype: float
@@ -2273,22 +2267,20 @@ tables:
     "@id": "#exposure_efd_unpivoted.created_at"
     datatype: timestamp
     value: 'CURRENT_TIMESTAMP'
-    description: Timestamp when the record was created, default is the current timestamp
+    description: Timestamp when record was created, default current timestamp
 
 - name: visit1_efd
   "@id": "#visit1_efd"
   description: Transformed EFD topics by visit.
   primaryKey:
   - "#visit1_efd.visit_id"
-  - "#visit1_efd.instrument"
   constraints:
-  - name: un_visit_id_instrument
-    "@id": "#visit1_efd.un_visit_id_instrument"
+  - name: un_visit_id
+    "@id": "#visit1_efd.un_visit_id"
     "@type": Unique
     description: Ensure visit_id is unique.
     columns:
     - "#visit1_efd.visit_id"
-    - "#visit1_efd.instrument"
   columns:
   - name: visit_id
     "@id": "#visit1_efd.visit_id"
@@ -2298,12 +2290,7 @@ tables:
     "@id": "#visit1_efd.created_at"
     datatype: timestamp
     value: 'CURRENT_TIMESTAMP'
-    description: Timestamp when the record was created, default is the current timestamp
-  - name: instrument
-    "@id": "#visit1_efd.instrument"
-    datatype: char
-    length: 20
-    description: Instrument name.
+    description: Timestamp when record was created, default current timestamp
   - name: "mt_salindex110_sonic_temperature_mean"
     "@id": "#visit1_efd.mt_salindex110_sonic_temperature_mean"
     datatype: float
@@ -4471,7 +4458,7 @@ tables:
   - name: un_visit_property_field
     "@id": "#visit1_efd_unpivoted.un_visit_property_field"
     "@type": Unique
-    description: Ensure the combination of visit_id, property, and field is unique.
+    description: Ensure combination of visit_id, property, and field is unique.
     columns:
     - "#visit1_efd_unpivoted.visit_id"
     - "#visit1_efd_unpivoted.property"
@@ -4488,14 +4475,14 @@ tables:
     length: 64
     nullable: False
     value: default_property
-    description: Property name for the unpivoted data
+    description: Property name for unpivoted data
   - name: field
     "@id": "#visit1_efd_unpivoted.field"
     datatype: string
     length: 32
     nullable: False
     value: default_field
-    description: Field name for the unpivoted data
+    description: Field name for unpivoted data
   - name: value
     "@id": "#visit1_efd_unpivoted.value"
     datatype: float
@@ -4505,7 +4492,7 @@ tables:
     "@id": "#visit1_efd_unpivoted.created_at"
     datatype: timestamp
     value: 'CURRENT_TIMESTAMP'
-    description: Timestamp when the record was created, default is the current timestamp
+    description: Timestamp when record was created, default current timestamp
 
 - name: transformed_efd_scheduler
   "@id": "#transformed_efd_scheduler"
@@ -4529,53 +4516,53 @@ tables:
   - name: start_time
     "@id": "#transformed_efd_scheduler.start_time"
     datatype: timestamp
-    description: Start time of the transformation interval, must be provided
+    description: Start time of transformation interval, must be provided
   - name: end_time
     "@id": "#transformed_efd_scheduler.end_time"
     datatype: timestamp
-    description: End time of the transformation interval, must be provided
+    description: End time of transformation interval, must be provided
   - name: timewindow
     "@id": "#transformed_efd_scheduler.timewindow"
     datatype: int
-    description: Time window used to expand start and endtimes by, in minutes
+    description: Time window to expand start/end times by (minutes)
   - name: status
     "@id": "#transformed_efd_scheduler.status"
     datatype: char
     length: 20
     value: "pending"
-    description: Status of the process, default is 'pending'
+    description: Process status, default 'pending'
   - name: process_start_time
     "@id": "#transformed_efd_scheduler.process_start_time"
     datatype: timestamp
-    description: Timestamp when the process started
+    description: Timestamp when process started
   - name: process_end_time
     "@id": "#transformed_efd_scheduler.process_end_time"
     datatype: timestamp
-    description: Timestamp when the process ended
+    description: Timestamp when process ended
   - name: process_exec_time
     "@id": "#transformed_efd_scheduler.process_exec_time"
     datatype: int
     value: 0
-    description: Execution time of the process in seconds, default is 0
+    description: Execution time in seconds, default 0
   - name: exposures
     "@id": "#transformed_efd_scheduler.exposures"
     datatype: int
     value: 0
-    description: Number of exposures processed, default is 0
+    description: Number of exposures processed, default 0
   - name: visits1
     "@id": "#transformed_efd_scheduler.visits1"
     datatype: int
     value: 0
-    description: Number of visits recorded, default is 0
+    description: Number of visits recorded, default 0
   - name: retries
     "@id": "#transformed_efd_scheduler.retries"
     datatype: int
     value: 0
-    description: Number of retries attempted, default is 0
+    description: Number of retries attempted, default 0
   - name: error
     "@id": "#transformed_efd_scheduler.error"
     datatype: text
-    description: "Error message, if any"
+    description: Error message, if any
   - name: butler_repo
     "@id": "#transformed_efd_scheduler.butler_repo"
     datatype: text
@@ -4583,4 +4570,4 @@ tables:
     "@id": "#transformed_efd_scheduler.created_at"
     datatype: timestamp
     value: 'CURRENT_TIMESTAMP'
-    description: Timestamp when the record was created, default is the current timestamp
+    description: Timestamp when record was created, default current timestamp
