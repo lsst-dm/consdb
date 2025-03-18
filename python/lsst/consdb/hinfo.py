@@ -546,13 +546,6 @@ def get_instrument_dict(instrument: str) -> dict:
                 DETECTOR_MAPPING,
                 lsst.obs.lsst.LsstCam.getCamera(),
             ),
-            "S": Instrument(
-                "lsstcamsim",
-                lsst.obs.lsst.translators.LsstCamSimTranslator,
-                LSSTCAM_MAPPING,
-                DETECTOR_MAPPING,
-                lsst.obs.lsst.LsstCamSim.getCamera(),
-            ),
         }
     else:
         raise ValueError(f"Unrecognized instrument: {instrument}")

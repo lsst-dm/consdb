@@ -30,7 +30,7 @@ if len(sys.argv) <= 1:
     print(
         """
     Usage:
-        {sys.argv[0]} put a revision message here")
+        {sys.argv[0]} put a revision message here
 
     """
     )
@@ -43,7 +43,7 @@ alembic_ini_path = "alembic.ini"
 
 # Loop over each of the instruments
 pattern = os.environ["SDM_SCHEMAS_DIR"] + "/yml/cdb_*.yaml"
-instruments = ["latiss", "lsstcomcam", "lsstcomcamsim"]
+instruments = ["latiss", "lsstcomcam", "lsstcomcamsim", "lsstcam"]
 for instrument in instruments:
     # Set up a temporary PostgreSQL instance using testing.postgresql
     with setup_postgres_test_db() as instance:
