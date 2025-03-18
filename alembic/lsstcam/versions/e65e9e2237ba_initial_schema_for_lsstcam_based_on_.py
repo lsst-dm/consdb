@@ -1584,6 +1584,8 @@ def upgrade() -> None:
 
     op.execute("CREATE VIEW cdb_lsstcam.ccdvisit1 AS SELECT * FROM cdb_lsstcam.ccdexposure")
     op.execute("CREATE VIEW cdb_lsstcam.visit1 AS SELECT * FROM cdb_lsstcam.exposure")
+    op.execute("ALTER TABLE cdb_lsstcam.ccdvisit1 RENAME COLUMN ccdexposure_id TO ccdvisit_id")
+    op.execute("ALTER TABLE cdb_lsstcam.visit1 RENAME COLUMN exposure_id TO visit_id")
     # ### end Alembic commands ###
 
 
