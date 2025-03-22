@@ -1,5 +1,5 @@
 ARG OBS_LSST_VERSION=w_2024_46
-FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
+FROM ghcr.io/lsst/scipipe:al9-${OBS_LSST_VERSION}
 USER root
 
 # testing.postgresql looks for pg in /usr/local...
