@@ -1,6 +1,6 @@
 # Define the LSST version
-ARG OBS_LSST_VERSION=w_2024_47
-FROM lsstsqre/centos:7-stack-lsst_distrib-${OBS_LSST_VERSION}
+ARG OBS_LSST_VERSION=w_2025_11
+FROM ghcr.io/lsst/scipipe:al9-${OBS_LSST_VERSION}
 
 # Set user
 USER lsst
@@ -18,29 +18,37 @@ COPY --chown=lsst:lsst python /opt/lsst/software/stack/python
 RUN mkdir -p /opt/lsst/software/stack/data
 COPY --chown=lsst:lsst tmp/efd_transform/*.db /opt/lsst/software/stack/data/
 
-# Environment variables
-ENV CONFIG_FILE="/opt/lsst/software/stack/python/lsst/consdb/efd_transform/config_LATISS.yml" \
-    INSTRUMENT="LATISS" \
-    BUTLER_REPO="s3://rubin-summit-users/butler.yaml" \
-    S3_ENDPOINT_URL="https://s3dfrgw.slac.stanford.edu/" \
-    LSST_RESOURCES_S3_PROFILE_embargo="https://sdfembs3.sdf.slac.stanford.edu" \
-    PGUSER="rubin" \
-    CONSDB_URL="sqlite:////opt/lsst/software/stack/data/test.db" \
-    TIMEDELTA="5" \
-    LOG_FILE="/opt/lsst/software/stack/data/transform.log" \
-    PYTHONPATH="/opt/lsst/software/stack/python:$PYTHONPATH"
+# Environment variables (overridden in docker run)
+ENV CONFIG_FILE="/opt/lsst/software/stack/python/lsst/consdb/efd_transform/config_LATISS.yml"
+ENV INSTRUMENT="LATISS"
+ENV BUTLER_REPO="s3://rubin-summit-users/butler.yaml"
+ENV S3_ENDPOINT_URL="https://s3dfrgw.slac.stanford.edu/"
+ENV LSST_RESOURCES_S3_PROFILE_embargo="https://sdfembs3.sdf.slac.stanford.edu"
+ENV PGUSER="rubin"
+ENV CONSDB_URL="sqlite:////opt/lsst/software/stack/data/test.db"
+ENV TIMEDELTA="5"
+ENV LOG_FILE="/opt/lsst/software/stack/data/transform.log"
+ENV PYTHONPATH="/opt/lsst/software/stack/python:$PYTHONPATH"
 
 # Run the Python script
-CMD ["bash", "-c", "source loadLSST.bash; setup lsst_distrib; python /opt/lsst/software/stack/python/lsst/consdb/efd_transform/transform_efd.py -c \"$CONFIG_FILE\" -i \"$INSTRUMENT\" -r \"$BUTLER_REPO\" -d \"$CONSDB_URL\" -E \"$EFD\" -t \"$TIMEDELTA\" -l \"$LOG_FILE\""]
-
+CMD ["bash", "-c", "source loadLSST.bash && \
+    setup lsst_distrib && \
+    python /opt/lsst/software/stack/python/lsst/consdb/efd_transform/transform_efd.py \
+    -c \"$CONFIG_FILE\" \
+    -i \"$INSTRUMENT\" \
+    -r \"$BUTLER_REPO\" \
+    -d \"$CONSDB_URL\" \
+    -E \"$EFD\" \
+    -t \"$TIMEDELTA\" \
+    -l \"$LOG_FILE\""]
 
 # Example:
 # docker run --rm -it \
 #     --volume $PWD/data:/opt/lsst/software/stack/data \
-#     -e CONFIG_FILE=/opt/lsst/software/stack/lsst/consdb/efd_transform/config_LATISS.yml \
-#     -e INSTRUMENT=LATISS \
-#     -e BUTLER_REPO=s3://rubin-summit-users/butler.yaml \
-#     -e EFD=usdf_efd \
-#     -e CONSDB_URL=sqlite:////opt/lsst/software/stack/data/test.db \
-#     -e TIMEDELTA=5 \
+#     -c CONFIG_FILE=/opt/lsst/software/stack/lsst/consdb/efd_transform/config_LATISS.yml \
+#     -i INSTRUMENT=LATISS \
+#     -r BUTLER_REPO=s3://rubin-summit-users/butler.yaml \
+#     -E EFD=usdf_efd \
+#     -d CONSDB_URL=sqlite:////opt/lsst/software/stack/data/test.db \
+#     -t TIMEDELTA=5 \
 #     consdb/efd_transform:latest
