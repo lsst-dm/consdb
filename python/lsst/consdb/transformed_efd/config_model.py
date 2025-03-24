@@ -85,6 +85,7 @@ class Column(BaseModel):
     topics: List[Topic]
 
     @model_validator(mode="after")
+    @classmethod  # Add this decorator
     def validate_tables_when_unpivoted(cls, model):
         """Validate the tables attribute when unpivoting is required.
 
