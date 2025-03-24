@@ -21,8 +21,8 @@
 
 """Provides the `InfluxDBClient` and `InfluxDbDao` classes.
 
-These classes support operations such as querying time-series data, retrieving field
-keys, and unpacking packed dataframes.
+These classes support operations such as querying time-series data, retrieving
+field keys, and unpacking packed dataframes.
 """
 
 import os
@@ -107,7 +107,7 @@ class InfluxDBClient:
             raise Exception(f"An error occurred: {exc}") from exc
 
     def get_fields(self, topic_name):
-        """Retrieve the field keys for a given topic from the InfluxDB database.
+        """Retrieves field keys for a topic from the InfluxDB database.
 
         Parameters
         ----------
@@ -225,7 +225,7 @@ class InfluxDBClient:
         fmt="unix_tai",
         scale="tai",
     ):
-        """Select fields that are time samples and unpack them into a dataframe.
+        """Select and unpack fields that are time samples into a dataframe.
 
         This function was adapted from the original implementation found at
         [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
@@ -545,7 +545,7 @@ class InfluxDBClient:
         ref_timestamp_scale="tai",
         use_old_csc_indexing=False,
     ):
-        """Select fields that are time samples and unpack them into a dataframe.
+        """Select and unpack fields that are time samples into a dataframe.
 
         This function was adapted from the original implementation found at
         [https://github.com/lsst-sqre/lsst-efd-client.git]. The core logic
@@ -625,8 +625,8 @@ class InfluxDbDao(InfluxDBClient):
     """A specialized extension of `InfluxDBClient`.
 
     This class provides streamlined access to EFD data, leveraging environment
-    variables or a credentials service for authentication. It facilitates querying
-    and managing time-series data with minimal configuration.
+    variables or a credentials service for authentication. It facilitates
+    querying and managing time-series data with minimal configuration.
 
     Attributes
     ----------
@@ -645,7 +645,7 @@ class InfluxDbDao(InfluxDBClient):
         database_name="efd",
         creds_service="https://roundtable.lsst.codes/segwarides/",
     ):
-        """Initialize the InfluxDbDao class, which extends the InfluxDBClient class.
+        """Initializes InfluxDbDao, extending the InfluxDBClient class.
 
         Parameters
         ----------

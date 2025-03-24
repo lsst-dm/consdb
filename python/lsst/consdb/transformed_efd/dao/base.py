@@ -39,14 +39,14 @@ class DBBase:
     Attributes
     ----------
         engine (Engine): The database engine.
-        con: The database connection.
+        connexion: The database connection.
         dialect: The database dialect.
         db_uri (str): The URI of the database.
 
     """
 
     engine: Engine = None
-    con = None
+    connexion = None
     dialect = None
     db_uri: str
 
@@ -60,7 +60,7 @@ class DBBase:
 
         Raises:
         ------
-            Exception: If the dialect for the given SGBD has not been implemented.
+            Exception: If the dialect has not been implemented.
 
         """
         self.db_uri = db_uri
@@ -102,11 +102,11 @@ class DBBase:
             The database connection.
 
         """
-        if self.con is None:
+        if self.connexion is None:
             engine = self.get_db_engine()
-            self.con = engine.connect()
+            self.connexion = engine.connect()
 
-        return self.con
+        return self.connexion
 
     def get_table(self, tablename, schema=None) -> Table:
         """Retrieve a table object from the database.
@@ -257,13 +257,14 @@ class DBBase:
             return con.scalar(stm)
 
     def execute_upsert(self, tbl: Table, df: pandas.DataFrame, commit_every: int = 100) -> int:
-        """Execute an upsert operation on the given table using the provided DataFrame.
+        """Executes an upsert on the table using the provided DataFrame.
 
         Args:
         ----
             tbl (Table): The table object representing the database table.
-            df (pandas.DataFrame): The DataFrame containing the data to be upserted.
-            commit_every (int, optional): The number of records to commit at once. Defaults to 100.
+            df (pandas.DataFrame): The DataFrame to be upserted.
+            commit_every (int, optional): The number of records to commit at
+                once. Defaults to 100.
 
         Returns:
         -------
@@ -271,7 +272,8 @@ class DBBase:
 
         Raises:
         ------
-            ValueError: If the DataFrame is missing primary key columns or if there are no columns to update.
+            ValueError: If the DataFrame is missing primary key columns or if
+                there are no columns to update.
         """
         # Replace NaN with None for SQL compatibility
         df = df.replace(numpy.nan, None)
@@ -321,7 +323,7 @@ class DBBase:
         return affected_rows
 
     def execute_bulk_insert(self, tbl: Table, df: pandas.DataFrame, commit_every: int = 100) -> int:
-        """Insert data in bulk into the specified table using the provided DataFrame.
+        """Inserts data in bulk into the table using the provided DataFrame.
 
         Args:
         ----
@@ -358,7 +360,7 @@ class DBBase:
         return affected_rows
 
     def debug_query(self, stm, with_parameters=False) -> str:
-        """Return SQL representation of the given statement for debugging purposes.
+        """Returns SQL representation of the statement for debugging.
 
         Args:
         ----
