@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Provides the `ButlerDao` class for interacting with data via a Butler object.
+"""Provides the `ButlerDao` class for interacting with data via Butler object.
 
 It includes methods to query dimensions and retrieve exposures or visits within
 specified time periods.
@@ -84,7 +84,8 @@ class ButlerDao:
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
     ) -> list:
-        """Retrieve list of exposures givem time period for a specific instrument.
+        """Retrieves exposures for a time period for the specified instrument.
+
 
         Args:
         ----
@@ -112,7 +113,7 @@ class ButlerDao:
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
     ) -> list:
-        """Retrieve list of visits for specified time period given an instrument.
+        """Retrieves visits for a time period for the specified instrument.
 
         Args:
         ----

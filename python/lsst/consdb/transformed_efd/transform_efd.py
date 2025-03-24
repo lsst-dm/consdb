@@ -21,8 +21,8 @@
 
 """Handles the transformation of EFD data using configurable models.
 
-Includes functionalities for managing data queues, retrieving configurations, and
-transforming data.
+Includes functionalities for managing data queues, retrieving configurations,
+and transforming data.
 """
 
 import argparse
@@ -175,7 +175,8 @@ def _to_astropy_time(dt: Optional[datetime]) -> Optional[Time]:
 
     Returns:
     -------
-        Optional[Time]: The converted Astropy Time object, or None if dt is None.
+        Optional[Time]: The converted Astropy Time object, or None if dt
+            is None.
     """
     if dt is None:
         return None
@@ -202,7 +203,7 @@ def _process_task(
         timewindow (int): The time window value.
 
     Returns:
-        Dict[str, int]: A dictionary containing the counts of exposures and visits.
+        Dict[str, int]: A dictionary with the counts of exposures and visits.
     """
     log.info("----------------------------------------------------------")
     log.info(f"Task ID: {task['id']}")

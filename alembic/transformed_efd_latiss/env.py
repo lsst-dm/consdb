@@ -69,7 +69,7 @@ def save_config_snapshot(revision):
 
 # Function to restore config snapshot and create a backup
 def restore_config_snapshot(revision):
-    """Restore config_latiss.yaml from a migration snapshot and create a backup."""
+    """Restore config file from migration snapshot and create a backup."""
     snapshot_path = os.path.join(SNAPSHOT_DIR, f"{revision}_config_latiss.yaml")
 
     if os.path.exists(snapshot_path):
@@ -122,7 +122,8 @@ def process_revision_directives(context, revision, directives):
 
 # Function to resolve revision from label (head or absolute ID)
 def resolve_revision(rev_label):
-    """Convert Alembic revision label (absolute revision ID or 'head') into a revision ID."""
+    """Convert Alembic revision label (absolute revision ID or 'head')
+    into a revision ID."""
     script = ScriptDirectory.from_config(config)
 
     if rev_label == "head":

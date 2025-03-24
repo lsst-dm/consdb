@@ -19,10 +19,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Provides tools for managing queues and scheduling workflows for data processing.
+"""Tools for managing queues and scheduling workflows in data processing.
 
-This implementation ensures that tasks are created only per interval without handling gaps.
-Includes features for task creation, retrieval, and management.
+This implementation ensures that tasks are created only per interval without
+handling gaps. Includes features for task creation, retrieval, and management.
 """
 
 import logging
@@ -41,7 +41,7 @@ class QueueManager:
     ----------
         db_uri (str): The database URI.
         log (logging.Logger): Logger for logging messages.
-        dao (TransformdDao): Data Access Object for interacting with the database.
+        dao (TransformdDao): DAO for interacting with the database.
 
     """
 
@@ -84,7 +84,7 @@ class QueueManager:
             end_time (Time): The end time for the tasks.
             process_interval (int): The interval in minutes between each task.
             time_window (int): The overlaping time window. Defaults to 1.
-            status (str): The processing status of the task. Defaults to "pending"
+            status (str): Processing status of the task. Defaults to "pending"
 
         Returns:
         -------
@@ -213,8 +213,8 @@ class QueueManager:
             limit (Optional[int]): The maximum number of tasks to retrieve.
                 If None, all recent tasks are retrieved.
             margin_seconds: int
-                A margin (in seconds). Negative values delay processing tasks to
-                ensure data availability.
+                A margin (in seconds). Negative values delay processing tasks
+                to ensure data availability.
 
 
         Returns:
@@ -243,13 +243,14 @@ class QueueManager:
             end_time: Optional[Time]
                 The end time up to which to search for the next task.
             margin_seconds: int
-                A margin (in seconds). Negative values delay processing tasks to
-                ensure data availability.
+                A margin (in seconds). Negative values delay processing tasks
+                to ensure data availability.
 
         Returns:
         -------
             Optional[dict]
-                A dictionary representing the next task to run, or None if no suitable task is found.
+                A dictionary representing the next task to run, or None if no
+                suitable task is found.
         """
 
         # Convert Astropy Time to timezone-aware datetime (UTC)
@@ -276,12 +277,12 @@ class QueueManager:
         Args:
         ----
             butler_repo (str): The bulter repository relative to the task
-            status (str, optional): The status of the tasks to query. Defaults to "pending".
+            status (str, optional): Status of the tasks. Defaults to "pending".
 
         Returns:
         -------
-        Optional[dict]: A dictionary representing the next task with the specified status.
-            If no task is found, returns `None`.
+        Optional[dict]: A dictionary representing the next task with the
+            specified status. If no task is found, returns `None`.
         """
         task = self.dao.select_queued(butler_repo, status)
 
@@ -297,8 +298,8 @@ class QueueManager:
 
         Returns:
         -------
-        Optional[dict]: A dictionary representing the next task with the specified status.
-            If no task is found, returns `None`.
+        Optional[dict]: A dictionary representing the next task with the
+            specified status. If no task is found, returns `None`.
         """
 
         task = self.dao.select_failed(butler_repo, max_retries=max_retries)

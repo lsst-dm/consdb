@@ -29,7 +29,7 @@ from astropy.time import Time
 
 
 class Summary:
-    """Class to summarize and analyze numeric time-series data with a DatetimeIndex.
+    """Class to summarize numeric time-series data with a DatetimeIndex.
 
     Attributes
     ----------
@@ -135,7 +135,7 @@ class Summary:
             raise ValueError(f"RMS calculation failed: {e}")
 
     def most_recent_value_in_last_minute(self) -> Optional[Union[float, int, bool]]:
-        """Find the most recent value within the last minute of the exposure_end.
+        """Find most recent value within the last minute of the exposure_end.
 
         Returns
         -------

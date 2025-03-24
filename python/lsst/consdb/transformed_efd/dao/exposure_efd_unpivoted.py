@@ -54,7 +54,7 @@ class ExposureEfdUnpivotedDao(DBBase):
         self.tbl = self.get_table("exposure_efd_unpivoted", schema=schema)
 
     def get_by_exposure_id(self, exposure_id: int):
-        """Retrieve row from the "exposure_efd_unpivoted" table based on exposure ID.
+        """Retrieves a row from 'exposure_efd_unpivoted' by exposure ID.
 
         Args:
         ----

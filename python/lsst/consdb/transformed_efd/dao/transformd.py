@@ -46,7 +46,7 @@ class Task(TypedDict):
 
 
 class TransformdDao(DBBase):
-    """Data Access Object (DAO) for managing the "transformed_efd_scheduler" table.
+    """DAO for managing the 'transformed_efd_scheduler' table.
 
     This class facilitates querying records, bulk inserts, and task management
     operations, such as updating statuses and execution counts.
@@ -109,7 +109,7 @@ class TransformdDao(DBBase):
 
         Args:
         ----
-        df (pandas.DataFrame): The DataFrame containing the data to be inserted.
+        df (pandas.DataFrame): DataFrame containing the data to be inserted.
         commit_every (int, optional): The number of rows to insert before
             committing the transaction. Defaults to 100.
 
@@ -158,7 +158,7 @@ class TransformdDao(DBBase):
             return result.rowcount
 
     def task_started(self, id: int) -> None:
-        """Update status of a task to 'running' and sets the process start time."""
+        """Update status of a task to 'running' and set process start time."""
         self._update_task_status(
             id,
             "running",
@@ -341,7 +341,8 @@ class TransformdDao(DBBase):
 
         Returns:
         -------
-            Task: A dictionary representing the existing task that matches the criteria.
+            Task: A dictionary representing the existing task that matches
+                the criteria.
         """
         query = select(self.tbl.c).where(
             and_(

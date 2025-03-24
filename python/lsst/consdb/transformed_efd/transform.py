@@ -221,12 +221,6 @@ class Transform:
             self.log.info(f"Querying the Topic: {topic['name']}")
             topic_series = self.get_efd_values(topic, topic_interval, topic["is_packed"])
 
-            # # debug memory usage and available memory
-            # memory_usage = sys.getsizeof(topic_series)
-            # self.log.info(f"   Size of query: {memory_usage/(1024*2):.1f} Mb")
-            # free_memory = psutil.virtual_memory().available
-            # self.log.info(f"   Available memory: {free_memory/(1024*3):.1f} Gb")
-
             # process the columns in that topic:
             for column in topic["columns"]:
                 # self.log.debug(column)
@@ -239,14 +233,16 @@ class Transform:
                         subset_value = str(column["subset_value"])
 
                         if subset_field in topic_series and not topic_series[subset_field].empty:
-                            # Ensure both the column and subset_value are of same type
+                            # Ensure both the column and subset_value are
+                            # of same type
                             topic_series[subset_field] = topic_series[subset_field].fillna("").astype(str)
                             subset_value = str(subset_value)
 
                             # Filter the DataFrame
                             filtered_df = topic_series.loc[topic_series[subset_field] == subset_value]
 
-                            # Verify which fields exist in the filtered DataFrame
+                            # Verify which fields exist in the filtered
+                            # DataFrame
                             fields.remove(subset_field)
                             valid_fields = [field for field in fields if field in filtered_df.columns]
 
@@ -441,7 +437,7 @@ class Transform:
         transform_function,
         **function_kwargs,
     ) -> Any:
-        """Process column values given a time range, topic, and aggregation function.
+        """Process columns using time range, topic, and aggregation function.
 
         Args:
         ----
@@ -507,7 +503,7 @@ class Transform:
         return result
 
     def topics_by_column(self, column, topic_interval, packed_series) -> List[dict]:
-        """Retrieve EFD topics and their corresponding series for a given column.
+        """Retrieve EFD topics and their corresponding series given a column.
 
         Args:
         ----
@@ -550,7 +546,7 @@ class Transform:
 
         Returns:
         -------
-            pandas.DataFrame: Queried data as a DataFrame, or an empty DataFrame
+            pandas.DataFrame: Queried data as DataFrame, or an empty DataFrame
                 if no data is found.
 
         """

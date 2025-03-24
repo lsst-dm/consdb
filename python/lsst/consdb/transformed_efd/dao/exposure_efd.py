@@ -27,7 +27,7 @@ from sqlalchemy.sql import and_, select
 
 
 class ExposureEfdDao(DBBase):
-    """A class representing a Data Access Object (DAO) for accessing exposure_efd data.
+    """Represents a DAO for accessing exposure_efd data.
 
     Args:
     ----
@@ -35,7 +35,7 @@ class ExposureEfdDao(DBBase):
 
     Attributes:
     ----------
-        tbl: The table object representing the "exposure_efd" table in the database.
+        tbl: The table object for the 'exposure_efd' table.
 
     """
 
@@ -61,7 +61,7 @@ class ExposureEfdDao(DBBase):
 
         Returns:
         -------
-            list: A list of dictionaries representing the rows retrieved from the table.
+            list: List of dictionaries for rows retrieved from the table.
 
         """
         stm = select(self.tbl.c).where(and_(self.tbl.c.exposure_id == exposure_id))
