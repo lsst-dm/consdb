@@ -57,7 +57,7 @@ def generate_schema(config_path: Path, instrument: str, output_dir: Optional[Pat
         raise ValueError("Configuration file must contain 'columns' section")
 
     # Determine output path
-    output_dir = output_dir or config_path.parent.parent / "schemas"
+    output_dir = output_dir or config_path.parent.parent / "schemas/yml"
     output_dir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
 
     schema_name = schema_dict[instrument.lower()]
