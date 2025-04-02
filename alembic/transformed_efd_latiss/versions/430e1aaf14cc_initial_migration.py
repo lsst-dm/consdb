@@ -1,8 +1,8 @@
-"""Initial state
+"""initial migration
 
-Revision ID: 5d3a594bae97
+Revision ID: 430e1aaf14cc
 Revises:
-Create Date: 2025-03-17 11:26:06.079715+00:00
+Create Date: 2025-04-02 20:56:21.021900+00:00
 
 """
 
@@ -14,7 +14,7 @@ from sqlalchemy.dialects import mysql, postgresql
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "5d3a594bae97"
+revision: str = "430e1aaf14cc"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
