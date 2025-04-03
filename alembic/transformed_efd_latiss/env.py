@@ -3,15 +3,11 @@ import os
 from logging.config import fileConfig
 
 import yaml
-from dotenv import load_dotenv
 from felis.datamodel import Schema
 from felis.metadata import MetaDataBuilder
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-
-# TODO: Coordinate appropriately schema locations and remove load_dotenv
-load_dotenv()
 
 # Near the top of env.py, after imports
 logging.basicConfig()
