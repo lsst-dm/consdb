@@ -1,8 +1,8 @@
 """initial migration
 
-Revision ID: 430e1aaf14cc
+Revision ID: b9fb85c0e5d1
 Revises:
-Create Date: 2025-04-02 20:56:21.021900+00:00
+Create Date: 2025-04-07 18:57:04.128329+00:00
 
 """
 
@@ -14,7 +14,7 @@ from sqlalchemy.dialects import mysql, postgresql
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "430e1aaf14cc"
+revision: str = "b9fb85c0e5d1"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,7 +28,8 @@ def upgrade() -> None:
             sa.Column(
                 "exposure_id",
                 sa.BIGINT().with_variant(mysql.BIGINT(), "mysql").with_variant(sa.BIGINT(), "postgresql"),
-                nullable=True,
+                autoincrement=False,
+                nullable=False,
                 comment="Exposure unique ID.",
             ),
             sa.Column(
@@ -1637,7 +1638,6 @@ def upgrade() -> None:
                 comment="Calculated sky angle.",
             ),
             sa.PrimaryKeyConstraint("exposure_id"),
-            sa.UniqueConstraint("exposure_id", name="un_exposure_id"),
         ],
         schema="efd_latiss",
         comment="Transformed EFD topics by exposure.",
@@ -1648,6 +1648,7 @@ def upgrade() -> None:
         sa.Column(
             "exposure_id",
             sa.BIGINT().with_variant(mysql.BIGINT(), "mysql").with_variant(sa.BIGINT(), "postgresql"),
+            autoincrement=False,
             nullable=False,
             comment="Unique identifier for the exposure",
         ),
@@ -1684,8 +1685,8 @@ def upgrade() -> None:
             nullable=True,
             comment="Timestamp when record was created, default current timestamp",
         ),
-        sa.PrimaryKeyConstraint("exposure_id", "property", "field"),
-        sa.UniqueConstraint("exposure_id", "property", "field", name="un_exposure_property_field"),
+        sa.PrimaryKeyConstraint("exposure_id"),
+        sa.UniqueConstraint("exposure_id", "property", "field", name="uq_exposure_property_field"),
         schema="efd_latiss",
         comment="Unpivoted EFD exposure data.",
         mysql_engine="MyISAM",
@@ -1795,7 +1796,6 @@ def upgrade() -> None:
             comment="Timestamp when record was created, default current timestamp",
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("id", name="un_id"),
         schema="efd_latiss",
         comment="Transformed EFD scheduler.",
         mysql_engine="MyISAM",
@@ -1806,7 +1806,8 @@ def upgrade() -> None:
             sa.Column(
                 "visit_id",
                 sa.BIGINT().with_variant(mysql.BIGINT(), "mysql").with_variant(sa.BIGINT(), "postgresql"),
-                nullable=True,
+                autoincrement=False,
+                nullable=False,
                 comment="Visit unique ID.",
             ),
             sa.Column(
@@ -3397,7 +3398,6 @@ def upgrade() -> None:
                 comment="Calculated sky angle.",
             ),
             sa.PrimaryKeyConstraint("visit_id"),
-            sa.UniqueConstraint("visit_id", name="un_visit_id"),
         ],
         schema="efd_latiss",
         comment="Transformed EFD topics by visit.",
@@ -3408,6 +3408,7 @@ def upgrade() -> None:
         sa.Column(
             "visit_id",
             sa.BIGINT().with_variant(mysql.BIGINT(), "mysql").with_variant(sa.BIGINT(), "postgresql"),
+            autoincrement=False,
             nullable=False,
             comment="Unique identifier for the visit",
         ),
@@ -3444,12 +3445,18 @@ def upgrade() -> None:
             nullable=True,
             comment="Timestamp when record was created, default current timestamp",
         ),
-        sa.PrimaryKeyConstraint("visit_id", "property", "field"),
-        sa.UniqueConstraint("visit_id", "property", "field", name="un_visit_property_field"),
+        sa.PrimaryKeyConstraint("visit_id"),
+        sa.UniqueConstraint(
+            "visit_id", "property", "field", name="uq_visit1_efd_unpivoted_visit_id_property_field"
+        ),
         schema="efd_latiss",
         comment="Unpivoted EFD visit data.",
         mysql_engine="MyISAM",
     )
+    # grant table access to oods and usdf
+    op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd TO oods")
+    op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd_latiss TO oods")
+    op.execute("GRANT SELECT ON ALL TABLES IN SCHEMA efd_latiss TO usdf")
     # ### end Alembic commands ###
 
 
