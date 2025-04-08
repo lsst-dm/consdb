@@ -8,18 +8,13 @@ tables:
   "@id": "#exposure_efd"
   description: Transformed EFD topics by exposure.
   primaryKey:
-  - "#exposure_efd.exposure_id"
-  constraints:
-  - name: un_exposure_id
-    "@id": "#exposure_efd.un_exposure_id"
-    "@type": Unique
-    description: Ensure exposure_id is unique.
-    columns:
     - "#exposure_efd.exposure_id"
   columns:
   - name: exposure_id
     "@id": "#exposure_efd.exposure_id"
     datatype: long
+    nullable: false
+    autoincrement: false
     description: Exposure unique ID.
   - name: created_at
     "@id": "#exposure_efd.created_at"
@@ -2227,11 +2222,9 @@ tables:
   description: Unpivoted EFD exposure data.
   primaryKey:
   - "#exposure_efd_unpivoted.exposure_id"
-  - "#exposure_efd_unpivoted.property"
-  - "#exposure_efd_unpivoted.field"
   constraints:
-  - name: un_exposure_property_field
-    "@id": "#exposure_efd_unpivoted.un_exposure_property_field"
+  - name: uq_exposure_property_field
+    "@id": "#exposure_efd_unpivoted.uq_exposure_property_field"
     "@type": Unique
     description: Ensure combination of exposure_id, property, and field is unique.
     columns:
@@ -2243,6 +2236,7 @@ tables:
     "@id": "#exposure_efd_unpivoted.exposure_id"
     datatype: long
     nullable: False
+    autoincrement: False
     description: Unique identifier for the exposure
   - name: property
     "@id": "#exposure_efd_unpivoted.property"
@@ -2273,18 +2267,13 @@ tables:
   "@id": "#visit1_efd"
   description: Transformed EFD topics by visit.
   primaryKey:
-  - "#visit1_efd.visit_id"
-  constraints:
-  - name: un_visit_id
-    "@id": "#visit1_efd.un_visit_id"
-    "@type": Unique
-    description: Ensure visit_id is unique.
-    columns:
     - "#visit1_efd.visit_id"
   columns:
   - name: visit_id
     "@id": "#visit1_efd.visit_id"
     datatype: long
+    nullable: False
+    autoincrement: False
     description: Visit unique ID.
   - name: created_at
     "@id": "#visit1_efd.created_at"
@@ -4451,23 +4440,23 @@ tables:
   "@id": "#visit1_efd_unpivoted"
   description: Unpivoted EFD visit data.
   primaryKey:
-  - "#visit1_efd_unpivoted.visit_id"
-  - "#visit1_efd_unpivoted.property"
-  - "#visit1_efd_unpivoted.field"
-  constraints:
-  - name: un_visit_property_field
-    "@id": "#visit1_efd_unpivoted.un_visit_property_field"
-    "@type": Unique
-    description: Ensure combination of visit_id, property, and field is unique.
-    columns:
     - "#visit1_efd_unpivoted.visit_id"
-    - "#visit1_efd_unpivoted.property"
-    - "#visit1_efd_unpivoted.field"
+  constraints:
+    # Unique Constraint
+    - name: uq_visit1_efd_unpivoted_visit_id_property_field
+      "@id": "#visit1_efd_unpivoted.uq_visit1_efd_unpivoted_visit_id_property_field"
+      "@type": Unique
+      description: Ensure combination of visit_id, property, and field is unique.
+      columns:
+        - "#visit1_efd_unpivoted.visit_id"
+        - "#visit1_efd_unpivoted.property"
+        - "#visit1_efd_unpivoted.field"
   columns:
   - name: visit_id
     "@id": "#visit1_efd_unpivoted.visit_id"
     datatype: long
     nullable: False
+    autoincrement: False
     description: Unique identifier for the visit
   - name: property
     "@id": "#visit1_efd_unpivoted.property"
@@ -4498,13 +4487,6 @@ tables:
   "@id": "#transformed_efd_scheduler"
   description: Transformed EFD scheduler.
   primaryKey:
-  - "#transformed_efd_scheduler.id"
-  constraints:
-  - name: un_id
-    "@id": "#transformed_efd_scheduler.un_id"
-    "@type": Unique
-    description: Ensure id is unique.
-    columns:
     - "#transformed_efd_scheduler.id"
   columns:
   - name: id
