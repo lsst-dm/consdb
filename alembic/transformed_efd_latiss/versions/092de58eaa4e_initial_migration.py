@@ -1,8 +1,8 @@
 """initial migration
 
-Revision ID: b9fb85c0e5d1
+Revision ID: 092de58eaa4e
 Revises:
-Create Date: 2025-04-07 18:57:04.128329+00:00
+Create Date: 2025-04-09 19:31:24.721508+00:00
 
 """
 
@@ -14,7 +14,7 @@ from sqlalchemy.dialects import mysql, postgresql
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "b9fb85c0e5d1"
+revision: str = "092de58eaa4e"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -1685,8 +1685,7 @@ def upgrade() -> None:
             nullable=True,
             comment="Timestamp when record was created, default current timestamp",
         ),
-        sa.PrimaryKeyConstraint("exposure_id"),
-        sa.UniqueConstraint("exposure_id", "property", "field", name="uq_exposure_property_field"),
+        sa.PrimaryKeyConstraint("exposure_id", "property", "field"),
         schema="efd_latiss",
         comment="Unpivoted EFD exposure data.",
         mysql_engine="MyISAM",
@@ -3445,14 +3444,12 @@ def upgrade() -> None:
             nullable=True,
             comment="Timestamp when record was created, default current timestamp",
         ),
-        sa.PrimaryKeyConstraint("visit_id"),
-        sa.UniqueConstraint(
-            "visit_id", "property", "field", name="uq_visit1_efd_unpivoted_visit_id_property_field"
-        ),
+        sa.PrimaryKeyConstraint("visit_id", "property", "field"),
         schema="efd_latiss",
         comment="Unpivoted EFD visit data.",
         mysql_engine="MyISAM",
     )
+
     # grant table access to oods and usdf
     op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd TO oods")
     op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd_latiss TO oods")
