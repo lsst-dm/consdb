@@ -27,11 +27,9 @@ from typing import Any, Dict, List
 import astropy.time
 import pandas
 from lsst.consdb.transformed_efd.dao.butler import ButlerDao
-from lsst.consdb.transformed_efd.dao.exposure_efd import ExposureEfdDao
-from lsst.consdb.transformed_efd.dao.exposure_efd_unpivoted import ExposureEfdUnpivotedDao
+from lsst.consdb.transformed_efd.dao.exposure_efd import ExposureEfdDao, ExposureEfdUnpivotedDao
 from lsst.consdb.transformed_efd.dao.influxdb import InfluxDbDao
-from lsst.consdb.transformed_efd.dao.visit_efd import VisitEfdDao
-from lsst.consdb.transformed_efd.dao.visit_efd_unpivoted import VisitEfdUnpivotedDao
+from lsst.consdb.transformed_efd.dao.visit_efd import VisitEfdDao, VisitEfdUnpivotedDao
 from lsst.consdb.transformed_efd.summary import Summary
 from lsst.daf.butler import Butler
 
@@ -111,7 +109,7 @@ class Transform:
             "lsstcomcam": "efd_lsstcomcam",
             "lsstcomcamsim": "efd_lsstcomcamsim",
         }
-        return schemas[instrument]
+        return schemas[instrument.lower()]
 
     def get_instrument(self, instrument: str) -> str:
         """Get the schema name for the given instrument.
@@ -453,7 +451,7 @@ class Transform:
             The processed column value.
 
         """
-        values = self.topic_values_by_exposure(start_time, end_time, topics)
+        values = self.topic_values_by_time_range(start_time, end_time, topics)
 
         if not values.empty:
             column_value = Summary(dataframe=values, exposure_start=start_time, exposure_end=end_time).apply(
@@ -463,7 +461,7 @@ class Transform:
 
         return None
 
-    def topic_values_by_exposure(
+    def topic_values_by_time_range(
         self, start_time: astropy.time.Time, end_time: astropy.time.Time, topics
     ) -> pandas.DataFrame:
         """Retrieve topic values for a given time range.
