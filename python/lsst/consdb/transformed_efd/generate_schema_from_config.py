@@ -122,15 +122,8 @@ def write_exposure_tables(f, config):
   description: Unpivoted EFD exposure data.
   primaryKey:
   - "#exposure_efd_unpivoted.exposure_id"
-  constraints:
-  - name: uq_exposure_property_field
-    "@id": "#exposure_efd_unpivoted.uq_exposure_property_field"
-    "@type": Unique
-    description: Ensure combination of exposure_id, property, and field is unique.
-    columns:
-    - "#exposure_efd_unpivoted.exposure_id"
-    - "#exposure_efd_unpivoted.property"
-    - "#exposure_efd_unpivoted.field"
+  - "#exposure_efd_unpivoted.property"
+  - "#exposure_efd_unpivoted.field"
   columns:
   - name: exposure_id
     "@id": "#exposure_efd_unpivoted.exposure_id"
@@ -205,16 +198,8 @@ def write_visit_tables(f, config):
   description: Unpivoted EFD visit data.
   primaryKey:
     - "#visit1_efd_unpivoted.visit_id"
-  constraints:
-    # Unique Constraint
-    - name: uq_visit1_efd_unpivoted_visit_id_property_field
-      "@id": "#visit1_efd_unpivoted.uq_visit1_efd_unpivoted_visit_id_property_field"
-      "@type": Unique
-      description: Ensure combination of visit_id, property, and field is unique.
-      columns:
-        - "#visit1_efd_unpivoted.visit_id"
-        - "#visit1_efd_unpivoted.property"
-        - "#visit1_efd_unpivoted.field"
+    - "#visit1_efd_unpivoted.property"
+    - "#visit1_efd_unpivoted.field"
   columns:
   - name: visit_id
     "@id": "#visit1_efd_unpivoted.visit_id"
