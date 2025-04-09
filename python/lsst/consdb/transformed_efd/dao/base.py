@@ -22,6 +22,7 @@
 """Provides the `DBBase` class for managing database access."""
 
 import warnings
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 import numpy
@@ -401,3 +402,15 @@ class DBBase:
         sql = sql.replace("\n", " ").replace("\r", "")
 
         return sql
+
+    @staticmethod
+    def _ensure_utc(dt: datetime) -> datetime:
+        """Ensure datetime is in UTC (naive or aware).
+        Args:
+            dt: Input datetime
+        Returns:
+            UTC-naive datetime
+        """
+        if dt.tzinfo is not None:
+            return dt.astimezone(timezone.utc).replace(tzinfo=None)
+        return dt
