@@ -70,7 +70,8 @@ class Summary:
         """
         if not isinstance(dataframe.index, pd.DatetimeIndex):
             raise ValueError("The DataFrame index must be a DatetimeIndex.")
-
+        if len(dataframe) == 0:  # reject empty DataFrames
+            raise ValueError("The DataFrame must not be empty.")
         if not isinstance(exposure_start, Time) or not isinstance(exposure_end, Time):
             raise ValueError("Exposure times must be astropy.time.Time objects.")
         if exposure_start >= exposure_end:
