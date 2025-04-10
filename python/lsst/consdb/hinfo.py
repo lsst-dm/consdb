@@ -206,6 +206,7 @@ KW_MAPPING: dict[str, str | Sequence] = {
     "focus_z": "FOCUSZ",
     "vignette": "VIGNETTE",
     "vignette_min": "VIGN_MIN",
+    "scheduler_note": "OBSANNOT",
     "s_region": (fp_region, "camera", "IMGTYPE", "RA", "DEC", "ROTPA"),
 }
 
