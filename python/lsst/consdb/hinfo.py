@@ -346,6 +346,11 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
 
     for header in content["PRIMARY"]:
         info[header["keyword"]] = header["value"]
+
+    if info["CONTRLLR"] not in instrument_dict:
+        logger.warning(f"Will not process {resource}: no mapping for controller `{info['CONTRLLR']}`")
+        return
+
     instrument_obj = instrument_dict[info["CONTRLLR"]]
     info["camera"] = instrument_obj.camera
     info["translator"] = instrument_obj.translator
