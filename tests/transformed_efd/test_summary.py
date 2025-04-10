@@ -121,3 +121,26 @@ def test_most_recent_value_in_last_minute_no_values_in_range(valid_dataframe):
     start, end = Time("2023-01-01T00:03:00"), Time("2023-01-01T00:04:00")
     with pytest.raises(ValueError, match="The DataFrame index must encompass the exposure time range."):
         Summary(dataframe=valid_dataframe, exposure_start=start, exposure_end=end)
+
+
+# 9. Test apply
+def test_apply_mean(summary_instance):
+    result = summary_instance.apply("mean")
+    assert result == 3.0
+
+
+def test_apply_stddev(summary_instance):
+    result = summary_instance.apply("stddev")
+    assert result == pytest.approx(1.5811, rel=1e-3)
+
+
+def test_apply_invalid_method(summary_instance):
+    with pytest.raises(AttributeError, match="Method 'invalid_method' not found."):
+        summary_instance.apply("invalid_method")
+
+
+def test_apply_with_empty_data():
+    df = pd.DataFrame({"value": []}, index=pd.DatetimeIndex([]))
+    start, end = Time("2023-01-01T00:00:00"), Time("2023-01-01T00:02:00")
+    with pytest.raises(ValueError, match="The DataFrame must not be empty."):  # <-- Updated error message
+        Summary(dataframe=df, exposure_start=start, exposure_end=end)
