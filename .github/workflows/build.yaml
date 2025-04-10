@@ -48,4 +48,4 @@ jobs:
         with:
           image: ${{ github.repository }}-transformed-efd
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          dockerfile: Dockerfile.transformed-efd
+          dockerfile: docker/Dockerfile.transformed-efd
