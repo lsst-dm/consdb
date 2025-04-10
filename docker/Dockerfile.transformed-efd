@@ -16,7 +16,6 @@ COPY --chown=lsst:lsst python /opt/lsst/software/stack/python
 
 # Create and populate the data directory
 RUN mkdir -p /opt/lsst/software/stack/data
-COPY --chown=lsst:lsst tmp/efd_transform/*.db /opt/lsst/software/stack/data/
 
 # Environment variables (overridden in docker run)
 ENV CONFIG_FILE="/opt/lsst/software/stack/python/lsst/consdb/efd_transform/config_LATISS.yml"
@@ -30,7 +29,6 @@ ENV TIMEDELTA=""
 ENV LOG_FILE=""
 ENV PYTHONPATH="/opt/lsst/software/stack/python:$PYTHONPATH"
 
-# Run the Python script
 CMD ["bash", "-c", "source loadLSST.bash && \
     setup lsst_distrib && \
     python /opt/lsst/software/stack/python/lsst/consdb/efd_transform/transform_efd.py \
@@ -41,14 +39,3 @@ CMD ["bash", "-c", "source loadLSST.bash && \
     -E \"$EFD\" \
     -t \"$TIMEDELTA\" \
     -l \"$LOG_FILE\""]
-
-# Example:
-# docker run --rm -it \
-#     --volume $PWD/data:/opt/lsst/software/stack/data \
-#     -c CONFIG_FILE=/opt/lsst/software/stack/lsst/consdb/efd_transform/config_LATISS.yml \
-#     -i INSTRUMENT=LATISS \
-#     -r BUTLER_REPO=s3://rubin-summit-users/butler.yaml \
-#     -E EFD=usdf_efd \
-#     -d CONSDB_URL=sqlite:////opt/lsst/software/stack/data/test.db \
-#     -t TIMEDELTA=5 \
-#     consdb/efd_transform:latest
