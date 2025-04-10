@@ -118,9 +118,10 @@ class QueueManager:
 
         # Handle end_time logic
         if end_time is None:
-            end_time = Time.now().utc  # Current UTC time
-            # Ensure at least one interval exists
-            if (end_time - start_time) < process_interval_td:
+            end_time = current_utc  # Current UTC time
+            # Ensure at least one interval exists / deal with floating point
+            time_delta = TimeDelta(round((end_time - start_time).to_value("sec"), 6), format="sec")
+            if time_delta < process_interval_td:
                 end_time = start_time + process_interval_td
 
         # Generate time intervals
