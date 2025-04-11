@@ -102,7 +102,9 @@ def build_argparser() -> argparse.ArgumentParser:
     # Required arguments
     req = parser.add_argument_group("required arguments")
     req.add_argument("-c", "--config", dest="config_name", required=True, help="Config YAML file")
-    req.add_argument("-i", "--instrument", dest="instrument", required=True, help="Instrument name")
+    req.add_argument(
+        "-i", "--instrument", dest="instrument", type=str.lower, required=True, help="Instrument name"
+    )
     req.add_argument(
         "-r",
         "--repo",
