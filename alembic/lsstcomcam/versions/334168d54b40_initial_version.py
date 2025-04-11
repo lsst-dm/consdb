@@ -1,7 +1,7 @@
 """initial version
 
 Revision ID: 334168d54b40
-Revises: 
+Revises:
 Create Date: 2024-06-18 10:11:27.736157+00:00
 
 """
@@ -1718,10 +1718,6 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("ccdvisit_id"),
         schema="cdb_lsstcomcam",
     )
-    op.execute("CREATE VIEW cdb_lsstcomcam.ccdvisit1 AS SELECT * FROM cdb_lsstcomcam.ccdexposure")
-    op.execute("ALTER TABLE cdb_lsstcomcam.ccdvisit1 RENAME COLUMN ccdexposure_id TO ccdvisit_id")
-    op.execute("CREATE VIEW cdb_lsstcomcam.visit1 AS SELECT * FROM cdb_lsstcomcam.exposure")
-    op.execute("ALTER TABLE cdb_lsstcomcam.visit1 RENAME COLUMN exposure_id TO visit_id")
     # ### end Alembic commands ###
 
 
@@ -1736,6 +1732,4 @@ def downgrade() -> None:
     op.drop_table("exposure_flexdata_schema", schema="cdb_lsstcomcam")
     op.drop_table("exposure", schema="cdb_lsstcomcam")
     op.drop_table("ccdexposure_flexdata_schema", schema="cdb_lsstcomcam")
-    op.execute("DROP VIEW cdb_lsstcomcam.ccdvisit1")
-    op.execute("DROP VIEW cdb_lsstcomcam.visit1")
     # ### end Alembic commands ###

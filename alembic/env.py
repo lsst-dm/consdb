@@ -5,7 +5,7 @@ from logging.config import fileConfig
 import yaml
 from felis.datamodel import Schema
 from felis.metadata import MetaDataBuilder
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, inspect, pool, text
 
 from alembic import context
 
@@ -68,6 +68,41 @@ target_metadata = schema_metadata
 # ... etc.
 
 
+# Operation to run before each migration...
+def drop_views(conn):
+    logger.info("Dropping views if they exist...")
+    global schema_name
+    conn.execute(text(f"DROP VIEW IF EXISTS {schema_name}.visit1"))
+    conn.execute(text(f"DROP VIEW IF EXISTS {schema_name}.ccdvisit1"))
+
+
+# Re-create the views at the end of the migration...
+def create_views(conn):
+    global schema_name
+    inspector = inspect(conn)
+    existing_tables = inspector.get_table_names(schema=f"{schema_name}")
+
+    if "ccdexposure" in existing_tables and "exposure" in existing_tables:
+        logger.info("Recreating views...")
+        statements = (
+            f"CREATE VIEW {schema_name}.ccdvisit1 "
+            f"AS SELECT * FROM {schema_name}.ccdexposure",
+
+            f"ALTER TABLE {schema_name}.ccdvisit1 "
+            "RENAME COLUMN ccdexposure_id TO ccdvisit_id",
+
+            f"CREATE VIEW {schema_name}.visit1 "
+            f"AS SELECT * FROM {schema_name}.exposure",
+
+            f"ALTER TABLE {schema_name}.visit1 "
+            "RENAME COLUMN exposure_id TO visit_id",
+        )
+        for statement in statements:
+            conn.execute(text(statement))
+    else:
+        logger.info("Skipping view creation – required base tables do not exist.")
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -95,6 +130,23 @@ def run_migrations_offline() -> None:
 
     with context.begin_transaction():
         context.run_migrations()
+        with context.begin_transaction():
+            print("-- Dropping views")
+            print(f"DROP VIEW IF EXISTS {schema_name}.visit1;")
+            print(f"DROP VIEW IF EXISTS {schema_name}.ccdvisit1;")
+
+            context.run_migrations()
+
+            print(f"""
+                CREATE VIEW {schema_name}.ccdvisit1
+                    AS SELECT * FROM {schema_name}.ccdexposure;
+                ALTER TABLE {schema_name}.ccdvisit1
+                    RENAME COLUMN ccdexposure_id TO ccdvisit_id;
+                CREATE VIEW {schema_name}.visit1
+                    AS SELECT * FROM {schema_name}.exposure;
+                ALTER TABLE cdb_{schema_name}.visit1
+                    RENAME COLUMN exposure_id TO visit_id;
+                """)
 
 
 def run_migrations_online() -> None:
@@ -122,7 +174,9 @@ def run_migrations_online() -> None:
         )
 
         with context.begin_transaction():
+            drop_views(connection)
             context.run_migrations()
+            create_views(connection)
 
 
 if context.is_offline_mode():
