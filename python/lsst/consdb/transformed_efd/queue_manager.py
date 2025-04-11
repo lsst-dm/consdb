@@ -189,7 +189,7 @@ class QueueManager:
             containing the start and end times.
 
         """
-        time_span = (end_time - start_time).sec
+        time_span = round((end_time - start_time).sec, 6)  # deal with floating point precision
         n_intervals = math.ceil(time_span / process_interval.sec)
         intervals = []
         for n in range(n_intervals):
