@@ -8,8 +8,6 @@ Create Date: 2024-12-05 00:56:55.551902+00:00
 
 from typing import Sequence, Union
 
-from alembic import op
-
 
 # revision identifiers, used by Alembic.
 revision: str = "ab45b3673c90"
