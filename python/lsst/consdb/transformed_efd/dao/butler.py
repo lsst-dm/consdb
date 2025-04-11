@@ -27,7 +27,7 @@ specified time periods.
 
 import astropy.time
 import pandas
-from lsst.daf.butler import Butler
+from lsst.daf.butler import Butler, EmptyQueryResultError
 
 
 class ButlerDao:
@@ -102,10 +102,18 @@ class ButlerDao:
             f"instrument=instr and exposure.timespan OVERLAPS " f"(T'{start_time}/utc', T'{end_time}/utc')"
         )
 
-        resultset = self.butler.registry.queryDimensionRecords(
-            "exposure", where=where_clause, bind=dict(instr=instrument)
-        ).order_by("timespan.begin")
-        return self.query_dimension_to_list(resultset)
+        try:
+            resultset = self.butler.query_dimension_records(
+                "exposure",
+                where=where_clause,
+                bind=dict(instr=instrument),
+                order_by="exposure.timespan.begin",
+            )
+
+            return self.query_dimension_to_list(resultset)
+
+        except EmptyQueryResultError:
+            return []
 
     def visits_by_period(
         self,
@@ -130,8 +138,15 @@ class ButlerDao:
             f"instrument=instr and visit.timespan OVERLAPS " f"(T'{start_time}/utc', T'{end_time}/utc')"
         )
 
-        resultset = self.butler.registry.queryDimensionRecords(
-            "visit", where=where_clause, bind=dict(instr=instrument)
-        ).order_by("timespan.begin")
+        try:
+            resultset = self.butler.query_dimension_records(
+                "visit",
+                where=where_clause,
+                bind=dict(instr=instrument),
+                order_by="visit.timespan.begin",
+            )
 
-        return self.query_dimension_to_list(resultset)
+            return self.query_dimension_to_list(resultset)
+
+        except EmptyQueryResultError:
+            return []
