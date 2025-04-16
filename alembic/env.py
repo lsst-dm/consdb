@@ -5,7 +5,7 @@ from logging.config import fileConfig
 import yaml
 from felis.datamodel import Schema
 from felis.metadata import MetaDataBuilder
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, inspect, pool, text
 
 from alembic import context
 
@@ -67,6 +67,39 @@ target_metadata = schema_metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+drop_view_statements = (
+    f"DROP VIEW IF EXISTS {schema_name}.visit1",
+    f"DROP VIEW IF EXISTS {schema_name}.ccdvisit1",
+)
+
+create_view_statements = (
+    f"CREATE VIEW {schema_name}.ccdvisit1 "
+    f"AS SELECT * FROM {schema_name}.ccdexposure",
+
+    f"ALTER TABLE {schema_name}.ccdvisit1 "
+    "RENAME COLUMN ccdexposure_id TO ccdvisit_id",
+
+    f"CREATE VIEW {schema_name}.visit1 "
+    f"AS SELECT * FROM {schema_name}.exposure",
+
+    f"ALTER TABLE {schema_name}.visit1 "
+    "RENAME COLUMN exposure_id TO visit_id",
+)
+
+
+# Re-create the views at the end of the migration...
+def create_views(conn):
+    global schema_name
+    inspector = inspect(conn)
+    existing_tables = inspector.get_table_names(schema=f"{schema_name}")
+
+    if "ccdexposure" in existing_tables and "exposure" in existing_tables:
+        logger.info("Recreating views...")
+        for statement in create_view_statements:
+            conn.execute(text(statement))
+    else:
+        logger.info("Skipping view creation – required base tables do not exist.")
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -94,7 +127,15 @@ def run_migrations_offline() -> None:
     )
 
     with context.begin_transaction():
+        print("-- Dropping views")
+        for statement in drop_view_statements:
+            print(statement + ";")
+
         context.run_migrations()
+
+        print("-- Re-creating views")
+        for statement in create_view_statements:
+            print(statement + ";")
 
 
 def run_migrations_online() -> None:
@@ -122,7 +163,14 @@ def run_migrations_online() -> None:
         )
 
         with context.begin_transaction():
+            # Drop the views (if they exist)
+            for statement in drop_view_statements:
+                connection.execute(text(statement))
+
             context.run_migrations()
+
+            # Re-create the views:
+            create_views(connection)
 
 
 if context.is_offline_mode():

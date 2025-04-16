@@ -579,19 +579,10 @@ def upgrade() -> None:
     )
 
     # Need to drop and re-create visit1 view before dropping columns
-    op.execute("DROP VIEW IF EXISTS cdb_latiss.visit1")
-    op.execute("DROP VIEW IF EXISTS cdb_latiss.ccdvisit1")
-    op.execute("DROP VIEW IF EXISTS cdb_latiss.exposure_wide_view")
-
     op.drop_column("exposure", "shutter_close_end", schema="cdb_latiss")
     op.drop_column("exposure", "shutter_close_begin", schema="cdb_latiss")
     op.drop_column("exposure", "shutter_open_begin", schema="cdb_latiss")
     op.drop_column("exposure", "shutter_open_end", schema="cdb_latiss")
-    op.execute("CREATE VIEW cdb_latiss.ccdvisit1 AS SELECT * FROM cdb_latiss.ccdexposure")
-    op.execute("ALTER TABLE cdb_latiss.ccdvisit1 RENAME COLUMN ccdexposure_id TO ccdvisit_id")
-    op.execute("CREATE VIEW cdb_latiss.visit1 AS SELECT * FROM cdb_latiss.exposure")
-    op.execute("ALTER TABLE cdb_latiss.visit1 RENAME COLUMN exposure_id TO visit_id")
-
     # ### end Alembic commands ###
 
 
@@ -652,6 +643,4 @@ def downgrade() -> None:
     )
     op.drop_table("ccdvisit1_quicklook", schema="cdb_latiss")
     op.drop_table("visit1_quicklook", schema="cdb_latiss")
-    op.execute("DROP VIEW cdb_latiss.visit1")
-    op.execute("DROP VIEW cdb_latiss.ccdvisit1")
     # ### end Alembic commands ###

@@ -1581,11 +1581,6 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("ccdvisit_id"),
         schema="cdb_lsstcam",
     )
-
-    op.execute("CREATE VIEW cdb_lsstcam.ccdvisit1 AS SELECT * FROM cdb_lsstcam.ccdexposure")
-    op.execute("CREATE VIEW cdb_lsstcam.visit1 AS SELECT * FROM cdb_lsstcam.exposure")
-    op.execute("ALTER TABLE cdb_lsstcam.ccdvisit1 RENAME COLUMN ccdexposure_id TO ccdvisit_id")
-    op.execute("ALTER TABLE cdb_lsstcam.visit1 RENAME COLUMN exposure_id TO visit_id")
     # ### end Alembic commands ###
 
 
@@ -1602,6 +1597,4 @@ def downgrade() -> None:
     op.drop_table("exposure_flexdata_schema", schema="cdb_lsstcam")
     op.drop_table("exposure", schema="cdb_lsstcam")
     op.drop_table("ccdexposure_flexdata_schema", schema="cdb_lsstcam")
-    op.execute("DROP VIEW cdb_lsstcam.ccdvisit1")
-    op.execute("DROP VIEW cdb_lsstcam.visit1")
     # ### end Alembic commands ###
