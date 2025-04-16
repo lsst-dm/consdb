@@ -67,13 +67,24 @@ target_metadata = schema_metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+drop_view_statements = (
+    f"DROP VIEW IF EXISTS {schema_name}.visit1",
+    f"DROP VIEW IF EXISTS {schema_name}.ccdvisit1",
+)
 
-# Operation to run before each migration...
-def drop_views(conn):
-    logger.info("Dropping views if they exist...")
-    global schema_name
-    conn.execute(text(f"DROP VIEW IF EXISTS {schema_name}.visit1"))
-    conn.execute(text(f"DROP VIEW IF EXISTS {schema_name}.ccdvisit1"))
+create_view_statements = (
+    f"CREATE VIEW {schema_name}.ccdvisit1 "
+    f"AS SELECT * FROM {schema_name}.ccdexposure",
+
+    f"ALTER TABLE {schema_name}.ccdvisit1 "
+    "RENAME COLUMN ccdexposure_id TO ccdvisit_id",
+
+    f"CREATE VIEW {schema_name}.visit1 "
+    f"AS SELECT * FROM {schema_name}.exposure",
+
+    f"ALTER TABLE {schema_name}.visit1 "
+    "RENAME COLUMN exposure_id TO visit_id",
+)
 
 
 # Re-create the views at the end of the migration...
@@ -84,20 +95,7 @@ def create_views(conn):
 
     if "ccdexposure" in existing_tables and "exposure" in existing_tables:
         logger.info("Recreating views...")
-        statements = (
-            f"CREATE VIEW {schema_name}.ccdvisit1 "
-            f"AS SELECT * FROM {schema_name}.ccdexposure",
-
-            f"ALTER TABLE {schema_name}.ccdvisit1 "
-            "RENAME COLUMN ccdexposure_id TO ccdvisit_id",
-
-            f"CREATE VIEW {schema_name}.visit1 "
-            f"AS SELECT * FROM {schema_name}.exposure",
-
-            f"ALTER TABLE {schema_name}.visit1 "
-            "RENAME COLUMN exposure_id TO visit_id",
-        )
-        for statement in statements:
+        for statement in create_view_statements:
             conn.execute(text(statement))
     else:
         logger.info("Skipping view creation – required base tables do not exist.")
@@ -129,24 +127,15 @@ def run_migrations_offline() -> None:
     )
 
     with context.begin_transaction():
+        print("-- Dropping views")
+        for statement in drop_view_statements:
+            print(statement + ";")
+
         context.run_migrations()
-        with context.begin_transaction():
-            print("-- Dropping views")
-            print(f"DROP VIEW IF EXISTS {schema_name}.visit1;")
-            print(f"DROP VIEW IF EXISTS {schema_name}.ccdvisit1;")
 
-            context.run_migrations()
-
-            print(f"""
-                CREATE VIEW {schema_name}.ccdvisit1
-                    AS SELECT * FROM {schema_name}.ccdexposure;
-                ALTER TABLE {schema_name}.ccdvisit1
-                    RENAME COLUMN ccdexposure_id TO ccdvisit_id;
-                CREATE VIEW {schema_name}.visit1
-                    AS SELECT * FROM {schema_name}.exposure;
-                ALTER TABLE cdb_{schema_name}.visit1
-                    RENAME COLUMN exposure_id TO visit_id;
-                """)
+        print("-- Re-creating views")
+        for statement in create_view_statements:
+            print(statement + ";")
 
 
 def run_migrations_online() -> None:
@@ -174,8 +163,13 @@ def run_migrations_online() -> None:
         )
 
         with context.begin_transaction():
-            drop_views(connection)
+            # Drop the views (if they exist)
+            for statement in drop_view_statements:
+                connection.execute(text(statement))
+
             context.run_migrations()
+
+            # Re-create the views:
             create_views(connection)
 
 
