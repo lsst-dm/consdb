@@ -27,7 +27,7 @@ ENV PGUSER=""
 ENV CONSDB_URL=""
 ENV TIMEDELTA=""
 ENV LOG_FILE=""
-ENV PYTHONPATH="/opt/lsst/software/stack/python${PYTHONPATH:+:$PYTHONPATH}
+ENV PYTHONPATH="/opt/lsst/software/stack/python${PYTHONPATH:+:$PYTHONPATH}"
 
 CMD ["bash", "-c", "source loadLSST.bash && \
     setup lsst_distrib && \
