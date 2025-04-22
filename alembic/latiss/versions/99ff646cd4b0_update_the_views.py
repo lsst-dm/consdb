@@ -142,11 +142,4 @@ def downgrade() -> None:
         existing_comment="Information from observatory systems about each detector (CCD) within each raw image taken; consistent with other multi-detector instruments",
         schema="cdb_latiss",
     )
-    op.execute("DROP VIEW cdb_latiss.ccdvisit1")
-    op.execute("DROP VIEW cdb_latiss.visit1")
-    op.execute("CREATE VIEW cdb_latiss.ccdvisit1 AS SELECT * FROM cdb_latiss.ccdexposure")
-    op.execute("CREATE VIEW cdb_latiss.visit1 AS SELECT * FROM cdb_latiss.exposure")
-    op.execute("ALTER TABLE cdb_latiss.ccdvisit1 RENAME COLUMN ccdexposure_id TO ccdvisit_id")
-    op.execute("ALTER TABLE cdb_latiss.ccdvisit1 RENAME COLUMN exposure_id TO visit_id")
-    op.execute("ALTER TABLE cdb_latiss.visit1 RENAME COLUMN exposure_id TO visit_id")
     # ### end Alembic commands ###
