@@ -110,7 +110,9 @@ class Transform:
         """Compute column value using named transformation."""
         ts_start = pandas.to_datetime(start_time.utc.datetime, utc=True)
         ts_end = pandas.to_datetime(end_time.utc.datetime, utc=True)
-        valid_series = [topic["series"].loc[ts_start:ts_end] for topic in topics if not topic["series"].empty]
+        valid_series = [
+            topic["series"].sort_index().loc[ts_start:ts_end] for topic in topics if not topic["series"].empty
+        ]
         values = pandas.concat(valid_series, copy=False) if valid_series else pandas.DataFrame()
 
         if values.empty:
