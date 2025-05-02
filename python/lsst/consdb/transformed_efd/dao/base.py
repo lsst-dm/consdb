@@ -21,6 +21,7 @@
 
 """Provides the `DBBase` class for managing database access."""
 
+import logging
 import warnings
 from datetime import datetime, timezone
 from typing import Any, Dict, List
@@ -43,6 +44,7 @@ class DBBase:
         connexion: The database connection.
         dialect: The database dialect.
         db_uri (str): The URI of the database.
+        logger (logging.Logger): The logger for the class.
 
     """
 
@@ -51,13 +53,15 @@ class DBBase:
     dialect = None
     db_uri: str
 
-    def __init__(self, db_uri: str, schema: str = None):
+    def __init__(self, db_uri: str, schema: str = None, logger: logging.Logger = None):
         """Initialize a BaseDAO object.
 
         Args:
         ----
             db_uri (str): The URI of the database.
             schema (str, optional): The schema to use. Defaults to None.
+            logger (logging.Logger, optional): The logger to use.
+                Defaults to None.
 
         Raises:
         ------
@@ -65,6 +69,7 @@ class DBBase:
 
         """
         self.db_uri = db_uri
+        self.log = logger
 
         sgbd = self.db_uri.split(":")[0]
 
@@ -294,9 +299,12 @@ class DBBase:
             c.name for c in tbl.c if c not in list(tbl.primary_key.columns) and c.name in insert_cols
         ]
 
-        # Ensure update_cols is not empty
+        # Warn when update_cols is not empty
         if not update_cols:
-            raise ValueError("No columns to update. Ensure the DataFrame includes non-primary-key columns.")
+            self.log.debug(
+                f"event=row_upserted schema={tbl.schema} table={tbl.name} "
+                f"warning='No data from the EFD to upsert'"
+            )
 
         # Convert the dataframe to a list of dicts
         records = df.to_dict("records")
@@ -308,18 +316,33 @@ class DBBase:
             # Insert Statement using dialect insert
             insert_stm = self.dialect.insert(tbl).values(chunk)
 
-            # Update Statement using in case of conflict makes an update.
-            upsert_stm = insert_stm.on_conflict_do_update(
-                index_elements=tbl.primary_key.columns,  # Use primary key for conflict detection
-                set_={k: getattr(insert_stm.excluded, k) for k in update_cols},
-            )
+            # Update statement
+            if update_cols:
+                upsert_stm = insert_stm.on_conflict_do_update(
+                    index_elements=tbl.primary_key.columns,
+                    set_={k: getattr(insert_stm.excluded, k) for k in update_cols},
+                )
+            else:
+                upsert_stm = insert_stm.on_conflict_do_nothing()
+
+            # Log each row being committed, only primary key values
+            pk_names = [col.name for col in tbl.primary_key.columns]
+            for record in chunk:
+                pk_values = {name: record[name] for name in pk_names}
+                self.log.info(
+                    f"event=row_upserted schema={tbl.schema} table={tbl.name} pk_values={pk_values}"
+                )
 
             # Execute the upsert statement
             engine = self.get_db_engine()
             with engine.connect() as con:
                 result = con.execute(upsert_stm)
                 con.commit()
-                affected_rows += result.rowcount
+                # account affected rows for two states on_conflict_do_nothing
+                # and on_conflict_do_update
+                affected_rows += (
+                    len(result.inserted_primary_key) if result.inserted_primary_key else result.rowcount
+                )
 
         return affected_rows
 
@@ -351,6 +374,12 @@ class DBBase:
 
             # Insert Statement using dialect insert
             insert_stm = self.dialect.insert(tbl).values(chunk)
+
+            # Log each row being committed, only primary key values
+            pk_names = [col.name for col in tbl.primary_key.columns]
+            for record in chunk:
+                pk_values = {name: record[name] for name in pk_names}
+                self.log.info(f"event=insert schema={tbl.schema} table={tbl.name} pk_values={pk_values}")
 
             engine = self.get_db_engine()
             with engine.connect() as con:

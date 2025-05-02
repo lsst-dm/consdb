@@ -19,9 +19,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import logging
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, TypedDict
 
+import numpy
 import pandas
 from lsst.consdb.transformed_efd.dao.base import DBBase
 from sqlalchemy import desc
@@ -48,18 +50,22 @@ class Task(TypedDict):
 class TransformdDao(DBBase):
     """DAO for transformed_efd_scheduler table operations."""
 
-    def __init__(self, db_uri: str, schema: str):
+    def __init__(self, db_uri: str, instrument: str, schema: str, logger: logging.Logger = None) -> None:
         """Initialize DAO.
 
         Parameters
         ----------
         db_uri : str
             Database connection URI
+        instrument : str
+            Instrument name
         schema : str
             Database schema name
+        logger : logging.Logger, optional
+            Logger instance for logging (default: None)
         """
-        super().__init__(db_uri, schema)
-        self.tbl = self.get_table("transformed_efd_scheduler", schema=schema)
+        super().__init__(db_uri, schema, logger)
+        self.tbl = self.get_table(instrument, schema=schema)
 
     def _update_task_status(self, id: int, status: str, **kwargs) -> None:
         """Update task status and fields.
@@ -76,7 +82,8 @@ class TransformdDao(DBBase):
         try:
             self.update(id, {"status": status, **kwargs})
         except Exception as e:
-            raise Exception(f"Error updating task: {e}")
+            self.log.error(f"Task update failed: id={id} status={status} error={e}", exc_info=True)
+            raise Exception(f"Error updating task: error={e}") from e
 
     @staticmethod
     def _ensure_utc_naive(dt: Optional[datetime]) -> Optional[datetime]:
@@ -120,8 +127,8 @@ class TransformdDao(DBBase):
         """
         return self.execute_count(self.tbl)
 
-    def bulk_insert(self, df: pandas.DataFrame, commit_every: int = 100) -> int:
-        """Bulk insert DataFrame.
+    def bulk_insert(self, df: pandas.DataFrame, commit_every: int = 100) -> List[Dict]:
+        """Bulk insert DataFrame and return the inserted task records.
 
         Parameters
         ----------
@@ -132,10 +139,35 @@ class TransformdDao(DBBase):
 
         Returns
         -------
-        int
-            Number of rows inserted
+        List[Dict]
+            A list of dicts representing the inserted tasks.
         """
-        return self.execute_bulk_insert(tbl=self.tbl, df=df, commit_every=commit_every)
+        df = df.replace(numpy.nan, None)
+        records = df.to_dict("records")
+
+        inserted_tasks = []
+        engine = self.get_db_engine()
+
+        for i in range(0, len(records), commit_every):
+            chunk = records[i : i + commit_every]
+            insert_stm = self.dialect.insert(self.tbl).values(chunk).returning(self.tbl)
+
+            with engine.connect() as con:
+                result = con.execute(insert_stm)
+                rows = result.fetchall()  # ✅ Must be BEFORE commit
+                con.commit()
+
+            pk_names = [col.name for col in self.tbl.primary_key.columns]
+
+            for row in rows:
+                task_dict = dict(row._mapping)
+                inserted_tasks.append(task_dict)
+                pk_values = {k: task_dict[k] for k in pk_names}
+                self.log.info(
+                    f"event=row_inserted schema={self.tbl.schema} table={self.tbl.name} pk_values={pk_values}"
+                )
+
+        return inserted_tasks
 
     def insert(self, data: Dict) -> Task:
         """Insert new task.
