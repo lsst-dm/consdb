@@ -133,28 +133,25 @@ class Summary:
             residuals = y - np.polyval(coeffs, x)
             return np.sqrt(np.mean(residuals**2))
         except Exception as e:
-            raise ValueError(f"RMS calculation failed: {e}")
+            raise ValueError(f"RMS calculation failed: error={e}")
 
     def most_recent_value_in_last_minute(self) -> Optional[Union[float, int, bool]]:
-        """Find most recent value within the last minute of the exposure_end.
-
-        Returns
-        -------
-            Optional[Union[float, int, bool]]: The most recent value in the
-                last minute or None if not found.
-
-        """
+        """Return the most‐recent scalar in the last minute, or None."""
         try:
-            # Convert exposure_end (astropy Time) to pandas Timestamp
             end_time = pd.Timestamp(self.exposure_end.iso)
-            last_minute = end_time - pd.Timedelta(minutes=1)
+            if end_time.tzinfo is None:
+                end_time = end_time.tz_localize("UTC")
+            start_time = end_time - pd.Timedelta(minutes=1)
 
-            # Filter timestamps and find the most recent value
-            mask = (self.timestamps >= last_minute) & (self.timestamps <= end_time)
-            recent_values = self.data_array[mask]
-            return recent_values[-1] if len(recent_values) > 0 else None
+            ts_last = self.timestamps[-1]
+            if start_time <= ts_last <= end_time:
+                # single‐column or first‐column value
+                val = self.data_array[-1] if self.data_array.ndim == 1 else self.data_array[-1, 0]
+                return val.item() if isinstance(val, np.generic) else val
+
+            return None
         except Exception as e:
-            raise ValueError(f"Error finding recent value: {e}")
+            raise ValueError(f"Error finding recent value: error={e}")
 
     def apply(self, method_name: str, **kwargs) -> Optional[float]:
         """Apply a transformation method specified by method_name.
@@ -178,8 +175,8 @@ class Summary:
             try:
                 return method(**kwargs)
             except Exception as e:
-                raise ValueError(f"Error in method '{method_name}': {e}")
-        raise AttributeError(f"Method '{method_name}' not found.")
+                raise ValueError(f"Error in method: method={method_name} error={e}")
+        raise AttributeError(f"Method not found: method={method_name}")
 
     def __repr__(self):
         """Provide a string representation of the Summary object.
