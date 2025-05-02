@@ -25,6 +25,7 @@ These classes support operations such as querying time-series data, retrieving
 field keys, and unpacking packed dataframes.
 """
 
+import logging
 import os
 from functools import partial
 from urllib.parse import urljoin
@@ -60,6 +61,7 @@ class InfluxDBClient:
         database_name: str,
         username: str | None = None,
         password: str | None = None,
+        logger: logging.Logger = None,
     ) -> None:
         """Initialize the InfluxDBClient class.
 
@@ -73,11 +75,14 @@ class InfluxDBClient:
             The username to authenticate with.
         password : str, optional
             The password to authenticate with.
+        logger : logging.Logger, optional
+            A logger instance for logging messages.
 
         """
         self.url = url
         self.database_name = database_name
         self.auth = (username, password) if username and password else None
+        self.log = logger
 
     def query(self, query: str) -> dict:
         """Send a query to the InfluxDB API and retrieve the result.
@@ -104,7 +109,8 @@ class InfluxDBClient:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as exc:
-            raise Exception(f"An error occurred: {exc}") from exc
+            self.log.error(f"Request failed: url={self.url}/query params={params} error={exc}", exc_info=True)
+            raise Exception(f"An error occurred: error={exc}") from exc
 
     def get_fields(self, topic_name):
         """Retrieves field keys for a topic from the InfluxDB database.
@@ -133,7 +139,7 @@ class InfluxDBClient:
                                     field_keys.append(value[0])
             return field_keys
         except Exception as e:
-            print(f"Error occurred while fetching fields for topic {topic_name}: {e}")
+            self.log.error(f"Error fetching topic fields: topic={topic_name} error={e}")
             return None
 
     def _make_fields(self, fields, base_fields):
@@ -356,7 +362,7 @@ class InfluxDBClient:
             # vals.update({"times": df["times"]})
             return pd.DataFrame(vals, index=df.index)
         except Exception as e:
-            print(f"Error occurred while merging field {f}: {e}")
+            self.log.error(f"Error merging field: field={f} error={e}")
             raise
 
     def _convert_index_format(self, x):

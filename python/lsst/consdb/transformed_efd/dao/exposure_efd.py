@@ -21,6 +21,8 @@
 
 """Provides the `ExposureEfdDao` class."""
 
+import logging
+
 import pandas
 from lsst.consdb.transformed_efd.dao.base import DBBase
 from sqlalchemy.sql import and_, select
@@ -39,16 +41,17 @@ class ExposureEfdDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str, schema: str):
+    def __init__(self, db_uri: str, schema: str, logger: logging.Logger = None):
         """Initialize the `ExposureEfdDao` class.
 
         Args:
         ----
             db_uri (str): The URI of the database.
             schema (str): The schema name in the database.
+            logger (logging.Logger, optional): Logger instance for logging.
 
         """
-        super(ExposureEfdDao, self).__init__(db_uri, schema)
+        super(ExposureEfdDao, self).__init__(db_uri, schema, logger)
 
         self.tbl = self.get_table("exposure_efd", schema=schema)
 
@@ -111,16 +114,17 @@ class ExposureEfdUnpivotedDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str, schema: str):
+    def __init__(self, db_uri: str, schema: str, logger: logging.Logger = None):
         """Initialize the `ExposureEfdUnpivotedDao` class.
 
         Args:
         ----
             db_uri (str): The URI of the database.
             schema (str): The schema name in the database.
+            logger (logging.Logger, optional): Logger instance for logging.
 
         """
-        super(ExposureEfdUnpivotedDao, self).__init__(db_uri, schema)
+        super(ExposureEfdUnpivotedDao, self).__init__(db_uri, schema, logger)
 
         self.tbl = self.get_table("exposure_efd_unpivoted", schema=schema)
 
