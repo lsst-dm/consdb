@@ -28,8 +28,10 @@ and transforming data.
 import argparse
 import asyncio
 import logging
+import os
 import signal
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -49,42 +51,36 @@ def parse_utc_naive(isostr: str) -> datetime:
     return dt.astimezone(timezone.utc).replace(tzinfo=None) if dt.tzinfo else dt
 
 
-def get_logger(path: str | Path | None = None, debug: bool = True) -> logging.Logger:
-    """Configure logger with optional file output.
+def get_logger(path: str | Path | None = None) -> logging.Logger:
 
-    Parameters
-    ----------
-    path : str | Path, optional
-        Path to log file. If None, logs to stdout only.
-    debug : bool
-        If True, sets log level to DEBUG.
-
-    Returns
-    -------
-    logging.Logger
-        Configured logger instance.
-    """
-    log = logging.getLogger("transform")
+    log = logging.getLogger("transformed_efd")
     log.handlers.clear()
-    log.setLevel(logging.DEBUG if debug else logging.INFO)
 
-    # Always configure console output
-    console_fmt = logging.Formatter("[%(levelname)s] %(message)s")
+    # Get log level from environment variable, default to "INFO"
+    env_level = os.getenv("LOG_LEVEL", "INFO").upper()
+    level = getattr(logging, env_level, logging.INFO)  # Default to INFO if invalid level
+    log.setLevel(level)
+
+    # Console formatter with UTC time
+    console_fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%dT%H:%M:%SZ")
+    console_fmt.converter = time.gmtime
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(console_fmt)
     log.addHandler(console_handler)
 
-    # Conditionally add file output
     if path:
         try:
             path = Path(path) if isinstance(path, str) else path
-            path.parent.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
-            file_fmt = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            file_fmt = logging.Formatter(
+                "%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%dT%H:%M:%SZ"
+            )
+            file_fmt.converter = time.gmtime
             file_handler = logging.FileHandler(path)
             file_handler.setFormatter(file_fmt)
             log.addHandler(file_handler)
         except (IOError, PermissionError, OSError) as e:
-            log.warning(f"Failed to initialize file logging: {str(e)}")
+            log.warning(f"Failed to initialize file logging: error={str(e)}")
 
     return log
 
@@ -217,8 +213,11 @@ async def _process_task(
     dict
         Processed counts: {'exposures': int, 'visits1': int}
     """
-    log.info("-" * 5)
-    log.info(f"Task {task['id']} | Start: {task['start_time']} | End: {task['end_time']}")
+    log.info("-" * 51)
+    log.info(
+        f"Processing Task: id={task['id']} start_time={task['start_time']} end_time={task['end_time']} "
+        f"timewindow={task['timewindow']}"
+    )
 
     qm.dao.task_started(task["id"])
     try:
@@ -233,7 +232,7 @@ async def _process_task(
             qm.dao.task_retries_increment(task["id"])
         return counts
     except Exception as e:
-        log.error(f"Task {task['id']} failure: {str(e)}")
+        log.error(f"Task failure: id={task['id']} error={str(e)}")
         qm.dao.task_failed(task["id"], error=str(e))
         return {"exposures": 0, "visits1": 0}
 
@@ -261,11 +260,13 @@ async def handle_job(
     list[dict]
         Tasks to process (queued + failed)
     """
+    log.info("-" * 51)
     if args.resume:
-        log.debug("Resuming idle tasks")
+        log.info("Resuming idle tasks")
         tasks = qm.waiting_tasks(args.repo, "idle")
     else:
-        log.debug(f"Creating new tasks {start_time}-{end_time}")
+        log.debug(f"Creating new tasks: start_time={start_time} end_time={end_time}")
+        log.info("Creating new tasks...")
         qm.create_tasks(
             start_time=start_time,
             end_time=end_time,
@@ -296,12 +297,13 @@ async def handle_cronjob(qm: QueueManager, log: logging.Logger, args: argparse.N
     list[dict]
         Tasks ready for processing
     """
+    log.info("-" * 51)
     log.debug("Checking for pending tasks")
     tasks = qm.recent_tasks_to_run(margin_seconds=-60)
     waiting_tasks = qm.waiting_tasks(args.repo, "pending")
 
     if not tasks and not waiting_tasks:
-        log.debug("Creating new periodic tasks")
+        log.info("Creating new periodic tasks...")
         qm.create_tasks(
             start_time=None,
             end_time=None,
@@ -353,7 +355,7 @@ async def process_tasks(
 
         batch = tasks[i : i + batch_size]
         log.debug("")  # Empty line as separator
-        log.debug(f"Processing batch {i//batch_size + 1}/{(len(tasks)-1)//batch_size + 1}")
+        log.debug(f"Processing batch: {i//batch_size + 1}/{(len(tasks)-1)//batch_size + 1}")
 
         for task in batch:
             await asyncio.sleep(0)  # Yield control to event loop
@@ -370,11 +372,8 @@ async def process_tasks(
         if shutdown_event.is_set():
             break  # Exit batch loop
 
-    log.info("=" * 50)
-    log.info(f"SUMMARY: Processed {totals['tasks']} tasks")
-    log.info(f"Total exposures: {totals['exposures']}")
-    log.info(f"Total visits: {totals['visits1']}")
-    log.info("=" * 50)
+    log.info("-" * 51)
+    log.info(f"Summary: tasks={totals['tasks']} exposures={totals['exposures']} visits={totals['visits1']}")
 
 
 async def main() -> None:
@@ -411,7 +410,7 @@ async def main() -> None:
 
         # Task queue management system
         qm = QueueManager(
-            db_uri=args.db_conn_str, schema=tm.get_schema_by_instrument(args.instrument), logger=log
+            db_uri=args.db_conn_str, instrument=args.instrument, schema="efd_scheduler", logger=log
         )
 
         log.info("All components initialized successfully")
@@ -419,7 +418,7 @@ async def main() -> None:
         # Cleanup orphaned tasks
         fixed = qm.dao.fail_orphaned_tasks()
         if fixed:
-            log.warning(f"Marked {fixed} orphaned task(s) as failed")
+            log.debug(f"Marked {fixed} orphaned task(s) as failed")
 
         # Handle time parameters
         time_params = {}
@@ -449,13 +448,13 @@ async def main() -> None:
     except asyncio.CancelledError:
         log.warning("Shutdown completed")
     except ValueError as e:
-        log.error(f"Configuration error: {e}")
+        log.error(f"Configuration error: error={e}")
         exit_code = 1
     except Exception as e:
-        log.error(f"Processing failed: {e}", exc_info=True)
+        log.error(f"Processing failed: error={e}", exc_info=True)
         exit_code = 1
     finally:
-        log.info(f"Total runtime: {datetime.now(timezone.utc).replace(tzinfo=None) - exec_start}")
+        log.info(f"Runtime: {datetime.now(timezone.utc).replace(tzinfo=None) - exec_start}")
         sys.exit(exit_code)
 
 

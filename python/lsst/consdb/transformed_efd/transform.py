@@ -56,7 +56,6 @@ class Transform:
         self.efd = efd
         self.config = config
         self.commit_every = commit_every
-        self.log.info("----------- Transform -----------")
 
     def get_schema_by_instrument(self, instrument: str) -> str:
         """Get the schema name for the given instrument."""
@@ -64,6 +63,7 @@ class Transform:
             "latiss": "efd_latiss",
             "lsstcomcam": "efd_lsstcomcam",
             "lsstcomcamsim": "efd_lsstcomcamsim",
+            "lsstcam": "efd_lsstcam",
         }
         return schemas[instrument.lower()]
 
@@ -73,6 +73,7 @@ class Transform:
             "latiss": "LATISS",
             "lsstcomcam": "LSSTComCam",
             "lsstcomcamsim": "LSSTComCamSim",
+            "lsstcam": "LSSTCam",
         }
         return instruments[instrument.lower()]
 
@@ -84,12 +85,12 @@ class Transform:
     ) -> Dict[str, int]:
         """Process the given time interval for a specific instrument."""
         count = self._initialize_counts()
-        self.log.info(f"Processing interval {start_time} - {end_time}")
+        self.log.debug(f"Interval + Time Window: start_time={start_time} end_time={end_time}")
 
         exposures, visits = self._retrieve_exposures_and_visits(instrument, start_time, end_time)
 
         if not exposures and not visits:
-            self.log.info("No exposures or visits found for the period.")
+            self.log.debug("No exposures or visits found for the period.")
             return count
 
         results = self._process_interval(exposures, visits, start_time, end_time)
@@ -159,7 +160,7 @@ class Transform:
         }
 
         topic_interval = self._get_topic_interval(start_time, end_time, exposures, visits)
-        self.log.info(f"Topic interval: {topic_interval[0]} - {topic_interval[1]}")
+        self.log.debug(f"Topic Interval: start={topic_interval[0]} end={topic_interval[1]}")
         topics_map = self._map_topics()
 
         for topic_name, topic in topics_map.items():
@@ -176,11 +177,12 @@ class Transform:
         results: Dict[str, Any],
     ) -> None:
         """Process a single topic and update results."""
-        self.log.info(f"Querying Topic {topic['name']}")
+        self.log.debug(f"Querying Topic: name={topic['name']}")
         topic_series = self._query_efd_values(topic, topic_interval, topic["is_packed"])
 
         if topic_series.empty:
-            self.log.warning(f"No data in topic {topic['name']}")
+            if self.log.isEnabledFor(logging.DEBUG):
+                self.log.warning(f"No data in topic: name={topic['name']}")
             return
 
         for column in topic["columns"]:
@@ -196,7 +198,7 @@ class Transform:
         results: Dict[str, Any],
     ) -> None:
         """Process a single column and update results."""
-        self.log.info(f"Processing Column {column['name']}")
+        self.log.debug(f"Processing Column: name={column['name']}")
         data = self._prepare_column_data(column, topic, topic_series)
 
         if "exposure_efd" in column["tables"]:
@@ -343,8 +345,9 @@ class Transform:
                             }
                         ]
                     else:
-                        self.log.warning(
-                            f"No valid fields found in filtered DataFrame " f"in Topic {topic['name']}"
+
+                        self.log.debug(
+                            f"No valid fields found in filtered DataFrame in Topic: " f"name={topic['name']}"
                         )
                         data = [
                             {
@@ -384,9 +387,10 @@ class Transform:
         """Retrieve exposures and visits from Butler"""
         instrument_name = self.get_instrument(instrument)
         exposures = self.butler_dao.exposures_by_period(instrument_name, start_time, end_time)
-        self.log.info(f"Exposures: {len(exposures)}")
+        self.log.debug(f"Exposures fetched from Butler: count={len(exposures)}")
         visits = self.butler_dao.visits_by_period(instrument_name, start_time, end_time)
-        self.log.info(f"Visits: {len(visits)}")
+        self.log.debug(f"Visits fetched from Butler: count={len(visits)}")
+
         return exposures, visits
 
     def _store_results(
@@ -409,42 +413,44 @@ class Transform:
             exposures_list = list(results["exposures"].values())
             df_exposures = pandas.DataFrame(exposures_list)
             if not df_exposures.empty:
-                exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=schema)
+                exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=schema, logger=self.log)
                 affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
                 count["exposures"] = affected_rows
-                self.log.info(f"Stored {affected_rows} exposure records")
+                self.log.debug(f"Stored exposure records: affected_rows={affected_rows}")
 
         # Store visits
         if results["visits"]:
             visits_list = list(results["visits"].values())
             df_visits = pandas.DataFrame(visits_list)
             if not df_visits.empty:
-                vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=schema)
+                vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=schema, logger=self.log)
                 affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
                 count["visits1"] = affected_rows
-                self.log.info(f"Stored {affected_rows} visit records")
+                self.log.debug(f"Stored visit records: affected_rows={affected_rows}")
 
         # Store unpivoted exposures
         if results["exposures_unpivoted"]:
             df_exposures_unpivoted = pandas.DataFrame(results["exposures_unpivoted"])
             if not df_exposures_unpivoted.empty:
-                exp_unpivoted_dao = ExposureEfdUnpivotedDao(db_uri=self.db_uri, schema=schema)
+                exp_unpivoted_dao = ExposureEfdUnpivotedDao(
+                    db_uri=self.db_uri, schema=schema, logger=self.log
+                )
                 affected_rows = exp_unpivoted_dao.upsert(
                     df=df_exposures_unpivoted, commit_every=self.commit_every
                 )
                 count["exposures_unpivoted"] = affected_rows
-                self.log.info(f"Stored {affected_rows} unpivoted exposure records")
+                self.log.debug(f"Stored unpivoted exposure records: affected_rows={affected_rows}")
 
         # Store unpivoted visits
         if results["visits_unpivoted"]:
             df_visits_unpivoted = pandas.DataFrame(results["visits_unpivoted"])
             if not df_visits_unpivoted.empty:
-                vis_unpivoted_dao = VisitEfdUnpivotedDao(db_uri=self.db_uri, schema=schema)
+                vis_unpivoted_dao = VisitEfdUnpivotedDao(db_uri=self.db_uri, schema=schema, logger=self.log)
                 affected_rows = vis_unpivoted_dao.upsert(
                     df=df_visits_unpivoted, commit_every=self.commit_every
                 )
                 count["visits1_unpivoted"] = affected_rows
-                self.log.info(f"Stored {affected_rows} unpivoted visit records")
+                self.log.debug(f"Stored unpivoted visit records: affected_rows={affected_rows}")
 
         return count
 
@@ -483,9 +489,27 @@ class Transform:
                 if not series.empty:
                     all_series.append(series)
             except Exception as e:
-                self.log.warning(f"An unexpected error occurred: {e}")
+                self.log.error(f"Unexpected error: error={e}")
 
         return pandas.concat(all_series, axis=1) if all_series else pandas.DataFrame()
+
+    def _update_bounds(
+        self,
+        timespans: List[dict],
+        start_time: astropy.time.Time,
+        end_time: astropy.time.Time,
+        min_time: astropy.time.Time,
+        max_time: astropy.time.Time,
+    ) -> tuple[astropy.time.Time, astropy.time.Time]:
+        """Update time bounds based on items within the given interval."""
+
+        for item in timespans:
+            ts = item["timespan"]
+            if ts.begin.utc >= start_time and ts.end.utc <= end_time:
+                min_time = min(ts.begin.utc, min_time)
+                max_time = max(ts.end.utc, max_time)
+
+        return min_time, max_time
 
     def _get_topic_interval(
         self,
@@ -494,15 +518,17 @@ class Transform:
         exposures: List[dict],
         visits: List[dict],
     ) -> List[astropy.time.Time]:
-        """Get the topic interval based on the given start and end times."""
-        min_topic_time = start_time
-        max_topic_time = end_time
-        for exposure in exposures:
-            if exposure["timespan"].end < end_time:
-                min_topic_time = min(exposure["timespan"].begin, min_topic_time)
-                max_topic_time = max(exposure["timespan"].begin, max_topic_time)
-        for visit in visits:
-            if visit["timespan"].end < end_time:
-                min_topic_time = min(visit["timespan"].begin, min_topic_time)
-                max_topic_time = max(visit["timespan"].begin, max_topic_time)
+        """Get the time bounds within the given interval."""
+
+        min_topic_time = end_time
+        max_topic_time = start_time
+
+        min_topic_time, max_topic_time = self._update_bounds(
+            exposures, start_time, end_time, min_topic_time, max_topic_time
+        )
+
+        min_topic_time, max_topic_time = self._update_bounds(
+            visits, start_time, end_time, min_topic_time, max_topic_time
+        )
+
         return [min_topic_time, max_topic_time]
