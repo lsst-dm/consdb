@@ -30,6 +30,7 @@ import math
 from datetime import timezone
 from typing import List, Optional
 
+import pandas
 from astropy.time import Time, TimeDelta
 from lsst.consdb.transformed_efd.dao.transformd import TransformdDao
 
@@ -48,6 +49,7 @@ class QueueManager:
     def __init__(
         self,
         db_uri: str,
+        instrument: str,
         schema: str,
         logger: logging.Logger,
     ):
@@ -56,11 +58,13 @@ class QueueManager:
         Args:
         ----
             db_uri (str): The URI of the database.
+            instrument (str): The name of the instrument.
             schema (str): The schema name in the database.
             logger (Logger): Logger instance for logging queue operations.
 
         """
-        self.dao = TransformdDao(db_uri, schema=schema)
+        self.dao = TransformdDao(db_uri, instrument=instrument, schema=schema, logger=logger)
+        self.instrument = instrument
         self.db_uri = db_uri
         self.log = logger
 
@@ -151,18 +155,16 @@ class QueueManager:
                 rows.append(task)
 
         # Insert tasks into the database
-        self.log.debug("Inserting tasks into the database")
-        affected_rows = 0
         tasks = []
-        for row in rows:
+        if rows:
             try:
-                task = self.dao.insert(row)
-                tasks.append(task)
-                affected_rows += 1
+                df = pandas.DataFrame(rows)
+                tasks = self.dao.bulk_insert(df)
             except Exception as e:
-                self.log.error(f"Failed to insert task {row}: {e}")
+                self.log.error(f"Failed to insert tasks: error={e}")
+                return []
 
-        self.log.info(f"Created {affected_rows} new tasks.")
+        self.log.debug(f"Created {len(tasks)} new tasks.")
         return tasks
 
     def create_time_intervals(
