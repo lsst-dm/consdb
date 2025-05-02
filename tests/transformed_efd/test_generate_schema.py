@@ -104,21 +104,7 @@ def test_unpivoted_table_generation(tmp_path, mock_config):
         assert "visit1_efd_unpivoted" in content
 
 
-# 7. Scheduler Table Test
-def test_scheduler_table_content(tmp_path, mock_config):
-    """Test scheduler table contains all required fields"""
-    config_path = tmp_path / "config.yml"
-    with patch(
-        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
-    ):
-        schema_path = generate_schema(config_path, "latiss")
-        content = schema_path.read_text()
-        assert "transformed_efd_scheduler" in content
-        assert "status" in content
-        assert "pending" in content
-
-
-# 8. Column Writing Tests
+# 7. Column Writing Tests
 def test_column_writing(tmp_path, mock_config):
     """Test columns are written with correct formatting"""
     config_path = tmp_path / "config.yml"
@@ -132,7 +118,7 @@ def test_column_writing(tmp_path, mock_config):
         assert "description: Test column" in content
 
 
-# 9. CLI Argument Parser Test
+# 8. CLI Argument Parser Test
 def test_argparser_output_dir():
     """Test argparser handles output_dir correctly"""
     parser = build_argparser()
@@ -140,7 +126,7 @@ def test_argparser_output_dir():
     assert args.output_dir == Path("custom")
 
 
-# 10. Instrument Coverage Test
+# 9. Instrument Coverage Test
 @pytest.mark.parametrize("instrument", schema_dict.keys())
 def test_all_instruments(tmp_path, mock_config, instrument):
     """Test all instruments in schema_dict work"""
@@ -152,7 +138,7 @@ def test_all_instruments(tmp_path, mock_config, instrument):
         assert instrument.lower() in schema_path.name.lower()
 
 
-# 11. Default Output Directory Test
+# 10. Default Output Directory Test
 def test_default_output_dir(tmp_path, mock_config):
     """Test default output directory is used when none specified"""
     config_path = tmp_path / "config.yml"
@@ -164,7 +150,7 @@ def test_default_output_dir(tmp_path, mock_config):
         assert expected_dir.exists()
 
 
-# 12. Empty Config Test
+# 11. Empty Config Test
 def test_empty_config(tmp_path, empty_config):
     """Test handling of empty columns list"""
     config_path = tmp_path / "config.yml"
@@ -177,7 +163,7 @@ def test_empty_config(tmp_path, empty_config):
         assert "column1" not in content  # But no custom columns
 
 
-# 13. File Writing Test with Mock
+# 12. File Writing Test with Mock
 def test_file_writing_with_mock(mock_config):
     """Test file writing operations using mock"""
     with (

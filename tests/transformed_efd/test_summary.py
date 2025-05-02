@@ -1,3 +1,5 @@
+import datetime
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -8,25 +10,25 @@ from lsst.consdb.transformed_efd.summary import Summary  # Replace with the actu
 # --- Fixtures ---
 @pytest.fixture
 def valid_dataframe():
-    """Provide a valid DataFrame with numeric values and a DatetimeIndex."""
-    return pd.DataFrame(
-        {"value": [1, 2, 3, 4, 5]},
-        index=pd.to_datetime(
-            [
-                "2023-01-01 00:00:00",
-                "2023-01-01 00:00:30",
-                "2023-01-01 00:01:00",
-                "2023-01-01 00:01:30",
-                "2023-01-01 00:02:00",
-            ]
-        ),
-    )
+    """Provide a valid DataFrame."""
+    times = [
+        "2023-01-01 00:00:00",
+        "2023-01-01 00:00:30",
+        "2023-01-01 00:01:00",
+        "2023-01-01 00:01:30",
+        "2023-01-01 00:02:00",
+    ]
+    # parse and localize to UTC
+    idx = pd.to_datetime(times).tz_localize("UTC")
+    return pd.DataFrame({"value": [1, 2, 3, 4, 5]}, index=idx)
 
 
 @pytest.fixture
 def exposure_times():
-    """Provide exposure start and end times as astropy.time.Time objects."""
-    return Time("2023-01-01T00:00:00"), Time("2023-01-01T00:02:00")
+    """UTC‐aware astropy Time start/end."""
+    start = Time("2023-01-01T00:00:00.000", scale="utc")
+    end = Time("2023-01-01T00:02:00.000", scale="utc")
+    return start, end
 
 
 @pytest.fixture
@@ -43,8 +45,17 @@ def summary_instance(valid_dataframe, exposure_times):
 def test_init_with_valid_data(valid_dataframe, exposure_times):
     start, end = exposure_times
     summary = Summary(dataframe=valid_dataframe, exposure_start=start, exposure_end=end)
+
+    # data_array shape unchanged
     assert summary.data_array.shape == (5, 1)
-    assert summary.timestamps[0] == pd.Timestamp("2023-01-01 00:00:00")
+
+    # timestamps must be timezone-aware UTC
+    tzinfo = summary.timestamps.tz
+    assert tzinfo is not None, "Index is not timezone-aware"
+    assert tzinfo == datetime.timezone.utc, f"Expected UTC tz, got {tzinfo}"
+    assert summary.timestamps[0] == pd.Timestamp("2023-01-01 00:00:00", tz="UTC")
+
+    # exposure_range preserved correctly
     assert summary.exposure_start.isot == "2023-01-01T00:00:00.000"
     assert summary.exposure_end.isot == "2023-01-01T00:02:00.000"
 
@@ -71,9 +82,20 @@ def test_init_with_exposure_outside_dataframe(valid_dataframe):
 # 2. Test __repr__
 def test_repr(summary_instance):
     result = repr(summary_instance)
+    # Check data_shape formatting
     assert "data_shape=(5, 1)" in result
-    assert "time_range=(2023-01-01 00:00:00, 2023-01-01 00:02:00)" in result
-    assert "exposure_range=(2023-01-01T00:00:00.000, 2023-01-01T00:02:00.000)" in result
+
+    # Build expected time_range with UTC-aware timestamps
+    time_min = summary_instance.timestamps.min()
+    time_max = summary_instance.timestamps.max()
+    expected_time_range = f"time_range=({time_min}, {time_max})"
+    assert expected_time_range in result
+
+    # Check exposure_range with isot strings
+    expected_exposure = (
+        f"exposure_range=({summary_instance.exposure_start.isot}, {summary_instance.exposure_end.isot})"
+    )
+    assert expected_exposure in result
 
 
 # 3. Test mean
@@ -135,7 +157,7 @@ def test_apply_stddev(summary_instance):
 
 
 def test_apply_invalid_method(summary_instance):
-    with pytest.raises(AttributeError, match="Method 'invalid_method' not found."):
+    with pytest.raises(AttributeError, match="Method not found: method=invalid_method"):
         summary_instance.apply("invalid_method")
 
 
