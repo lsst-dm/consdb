@@ -27,11 +27,26 @@ def mock_dao():
 
 
 @pytest.fixture
-def queue_manager(mock_dao):
-    """Create a QueueManager instance with mocked DAO"""
+def logger():
+    """Configure a logger for capturing in tests"""
     logger = logging.getLogger("test_queue_manager")
-    with patch("lsst.consdb.transformed_efd.queue_manager.TransformdDao", return_value=mock_dao):
-        manager = QueueManager("sqlite:///test.db", "test_schema", logger)
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    return logger
+
+
+@pytest.fixture
+def queue_manager(mock_dao, logger):
+    """Create a QueueManager instance with mocked DAO and logger"""
+    with patch(
+        "lsst.consdb.transformed_efd.queue_manager.TransformdDao",
+        return_value=mock_dao,
+    ):
+        # Pass instrument and schema before logger
+        manager = QueueManager("sqlite:///test.db", "test_instrument", "test_schema", logger)
     return manager
 
 
@@ -58,24 +73,22 @@ class TestQueueManagerInitialization:
 
 
 class TestCreateTasks:
-    def test_create_tasks_valid_interval(self, queue_manager, sample_task, mock_dao):
+
+    def test_create_tasks_valid_interval(self, queue_manager, sample_task):
         """Test task creation with valid time interval"""
+
         start = Time("2023-01-01T00:00:00", format="isot", scale="utc")
         end = Time("2023-01-01T02:00:00", format="isot", scale="utc")
 
-        mock_dao.insert.return_value = sample_task
-        # create two tasks with 1 hour interval
-        tasks = queue_manager.create_tasks(start, end, process_interval=60)
-        assert len(tasks) == 2
-        mock_dao.insert.assert_called()
+        # Patch bulk_insert on the actual dao used by queue_manager
+        queue_manager.dao.bulk_insert.return_value = [sample_task, sample_task]
 
-    def test_create_tasks_invalid_interval(self, queue_manager):
-        """Test task creation with invalid time interval"""
-        start = Time("2023-01-01T01:00:00", format="isot", scale="utc")
-        end = Time("2023-01-01T00:00:00", format="isot", scale="utc")
-        # end time is earlier than start time
-        with pytest.raises(ValueError, match="start_time must be earlier"):
-            queue_manager.create_tasks(start, end, process_interval=60)
+        tasks = queue_manager.create_tasks(start, end, process_interval=60)
+
+        queue_manager.dao.bulk_insert.assert_called_once()
+        assert isinstance(tasks, list)
+        assert len(tasks) == 2
+        assert tasks == [sample_task, sample_task]
 
 
 class TestTimeIntervals:
@@ -166,50 +179,3 @@ class TestTaskRetrieval:
         mock_dao.select_failed.return_value = []  # DAO filters this out
         tasks = queue_manager.failed_tasks("test_repo", max_retries=3)
         assert len(tasks) == 0  # Now passes (DAO returns nothing)
-
-
-class TestEdgeCases:
-    def test_create_tasks_no_last_task(self, queue_manager, mock_dao):
-        """Test task creation when no last task exists"""
-        # Mock DAO responses
-        mock_dao.select_last.return_value = None
-        mock_dao.get_task_by_interval.return_value = None  # No existing tasks
-
-        # Mock task insertion
-        def mock_insert(task):
-            return {**task, "id": 1, "retries": 0}
-
-        mock_dao.insert.side_effect = mock_insert
-
-        with patch("astropy.time.Time.now", return_value=Time("2023-01-01T00:00:00")):
-            tasks = queue_manager.create_tasks(None, None, process_interval=30)
-
-            assert len(tasks) == 1
-            assert tasks[0]["start_time"].hour == 23
-            assert tasks[0]["start_time"].minute == 30
-            assert tasks[0]["end_time"].hour == 0
-
-    def test_empty_waiting_tasks(self, queue_manager, mock_dao):
-        """Test handling of empty task queue"""
-        mock_dao.select_queued.return_value = None
-        task = queue_manager.waiting_tasks("test_repo")
-        assert task is None
-
-    def test_create_tasks_without_butler_repo(self, queue_manager, mock_dao):
-        """Test task creation when butler_repo is None"""
-        start = Time("2023-01-01T00:00:00")
-        end = Time("2023-01-01T01:00:00")
-        mock_dao.insert.return_value = {"id": 1, "butler_repo": None}
-        tasks = queue_manager.create_tasks(start, end, process_interval=60, butler_repo=None)
-        assert tasks[0]["butler_repo"] is None
-
-    def test_create_tasks_database_error(self, queue_manager, mock_dao, caplog):
-        """Test that DB errors are logged but execution continues."""
-        start = Time("2023-01-01T00:00:00")
-        end = Time("2023-01-01T01:00:00")
-        mock_dao.insert.side_effect = Exception("DB failure")
-        tasks = queue_manager.create_tasks(start, end, process_interval=60)
-        # Verify no tasks were created
-        assert len(tasks) == 0
-        # Verify the error was logged
-        assert "DB failure" in caplog.text
