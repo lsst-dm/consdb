@@ -340,9 +340,8 @@ class DBBase:
                 con.commit()
                 # account affected rows for two states on_conflict_do_nothing
                 # and on_conflict_do_update
-                affected_rows += (
-                    len(result.inserted_primary_key) if result.inserted_primary_key else result.rowcount
-                )
+                affected_rows += result.rowcount
+                print(f"\nInserted PK: {result.inserted_primary_key}\nRowcount: {result.rowcount}\n")
 
         return affected_rows
 
