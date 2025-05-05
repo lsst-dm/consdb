@@ -32,9 +32,9 @@ import os
 import signal
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 import yaml
 from astropy.time import Time, TimeDelta
@@ -280,6 +280,66 @@ async def handle_job(
     return tasks + qm.failed_tasks(args.repo, max_retries=3)
 
 
+def _get_retryable_tasks(
+    qm: QueueManager,
+    repo: str,
+    base_hour: float = 2.82843,
+    max_retries: int = 3,
+    max_age_hours: float = 72.0,
+    log: logging.Logger = None,
+) -> List[Dict]:
+    """
+    Return failed tasks eligible for retry based on exponential backoff.
+
+    Parameters
+    ----------
+    qm : QueueManager
+        Queue management object.
+    repo : str
+        Repository identifier.
+    base_hour : float
+        Backoff base in hours. Default is 2.82843.
+    max_retries : int
+        Maximum retry attempts. Default is 3.
+    max_age_hours : float
+        Max age in hours before a task is considered stale. Default is 72.
+
+    Returns
+    -------
+    List[Dict]
+        Tasks where (now – created_at) exceeds base_hour**(retries+1)
+        but is less than max_age_hours.
+    """
+    tasks = qm.failed_tasks(repo, max_retries=max_retries)
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    max_age = timedelta(hours=max_age_hours)
+    selected: List[Dict] = []
+
+    for t in tasks:
+        retries = t["retries"]
+        created = t["created_at"]
+        if created.tzinfo:
+            created = created.astimezone(timezone.utc).replace(tzinfo=None)
+
+        since_created = now - created
+        next_wait = timedelta(hours=base_hour ** (retries + 1))
+        print(since_created)
+        if next_wait < since_created < max_age:
+            selected.append(t)
+            log.debug(
+                f"Task {t['id']} retryable: created_at={t['created_at']} elapsed={since_created}"
+                f" required_wait={next_wait}"
+            )
+        elif since_created >= max_age:
+            log.debug(
+                f"Task {t['id']} stale: created_at={t['created_at']} elapsed={since_created}"
+                f" required_wait={next_wait}"
+            )
+            qm._mark_task_stale(t["id"])
+
+    return selected
+
+
 async def handle_cronjob(qm: QueueManager, log: logging.Logger, args: argparse.Namespace) -> list[dict]:
     """Manage periodic cronjob tasks.
 
@@ -297,23 +357,36 @@ async def handle_cronjob(qm: QueueManager, log: logging.Logger, args: argparse.N
     list[dict]
         Tasks ready for processing
     """
-    log.info("-" * 51)
-    log.debug("Checking for pending tasks")
-    tasks = qm.recent_tasks_to_run(margin_seconds=-60)
-    waiting_tasks = qm.waiting_tasks(args.repo, "pending")
-
-    if not tasks and not waiting_tasks:
-        log.info("Creating new periodic tasks...")
-        qm.create_tasks(
-            start_time=None,
-            end_time=None,
-            process_interval=int(args.timedelta),
-            time_window=int(args.timewindow),
-            butler_repo=args.repo,
+    if args.resume:
+        log.info("-" * 51)
+        log.info("Checking for eligible failed tasks")
+        return _get_retryable_tasks(
+            qm,
+            args.repo,
+            base_hour=2.82843,
+            max_retries=3,
+            max_age_hours=72.0,
+            log=log,
         )
-        tasks = qm.recent_tasks_to_run(margin_seconds=-60)
 
-    return tasks
+    else:
+        log.info("-" * 51)
+        log.debug("Checking for pending tasks")
+        tasks = qm.recent_tasks_to_run(margin_seconds=-60)
+        waiting_tasks = qm.waiting_tasks(args.repo, "pending")
+
+        if not tasks and not waiting_tasks:
+            log.info("Creating new periodic tasks...")
+            qm.create_tasks(
+                start_time=None,
+                end_time=None,
+                process_interval=int(args.timedelta),
+                time_window=int(args.timewindow),
+                butler_repo=args.repo,
+            )
+            tasks = qm.recent_tasks_to_run(margin_seconds=-60)
+
+        return tasks
 
 
 async def process_tasks(
@@ -373,7 +446,10 @@ async def process_tasks(
             break  # Exit batch loop
 
     log.info("-" * 51)
-    log.info(f"Summary: tasks={totals['tasks']} exposures={totals['exposures']} visits={totals['visits1']}")
+    log.info(
+        f"Summary (inserted/updated): tasks={totals['tasks']} exposures={totals['exposures']}"
+        f" visits={totals['visits1']}"
+    )
 
 
 async def main() -> None:

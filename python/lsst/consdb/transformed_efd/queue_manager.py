@@ -358,3 +358,13 @@ class QueueManager:
             return True
 
         return False
+
+    def _mark_task_stale(self, task_id: int) -> None:
+        """Mark task as stale to prevent reselection.
+
+        Args:
+        ----
+            task_id (int): The ID of the task to mark as stale.
+        """
+
+        self.dao._update_task_status(task_id, "stale")
