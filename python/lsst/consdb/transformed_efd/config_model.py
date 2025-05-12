@@ -68,6 +68,22 @@ class Column(BaseModel):
         name (str): The name of the column.
         tables (Optional[List[str]]): A list of table names where the column
             exists.
+        store_unpivoted (Optional[bool]): Flag indicating whether to store
+            column in unpivoted format. Defaults to False.
+        function (str): The transformation function to apply to the column.
+        function_args (Optional[Dict]): A dictionary of arguments for the
+            transformation function.
+        datatype (str): The data type of the column. Must match the
+            Felis type.
+        unit (str): The unit of the column.
+        description (str): A description of the column.
+        packed_series (bool): Flag indicating whether the column will process
+            a packed series.
+        subset_field (Optional[str]): The field (InfluxDB column) used to
+            filter data during the transformation.
+        subset_value (Optional[Union[str, int]]): The value of the field used
+            to filter data during the transformation.
+        topics (List[Topic]): The EFD topic(s) used in the transformation.
 
     """
 
