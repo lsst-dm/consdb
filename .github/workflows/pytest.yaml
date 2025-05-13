@@ -17,8 +17,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Extract full branch name
+      run: |
+        echo "Extracting branch name..."
+        if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+          echo "BRANCH_NAME=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+        elif [[ "${GITHUB_REF}" == refs/heads/* ]]; then
+          echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+          echo "BRANCH_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        else
+          echo "Unable to determine branch name from GITHUB_REF=${GITHUB_REF}"
+          exit 1
+        fi
+        echo "Building for branch: $BRANCH_NAME"
+
     - name: Build docker image
-      run: docker build -f docker/Dockerfile.pytest -t pytest_image .
+      run: docker build --build-arg BRANCH_NAME=$BRANCH_NAME -f docker/Dockerfile.pytest -t pytest_image .
 
     - name: Create directory for coverage report
       run: mkdir -p ${{ github.workspace }}/pytest_reports

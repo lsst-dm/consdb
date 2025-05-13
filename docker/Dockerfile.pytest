@@ -12,6 +12,17 @@ RUN source loadLSST.bash && pip install kafkit aiokafka httpx pytest-asyncio pyt
 WORKDIR /home/lsst/
 
 COPY --chown=lsst .  ./consdb/
+
+ARG BRANCH_NAME
+ENV BRANCH_NAME=$BRANCH_NAME
+
+RUN git clone https://github.com/lsst/sdm_schemas && \
+    branch=$(git -C /home/lsst/consdb rev-parse --abbrev-ref HEAD) && \
+    cd sdm_schemas && \
+    git fetch origin && \
+    git ls-remote --exit-code --heads origin "$BRANCH_NAME" && git checkout "$BRANCH_NAME" || \
+        echo "No remote \"$BRANCH_NAME\" found. Using main branch."
+
 WORKDIR /home/lsst/consdb/
 RUN source /opt/lsst/software/stack/loadLSST.bash && pip install -e .
 
@@ -19,4 +30,4 @@ USER root
 RUN mkdir -p /home/lsst/consdb/pytest_reports && chown lsst:lsst /home/lsst/consdb/pytest_reports
 USER lsst
 
-ENTRYPOINT [ "/bin/bash", "-c", "source /opt/lsst/software/stack/loadLSST.bash; setup obs_lsst; setup felis; pytest --cov=./ --cov-report=html:/home/lsst/consdb/pytest_reports/htmlcov --html=pytest_reports/pytest_report.html --self-contained-html ."  ]
+ENTRYPOINT [ "/bin/bash", "-c", "source /opt/lsst/software/stack/loadLSST.bash; setup obs_lsst; setup felis; setup -kr /home/lsst/sdm_schemas/; pytest --cov=./ --cov-report=html:/home/lsst/consdb/pytest_reports/htmlcov --html=pytest_reports/pytest_report.html --self-contained-html ."  ]
