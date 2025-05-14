@@ -219,7 +219,7 @@ PRIMARY:
   value: BLOCK-271_1
   comment: Reason for observation
 - keyword: OBSANNOT
-  value: ''
+  value: 'here is a test OBSANNOT string'
   comment: Observing annotation
 - keyword: COMMENT
   value: ''
