@@ -39,3 +39,6 @@ htmlcov
 docker/pgadmin-data
 docker/pgadmin-cfg
 docker/pgdata
+
+# local testing
+local_testing/
