@@ -240,7 +240,7 @@ def write_column(f, column: dict, table: str):
     f.write(f'  - name: "{column_name}"\n')
     f.write(f'    "@id": "#{table}.{column_name}"\n')
     f.write(f'    datatype: {column["datatype"]}\n')
-    f.write(f"    nullable: true\n")
+    f.write("    nullable: true\n")
     f.write(f'    description: {column["description"]}\n')
 
 
