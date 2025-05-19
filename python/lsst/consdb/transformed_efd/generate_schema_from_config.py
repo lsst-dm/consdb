@@ -91,7 +91,7 @@ def write_exposure_tables(f, config):
   "@id": "#exposure_efd"
   description: Transformed EFD topics by exposure.
   primaryKey:
-    - "#exposure_efd.exposure_id"
+  - "#exposure_efd.exposure_id"
   columns:
   - name: exposure_id
     "@id": "#exposure_efd.exposure_id"
@@ -127,27 +127,27 @@ def write_exposure_tables(f, config):
   - name: exposure_id
     "@id": "#exposure_efd_unpivoted.exposure_id"
     datatype: long
-    nullable: False
-    autoincrement: False
+    nullable: false
+    autoincrement: false
     description: Unique identifier for the exposure
   - name: property
     "@id": "#exposure_efd_unpivoted.property"
     datatype: string
     length: 64
-    nullable: False
+    nullable: false
     value: default_property
     description: Property name for unpivoted data
   - name: field
     "@id": "#exposure_efd_unpivoted.field"
     datatype: string
     length: 32
-    nullable: False
+    nullable: false
     value: default_field
     description: Field name for unpivoted data
   - name: value
     "@id": "#exposure_efd_unpivoted.value"
     datatype: float
-    nullable: True
+    nullable: true
     description: Value corresponding to the parameter
   - name: created_at
     "@id": "#exposure_efd_unpivoted.created_at"
@@ -167,13 +167,13 @@ def write_visit_tables(f, config):
   "@id": "#visit1_efd"
   description: Transformed EFD topics by visit.
   primaryKey:
-    - "#visit1_efd.visit_id"
+  - "#visit1_efd.visit_id"
   columns:
   - name: visit_id
     "@id": "#visit1_efd.visit_id"
     datatype: long
-    nullable: False
-    autoincrement: False
+    nullable: false
+    autoincrement: false
     description: Visit unique ID.
   - name: created_at
     "@id": "#visit1_efd.created_at"
@@ -196,34 +196,34 @@ def write_visit_tables(f, config):
   "@id": "#visit1_efd_unpivoted"
   description: Unpivoted EFD visit data.
   primaryKey:
-    - "#visit1_efd_unpivoted.visit_id"
-    - "#visit1_efd_unpivoted.property"
-    - "#visit1_efd_unpivoted.field"
+  - "#visit1_efd_unpivoted.visit_id"
+  - "#visit1_efd_unpivoted.property"
+  - "#visit1_efd_unpivoted.field"
   columns:
   - name: visit_id
     "@id": "#visit1_efd_unpivoted.visit_id"
     datatype: long
-    nullable: False
-    autoincrement: False
+    nullable: false
+    autoincrement: false
     description: Unique identifier for the visit
   - name: property
     "@id": "#visit1_efd_unpivoted.property"
     datatype: string
     length: 64
-    nullable: False
+    nullable: false
     value: default_property
     description: Property name for unpivoted data
   - name: field
     "@id": "#visit1_efd_unpivoted.field"
     datatype: string
     length: 32
-    nullable: False
+    nullable: false
     value: default_field
     description: Field name for unpivoted data
   - name: value
     "@id": "#visit1_efd_unpivoted.value"
     datatype: float
-    nullable: True
+    nullable: true
     description: Value corresponding to the parameter
   - name: created_at
     "@id": "#visit1_efd_unpivoted.created_at"
@@ -240,7 +240,7 @@ def write_column(f, column: dict, table: str):
     f.write(f'  - name: "{column_name}"\n')
     f.write(f'    "@id": "#{table}.{column_name}"\n')
     f.write(f'    datatype: {column["datatype"]}\n')
-    f.write("    nullable: True\n")
+    f.write(f"    nullable: true\n")
     f.write(f'    description: {column["description"]}\n')
 
 
