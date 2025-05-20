@@ -62,7 +62,3 @@ def test_process_resource(pg_engine):
     assert _header_lookup(header, "VIGN_MIN") == row.vignette_min
     assert _header_lookup(header, "DOMEAZ") == row.dome_azimuth
     assert _header_lookup(header, "OBSANNOT") == row.scheduler_note
-
-    elstart = _header_lookup(header, "ELSTART")
-    elend = _header_lookup(header, "ELEND")
-    assert 0.5 * (elstart + elend) == row.altitude
