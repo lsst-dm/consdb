@@ -3,18 +3,20 @@ import os
 import random
 import re
 from dataclasses import dataclass
-from datetime import datetime
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Union
 
 import aiokafka  # type: ignore
 import astropy.time  # type: ignore
+import astropy.units as u  # type: ignore
 import httpx  # type: ignore
 import kafkit.registry
 import kafkit.registry.httpx  # type: ignore
 import lsst.geom  # type: ignore
 import lsst.obs.lsst  # type: ignore
+import numpy as np  # type: ignore
 import yaml
 from astro_metadata_translator import ObservationInfo
+from astropy.coordinates import AltAz, EarthLocation, SkyCoord  # type: ignore
 from lsst.obs.lsst.rawFormatter import LsstCamRawFormatter  # type: ignore
 from lsst.resources import ResourcePath
 from sqlalchemy import MetaData, Table
@@ -28,24 +30,6 @@ if TYPE_CHECKING:
 ###############################
 # Header Processing Functions #
 ###############################
-
-
-def ninety_minus(angle: float) -> float:
-    return 90.0 - angle
-
-
-def tai_convert(t: str) -> datetime:
-    return astropy.time.Time(t, format="isot", scale="tai").datetime
-
-
-def tai_mean(start: str, end: str) -> datetime:
-    s = astropy.time.Time(start, format="isot", scale="tai")
-    e = astropy.time.Time(end, format="isot", scale="tai")
-    return (s + (e - s) / 2).datetime
-
-
-def mean(*iterable: float) -> float:
-    return sum(iterable) / len(iterable)
 
 
 def logical_or(*bools: int | str | None) -> bool:
@@ -162,48 +146,16 @@ def fp_region(
 # Header Mapping Configurations #
 #################################
 
+ColumnMapping = Union[str, tuple[Callable[..., Any], *tuple[str, ...]]]
+
 # Non-instrument-specific mapping to column name from Header Service keyword
-KW_MAPPING: dict[str, str | Sequence] = {
-    "exposure_name": "OBSID",
+KW_MAPPING: dict[str, ColumnMapping] = {
     "controller": "CONTRLLR",
-    "seq_num": "SEQNUM",
     "band": "FILTBAND",
-    "s_ra": "RA",
-    "s_dec": "DEC",
-    "sky_rotation": "ROTPA",
-    "azimuth_start": "AZSTART",
-    "azimuth_end": "AZEND",
-    "azimuth": (mean, "AZSTART", "AZEND"),
-    "altitude_start": "ELSTART",
-    "altitude_end": "ELEND",
-    "altitude": (mean, "ELSTART", "ELEND"),
-    "zenith_distance_start": (ninety_minus, "ELSTART"),
-    "zenith_distance_end": (ninety_minus, "ELEND"),
-    "zenith_distance": (mean, (ninety_minus, "ELSTART"), (ninety_minus, "ELEND")),
-    "exp_midpt": (tai_mean, "DATE-BEG", "DATE-END"),
-    "exp_midpt_mjd": (mean, "MJD-BEG", "MJD-END"),
-    "obs_start": (tai_convert, "DATE-BEG"),
-    "obs_start_mjd": "MJD-BEG",
-    "obs_end": (tai_convert, "DATE-END"),
-    "obs_end_mjd": "MJD-END",
     "exp_time": "EXPTIME",
-    "shut_time": "SHUTTIME",
-    "dark_time": "DARKTIME",
-    "group_id": "GROUPID",
-    "cur_index": "CURINDEX",
-    "max_index": "MAXINDEX",
-    "img_type": "IMGTYPE",
-    "emulated": (logical_or, "EMUIMAGE"),
-    "science_program": "PROGRAM",
-    "observation_reason": "REASON",
-    "target_name": "OBJECT",
-    "air_temp": "AIRTEMP",
-    "pressure": "PRESSURE",
-    "humidity": "HUMIDITY",
     "wind_speed": "WINDSPD",
     "wind_dir": "WINDDIR",
     "dimm_seeing": "SEEING",
-    "focus_z": "FOCUSZ",
     "vignette": "VIGNETTE",
     "vignette_min": "VIGN_MIN",
     "scheduler_note": "OBSANNOT",
@@ -211,7 +163,7 @@ KW_MAPPING: dict[str, str | Sequence] = {
 }
 
 # Instrument-specific mapping to column name from Header Service keyword
-LATISS_MAPPING: dict[str, str | Sequence] = {
+LATISS_MAPPING: dict[str, ColumnMapping] = {
     "dome_azimuth": "DOMEAZ",
     "shut_lower": "SHUTLOWR",
     "shut_upper": "SHUTUPPR",
@@ -225,7 +177,7 @@ LATISS_MAPPING: dict[str, str | Sequence] = {
     ),
 }
 
-LSSTCOMCAMSIM_MAPPING: dict[str, str | Sequence] = {
+LSSTCOMCAMSIM_MAPPING: dict[str, ColumnMapping] = {
     "simulated": (
         logical_or,
         "SIMULATE MTMOUNT",
@@ -239,7 +191,7 @@ LSSTCOMCAMSIM_MAPPING: dict[str, str | Sequence] = {
     ),
 }
 
-LSSTCOMCAM_MAPPING: dict[str, str | Sequence] = {
+LSSTCOMCAM_MAPPING: dict[str, ColumnMapping] = {
     "simulated": (
         logical_or,
         "SIMULATE MTMOUNT",
@@ -253,7 +205,7 @@ LSSTCOMCAM_MAPPING: dict[str, str | Sequence] = {
     ),
 }
 
-LSSTCAM_MAPPING: dict[str, str | Sequence] = {
+LSSTCAM_MAPPING: dict[str, ColumnMapping] = {
     "simulated": (
         logical_or,
         "SIMULATE MTMOUNT",
@@ -267,23 +219,101 @@ LSSTCAM_MAPPING: dict[str, str | Sequence] = {
     ),
 }
 
-DETECTOR_MAPPING = {
+DETECTOR_MAPPING: dict[str, ColumnMapping] = {
     "ccdexposure_id": (ccdexposure_id, "translator", "exposure_id", "detector"),
     "exposure_id": "exposure_id",
     "detector": "detector",
     "s_region": (ccd_region, "camera", "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
 }
 
+
+def time_midpoint(t1: astropy.time.Time, t2: astropy.time.Time) -> astropy.time.Time:
+    return t1 + (t2 - t1) / 2
+
+
+cerro_pachon = EarthLocation(lat=-30.24074167 * u.deg, lon=-70.7366833 * u.deg, height=2750 * u.m)
+
+
+def altaz_midpoint(tracking_radec: SkyCoord, t1: astropy.time.Time, t2: astropy.time.Time) -> AltAz:
+    """Return the AltAz of *tracking_radec* at the midpoint of *t1* and *t2*.
+
+    Parameters
+    ----------
+    tracking_radec : `~astropy.coordinates.SkyCoord`
+        Target position in an ICRS-like frame (e.g., RA/Dec).
+    t1, t2 : `~astropy.time.Time`
+        Start and end times.
+
+    Returns
+    -------
+    `~astropy.coordinates.AltAz`
+        Altitude–azimuth coordinates at the midpoint, using the global
+        *cerro_pachon* (Cerro Pachón).
+    """
+    global cerro_pachon
+    altaz_frame = AltAz(obstime=time_midpoint(t1, t2), location=cerro_pachon)
+    return tracking_radec.transform_to(altaz_frame)
+
+
 # Mapping to column name from ObservationInfo keyword
-OI_MAPPING = {
+OI_MAPPING: dict[str, ColumnMapping] = {
+    "exposure_name": "observation_id",
     "exposure_id": "exposure_id",
-    "physical_filter": "physical_filter",
-    "airmass": "boresight_airmass",
     "day_obs": "observing_day",
+    "seq_num": "observation_counter",
+    "physical_filter": "physical_filter",
+    "s_ra": (lambda coord: coord.ra.deg, "tracking_radec"),
+    "s_dec": (lambda coord: coord.dec.deg, "tracking_radec"),
+    "sky_rotation": "boresight_rotation_angle",
+    "azimuth_start": (lambda altaz: altaz.az.deg, "altaz_begin"),
+    "azimuth_end": (lambda altaz: altaz.az.deg, "altaz_end"),
+    "azimuth": (
+        lambda coord, t1, t2: altaz_midpoint(coord, t1, t2).az.deg,
+        "tracking_radec",
+        "datetime_begin",
+        "datetime_end",
+    ),
+    "altitude_start": (lambda altaz: altaz.alt.deg, "altaz_begin"),
+    "altitude_end": (lambda altaz: altaz.az.deg, "altaz_end"),
+    "altitude": (
+        lambda coord, t1, t2: altaz_midpoint(coord, t1, t2).alt.deg,
+        "tracking_radec",
+        "datetime_begin",
+        "datetime_end",
+    ),
+    "zenith_distance_start": (lambda altaz: altaz.zen.deg, "altaz_begin"),
+    "zenith_distance_end": (lambda altaz: altaz.zen.deg, "altaz_end"),
+    "zenith_distance": (
+        lambda coord, t1, t2: altaz_midpoint(coord, t1, t2).zen.deg,
+        "tracking_radec",
+        "datetime_begin",
+        "datetime_end",
+    ),
+    "airmass": "boresight_airmass",
+    "exp_midpt": (lambda t1, t2: time_midpoint(t1, t2).tai.isot, "datetime_begin", "datetime_end"),
+    "exp_midpt_mjd": (lambda t1, t2: time_midpoint(t1, t2).tai.mjd, "datetime_begin", "datetime_end"),
+    "obs_start": (lambda t: t.tai.isot, "datetime_begin"),
+    "obs_start_mjd": (lambda t: t.tai.mjd, "datetime_begin"),
+    "obs_end": (lambda t: t.tai.isot, "datetime_end"),
+    "obs_end_mjd": (lambda t: t.tai.mjd, "datetime_end"),
+    "shut_time": "exposure_time",
+    "dark_time": "dark_time",
+    "group_id": "exposure_group",
+    "cur_index": (lambda seq_num, start: seq_num - start + 1, "observation_counter", "group_counter_start"),
+    "max_index": (lambda end, start: end - start + 1, "group_counter_end", "group_counter_start"),
+    "img_type": "observation_type",
+    "emulated": "has_simulated_content",
+    "science_program": "science_program",
+    "observation_reason": "observation_reason",
+    "target_name": "object",
+    "air_temp": "temperature",
+    "pressure": "pressure",
+    "humidity": "relative_humidity",
+    "focus_z": "focus_z",
 }
 
 # Mapping from instrument name to Header Service topic name
-TOPIC_MAPPING = {
+TOPIC_MAPPING: dict[str, ColumnMapping] = {
     "LATISS": "ATHeaderService",
     "LSSTComCam": "CCHeaderService",
     "LSSTCam": "MTHeaderService",
@@ -295,7 +325,7 @@ TOPIC_MAPPING = {
 ########################
 
 
-def process_column(column_def: str | Sequence, info: dict) -> Any:
+def process_column(column_def: ColumnMapping, info: dict) -> Any:
     """Generate a column value from one or more keyword values in a dict.
 
     The dict may contain FITS headers or ObservationInfo.
@@ -326,6 +356,38 @@ def process_column(column_def: str | Sequence, info: dict) -> Any:
             return fn(*arg_values)
 
 
+def process_oi_column(column_def: ColumnMapping, obs_info: ObservationInfo) -> Any:
+    """
+    Process a column definition from OI_MAPPING and return the processed value.
+
+    Parameters
+    ----------
+    column_def : str or Sequence
+        Either a string key to directly access a value in `info`, or a sequence
+        where the first element is a callable and the remaining elements are
+        keys in `info` whose values are passed to the callable.
+    obs_info : ObservationInfo
+        An ObservationInfo object containing exposure metadata
+
+    Returns
+    -------
+    Any
+        The resulting value after processing the column definition.
+    """
+    if isinstance(column_def, str):
+        if hasattr(obs_info, column_def):
+            val = getattr(obs_info, column_def)
+            if val is not None:
+                return val
+        logger.warning(f"Value missing in processing of OI: {column_def}")
+    elif isinstance(column_def, tuple):
+        fn = column_def[0]
+        arg_values = [process_oi_column(a, obs_info) for a in column_def[1:]]
+        if all(v is not None for v in arg_values):
+            return fn(*arg_values)
+        logger.warning(f"Missing values in processing of OI: {fn} {arg_values=}")
+
+
 def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool = False) -> None:
     """Process a header resource.
 
@@ -339,6 +401,8 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     """
     global KW_MAPPING, OI_MAPPING, logger
     global engine
+
+    assert engine is not None
 
     exposure_rec = dict()
 
@@ -360,12 +424,16 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     for column, column_def in instrument_obj.instrument_mapping.items():
         exposure_rec[column] = process_column(column_def, info)
 
-    obs_info_obj = ObservationInfo(info, translator_class=instrument_obj.translator)
-    obs_info = dict()
-    for keyword in OI_MAPPING.values():
-        obs_info[keyword] = getattr(obs_info_obj, keyword)
-    for field, keyword in OI_MAPPING.items():
-        exposure_rec[field] = process_column(keyword, obs_info)
+    obs_info = ObservationInfo(info, translator_class=instrument_obj.translator)
+    for column, column_def in OI_MAPPING.items():
+        try:
+            exposure_rec[column] = process_oi_column(column_def, obs_info)
+            if isinstance(exposure_rec[column], u.Quantity):
+                exposure_rec[column] = float(exposure_rec[column].value)
+            elif isinstance(exposure_rec[column], np.float64):
+                exposure_rec[column] = float(exposure_rec[column])
+        except Exception:
+            logger.exception(f"Unable to process column: {column}")
 
     stmt = insert(instrument_obj.exposure_table).values(exposure_rec)
     if update:
@@ -380,7 +448,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
         for detector in detectors:
             det_exposure_rec = dict()
             det_info = info.copy()
-            det_info["exposure_id"] = obs_info["exposure_id"]
+            det_info["exposure_id"] = obs_info.exposure_id
             ccdname = f"{detector[0:3]}_{detector[3:6]}"
             if ccdname == "R00_S00" and instrument_obj.instrument_name == "latiss":
                 ccdname = "RXX_S00"
@@ -642,7 +710,7 @@ async def main() -> None:
 
     while handler_task_set:
         logger.debug("Waiting for background tasks to finish...")
-        asyncio.sleep(5)
+        await asyncio.sleep(5)
 
 
 if __name__ == "__main__":
