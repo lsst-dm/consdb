@@ -1,0 +1,218 @@
+---
+name: efd_scheduler
+"@id": "#efd_scheduler"
+description: Transformed EFD scheduler for all instruments
+tables:
+
+- name: latiss
+  "@id": "#latiss"
+  description: Scheduler for latiss.
+  primaryKey:
+    - "#latiss.id"
+  columns:
+  - name: id
+    "@id": "#latiss.id"
+    datatype: int
+    nullable: False
+    autoincrement: True
+    description: Unique ID, auto-incremented
+  - name: start_time
+    "@id": "#latiss.start_time"
+    datatype: timestamp
+    description: Start time of transformation interval, must be provided
+  - name: end_time
+    "@id": "#latiss.end_time"
+    datatype: timestamp
+    description: End time of transformation interval, must be provided
+  - name: timewindow
+    "@id": "#latiss.timewindow"
+    datatype: int
+    description: Time window to expand start/end times by (minutes)
+  - name: status
+    "@id": "#latiss.status"
+    datatype: char
+    length: 20
+    value: "pending"
+    description: Process status, default 'pending'
+  - name: process_start_time
+    "@id": "#latiss.process_start_time"
+    datatype: timestamp
+    description: Timestamp when process started
+  - name: process_end_time
+    "@id": "#latiss.process_end_time"
+    datatype: timestamp
+    description: Timestamp when process ended
+  - name: process_exec_time
+    "@id": "#latiss.process_exec_time"
+    datatype: int
+    value: 0
+    description: Execution time in seconds, default 0
+  - name: exposures
+    "@id": "#latiss.exposures"
+    datatype: int
+    value: 0
+    description: Number of exposures processed, default 0
+  - name: visits1
+    "@id": "#latiss.visits1"
+    datatype: int
+    value: 0
+    description: Number of visits recorded, default 0
+  - name: retries
+    "@id": "#latiss.retries"
+    datatype: int
+    value: 0
+    description: Number of retries attempted, default 0
+  - name: error
+    "@id": "#latiss.error"
+    datatype: text
+    description: Error message, if any
+  - name: butler_repo
+    "@id": "#latiss.butler_repo"
+    datatype: text
+  - name: created_at
+    "@id": "#latiss.created_at"
+    datatype: timestamp
+    value: 'CURRENT_TIMESTAMP'
+    description: Timestamp when record was created, default current timestamp
+
+- name: lsstcam
+  "@id": "#lsstcam"
+  description: Scheduler for lsstcam.
+  primaryKey:
+    - "#lsstcam.id"
+  columns:
+  - name: id
+    "@id": "#lsstcam.id"
+    datatype: int
+    nullable: False
+    autoincrement: True
+    description: Unique ID, auto-incremented
+  - name: start_time
+    "@id": "#lsstcam.start_time"
+    datatype: timestamp
+    description: Start time of transformation interval, must be provided
+  - name: end_time
+    "@id": "#lsstcam.end_time"
+    datatype: timestamp
+    description: End time of transformation interval, must be provided
+  - name: timewindow
+    "@id": "#lsstcam.timewindow"
+    datatype: int
+    description: Time window to expand start/end times by (minutes)
+  - name: status
+    "@id": "#lsstcam.status"
+    datatype: char
+    length: 20
+    value: "pending"
+    description: Process status, default 'pending'
+  - name: process_start_time
+    "@id": "#lsstcam.process_start_time"
+    datatype: timestamp
+    description: Timestamp when process started
+  - name: process_end_time
+    "@id": "#lsstcam.process_end_time"
+    datatype: timestamp
+    description: Timestamp when process ended
+  - name: process_exec_time
+    "@id": "#lsstcam.process_exec_time"
+    datatype: int
+    value: 0
+    description: Execution time in seconds, default 0
+  - name: exposures
+    "@id": "#lsstcam.exposures"
+    datatype: int
+    value: 0
+    description: Number of exposures processed, default 0
+  - name: visits1
+    "@id": "#lsstcam.visits1"
+    datatype: int
+    value: 0
+    description: Number of visits recorded, default 0
+  - name: retries
+    "@id": "#lsstcam.retries"
+    datatype: int
+    value: 0
+    description: Number of retries attempted, default 0
+  - name: error
+    "@id": "#lsstcam.error"
+    datatype: text
+    description: Error message, if any
+  - name: butler_repo
+    "@id": "#lsstcam.butler_repo"
+    datatype: text
+  - name: created_at
+    "@id": "#lsstcam.created_at"
+    datatype: timestamp
+    value: 'CURRENT_TIMESTAMP'
+    description: Timestamp when record was created, default current timestamp
+
+- name: lsstcomcam
+  "@id": "#lsstcomcam"
+  description: Scheduler for lsstcomcam.
+  primaryKey:
+    - "#lsstcomcam.id"
+  columns:
+  - name: id
+    "@id": "#lsstcomcam.id"
+    datatype: int
+    nullable: False
+    autoincrement: True
+    description: Unique ID, auto-incremented
+  - name: start_time
+    "@id": "#lsstcomcam.start_time"
+    datatype: timestamp
+    description: Start time of transformation interval, must be provided
+  - name: end_time
+    "@id": "#lsstcomcam.end_time"
+    datatype: timestamp
+    description: End time of transformation interval, must be provided
+  - name: timewindow
+    "@id": "#lsstcomcam.timewindow"
+    datatype: int
+    description: Time window to expand start/end times by (minutes)
+  - name: status
+    "@id": "#lsstcomcam.status"
+    datatype: char
+    length: 20
+    value: "pending"
+    description: Process status, default 'pending'
+  - name: process_start_time
+    "@id": "#lsstcomcam.process_start_time"
+    datatype: timestamp
+    description: Timestamp when process started
+  - name: process_end_time
+    "@id": "#lsstcomcam.process_end_time"
+    datatype: timestamp
+    description: Timestamp when process ended
+  - name: process_exec_time
+    "@id": "#lsstcomcam.process_exec_time"
+    datatype: int
+    value: 0
+    description: Execution time in seconds, default 0
+  - name: exposures
+    "@id": "#lsstcomcam.exposures"
+    datatype: int
+    value: 0
+    description: Number of exposures processed, default 0
+  - name: visits1
+    "@id": "#lsstcomcam.visits1"
+    datatype: int
+    value: 0
+    description: Number of visits recorded, default 0
+  - name: retries
+    "@id": "#lsstcomcam.retries"
+    datatype: int
+    value: 0
+    description: Number of retries attempted, default 0
+  - name: error
+    "@id": "#lsstcomcam.error"
+    datatype: text
+    description: Error message, if any
+  - name: butler_repo
+    "@id": "#lsstcomcam.butler_repo"
+    datatype: text
+  - name: created_at
+    "@id": "#lsstcomcam.created_at"
+    datatype: timestamp
+    value: 'CURRENT_TIMESTAMP'
+    description: Timestamp when record was created, default current timestamp
