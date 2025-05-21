@@ -116,7 +116,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  description: Mean median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -133,7 +133,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -149,7 +149,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  description: Standard deviation of the mean standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -166,7 +166,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  description: Standard deviation of the standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -182,7 +182,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)
+  description: Mean median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -199,7 +199,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)
+  description: Standard deviation of the median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -215,7 +215,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)
+  description: Minimum median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -231,7 +231,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110)
+  description: Maximum median wind speed (x, y, z) in TMA-GillLabJack01 along axis 0 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -247,7 +247,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 1 (salIndex 110)
+  description: Mean median wind speed (x, y, z) in TMA-GillLabJack01 along axis 1 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -264,7 +264,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 1 (salIndex 110)
+  description: Standard deviation of the median wind speed (x, y, z) in TMA-GillLabJack01 along axis 1 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -280,7 +280,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 1 (salIndex 110)
+  description: Minimum median wind speed (x, y, z) in TMA-GillLabJack01 along axis 1 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -296,7 +296,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 1 (salIndex 110)
+  description: Maximum median wind speed (x, y, z) in TMA-GillLabJack01 along axis 1 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -312,7 +312,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 2 (salIndex 110)
+  description: Mean median wind speed (x, y, z) in TMA-GillLabJack01 along axis 2 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -329,7 +329,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 2 (salIndex 110)
+  description: Standard deviation of the median wind speed (x, y, z) in TMA-GillLabJack01 along axis 2 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -345,7 +345,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 2 (salIndex 110)
+  description: Minimum median wind speed (x, y, z) in TMA-GillLabJack01 along axis 2 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -361,7 +361,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in TMA-GillLabJack01 along axis 2 (salIndex 110)
+  description: Maximum median wind speed (x, y, z) in TMA-GillLabJack01 along axis 2 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -377,7 +377,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 0 (salIndex 110)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 0 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -394,7 +394,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 0 (salIndex 110)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 0 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -410,7 +410,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 0 (salIndex 110)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 0 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -426,7 +426,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 0 (salIndex 110)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 0 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -442,7 +442,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 1 (salIndex 110)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 1 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -459,7 +459,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 1 (salIndex 110)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 1 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -475,7 +475,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 1 (salIndex 110)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 1 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -491,7 +491,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 1 (salIndex 110)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 1 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -507,7 +507,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 2 (salIndex 110)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 2 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -524,7 +524,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 2 (salIndex 110)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 2 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -540,7 +540,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 2 (salIndex 110)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 2 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -556,7 +556,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 2 (salIndex 110)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TMA-GillLabJack01 along axis 2 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -572,7 +572,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in TMA-GillLabJack01 (salIndex 110)
+  description: Mean median wind speed magnitude in TMA-GillLabJack01 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -589,7 +589,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in TMA-GillLabJack01 (salIndex 110)
+  description: Standard deviation of the edian wind speed magnitude in TMA-GillLabJack01 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -605,7 +605,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in TMA-GillLabJack01 (salIndex 110)
+  description: Minimum median wind speed magnitude in TMA-GillLabJack01 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -621,7 +621,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in TMA-GillLabJack01 (salIndex 110)
+  description: Maximum median wind speed magnitude in TMA-GillLabJack01 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -637,7 +637,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in TMA-GillLabJack01 (salIndex 110)
+  description: Mean maximum wind speed magnitude in TMA-GillLabJack01 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -654,7 +654,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in TMA-GillLabJack01 (salIndex 110)
+  description: Standard deviation of the maximum wind speed magnitude in TMA-GillLabJack01 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -670,7 +670,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in TMA-GillLabJack01 (salIndex 110)
+  description: Minimum maximum wind speed magnitude in TMA-GillLabJack01 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -686,7 +686,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in TMA-GillLabJack01 (salIndex 110)
+  description: Maximum maximum wind speed magnitude in TMA-GillLabJack01 (salIndex 110).
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -702,7 +702,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 301)
+  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 301).
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -719,7 +719,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 301)
+  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 301).
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -735,7 +735,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 301)
+  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 301).
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -751,7 +751,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 301)
+  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 301).
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -767,7 +767,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 301). Not available for all sensor types.
+  description: Mean standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 301). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -784,7 +784,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 301). Not available for all sensor types.
+  description: Standard deviation of the standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 301). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -800,7 +800,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 301). Not available for all sensor types.
+  description: Minimum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 301). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -816,7 +816,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 301). Not available for all sensor types.
+  description: Maximum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 301). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -832,7 +832,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 301)
+  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 301).
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -849,7 +849,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 301)
+  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 301).
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -865,7 +865,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 301)
+  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 301).
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -881,7 +881,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 301)
+  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 301).
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -897,7 +897,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 0
+  description: Mean MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -914,7 +914,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 0
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -930,7 +930,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 0
+  description: Minimum MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -946,7 +946,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 1
+  description: Mean MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -962,7 +962,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 0
+  description: Maximum MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -979,7 +979,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 1
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -995,7 +995,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 1
+  description: Minimum MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1011,7 +1011,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 1
+  description: Maximum MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1027,7 +1027,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 2
+  description: Mean MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1044,7 +1044,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 2
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1060,7 +1060,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 2
+  description: Minimum MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1076,7 +1076,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 2
+  description: Maximum MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1092,7 +1092,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 3
+  description: Mean MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1109,7 +1109,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 3
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1125,7 +1125,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 3
+  description: Minimum MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1141,7 +1141,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 3
+  description: Maximum MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1157,7 +1157,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 4
+  description: Mean MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1174,7 +1174,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 4
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1190,7 +1190,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 4
+  description: Minimum MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1206,7 +1206,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 4
+  description: Maximum MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1222,7 +1222,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 5
+  description: Mean MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1239,7 +1239,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 5
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1255,7 +1255,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 5
+  description: Minimum MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1271,7 +1271,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 5
+  description: Maximum MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1287,7 +1287,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 6
+  description: Mean MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1304,7 +1304,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 6
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1320,7 +1320,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 6
+  description: Minimum MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1336,7 +1336,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 6
+  description: Maximum MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1352,7 +1352,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 7
+  description: Mean MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1369,7 +1369,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 7
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1385,7 +1385,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 7
+  description: Minimum MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1401,7 +1401,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 7
+  description: Maximum MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 1
@@ -1417,7 +1417,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 0
+  description: Mean MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1434,7 +1434,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 0
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1450,7 +1450,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 0
+  description: Minimum MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1466,7 +1466,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 1
+  description: Mean MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1482,7 +1482,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 0
+  description: Maximum MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1499,7 +1499,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 1
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1515,7 +1515,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 1
+  description: Minimum MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1531,7 +1531,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 1
+  description: Maximum MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1547,7 +1547,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 2
+  description: Mean MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1564,7 +1564,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 2
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1580,7 +1580,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 2
+  description: Minimum MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1596,7 +1596,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 2
+  description: Maximum MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1612,7 +1612,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 3
+  description: Mean MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1629,7 +1629,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 3
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1645,7 +1645,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 3
+  description: Minimum MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1661,7 +1661,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 3
+  description: Maximum MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1677,7 +1677,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 4
+  description: Mean MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1694,7 +1694,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 4
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1710,7 +1710,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 4
+  description: Minimum MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1726,7 +1726,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 4
+  description: Maximum MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1742,7 +1742,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 5
+  description: Mean MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1759,7 +1759,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 5
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1775,7 +1775,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 5
+  description: Minimum MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1791,7 +1791,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 5
+  description: Maximum MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1807,7 +1807,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 6
+  description: Mean MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1824,7 +1824,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 6
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1840,7 +1840,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 6
+  description: Minimum MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1856,7 +1856,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 6
+  description: Maximum MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1872,7 +1872,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 7
+  description: Mean MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1889,7 +1889,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 7
+  description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1905,7 +1905,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 7
+  description: Minimum MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1921,7 +1921,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: MTCameraAssembly-ESS01 temperature item 7
+  description: Maximum MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 101
@@ -1937,7 +1937,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 0
+  description: Mean UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -1954,7 +1954,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 0
+  description: Standard deviation of the UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -1970,7 +1970,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 0
+  description: Minimum UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -1986,7 +1986,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 1
+  description: Mean UNKNOWN temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2002,7 +2002,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 0
+  description: Maximum UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2019,7 +2019,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 1
+  description: Standard deviation of the UNKNOWN temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2035,7 +2035,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 1
+  description: Minimum UNKNOWN temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2051,7 +2051,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 1
+  description: Maximum UNKNOWN temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2067,7 +2067,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 2
+  description: Mean UNKNOWN temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2084,7 +2084,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 2
+  description: Standard deviation of the UNKNOWN temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2100,7 +2100,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 2
+  description: Minimum UNKNOWN temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2116,7 +2116,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 2
+  description: Maximum UNKNOWN temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2132,7 +2132,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 3
+  description: Mean UNKNOWN temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2149,7 +2149,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 3
+  description: Standard deviation of the UNKNOWN temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2165,7 +2165,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 3
+  description: Minimum UNKNOWN temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2181,7 +2181,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 3
+  description: Maximum UNKNOWN temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2197,7 +2197,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 4
+  description: Mean UNKNOWN temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2214,7 +2214,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 4
+  description: Standard deviation of the UNKNOWN temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2230,7 +2230,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 4
+  description: Minimum UNKNOWN temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2246,7 +2246,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 4
+  description: Maximum UNKNOWN temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2262,7 +2262,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 5
+  description: Mean UNKNOWN temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2279,7 +2279,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 5
+  description: Standard deviation of the UNKNOWN temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2295,7 +2295,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 5
+  description: Minimum UNKNOWN temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2311,7 +2311,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 5
+  description: Maximum UNKNOWN temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2327,7 +2327,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 6
+  description: Mean UNKNOWN temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2344,7 +2344,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 6
+  description: Standard deviation of the UNKNOWN temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2360,7 +2360,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 6
+  description: Minimum UNKNOWN temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2376,7 +2376,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 6
+  description: Maximum UNKNOWN temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2392,7 +2392,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 7
+  description: Mean UNKNOWN temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2409,7 +2409,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 7
+  description: Standard deviation of the UNKNOWN temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2425,7 +2425,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 7
+  description: Minimum UNKNOWN temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2441,7 +2441,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 7
+  description: Maximum UNKNOWN temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 102
@@ -2457,7 +2457,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 0
+  description: Mean UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2474,7 +2474,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 0
+  description: Standard deviation of the UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2490,7 +2490,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 0
+  description: Minimum UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2506,7 +2506,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 1
+  description: Mean UNKNOWN temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2522,7 +2522,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 0
+  description: Maximum UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2539,7 +2539,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 1
+  description: Standard deviation of the UNKNOWN temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2555,7 +2555,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 1
+  description: Minimum UNKNOWN temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2571,7 +2571,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 1
+  description: Maximum UNKNOWN temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2587,7 +2587,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 2
+  description: Mean UNKNOWN temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2604,7 +2604,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 2
+  description: Standard deviation of the UNKNOWN temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2620,7 +2620,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 2
+  description: Minimum UNKNOWN temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2636,7 +2636,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 2
+  description: Maximum UNKNOWN temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2652,7 +2652,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 3
+  description: Mean UNKNOWN temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2669,7 +2669,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 3
+  description: Standard deviation of the UNKNOWN temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2685,7 +2685,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 3
+  description: Minimum UNKNOWN temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2701,7 +2701,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 3
+  description: Maximum UNKNOWN temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2717,7 +2717,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 4
+  description: Mean UNKNOWN temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2734,7 +2734,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 4
+  description: Standard deviation of the UNKNOWN temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2750,7 +2750,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 4
+  description: Minimum UNKNOWN temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2766,7 +2766,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 4
+  description: Maximum UNKNOWN temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2782,7 +2782,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 5
+  description: Mean UNKNOWN temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2799,7 +2799,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 5
+  description: Standard deviation of the UNKNOWN temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2815,7 +2815,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 5
+  description: Minimum UNKNOWN temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2831,7 +2831,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 5
+  description: Maximum UNKNOWN temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2847,7 +2847,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 6
+  description: Mean UNKNOWN temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2864,7 +2864,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 6
+  description: Standard deviation of the UNKNOWN temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2880,7 +2880,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 6
+  description: Minimum UNKNOWN temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2896,7 +2896,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 6
+  description: Maximum UNKNOWN temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2912,7 +2912,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: XX temperature item 7
+  description: Mean UNKNOWN temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2929,7 +2929,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: XX temperature item 7
+  description: Standard deviation of the UNKNOWN temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2945,7 +2945,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: XX temperature item 7
+  description: Minimum UNKNOWN temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2961,7 +2961,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: XX temperature item 7
+  description: Maximum UNKNOWN temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 103
@@ -2977,7 +2977,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 0
+  description: Mean M2-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -2994,7 +2994,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 0
+  description: Standard deviation of the M2-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3010,7 +3010,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 0
+  description: Minimum M2-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3026,7 +3026,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 1
+  description: Mean M2-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3042,7 +3042,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 0
+  description: Maximum M2-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3059,7 +3059,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 1
+  description: Standard deviation of the M2-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3075,7 +3075,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 1
+  description: Minimum M2-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3091,7 +3091,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 1
+  description: Maximum M2-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3107,7 +3107,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 2
+  description: Mean M2-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3124,7 +3124,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 2
+  description: Standard deviation of the M2-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3140,7 +3140,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 2
+  description: Minimum M2-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3156,7 +3156,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 2
+  description: Maximum M2-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3172,7 +3172,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 3
+  description: Mean M2-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3189,7 +3189,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 3
+  description: Standard deviation of the M2-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3205,7 +3205,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 3
+  description: Minimum M2-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3221,7 +3221,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 3
+  description: Maximum M2-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3237,7 +3237,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 4
+  description: Mean M2-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3254,7 +3254,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 4
+  description: Standard deviation of the M2-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3270,7 +3270,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 4
+  description: Minimum M2-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3286,7 +3286,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 4
+  description: Maximum M2-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3302,7 +3302,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 5
+  description: Mean M2-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3319,7 +3319,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 5
+  description: Standard deviation of the M2-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3335,7 +3335,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 5
+  description: Minimum M2-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3351,7 +3351,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 5
+  description: Maximum M2-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3367,7 +3367,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 6
+  description: Mean M2-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3384,7 +3384,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 6
+  description: Standard deviation of the M2-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3400,7 +3400,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 6
+  description: Minimum M2-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3416,7 +3416,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 6
+  description: Maximum M2-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3432,7 +3432,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 7
+  description: Mean M2-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3449,7 +3449,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 7
+  description: Standard deviation of the M2-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3465,7 +3465,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 7
+  description: Minimum M2-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3481,7 +3481,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: M2-ESS01 temperature item 7
+  description: Maximum M2-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 106
@@ -3497,7 +3497,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 0
+  description: Mean Laser-ESS01, Laser-ESS02 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3514,7 +3514,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 0
+  description: Standard deviation of the Laser-ESS01, Laser-ESS02 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3530,7 +3530,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 0
+  description: Minimum Laser-ESS01, Laser-ESS02 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3546,7 +3546,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 1
+  description: Mean Laser-ESS01, Laser-ESS02 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3562,7 +3562,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 0
+  description: Maximum Laser-ESS01, Laser-ESS02 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3579,7 +3579,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 1
+  description: Standard deviation of the Laser-ESS01, Laser-ESS02 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3595,7 +3595,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 1
+  description: Minimum Laser-ESS01, Laser-ESS02 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3611,7 +3611,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 1
+  description: Maximum Laser-ESS01, Laser-ESS02 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3627,7 +3627,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 2
+  description: Mean Laser-ESS01, Laser-ESS02 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3644,7 +3644,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 2
+  description: Standard deviation of the Laser-ESS01, Laser-ESS02 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3660,7 +3660,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 2
+  description: Minimum Laser-ESS01, Laser-ESS02 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3676,7 +3676,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 2
+  description: Maximum Laser-ESS01, Laser-ESS02 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3692,7 +3692,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 3
+  description: Mean Laser-ESS01, Laser-ESS02 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3709,7 +3709,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 3
+  description: Standard deviation of the Laser-ESS01, Laser-ESS02 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3725,7 +3725,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 3
+  description: Minimum Laser-ESS01, Laser-ESS02 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3741,7 +3741,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 3
+  description: Maximum Laser-ESS01, Laser-ESS02 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3757,7 +3757,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 4
+  description: Mean Laser-ESS01, Laser-ESS02 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3774,7 +3774,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 4
+  description: Standard deviation of the Laser-ESS01, Laser-ESS02 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3790,7 +3790,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 4
+  description: Minimum Laser-ESS01, Laser-ESS02 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3806,7 +3806,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 4
+  description: Maximum Laser-ESS01, Laser-ESS02 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3822,7 +3822,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 5
+  description: Mean Laser-ESS01, Laser-ESS02 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3839,7 +3839,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 5
+  description: Standard deviation of the Laser-ESS01, Laser-ESS02 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3855,7 +3855,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 5
+  description: Minimum Laser-ESS01, Laser-ESS02 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3871,7 +3871,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 5
+  description: Maximum Laser-ESS01, Laser-ESS02 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3887,7 +3887,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 6
+  description: Mean Laser-ESS01, Laser-ESS02 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3904,7 +3904,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 6
+  description: Standard deviation of the Laser-ESS01, Laser-ESS02 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3920,7 +3920,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 6
+  description: Minimum Laser-ESS01, Laser-ESS02 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3936,7 +3936,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 6
+  description: Maximum Laser-ESS01, Laser-ESS02 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3952,7 +3952,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 7
+  description: Mean Laser-ESS01, Laser-ESS02 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3969,7 +3969,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 7
+  description: Standard deviation of the Laser-ESS01, Laser-ESS02 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -3985,7 +3985,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 7
+  description: Minimum Laser-ESS01, Laser-ESS02 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -4001,7 +4001,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Laser-ESS01, Laser-ESS02 temperature item 7
+  description: Maximum Laser-ESS01, Laser-ESS02 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 107
@@ -4017,7 +4017,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 0
+  description: Mean CBP-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4034,7 +4034,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 0
+  description: Standard deviation of the CBP-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4050,7 +4050,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 0
+  description: Minimum CBP-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4066,7 +4066,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 1
+  description: Mean CBP-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4082,7 +4082,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 0
+  description: Maximum CBP-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4099,7 +4099,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 1
+  description: Standard deviation of the CBP-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4115,7 +4115,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 1
+  description: Minimum CBP-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4131,7 +4131,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 1
+  description: Maximum CBP-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4147,7 +4147,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 2
+  description: Mean CBP-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4164,7 +4164,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 2
+  description: Standard deviation of the CBP-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4180,7 +4180,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 2
+  description: Minimum CBP-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4196,7 +4196,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 2
+  description: Maximum CBP-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4212,7 +4212,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 3
+  description: Mean CBP-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4229,7 +4229,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 3
+  description: Standard deviation of the CBP-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4245,7 +4245,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 3
+  description: Minimum CBP-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4261,7 +4261,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 3
+  description: Maximum CBP-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4277,7 +4277,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 4
+  description: Mean CBP-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4294,7 +4294,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 4
+  description: Standard deviation of the CBP-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4310,7 +4310,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 4
+  description: Minimum CBP-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4326,7 +4326,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 4
+  description: Maximum CBP-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4342,7 +4342,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 5
+  description: Mean CBP-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4359,7 +4359,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 5
+  description: Standard deviation of the CBP-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4375,7 +4375,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 5
+  description: Minimum CBP-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4391,7 +4391,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 5
+  description: Maximum CBP-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4407,7 +4407,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 6
+  description: Mean CBP-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4424,7 +4424,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 6
+  description: Standard deviation of the CBP-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4440,7 +4440,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 6
+  description: Minimum CBP-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4456,7 +4456,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 6
+  description: Maximum CBP-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4472,7 +4472,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 7
+  description: Mean CBP-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4489,7 +4489,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 7
+  description: Standard deviation of the CBP-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4505,7 +4505,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 7
+  description: Minimum CBP-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4521,7 +4521,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: CBP-ESS01 temperature item 7
+  description: Maximum CBP-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 108
@@ -4537,7 +4537,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 0
+  description: Mean weather tower air temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4554,7 +4554,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 0
+  description: Standard deviation of the weather tower air temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4570,7 +4570,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 0
+  description: Minimum weather tower air temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4586,7 +4586,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 1
+  description: Mean weather tower air temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4602,7 +4602,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 0
+  description: Maximum weather tower air temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4619,7 +4619,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 1
+  description: Standard deviation of the weather tower air temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4635,7 +4635,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 1
+  description: Minimum weather tower air temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4651,7 +4651,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 1
+  description: Maximum weather tower air temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4667,7 +4667,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 2
+  description: Mean weather tower air temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4684,7 +4684,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 2
+  description: Standard deviation of the weather tower air temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4700,7 +4700,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 2
+  description: Minimum weather tower air temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4716,7 +4716,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 2
+  description: Maximum weather tower air temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4732,7 +4732,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 3
+  description: Mean weather tower air temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4749,7 +4749,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 3
+  description: Standard deviation of the weather tower air temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4765,7 +4765,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 3
+  description: Minimum weather tower air temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4781,7 +4781,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 3
+  description: Maximum weather tower air temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4797,7 +4797,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 4
+  description: Mean weather tower air temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4814,7 +4814,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 4
+  description: Standard deviation of the weather tower air temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4830,7 +4830,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 4
+  description: Minimum weather tower air temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4846,7 +4846,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 4
+  description: Maximum weather tower air temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4862,7 +4862,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 5
+  description: Mean weather tower air temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4879,7 +4879,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 5
+  description: Standard deviation of the weather tower air temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4895,7 +4895,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 5
+  description: Minimum weather tower air temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4911,7 +4911,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 5
+  description: Maximum weather tower air temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4927,7 +4927,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 6
+  description: Mean weather tower air temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4944,7 +4944,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 6
+  description: Standard deviation of the weather tower air temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4960,7 +4960,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 6
+  description: Minimum weather tower air temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4976,7 +4976,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 6
+  description: Maximum weather tower air temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -4992,7 +4992,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 7
+  description: Mean weather tower air temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -5009,7 +5009,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 7
+  description: Standard deviation of the weather tower air temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -5025,7 +5025,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 7
+  description: Minimum weather tower air temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -5041,7 +5041,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: Weather tower air temperature item 7
+  description: Maximum weather tower air temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -5057,7 +5057,7 @@ columns:
   function: mean
   datatype: float
   unit: arcsec
-  description: Combined full width half maximum
+  description: Mean combined full width half maximum.
   packed_series: False
   topics:
   - name: lsst.sal.DIMM.logevent_dimmMeasurement
@@ -5070,7 +5070,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Azimuth absolute position read by each encoder head.
+  description: Mean Azimuth absolute position read by each encoder head.
   packed_series: False
   topics:
   - name: lsst.sal.MTMount.encoder
@@ -5083,7 +5083,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Azimuth absolute position read by each encoder head.
+  description: Mean Azimuth absolute position read by each encoder head.
   packed_series: False
   topics:
   - name: lsst.sal.MTMount.encoder
@@ -5096,7 +5096,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Azimuth absolute position read by each encoder head.
+  description: Mean Azimuth absolute position read by each encoder head.
   packed_series: False
   topics:
   - name: lsst.sal.MTMount.encoder
@@ -5109,7 +5109,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Azimuth absolute position read by each encoder head.
+  description: Mean Azimuth absolute position read by each encoder head.
   packed_series: False
   topics:
   - name: lsst.sal.MTMount.encoder
@@ -5122,7 +5122,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Elevation absolute position read by each encoder head.
+  description: Mean Elevation absolute position read by each encoder head.
   packed_series: False
   topics:
   - name: lsst.sal.MTMount.encoder
@@ -5135,7 +5135,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Elevation absolute position read by each encoder head.
+  description: Mean Elevation absolute position read by each encoder head.
   packed_series: False
   topics:
   - name: lsst.sal.MTMount.encoder
@@ -5148,7 +5148,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Elevation absolute position read by each encoder head.
+  description: Mean Elevation absolute position read by each encoder head.
   packed_series: False
   topics:
   - name: lsst.sal.MTMount.encoder
@@ -5161,7 +5161,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Elevation absolute position read by each encoder head.
+  description: Mean Elevation absolute position read by each encoder head.
   packed_series: False
   topics:
   - name: lsst.sal.MTMount.encoder
@@ -5174,7 +5174,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: U angle.
+  description: Mean U angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5184,10 +5184,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_u_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: degree
-  description: U angle.
+  description: Maximum U angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5197,10 +5197,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_u_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: degree
-  description: U angle.
+  description: Minimum U angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5213,7 +5213,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: V angle.
+  description: Mean V angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5223,10 +5223,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_v_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: degree
-  description: V angle.
+  description: Maximum V angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5236,10 +5236,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_v_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: degree
-  description: V angle.
+  description: Minimum V angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5252,7 +5252,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: W angle.
+  description: Mean W angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5262,10 +5262,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_w_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: degree
-  description: W angle.
+  description: Maximum W angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5275,10 +5275,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_w_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: degree
-  description: W angle.
+  description: Minimum W angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5291,7 +5291,7 @@ columns:
   function: mean
   datatype: float
   unit: um
-  description: X position.
+  description: Mean X position.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5301,10 +5301,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_x_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: um
-  description: X position.
+  description: Maximum X position.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5314,10 +5314,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_x_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: um
-  description: X position.
+  description: Minimum X position.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5330,7 +5330,7 @@ columns:
   function: mean
   datatype: float
   unit: um
-  description: Y position.
+  description: Mean Y position.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5340,10 +5340,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_y_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: um
-  description: Y position.
+  description: Maximum Y position.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5353,10 +5353,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_y_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: um
-  description: Y position.
+  description: Minimum Y position.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5369,7 +5369,7 @@ columns:
   function: mean
   datatype: float
   unit: um
-  description: Z position.
+  description: Mean Z position.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5379,10 +5379,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_z_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: um
-  description: Z position.
+  description: Maximum Z position.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5392,10 +5392,10 @@ columns:
 
 - name: mt_hexapod_uncompensated_position_z_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: um
-  description: Z position.
+  description: Minimum Z position.
   packed_series: False
   topics:
   - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
@@ -5408,7 +5408,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Dew point.
+  description: Mean dew point.
   packed_series: False
   subset_field: salIndex
   subset_value: 111
@@ -5424,7 +5424,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Dew point.
+  description: Mean dew point.
   packed_series: False
   subset_field: salIndex
   subset_value: 112
@@ -5440,7 +5440,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Dew point.
+  description: Mean dew point.
   packed_series: False
   subset_field: salIndex
   subset_value: 113
@@ -5456,7 +5456,7 @@ columns:
   function: mean
   datatype: float
   unit: percent
-  description: Relative humidity.
+  description: Mean relative humidity.
   packed_series: False
   subset_field: salIndex
   subset_value: 111
@@ -5472,7 +5472,7 @@ columns:
   function: mean
   datatype: float
   unit: percent
-  description: Relative humidity.
+  description: Mean relative humidity.
   packed_series: False
   subset_field: salIndex
   subset_value: 112
@@ -5488,7 +5488,7 @@ columns:
   function: mean
   datatype: float
   unit: percent
-  description: Relative humidity.
+  description: Mean relative humidity.
   packed_series: False
   subset_field: salIndex
   subset_value: 113
@@ -5504,7 +5504,7 @@ columns:
   function: mean
   datatype: float
   unit: Pa
-  description: The pressures.
+  description: Mean pressure.
   packed_series: False
   subset_field: salIndex
   subset_value: 113
@@ -5520,7 +5520,7 @@ columns:
   function: mean
   datatype: float
   unit: Pa
-  description: The pressures.
+  description: Mean pressure.
   packed_series: False
   subset_field: salIndex
   subset_value: 113
@@ -5536,7 +5536,7 @@ columns:
   function: mean
   datatype: float
   unit: Pa
-  description: The pressures.
+  description: Mean pressure.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -5552,7 +5552,7 @@ columns:
   function: mean
   datatype: float
   unit: Pa
-  description: The pressures.
+  description: Mean pressure.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -5568,7 +5568,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: RA calculated from the azimuthActualPosition and elevationActualPosition.
+  description: Mean RA calculated from the azimuthActualPosition and elevationActualPosition.
   packed_series: False
   topics:
   - name: lsst.sal.MTPtg.mountPosition
@@ -5582,7 +5582,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: degree
-  description: RA calculated from the azimuthActualPosition and elevationActualPosition.
+  description: Standard deviation of the RA calculated from the azimuthActualPosition and elevationActualPosition.
   packed_series: False
   topics:
   - name: lsst.sal.MTPtg.mountPosition
@@ -5595,7 +5595,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Dec calculated from the azimuthActualPosition and elevationActualPosition.
+  description: Mean Dec calculated from the azimuthActualPosition and elevationActualPosition.
   packed_series: False
   topics:
   - name: lsst.sal.MTPtg.mountPosition
@@ -5609,7 +5609,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: degree
-  description: Dec calculated from the azimuthActualPosition and elevationActualPosition.
+  description: Standard deviation of the Dec calculated from the azimuthActualPosition and elevationActualPosition.
   packed_series: False
   topics:
   - name: lsst.sal.MTPtg.mountPosition
@@ -5622,7 +5622,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Calculated sky angle.
+  description: Mean calculated sky angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTPtg.mountPosition
@@ -5636,7 +5636,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: degree
-  description: Calculated sky angle.
+  description: Standard deviation of the calculated sky angle.
   packed_series: False
   topics:
   - name: lsst.sal.MTPtg.mountPosition
@@ -5649,7 +5649,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Rotator axis position reported by rotator component.
+  description: Mean rotator axis position reported by rotator component.
   packed_series: False
   topics:
   - name: lsst.sal.MTPtg.mountPosition
@@ -5663,7 +5663,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: degree
-  description: Rotator axis position reported by rotator component.
+  description: Standard deviation of the rotator axis position reported by rotator component.
   packed_series: False
   topics:
   - name: lsst.sal.MTPtg.mountPosition
@@ -5858,7 +5858,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Mean acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -6274,7 +6274,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Standard deviation of the acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -6689,7 +6689,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Minimum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -7104,7 +7104,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Maximum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -7519,7 +7519,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Mean acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -7935,7 +7935,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Standard deviation of the acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -8350,7 +8350,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Minimum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -8765,7 +8765,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Maximum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -9180,7 +9180,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Mean acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -9596,7 +9596,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Standard deviation of the acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -10011,7 +10011,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Minimum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -10426,7 +10426,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Maximum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -10841,7 +10841,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Mean acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -11058,7 +11058,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Standard deviation of the acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -11274,7 +11274,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Minimum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -11490,7 +11490,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Maximum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -11706,7 +11706,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Mean acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -11923,7 +11923,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Standard deviation of the acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -12139,7 +12139,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Minimum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -12355,7 +12355,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Maximum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -12571,7 +12571,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Mean acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -12788,7 +12788,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Standard deviation of the acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -13004,7 +13004,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Minimum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -13220,7 +13220,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Maximum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 104
@@ -13431,12 +13431,12 @@ columns:
     - name: accelerationPSDZ200
 
 
-- name: mt_salIndex104_m1m3_accelerometer_0_mean
+- name: mt_salindex104_m1m3_accelerometer_0_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Mean accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13444,13 +13444,13 @@ columns:
     - name: accelerometer0
 
 
-- name: mt_salIndex104_m1m3_accelerometer_0_stddev
+- name: mt_salindex104_m1m3_accelerometer_0_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Standard deviation of the accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13458,12 +13458,12 @@ columns:
     - name: accelerometer0
 
 
-- name: mt_salIndex104_m1m3_accelerometer_0_max
+- name: mt_salindex104_m1m3_accelerometer_0_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Maximum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13471,12 +13471,12 @@ columns:
     - name: accelerometer0
 
 
-- name: mt_salIndex104_m1m3_accelerometer_0_min
+- name: mt_salindex104_m1m3_accelerometer_0_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Minimum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13484,12 +13484,12 @@ columns:
     - name: accelerometer0
 
 
-- name: mt_salIndex104_m1m3_accelerometer_1_mean
+- name: mt_salindex104_m1m3_accelerometer_1_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Mean accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13497,13 +13497,13 @@ columns:
     - name: accelerometer1
 
 
-- name: mt_salIndex104_m1m3_accelerometer_1_stddev
+- name: mt_salindex104_m1m3_accelerometer_1_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Standard deviation of the accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13511,12 +13511,12 @@ columns:
     - name: accelerometer1
 
 
-- name: mt_salIndex104_m1m3_accelerometer_1_max
+- name: mt_salindex104_m1m3_accelerometer_1_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Maximum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13524,12 +13524,12 @@ columns:
     - name: accelerometer1
 
 
-- name: mt_salIndex104_m1m3_accelerometer_1_min
+- name: mt_salindex104_m1m3_accelerometer_1_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Minimum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13537,12 +13537,12 @@ columns:
     - name: accelerometer1
 
 
-- name: mt_salIndex104_m1m3_accelerometer_2_mean
+- name: mt_salindex104_m1m3_accelerometer_2_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Mean accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13550,13 +13550,13 @@ columns:
     - name: accelerometer2
 
 
-- name: mt_salIndex104_m1m3_accelerometer_2_stddev
+- name: mt_salindex104_m1m3_accelerometer_2_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Standard deviation of the accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13564,12 +13564,12 @@ columns:
     - name: accelerometer2
 
 
-- name: mt_salIndex104_m1m3_accelerometer_2_max
+- name: mt_salindex104_m1m3_accelerometer_2_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Maximum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13577,12 +13577,12 @@ columns:
     - name: accelerometer2
 
 
-- name: mt_salIndex104_m1m3_accelerometer_2_min
+- name: mt_salindex104_m1m3_accelerometer_2_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Minimum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13590,12 +13590,12 @@ columns:
     - name: accelerometer2
 
 
-- name: mt_salIndex104_m1m3_accelerometer_3_mean
+- name: mt_salindex104_m1m3_accelerometer_3_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Mean accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13603,13 +13603,13 @@ columns:
     - name: accelerometer3
 
 
-- name: mt_salIndex104_m1m3_accelerometer_3_stddev
+- name: mt_salindex104_m1m3_accelerometer_3_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Standard deviation of the accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13617,12 +13617,12 @@ columns:
     - name: accelerometer3
 
 
-- name: mt_salIndex104_m1m3_accelerometer_3_max
+- name: mt_salindex104_m1m3_accelerometer_3_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Maximum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13630,12 +13630,12 @@ columns:
     - name: accelerometer3
 
 
-- name: mt_salIndex104_m1m3_accelerometer_3_min
+- name: mt_salindex104_m1m3_accelerometer_3_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Minimum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13643,12 +13643,12 @@ columns:
     - name: accelerometer3
 
 
-- name: mt_salIndex104_m1m3_accelerometer_4_mean
+- name: mt_salindex104_m1m3_accelerometer_4_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Mean accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13656,13 +13656,13 @@ columns:
     - name: accelerometer4
 
 
-- name: mt_salIndex104_m1m3_accelerometer_4_stddev
+- name: mt_salindex104_m1m3_accelerometer_4_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Standard deviation of the accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13670,12 +13670,12 @@ columns:
     - name: accelerometer4
 
 
-- name: mt_salIndex104_m1m3_accelerometer_4_max
+- name: mt_salindex104_m1m3_accelerometer_4_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Maximum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13683,12 +13683,12 @@ columns:
     - name: accelerometer4
 
 
-- name: mt_salIndex104_m1m3_accelerometer_4_min
+- name: mt_salindex104_m1m3_accelerometer_4_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Minimum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13696,12 +13696,12 @@ columns:
     - name: accelerometer4
 
 
-- name: mt_salIndex104_m1m3_accelerometer_5_mean
+- name: mt_salindex104_m1m3_accelerometer_5_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Mean accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13709,13 +13709,13 @@ columns:
     - name: accelerometer5
 
 
-- name: mt_salIndex104_m1m3_accelerometer_5_stddev
+- name: mt_salindex104_m1m3_accelerometer_5_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Standard deviation of the accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13723,12 +13723,12 @@ columns:
     - name: accelerometer5
 
 
-- name: mt_salIndex104_m1m3_accelerometer_5_max
+- name: mt_salindex104_m1m3_accelerometer_5_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Maximum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13736,12 +13736,12 @@ columns:
     - name: accelerometer5
 
 
-- name: mt_salIndex104_m1m3_accelerometer_5_min
+- name: mt_salindex104_m1m3_accelerometer_5_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Minimum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13749,12 +13749,12 @@ columns:
     - name: accelerometer5
 
 
-- name: mt_salIndex104_m1m3_accelerometer_6_mean
+- name: mt_salindex104_m1m3_accelerometer_6_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Mean accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13762,13 +13762,13 @@ columns:
     - name: accelerometer6
 
 
-- name: mt_salIndex104_m1m3_accelerometer_6_stddev
+- name: mt_salindex104_m1m3_accelerometer_6_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Standard deviation of the accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13776,12 +13776,12 @@ columns:
     - name: accelerometer6
 
 
-- name: mt_salIndex104_m1m3_accelerometer_6_max
+- name: mt_salindex104_m1m3_accelerometer_6_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Maximum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13789,12 +13789,12 @@ columns:
     - name: accelerometer6
 
 
-- name: mt_salIndex104_m1m3_accelerometer_6_min
+- name: mt_salindex104_m1m3_accelerometer_6_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Minimum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13802,12 +13802,12 @@ columns:
     - name: accelerometer6
 
 
-- name: mt_salIndex104_m1m3_accelerometer_7_mean
+- name: mt_salindex104_m1m3_accelerometer_7_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Mean accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13815,13 +13815,13 @@ columns:
     - name: accelerometer7
 
 
-- name: mt_salIndex104_m1m3_accelerometer_7_stddev
+- name: mt_salindex104_m1m3_accelerometer_7_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Standard deviation of the accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13829,25 +13829,12 @@ columns:
     - name: accelerometer7
 
 
-- name: mt_salIndex104_m1m3_accelerometer_7_max
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: m/s2
-  description: Accelerometer data.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTM1M3.accelerometerData
-    fields:
-    - name: accelerometer7
-
-
-- name: mt_salIndex104_m1m3_accelerometer_7_min
+- name: mt_salindex104_m1m3_accelerometer_7_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: m/s2
-  description: Accelerometer data.
+  description: Maximum accelerometer data.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13855,12 +13842,25 @@ columns:
     - name: accelerometer7
 
 
-- name: mt_salIndex104_m1m3_angular_acceleration_x_mean
+- name: mt_salindex104_m1m3_accelerometer_7_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  unit: m/s2
+  description: Minimum accelerometer data.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM1M3.accelerometerData
+    fields:
+    - name: accelerometer7
+
+
+- name: mt_salindex104_m1m3_angular_acceleration_x_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: deg/s2
-  description: Accelerometer data angular Acceleration X.
+  description: Mean accelerometer data angular Acceleration X.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13868,13 +13868,13 @@ columns:
     - name: angularAccelerationX
 
 
-- name: mt_salIndex104_m1m3_angular_acceleration_x_stddev
+- name: mt_salindex104_m1m3_angular_acceleration_x_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: deg/s2
-  description: Accelerometer data angular Acceleration X.
+  description: Standard deviation of the accelerometer data angular Acceleration X.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13882,25 +13882,12 @@ columns:
     - name: angularAccelerationX
 
 
-- name: mt_salIndex104_m1m3_angular_acceleration_x_max
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: deg/s2
-  description: Accelerometer data angular Acceleration X.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTM1M3.accelerometerData
-    fields:
-    - name: angularAccelerationX
-
-
-- name: mt_salIndex104_m1m3_angular_acceleration_x_min
+- name: mt_salindex104_m1m3_angular_acceleration_x_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: deg/s2
-  description: Accelerometer data angular Acceleration X.
+  description: Maximum accelerometer data angular Acceleration X.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13908,12 +13895,25 @@ columns:
     - name: angularAccelerationX
 
 
-- name: mt_salIndex104_m1m3_angular_acceleration_y_mean
+- name: mt_salindex104_m1m3_angular_acceleration_x_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  unit: deg/s2
+  description: Minimum accelerometer data angular Acceleration X.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM1M3.accelerometerData
+    fields:
+    - name: angularAccelerationX
+
+
+- name: mt_salindex104_m1m3_angular_acceleration_y_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: deg/s2
-  description: Accelerometer data angular Acceleration Y.
+  description: Mean accelerometer data angular Acceleration Y.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13921,13 +13921,13 @@ columns:
     - name: angularAccelerationY
 
 
-- name: mt_salIndex104_m1m3_angular_acceleration_y_stddev
+- name: mt_salindex104_m1m3_angular_acceleration_y_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: deg/s2
-  description: Accelerometer data angular Acceleration Y.
+  description: Standard deviation of the accelerometer data angular Acceleration Y.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13935,25 +13935,12 @@ columns:
     - name: angularAccelerationY
 
 
-- name: mt_salIndex104_m1m3_angular_acceleration_y_max
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: deg/s2
-  description: Accelerometer data angular Acceleration Y.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTM1M3.accelerometerData
-    fields:
-    - name: angularAccelerationY
-
-
-- name: mt_salIndex104_m1m3_angular_acceleration_y_min
+- name: mt_salindex104_m1m3_angular_acceleration_y_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: deg/s2
-  description: Accelerometer data angular Acceleration Y.
+  description: Maximum accelerometer data angular Acceleration Y.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13961,12 +13948,25 @@ columns:
     - name: angularAccelerationY
 
 
-- name: mt_salIndex104_m1m3_angular_acceleration_z_mean
+- name: mt_salindex104_m1m3_angular_acceleration_y_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  unit: deg/s2
+  description: Minimum accelerometer data angular Acceleration Y.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM1M3.accelerometerData
+    fields:
+    - name: angularAccelerationY
+
+
+- name: mt_salindex104_m1m3_angular_acceleration_z_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: deg/s2
-  description: Accelerometer data angular Acceleration Z.
+  description: Mean accelerometer data angular Acceleration Z.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13974,13 +13974,13 @@ columns:
     - name: angularAccelerationZ
 
 
-- name: mt_salIndex104_m1m3_angular_acceleration_z_stddev
+- name: mt_salindex104_m1m3_angular_acceleration_z_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
   unit: deg/s2
-  description: Accelerometer data angular Acceleration Z.
+  description: Standard deviation of the accelerometer data angular Acceleration Z.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -13988,25 +13988,25 @@ columns:
     - name: angularAccelerationZ
 
 
-- name: mt_salIndex104_m1m3_angular_acceleration_z_max
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: deg/s2
-  description: Accelerometer data angular Acceleration Z.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTM1M3.accelerometerData
-    fields:
-    - name: angularAccelerationZ
-
-
-- name: mt_salIndex104_m1m3_angular_acceleration_z_min
+- name: mt_salindex104_m1m3_angular_acceleration_z_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
   unit: deg/s2
-  description: Accelerometer data angular Acceleration Z.
+  description: Maximum accelerometer data angular Acceleration Z.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM1M3.accelerometerData
+    fields:
+    - name: angularAccelerationZ
+
+
+- name: mt_salindex104_m1m3_angular_acceleration_z_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  unit: deg/s2
+  description: Minimum accelerometer data angular Acceleration Z.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.accelerometerData
@@ -14020,7 +14020,7 @@ columns:
   function: mean
   datatype: float
   unit: m2/(s4 Hz)
-  description: Acceleration PSD in the sensor direction.
+  description: Mean acceleration PSD in the sensor direction.
   packed_series: False
   topics:
   - name: lsst.sal.MTVMS.psd
@@ -14334,7 +14334,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m2/(s4 Hz)
-  description: Acceleration PSD in the sensor direction.
+  description: Standard deviation of the acceleration PSD in the sensor direction.
   packed_series: False
   topics:
   - name: lsst.sal.MTVMS.psd
@@ -14644,10 +14644,10 @@ columns:
 - name: mt_vibration_data_max
   tables: ["exposure_efd_unpivoted","visit1_efd_unpivoted"]
   store_unpivoted: True
-  function: min
+  function: max
   datatype: float
   unit: m2/(s4 Hz)
-  description: Acceleration PSD in the sensor direction.
+  description: Maximum acceleration PSD in the sensor direction.
   packed_series: False
   topics:
   - name: lsst.sal.MTVMS.psd
@@ -14957,10 +14957,10 @@ columns:
 - name: mt_vibration_data_min
   tables: ["exposure_efd_unpivoted","visit1_efd_unpivoted"]
   store_unpivoted: True
-  function: max
+  function: min
   datatype: float
   unit: m2/(s4 Hz)
-  description: Acceleration PSD in the sensor direction.
+  description: Minimum acceleration PSD in the sensor direction.
   packed_series: False
   topics:
   - name: lsst.sal.MTVMS.psd
@@ -15685,7 +15685,7 @@ columns:
   function: mean
   datatype: float
   unit: Newton
-  description: Forces in Z axis.
+  description: Mean forces in Z axis.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.appliedForces
@@ -15854,7 +15854,7 @@ columns:
   function: mean
   datatype: float
   unit: Newton
-  description: Forces in Z axis.
+  description: Mean forces in Z axis.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.appliedElevationForces
@@ -16023,7 +16023,7 @@ columns:
   function: mean
   datatype: float
   unit: Newton
-  description: Forces in Z axis.
+  description: Mean forces in Z axis.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.appliedThermalForces
@@ -16192,7 +16192,7 @@ columns:
   function: mean
   datatype: float
   unit: Newton
-  description: Forces in Z axis.
+  description: Mean forces in Z axis.
   packed_series: False
   topics:
   - name: lsst.sal.MTM1M3.appliedAzimuthForces
@@ -16361,7 +16361,7 @@ columns:
   function: mean
   datatype: float
   unit: Newton
-  description: Force applied by SAL command or script for each actuator in sequence.
+  description: Mean force applied by SAL command or script for each actuator in sequence.
   packed_series: False
   topics:
   - name: lsst.sal.MTM2.axialForce
@@ -16446,7 +16446,7 @@ columns:
   function: mean
   datatype: float
   unit: Newton
-  description: Gravity component (F_e + F_0 + F_a + F_f) of look-up table (LUT) force for each actuator in sequence.
+  description: Mean gravity component (F_e + F_0 + F_a + F_f) of look-up table (LUT) force for each actuator in sequence.
   packed_series: False
   topics:
   - name: lsst.sal.MTM2.axialForce
@@ -16531,7 +16531,7 @@ columns:
   function: mean
   datatype: float
   unit: Newton
-  description: Temperature component (T_u + T_x + T_y + T_r) of look-up table (LUT) force for each actuator in sequence.
+  description: Mean temperature component (T_u + T_x + T_y + T_r) of look-up table (LUT) force for each actuator in sequence.
   packed_series: False
   topics:
   - name: lsst.sal.MTM2.axialForce

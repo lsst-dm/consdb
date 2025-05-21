@@ -46,7 +46,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  description: Mean median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -63,7 +63,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -79,7 +79,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  description: Mean standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -96,7 +96,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  description: Standard deviation of the standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -112,7 +112,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  description: Mean median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -129,7 +129,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -145,7 +145,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  description: Mean standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -162,7 +162,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: Standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  description: Standard deviation of the standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -178,7 +178,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  description: Mean median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -195,7 +195,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  description: Standard deviation of the median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -211,7 +211,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  description: Minimum median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -227,7 +227,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201)
+  description: Maximum median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -243,7 +243,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  description: Mean median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -260,7 +260,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  description: Standard deviation of the median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -276,7 +276,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  description: Minimum median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -292,7 +292,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201)
+  description: Maximum median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -308,7 +308,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  description: Mean median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -325,7 +325,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  description: Standard deviation of the median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -341,7 +341,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  description: Minimum median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -357,7 +357,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201)
+  description: Maximum median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -373,7 +373,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -390,7 +390,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -406,7 +406,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -422,7 +422,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -438,7 +438,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -455,7 +455,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -471,7 +471,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -487,7 +487,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -503,7 +503,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -520,7 +520,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -536,7 +536,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -552,7 +552,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -568,7 +568,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  description: Mean median wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -585,7 +585,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  description: Standard deviation of the median wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -601,7 +601,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  description: Minimum median wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -617,7 +617,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  description: Maximum median wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -633,7 +633,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  description: Mean maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -650,7 +650,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  description: Standard deviation of the maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -666,7 +666,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  description: Minimum maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -682,7 +682,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201)
+  description: Maximum maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -698,7 +698,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  description: Mean median wind speed (x, y, z) along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -715,7 +715,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  description: Standard deviation of the median wind speed (x, y, z) along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -731,7 +731,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  description: Minimum median wind speed (x, y, z) along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -747,7 +747,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 0 (salIndex 204)
+  description: Maximum median wind speed (x, y, z) along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -763,7 +763,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  description: Mean median wind speed (x, y, z) along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -780,7 +780,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  description: Standard deviation of the median wind speed (x, y, z) along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -796,7 +796,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  description: Minimum median wind speed (x, y, z) along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -812,7 +812,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 1 (salIndex 204)
+  description: Maximum median wind speed (x, y, z) along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -828,7 +828,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  description: Mean median wind speed (x, y, z) along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -845,7 +845,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  description: Standard deviation of the median wind speed (x, y, z) along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -861,7 +861,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  description: Minimum median wind speed (x, y, z) along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -877,7 +877,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) along axis 2 (salIndex 204)
+  description: Maximum median wind speed (x, y, z) along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -893,7 +893,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -910,7 +910,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -926,7 +926,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -942,7 +942,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -958,7 +958,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -975,7 +975,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -991,7 +991,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1007,7 +1007,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1023,7 +1023,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1040,7 +1040,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1056,7 +1056,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1072,7 +1072,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1088,7 +1088,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude (salIndex 204)
+  description: Mean median wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1105,7 +1105,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude (salIndex 204)
+  description: Standard deviation of the median wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1121,7 +1121,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude (salIndex 204)
+  description: Minimum median wind speed magnitude (salIndex 204)s
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1137,7 +1137,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude (salIndex 204)
+  description: Maximum median wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1153,7 +1153,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude (salIndex 204)
+  description: Mean maximum wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1170,7 +1170,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude (salIndex 204)
+  description: Standard deviation of the maximum wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1186,7 +1186,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude (salIndex 204)
+  description: Minimum maximum wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1202,7 +1202,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude (salIndex 204)
+  description: Maximum maximum wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1218,7 +1218,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  description: Mean median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1235,7 +1235,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  description: Standard deviation of the median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1251,7 +1251,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  description: Minimum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1267,7 +1267,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  description: Maximum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1283,7 +1283,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  description: Mean median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1300,7 +1300,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  description: Standard deviation of the median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1316,7 +1316,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  description: Minimum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1332,7 +1332,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  description: Maximum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1348,7 +1348,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  description: Mean median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1365,7 +1365,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  description: Standard deviation of the median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1381,7 +1381,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  description: Minimum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1397,7 +1397,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  description: Maximum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1413,7 +1413,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1430,7 +1430,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1446,7 +1446,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1462,7 +1462,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1478,7 +1478,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1495,7 +1495,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1511,7 +1511,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1527,7 +1527,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1543,7 +1543,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1560,7 +1560,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1576,7 +1576,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1592,7 +1592,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205)
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1608,7 +1608,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  description: Mean median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1625,7 +1625,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  description: Standard deviation of the median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1641,7 +1641,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  description: Minimum median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1657,7 +1657,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  description: Maximum median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1673,7 +1673,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  description: Mean maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1690,7 +1690,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  description: Standard deviation of the maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1706,7 +1706,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  description: Minimum maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1722,7 +1722,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205)
+  description: Maximum maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -1738,7 +1738,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 201)
+  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1755,7 +1755,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 201)
+  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1771,7 +1771,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 201)
+  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1787,7 +1787,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 201)
+  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1803,7 +1803,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 201). Not available for all sensor types.
+  description: Mean standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 201). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1820,7 +1820,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 201). Not available for all sensor types.
+  description: Standard deviation of the standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 201). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1836,7 +1836,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 201). Not available for all sensor types.
+  description: Minimum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 201). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1852,7 +1852,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 201). Not available for all sensor types.
+  description: Maximum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 201). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1868,7 +1868,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 201)
+  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1885,7 +1885,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 201)
+  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1901,7 +1901,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 201)
+  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1917,7 +1917,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 201)
+  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1933,7 +1933,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  description: Mean median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1950,7 +1950,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  description: Standard deviation of the median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1966,7 +1966,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  description: Minimum median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1982,7 +1982,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  description: Maximum median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -1998,7 +1998,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  description: Mean standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -2015,7 +2015,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  description: Standard deviation of the standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -2031,7 +2031,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  description: Minimum standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -2047,7 +2047,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
+  description: Maximum standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -2063,7 +2063,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  description: Mean median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -2080,7 +2080,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  description: Standard deviation of the median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -2096,7 +2096,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  description: Minimum median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -2112,7 +2112,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204)
+  description: Maximum median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
   subset_value: 204
@@ -2128,7 +2128,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 205)
+  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2145,7 +2145,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 205)
+  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2161,7 +2161,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 205)
+  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2177,7 +2177,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 205)
+  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2193,7 +2193,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 205). Not available for all sensor types.
+  description: Mean standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 205). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2210,7 +2210,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 205). Not available for all sensor types.
+  description: Standard deviation of the standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 205). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2226,7 +2226,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 205). Not available for all sensor types.
+  description: Minimum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 205). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2242,7 +2242,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Standard deviation of wind speed estimated from quartiles in XX (salIndex 205). Not available for all sensor types.
+  description: Maximum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 205). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2258,7 +2258,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 205)
+  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2275,7 +2275,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 205)
+  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2291,7 +2291,7 @@ columns:
   function: min
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 205)
+  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2307,7 +2307,7 @@ columns:
   function: max
   datatype: float
   unit: m/s
-  description: Median (mean for some sensors) wind speed in XX (salIndex 205)
+  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2323,7 +2323,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2340,7 +2340,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2356,7 +2356,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2372,7 +2372,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2388,7 +2388,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2405,7 +2405,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2421,7 +2421,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2437,7 +2437,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2453,7 +2453,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2470,7 +2470,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2486,7 +2486,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2502,7 +2502,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2518,7 +2518,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2535,7 +2535,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2551,7 +2551,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2567,7 +2567,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2583,7 +2583,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2600,7 +2600,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2616,7 +2616,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2632,7 +2632,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2648,7 +2648,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2665,7 +2665,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2681,7 +2681,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2697,7 +2697,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2713,7 +2713,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2730,7 +2730,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2746,7 +2746,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2762,7 +2762,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2778,7 +2778,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2795,7 +2795,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2811,7 +2811,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2827,7 +2827,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -2843,7 +2843,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -2860,7 +2860,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -2876,7 +2876,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -2892,7 +2892,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -2908,7 +2908,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -2925,7 +2925,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -2941,7 +2941,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -2957,7 +2957,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -2973,7 +2973,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -2990,7 +2990,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3006,7 +3006,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3022,7 +3022,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3038,7 +3038,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3055,7 +3055,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3071,7 +3071,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3087,7 +3087,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3103,7 +3103,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3120,7 +3120,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3136,7 +3136,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3152,7 +3152,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3168,7 +3168,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3185,7 +3185,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3201,7 +3201,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3217,7 +3217,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3233,7 +3233,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3250,7 +3250,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3266,7 +3266,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3282,7 +3282,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3298,7 +3298,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3315,7 +3315,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3331,7 +3331,7 @@ columns:
   function: min
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3347,7 +3347,7 @@ columns:
   function: max
   datatype: float
   unit: Celsius
-  description: AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7
+  description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -3389,7 +3389,7 @@ columns:
   function: mean
   datatype: float
   unit: arcsec
-  description: Combined full width half maximum
+  description: Mean combined full width half maximum.
   packed_series: False
   topics:
   - name: lsst.sal.DIMM.logevent_dimmMeasurement
@@ -3402,7 +3402,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  description: Mean Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
   packed_series: False
   topics:
   - name: lsst.sal.ATMCS.mount_AzEl_Encoders
@@ -3415,7 +3415,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
+  description: Mean Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
   packed_series: False
   topics:
   - name: lsst.sal.ATMCS.mount_AzEl_Encoders
@@ -3428,7 +3428,7 @@ columns:
   function: mean
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in x
+  description: Mean Auxiliary telescope hexapod reported position in x.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3438,10 +3438,10 @@ columns:
 
 - name: at_hexapod_reported_position_x_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in x
+  description: Maximum auxiliary telescope hexapod reported position in x.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3451,10 +3451,10 @@ columns:
 
 - name: at_hexapod_reported_position_x_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in x
+  description: Minimum auxiliary telescope hexapod reported position in x.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3467,7 +3467,7 @@ columns:
   function: mean
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in y
+  description: Mean Auxiliary telescope hexapod reported position in x.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3477,10 +3477,10 @@ columns:
 
 - name: at_hexapod_reported_position_y_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in y
+  description: Maximum auxiliary telescope hexapod reported position in y.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3490,10 +3490,10 @@ columns:
 
 - name: at_hexapod_reported_position_y_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in y
+  description: Minimum auxiliary telescope hexapod reported position in y.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3506,7 +3506,7 @@ columns:
   function: mean
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in z
+  description: Mean auxiliary telescope hexapod reported position in z.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3516,10 +3516,10 @@ columns:
 
 - name: at_hexapod_reported_position_z_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in z
+  description: Maximum auxiliary telescope hexapod reported position in z.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3529,10 +3529,10 @@ columns:
 
 - name: at_hexapod_reported_position_z_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in z
+  description: Minimum auxiliary telescope hexapod reported position in z.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3545,7 +3545,7 @@ columns:
   function: mean
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in u
+  description: Mean auxiliary telescope hexapod reported position in u.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3555,10 +3555,10 @@ columns:
 
 - name: at_hexapod_reported_position_u_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in u
+  description: Maximum auxiliary telescope hexapod reported position in u.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3568,10 +3568,10 @@ columns:
 
 - name: at_hexapod_reported_position_u_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in u
+  description: Minimum auxiliary telescope hexapod reported position in u.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3584,7 +3584,7 @@ columns:
   function: mean
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in v
+  description: Mean auxiliary telescope hexapod reported position in v.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3594,10 +3594,10 @@ columns:
 
 - name: at_hexapod_reported_position_v_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in v
+  description: Maximum uxiliary telescope hexapod reported position in v.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3607,10 +3607,10 @@ columns:
 
 - name: at_hexapod_reported_position_v_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in v
+  description: Minimum auxiliary telescope hexapod reported position in v.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3623,7 +3623,7 @@ columns:
   function: mean
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in w
+  description: Mean auxiliary telescope hexapod reported position in w.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3633,10 +3633,10 @@ columns:
 
 - name: at_hexapod_reported_position_w_max
   tables: ["exposure_efd","visit1_efd"]
-  function: min
+  function: max
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in w
+  description: Maximum auxiliary telescope hexapod reported position in w.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3646,10 +3646,10 @@ columns:
 
 - name: at_hexapod_reported_position_w_min
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: min
   datatype: float
   unit: mm
-  description: Auxiliary telescope hexapod reported position in w
+  description: Minimum auxiliary telescope hexapod reported position in w.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3662,7 +3662,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Mean acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -4078,7 +4078,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Standard deviation of the acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -4493,7 +4493,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Minimum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -4908,7 +4908,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Maximum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -5323,7 +5323,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Mean acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -5739,7 +5739,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Standard deviation of the acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -6154,7 +6154,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Minimum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -6569,7 +6569,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Maximum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -6984,7 +6984,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Mean acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -7400,7 +7400,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Standard deviation of the acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -7815,7 +7815,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Minimum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -8230,7 +8230,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Maximum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -8645,7 +8645,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Mean acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -8862,7 +8862,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Standard deviation of the acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -9078,7 +9078,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Minimum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -9294,7 +9294,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in x direction.
+  description: Maximum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -9510,7 +9510,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Mean acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -9727,7 +9727,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Standard deviation of the acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -9943,7 +9943,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Minimum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -10159,7 +10159,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in y direction.
+  description: Maximum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -10375,7 +10375,7 @@ columns:
   function: mean
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Mean acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -10592,7 +10592,7 @@ columns:
   function_args: {"ddof": 1}
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Standard deviation of the acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -10808,7 +10808,7 @@ columns:
   function: min
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Minimum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -11024,7 +11024,7 @@ columns:
   function: max
   datatype: float
   unit: m/s2
-  description: Acceleration in z direction.
+  description: Maximum cceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -11240,7 +11240,7 @@ columns:
   function: mean
   datatype: float
   unit: Celsius
-  description: Dew point in AuxTel-ESS02
+  description: Mean dew point in AuxTel-ESS02.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -11256,7 +11256,7 @@ columns:
   function: mean
   datatype: float
   unit: percent
-  description: Relative humidity in AuxTel-ESS02
+  description: Mean relative humidity in AuxTel-ESS02.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -11272,7 +11272,7 @@ columns:
   function: mean
   datatype: float
   unit: Pa
-  description: Atmosferic pressure item 0 in AuxTel-ESS02
+  description: Mean atmosferic pressure item 0 in AuxTel-ESS02.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -11288,7 +11288,7 @@ columns:
   function: mean
   datatype: float
   unit: Pa
-  description: Atmosferic pressure item 1 in AuxTel-ESS02
+  description: Mean atmosferic pressure item 1 in AuxTel-ESS02.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -11304,7 +11304,7 @@ columns:
   function: mean
   datatype: float
   unit: Pa
-  description: Atmosferic pressure item 0 in weather tower atmospheric pressure
+  description: Mean atmosferic pressure item 0 in weather tower atmospheric pressure.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -11320,7 +11320,7 @@ columns:
   function: mean
   datatype: float
   unit: Pa
-  description: Atmosferic pressure item 1 in weather tower atmospheric pressure
+  description: Mean atmosferic pressure item 1 in weather tower atmospheric pressure.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -11336,7 +11336,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  description: Mean RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
   topics:
   - name: lsst.sal.ATPtg.mountPositions
@@ -11349,7 +11349,7 @@ columns:
   function: stddev
   datatype: float
   unit: degree
-  description: RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  description: Standard deviation of the RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
   topics:
   - name: lsst.sal.ATPtg.mountPositions
@@ -11362,7 +11362,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  description: Mean Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
   topics:
   - name: lsst.sal.ATPtg.mountPositions
@@ -11375,7 +11375,7 @@ columns:
   function: stddev
   datatype: float
   unit: degree
-  description: Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
+  description: Standard deviation of the Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
   topics:
   - name: lsst.sal.ATPtg.mountPositions
@@ -11388,7 +11388,7 @@ columns:
   function: mean
   datatype: float
   unit: degree
-  description: Calculated sky angle.
+  description: Mean c sky angle.
   packed_series: False
   topics:
   - name: lsst.sal.ATPtg.mountPositions
@@ -11401,7 +11401,7 @@ columns:
   function: stddev
   datatype: float
   unit: degree
-  description: Calculated sky angle.
+  description: Standard deviation of the calculated sky angle.
   packed_series: False
   topics:
   - name: lsst.sal.ATPtg.mountPositions
