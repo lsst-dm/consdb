@@ -237,7 +237,7 @@ def write_visit_tables(f, config):
 def write_column(f, column: dict, table: str):
     """Helper function to write column definitions"""
     column_name = column["name"]
-    f.write(f'  - name: "{column_name}"\n')
+    f.write(f"  - name: {column_name}\n")
     f.write(f'    "@id": "#{table}.{column_name}"\n')
     f.write(f'    datatype: {column["datatype"]}\n')
     f.write("    nullable: true\n")
