@@ -113,7 +113,7 @@ def test_column_writing(tmp_path, mock_config):
     ):
         schema_path = generate_schema(config_path, "latiss")
         content = schema_path.read_text()
-        assert '- name: "column1"' in content
+        assert "- name: column1" in content
         assert "datatype: int" in content
         assert "description: Test column" in content
 
