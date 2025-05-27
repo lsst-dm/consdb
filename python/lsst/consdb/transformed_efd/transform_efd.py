@@ -323,7 +323,6 @@ def _get_retryable_tasks(
 
         since_created = now - created
         next_wait = timedelta(hours=base_hour ** (retries + 1))
-        print(since_created)
         if next_wait < since_created < max_age:
             selected.append(t)
             log.debug(
