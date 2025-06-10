@@ -187,6 +187,10 @@ services:
         then
             psql -h db -U postgres -d postgres \
                 -c "CREATE SCHEMA IF NOT EXISTS \"cdb\";"
+            psql -h db -U postgres -d postgres \
+                -c "CREATE USER \"usdf\";"
+            psql -h db -U postgres -d postgres \
+                -c "CREATE USER \"oods\";"
             for instrument in latiss lsstcomcam lsstcomcamsim lsstcam
             do
                 echo Alembic update for $$instrument > /dev/stderr

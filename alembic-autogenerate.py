@@ -52,6 +52,8 @@ for instrument in instruments:
         with instance.engine.connect() as connection:
             connection.execute(text("CREATE SCHEMA cdb;"))
             connection.execute(text(f"CREATE SCHEMA cdb_{instrument};"))
+            connection.execute(text("CREATE USER usdf;"))
+            connection.execute(text("CREATE USER oods;"))
             connection.commit()
 
         # Initialize Alembic configuration
