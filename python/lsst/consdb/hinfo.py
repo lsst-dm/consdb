@@ -259,6 +259,7 @@ def altaz_midpoint(tracking_radec: SkyCoord, t1: astropy.time.Time, t2: astropy.
 OI_MAPPING: dict[str, ColumnMapping] = {
     "exposure_name": "observation_id",
     "exposure_id": "exposure_id",
+    "can_see_sky": "can_see_sky",
     "day_obs": "observing_day",
     "seq_num": "observation_counter",
     "physical_filter": "physical_filter",
