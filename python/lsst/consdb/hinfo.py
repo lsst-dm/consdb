@@ -275,7 +275,7 @@ OI_MAPPING: dict[str, ColumnMapping] = {
         "datetime_end",
     ),
     "altitude_start": (lambda altaz: altaz.alt.deg, "altaz_begin"),
-    "altitude_end": (lambda altaz: altaz.az.deg, "altaz_end"),
+    "altitude_end": (lambda altaz: altaz.alt.deg, "altaz_end"),
     "altitude": (
         lambda coord, t1, t2: altaz_midpoint(coord, t1, t2).alt.deg,
         "tracking_radec",
