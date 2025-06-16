@@ -152,7 +152,6 @@ ColumnMapping = Union[str, tuple[Callable[..., Any], *tuple[str, ...]]]
 KW_MAPPING: dict[str, ColumnMapping] = {
     "controller": "CONTRLLR",
     "band": "FILTBAND",
-    "exp_time": "EXPTIME",
     "wind_speed": "WINDSPD",
     "wind_dir": "WINDDIR",
     "dimm_seeing": "SEEING",
@@ -316,6 +315,7 @@ def altaz_midpoint(
 OI_MAPPING: dict[str, ColumnMapping] = {
     "exposure_name": "observation_id",
     "exposure_id": "exposure_id",
+    "exp_time": "exposure_time_requested",
     "can_see_sky": "can_see_sky",
     "day_obs": "observing_day",
     "seq_num": "observation_counter",
