@@ -5361,7 +5361,7 @@ columns:
 
 - name: camera_hexapod_compensation_offset_u
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: degree
   description: Camera Hexapod compensation offset (LUT) mean U angle.
@@ -5377,7 +5377,7 @@ columns:
 
 - name: camera_hexapod_compensation_offset_v
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: degree
   description: Camera Hexapod compensation offset (LUT) mean V angle.
@@ -5393,7 +5393,7 @@ columns:
 
 - name: camera_hexapod_compensation_offset_w
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: degree
   description: Camera Hexapod compensation offset (LUT) mean W angle.
@@ -5409,7 +5409,7 @@ columns:
 
 - name: camera_hexapod_compensation_offset_x
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: um
   description: Camera Hexapod compensation offset (LUT) mean X position.
@@ -5425,7 +5425,7 @@ columns:
 
 - name: camera_hexapod_compensation_offset_y
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: um
   description: Camera Hexapod compensation offset (LUT) mean Y position.
@@ -5441,7 +5441,7 @@ columns:
 
 - name: camera_hexapod_compensation_offset_z
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: um
   description: Camera Hexapod compensation offset (LUT) mean Z position.
@@ -5457,7 +5457,7 @@ columns:
 
 - name: m2_hexapod_compensation_offset_u
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: degree
   description: M2 Hexapod compensation offset (LUT) mean U angle.
@@ -5473,7 +5473,7 @@ columns:
 
 - name: m2_hexapod_compensation_offset_v
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: degree
   description: M2 Hexapod compensation offset (LUT) mean V angle.
@@ -5489,7 +5489,7 @@ columns:
 
 - name: m2_hexapod_compensation_offset_w
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: degree
   description: M2 Hexapod compensation offset (LUT) mean W angle.
@@ -5505,7 +5505,7 @@ columns:
 
 - name: m2_hexapod_compensation_offset_x
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: um
   description: M2 Hexapod compensation offset (LUT) mean X position.
@@ -5521,7 +5521,7 @@ columns:
 
 - name: m2_hexapod_compensation_offset_y
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: um
   description: M2 Hexapod compensation offset (LUT) mean Y position.
@@ -5537,7 +5537,7 @@ columns:
 
 - name: m2_hexapod_compensation_offset_z
   tables: ["exposure_efd","visit1_efd"]
-  function: mean
+  function: most_recent_value_in_last_minute
   datatype: float
   unit: um
   description: M2 Hexapod compensation offset (LUT) mean Z position.
@@ -15424,7 +15424,7 @@ columns:
   description: Temperatures of the 96 M1M3 fan coil units. See documentation for details on positions.
   packed_series: False
   topics:
-  - name: lsst.sal.MTAOS.logevent_wavefrontError
+  - name: lsst.sal.MTM1M3TS.thermalData
     fields:
     - name: absoluteTemperature0
     - name: absoluteTemperature1
