@@ -111,7 +111,215 @@ columns:
     - name: elevationEncoderAbsolutePosition3
 
 
-- name: mt_salindex110_sonic_temperature_mean
+- name: mt_m1m3_glycol_loop_temperature_inside_cell_temp_1
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature inside M1M3 Cell thermocouple 1. See M1M3 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM1M3TS.glycolLoopTemperature
+    fields:
+    - name: insideCellTemperature1
+
+
+- name: mt_m1m3_glycol_loop_temperature_inside_cell_temp_2
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature inside M1M3 Cell thermocouple 2. See M1M3 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM1M3TS.glycolLoopTemperature
+    fields:
+    - name: insideCellTemperature2
+
+
+- name: mt_m1m3_glycol_loop_temperature_inside_cell_temp_3
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature inside M1M3 Cell thermocouple 3. See M1M3 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM1M3TS.glycolLoopTemperature
+    fields:
+    - name: insideCellTemperature3
+
+
+- name: mt_m1m3_glycol_loop_temperature_above_mirror_temp
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature above mirror M1M3. See M1M3 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM1M3TS.glycolLoopTemperature
+    fields:
+    - name: aboveMirrorTemperature
+
+
+- name: mt_m2_temperature_ring0
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring0 (LG2-1 A5/A6 OD) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring0
+
+
+- name: mt_m2_temperature_ring1
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring1 (LG2-2 A1 INNER) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring1
+
+
+- name: mt_m2_temperature_ring2
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring2 (LG2-3 A1 OUTER) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring2
+
+
+- name: mt_m2_temperature_ring3
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring3 (LG2-4 A1 OD) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring3
+
+
+- name: mt_m2_temperature_ring4
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring4 (LG3-1 A4 INNER) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring4
+
+
+- name: mt_m2_temperature_ring5
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring5 (LG3-2 A2/A3 INNER (not mounted)) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring5
+
+
+- name: mt_m2_temperature_ring6
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring6 (LG3-3 A2/A3 OUTER) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring6
+
+
+- name: mt_m2_temperature_ring7
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring7 (LG3-4 A2/A3 OD) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring7
+
+
+- name: mt_m2_temperature_ring8
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring8 (LG4-1 A4 OUTER) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring8
+
+
+- name: mt_m2_temperature_ring9
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring9 (LG4-2 A4 OD) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring9
+
+
+- name: mt_m2_temperature_ring10
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring10 (LG4-3 A5/A6 OUTER) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring10
+
+
+- name: mt_m2_temperature_ring11
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Mean median temperature on ring11 (LG4-4 A5/A6 INNER) thermocouple on M2. See M2 documentation for a map of the thermocouples.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTM2.temperature
+    fields:
+    - name: ring11
+
+
+- name: mt_salindex110_sonic_temperature
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -129,44 +337,10 @@ columns:
 
 - name: mt_salindex110_sonic_temperature_stddev
   tables: ["exposure_efd","visit1_efd"]
-  function: stddev
-  function_args: {"ddof": 1}
-  datatype: float
-  unit: Celsius
-  description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
-  packed_series: False
-  subset_field: salIndex
-  subset_value: 110
-  topics:
-  - name: lsst.sal.ESS.airTurbulence
-    fields:
-    - name: sonicTemperature
-    - name: salIndex
-
-
-- name: mt_salindex110_sonic_temperature_stddev_mean
-  tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: Celsius
   description: Standard deviation of the mean standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
-  packed_series: False
-  subset_field: salIndex
-  subset_value: 110
-  topics:
-  - name: lsst.sal.ESS.airTurbulence
-    fields:
-    - name: sonicTemperatureStdDev
-    - name: salIndex
-
-
-- name: mt_salindex110_sonic_temperature_stddev_stddev
-  tables: ["exposure_efd","visit1_efd"]
-  function: stddev
-  function_args: {"ddof": 1}
-  datatype: float
-  unit: Celsius
-  description: Standard deviation of the standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 110
@@ -4532,6 +4706,22 @@ columns:
     - name: salIndex
 
 
+- name: mt_salindex112_temperature_0_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: Celsius
+  description: Temperature measurement from M2 Humidity and temperature sensor.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 112
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
+
+
 - name: mt_salindex301_temperature_0_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
@@ -5169,238 +5359,196 @@ columns:
     - name: elevationEncoderAbsolutePosition3
 
 
-- name: mt_hexapod_uncompensated_position_u_mean
+- name: camera_hexapod_compensation_offset_u
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: degree
-  description: Mean U angle.
+  description: Camera Hexapod compensation offset (LUT) mean U angle.
   packed_series: False
+  subset_field: salIndex
+  subset_value: 1
   topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
     fields:
     - name: u
+    - name: salIndex
 
 
-- name: mt_hexapod_uncompensated_position_u_max
+- name: camera_hexapod_compensation_offset_v
   tables: ["exposure_efd","visit1_efd"]
-  function: max
+  function: mean
   datatype: float
   unit: degree
-  description: Maximum U angle.
+  description: Camera Hexapod compensation offset (LUT) mean V angle.
   packed_series: False
+  subset_field: salIndex
+  subset_value: 1
   topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
+    fields:
+    - name: v
+    - name: salIndex
+
+
+- name: camera_hexapod_compensation_offset_w
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: degree
+  description: Camera Hexapod compensation offset (LUT) mean W angle.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 1
+  topics:
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
+    fields:
+    - name: w
+    - name: salIndex
+
+
+- name: camera_hexapod_compensation_offset_x
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: um
+  description: Camera Hexapod compensation offset (LUT) mean X position.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 1
+  topics:
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
+    fields:
+    - name: x
+    - name: salIndex
+
+
+- name: camera_hexapod_compensation_offset_y
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: um
+  description: Camera Hexapod compensation offset (LUT) mean Y position.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 1
+  topics:
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
+    fields:
+    - name: y
+    - name: salIndex
+
+
+- name: camera_hexapod_compensation_offset_z
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: um
+  description: Camera Hexapod compensation offset (LUT) mean Z position.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 1
+  topics:
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
+    fields:
+    - name: z
+    - name: salIndex
+
+
+- name: m2_hexapod_compensation_offset_u
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: degree
+  description: M2 Hexapod compensation offset (LUT) mean U angle.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 2
+  topics:
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
     fields:
     - name: u
+    - name: salIndex
 
 
-- name: mt_hexapod_uncompensated_position_u_min
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: degree
-  description: Minimum U angle.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: u
-
-
-- name: mt_hexapod_uncompensated_position_v_mean
+- name: m2_hexapod_compensation_offset_v
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: degree
-  description: Mean V angle.
+  description: M2 Hexapod compensation offset (LUT) mean V angle.
   packed_series: False
+  subset_field: salIndex
+  subset_value: 2
   topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
     fields:
     - name: v
+    - name: salIndex
 
 
-- name: mt_hexapod_uncompensated_position_v_max
-  tables: ["exposure_efd","visit1_efd"]
-  function: max
-  datatype: float
-  unit: degree
-  description: Maximum V angle.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: v
-
-
-- name: mt_hexapod_uncompensated_position_v_min
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: degree
-  description: Minimum V angle.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: v
-
-
-- name: mt_hexapod_uncompensated_position_w_mean
+- name: m2_hexapod_compensation_offset_w
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: degree
-  description: Mean W angle.
+  description: M2 Hexapod compensation offset (LUT) mean W angle.
   packed_series: False
+  subset_field: salIndex
+  subset_value: 2
   topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
     fields:
     - name: w
+    - name: salIndex
 
 
-- name: mt_hexapod_uncompensated_position_w_max
-  tables: ["exposure_efd","visit1_efd"]
-  function: max
-  datatype: float
-  unit: degree
-  description: Maximum W angle.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: w
-
-
-- name: mt_hexapod_uncompensated_position_w_min
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: degree
-  description: Minimum W angle.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: w
-
-
-- name: mt_hexapod_uncompensated_position_x_mean
+- name: m2_hexapod_compensation_offset_x
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: um
-  description: Mean X position.
+  description: M2 Hexapod compensation offset (LUT) mean X position.
   packed_series: False
+  subset_field: salIndex
+  subset_value: 2
   topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
     fields:
     - name: x
+    - name: salIndex
 
 
-- name: mt_hexapod_uncompensated_position_x_max
-  tables: ["exposure_efd","visit1_efd"]
-  function: max
-  datatype: float
-  unit: um
-  description: Maximum X position.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: x
-
-
-- name: mt_hexapod_uncompensated_position_x_min
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: um
-  description: Minimum X position.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: x
-
-
-- name: mt_hexapod_uncompensated_position_y_mean
+- name: m2_hexapod_compensation_offset_y
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: um
-  description: Mean Y position.
+  description: M2 Hexapod compensation offset (LUT) mean Y position.
   packed_series: False
+  subset_field: salIndex
+  subset_value: 2
   topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
     fields:
     - name: y
+    - name: salIndex
 
 
-- name: mt_hexapod_uncompensated_position_y_max
-  tables: ["exposure_efd","visit1_efd"]
-  function: max
-  datatype: float
-  unit: um
-  description: Maximum Y position.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: y
-
-
-- name: mt_hexapod_uncompensated_position_y_min
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: um
-  description: Minimum Y position.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: y
-
-
-- name: mt_hexapod_uncompensated_position_z_mean
+- name: m2_hexapod_compensation_offset_z
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
   unit: um
-  description: Mean Z position.
+  description: M2 Hexapod compensation offset (LUT) mean Z position.
   packed_series: False
+  subset_field: salIndex
+  subset_value: 2
   topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
+  - name: lsst.sal.MTHexapod.logevent_compensationOffset
     fields:
     - name: z
-
-
-- name: mt_hexapod_uncompensated_position_z_max
-  tables: ["exposure_efd","visit1_efd"]
-  function: max
-  datatype: float
-  unit: um
-  description: Maximum Z position.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: z
-
-
-- name: mt_hexapod_uncompensated_position_z_min
-  tables: ["exposure_efd","visit1_efd"]
-  function: min
-  datatype: float
-  unit: um
-  description: Minimum Z position.
-  packed_series: False
-  topics:
-  - name: lsst.sal.MTHexapod.logevent_uncompensatedPosition
-    fields:
-    - name: z
+    - name: salIndex
 
 
 - name: mt_salindex111_dewpoint_mean
@@ -15265,6 +15413,115 @@ columns:
     - name: accelerationPSDZ97
     - name: accelerationPSDZ98
     - name: accelerationPSDZ102
+
+
+- name: mt_m1m3_fan_coil_units_themperatures
+  tables: ["exposure_efd_unpivoted","visit1_efd_unpivoted"]
+  store_unpivoted: True
+  function: most_recent_value_in_last_minute
+  datatype: float
+  unit: Celsius
+  description: Temperatures of the 96 M1M3 fan coil units. See documentation for details on positions.
+  packed_series: False
+  topics:
+  - name: lsst.sal.MTAOS.logevent_wavefrontError
+    fields:
+    - name: absoluteTemperature0
+    - name: absoluteTemperature1
+    - name: absoluteTemperature2
+    - name: absoluteTemperature3
+    - name: absoluteTemperature4
+    - name: absoluteTemperature5
+    - name: absoluteTemperature6
+    - name: absoluteTemperature7
+    - name: absoluteTemperature8
+    - name: absoluteTemperature9
+    - name: absoluteTemperature10
+    - name: absoluteTemperature11
+    - name: absoluteTemperature12
+    - name: absoluteTemperature13
+    - name: absoluteTemperature14
+    - name: absoluteTemperature15
+    - name: absoluteTemperature16
+    - name: absoluteTemperature17
+    - name: absoluteTemperature18
+    - name: absoluteTemperature19
+    - name: absoluteTemperature20
+    - name: absoluteTemperature21
+    - name: absoluteTemperature22
+    - name: absoluteTemperature23
+    - name: absoluteTemperature24
+    - name: absoluteTemperature25
+    - name: absoluteTemperature26
+    - name: absoluteTemperature27
+    - name: absoluteTemperature28
+    - name: absoluteTemperature29
+    - name: absoluteTemperature30
+    - name: absoluteTemperature31
+    - name: absoluteTemperature32
+    - name: absoluteTemperature33
+    - name: absoluteTemperature34
+    - name: absoluteTemperature35
+    - name: absoluteTemperature36
+    - name: absoluteTemperature37
+    - name: absoluteTemperature38
+    - name: absoluteTemperature39
+    - name: absoluteTemperature40
+    - name: absoluteTemperature41
+    - name: absoluteTemperature42
+    - name: absoluteTemperature43
+    - name: absoluteTemperature44
+    - name: absoluteTemperature45
+    - name: absoluteTemperature46
+    - name: absoluteTemperature47
+    - name: absoluteTemperature48
+    - name: absoluteTemperature49
+    - name: absoluteTemperature50
+    - name: absoluteTemperature51
+    - name: absoluteTemperature52
+    - name: absoluteTemperature53
+    - name: absoluteTemperature54
+    - name: absoluteTemperature55
+    - name: absoluteTemperature56
+    - name: absoluteTemperature57
+    - name: absoluteTemperature58
+    - name: absoluteTemperature59
+    - name: absoluteTemperature60
+    - name: absoluteTemperature61
+    - name: absoluteTemperature62
+    - name: absoluteTemperature63
+    - name: absoluteTemperature64
+    - name: absoluteTemperature65
+    - name: absoluteTemperature66
+    - name: absoluteTemperature67
+    - name: absoluteTemperature68
+    - name: absoluteTemperature69
+    - name: absoluteTemperature70
+    - name: absoluteTemperature71
+    - name: absoluteTemperature72
+    - name: absoluteTemperature73
+    - name: absoluteTemperature74
+    - name: absoluteTemperature75
+    - name: absoluteTemperature76
+    - name: absoluteTemperature77
+    - name: absoluteTemperature78
+    - name: absoluteTemperature79
+    - name: absoluteTemperature80
+    - name: absoluteTemperature81
+    - name: absoluteTemperature82
+    - name: absoluteTemperature83
+    - name: absoluteTemperature84
+    - name: absoluteTemperature85
+    - name: absoluteTemperature86
+    - name: absoluteTemperature87
+    - name: absoluteTemperature88
+    - name: absoluteTemperature89
+    - name: absoluteTemperature90
+    - name: absoluteTemperature91
+    - name: absoluteTemperature92
+    - name: absoluteTemperature93
+    - name: absoluteTemperature94
+    - name: absoluteTemperature95
 
 
 - name: mt_logevent_annular_zernike_coeff
