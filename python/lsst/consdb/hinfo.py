@@ -327,6 +327,7 @@ OI_MAPPING: dict[str, ColumnMapping] = {
     "azimuth_end": (lambda altaz: altaz.az.deg, "altaz_end"),
     "azimuth": (
         lambda coord, t1, t2, altaz1, altaz2: altaz_midpoint(coord, t1, t2, altaz1, altaz2).az.deg,
+        "ACCEPTS_NULL",
         "tracking_radec",
         "datetime_begin",
         "datetime_end",
@@ -337,6 +338,7 @@ OI_MAPPING: dict[str, ColumnMapping] = {
     "altitude_end": (lambda altaz: altaz.alt.deg, "altaz_end"),
     "altitude": (
         lambda coord, t1, t2, altaz1, altaz2: altaz_midpoint(coord, t1, t2, altaz1, altaz2).alt.deg,
+        "ACCEPTS_NULL",
         "tracking_radec",
         "datetime_begin",
         "datetime_end",
@@ -347,6 +349,7 @@ OI_MAPPING: dict[str, ColumnMapping] = {
     "zenith_distance_end": (lambda altaz: altaz.zen.deg, "altaz_end"),
     "zenith_distance": (
         lambda coord, t1, t2, altaz1, altaz2: altaz_midpoint(coord, t1, t2, altaz1, altaz2).zen.deg,
+        "ACCEPTS_NULL",
         "tracking_radec",
         "datetime_begin",
         "datetime_end",
@@ -446,8 +449,12 @@ def process_oi_column(column_def: ColumnMapping, obs_info: ObservationInfo) -> A
         logger.warning(f"Value missing in processing of OI: {column_def}")
     elif isinstance(column_def, tuple):
         fn = column_def[0]
-        arg_values = [process_oi_column(a, obs_info) for a in column_def[1:]]
-        if all(v is not None for v in arg_values):
+
+        accepts_null = column_def[1] == "ACCEPTS_NULL"
+        arg_names = column_def[2:] if accepts_null else column_def[1:]
+
+        arg_values = [process_oi_column(a, obs_info) for a in arg_names]
+        if accepts_null or all(v is not None for v in arg_values):
             return fn(*arg_values)
         logger.warning(f"Missing values in processing of OI: {fn} {arg_values=}")
 
@@ -497,6 +504,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
             elif isinstance(exposure_rec[column], np.float64):
                 exposure_rec[column] = float(exposure_rec[column])
         except Exception:
+            exposure_rec[column] = None
             logger.exception(f"Unable to process column: {column}")
 
     stmt = insert(instrument_obj.exposure_table).values(exposure_rec)
