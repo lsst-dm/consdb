@@ -198,7 +198,7 @@ def insert_flexible_metadata(
         # check value against dtype
         dtype = schema[key][0]
         if dtype != type(value).__name__:
-            raise BadValueException(f"{dtype} value", value)
+            raise BadValueException(f"{dtype} value", value, [type(value).__name__])
 
     has_multi_column_primary_keys = (
         instrument_table.get_schema_version() >= Version("3.2.0") and obs_type == "exposure"
@@ -258,6 +258,10 @@ def insert(
     table_name = table.lower()
     if not table.lower().startswith(schema):
         table_name = schema + table_name
+
+    if table_name not in instrument_table.schemas.tables:
+        raise BadValueException("table", table_name, list(instrument_table.schemas.tables.keys()))
+
     table_obj = instrument_table.schemas.tables[table_name]
 
     valdict = data.values
