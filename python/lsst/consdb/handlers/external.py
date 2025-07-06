@@ -198,7 +198,7 @@ def insert_flexible_metadata(
         # check value against dtype
         dtype = schema[key][0]
         if dtype != type(value).__name__:
-            raise BadValueException(f"{dtype} value", value)
+            raise BadValueException(f"{dtype} value", value, [type(value).__name__])
 
     has_multi_column_primary_keys = (
         instrument_table.get_schema_version() >= Version("3.2.0") and obs_type == "exposure"
@@ -238,6 +238,40 @@ def insert_flexible_metadata(
     )
 
 
+def validate_columns(table_obj: sqlalchemy.sql.schema.Table, valdict: dict[str, Any]) -> None:
+    """Checks for extra or missing columns in the dictionary.
+
+    All items in the dictionary must correspond to a column name in table_obj,
+    and all non-nullable columns in table_obj must be present in valdict.
+
+    Parameters
+    ----------
+    table_obj : `~sqlalchemy.sql.schema.Table`
+        The table into which valdict will be inserted.
+    valdict : `dict[str, Any]`
+        The data that will be inserted into the table.
+
+    Raises
+    ------
+    BadValueException
+        If valdict is not compatible with the table_obj table.
+    """
+    # Check for missing columns in valdict.
+    missing_columns = []
+    for column in table_obj.columns:
+        if not column.nullable and column.name not in valdict:
+            missing_columns.append(column.name)
+
+    if missing_columns:
+        raise BadValueException("missing columns", ",".join(missing_columns))
+
+    # Check for extra columns in valdict that would be unconsumed.
+    valid_columns = set(column.name for column in table_obj.columns)
+    extra_columns = set(valdict.keys()) - valid_columns
+    if extra_columns:
+        raise BadValueException("extra columns", ",".join(extra_columns))
+
+
 @external_router.post(
     "/insert/{instrument}/{table}/obs/{obs_id}",
     summary="Insert data row",
@@ -258,6 +292,10 @@ def insert(
     table_name = table.lower()
     if not table.lower().startswith(schema):
         table_name = schema + table_name
+
+    if table_name not in instrument_table.schemas.tables:
+        raise BadValueException("table", table_name, list(instrument_table.schemas.tables.keys()))
+
     table_obj = instrument_table.schemas.tables[table_name]
 
     valdict = data.values
@@ -279,6 +317,9 @@ def insert(
             if "seq_num" not in valdict:
                 valdict["seq_num"] = seq_num
 
+    validate_columns(table_obj, valdict)
+
+    # Do the insert with sqlalchemy.
     stmt: sqlalchemy.sql.dml.Insert
     stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict)
     if u != 0:
@@ -354,6 +395,7 @@ def insert_multiple(
                 timestamp = astropy.time.Time(timestamp, format="isot", scale="tai")
                 valdict[column] = timestamp.to_datetime()
 
+    validate_columns(table_obj, valdict)
     bulk_data.append(valdict)
 
     try:

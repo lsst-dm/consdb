@@ -190,7 +190,7 @@ class InstrumentTable:
         query_result = db.execute(query).first()
 
         if not query_result:
-            raise BadValueException(f"Exposure ID: {exposure_id} - no such exposure ID")
+            raise BadValueException("exposure_id", exposure_id)
         return (query_result.day_obs, query_result.seq_num)
 
     def refresh_flexible_metadata_schema(self, obs_type: str):
