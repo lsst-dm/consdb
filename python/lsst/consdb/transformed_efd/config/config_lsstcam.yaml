@@ -5254,6 +5254,41 @@ columns:
     fields:
     - name: fwhm
 
+- name: mt_ringss_fwhm_free
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: arcsec
+  description: Mean RINGSS free seeing full width half maximum.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.logevent_ringssMeasurement
+    fields:
+    - name: fwhmFree
+
+- name: mt_ringss_fwhm_scintillation
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: arcsec
+  description: Mean RINGSS scintillationseeing full width half maximum.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.logevent_ringssMeasurement
+    fields:
+    - name: fwhmScintillation
+
+- name: mt_ringss_fwhm_sector
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  unit: arcsec
+  description: Mean RINGSS sector seeing full width half maximum.
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.logevent_ringssMeasurement
+    fields:
+    - name: fwhmSector
 
 - name: mt_azimuth_encoder_absolute_position_0_mean
   tables: ["exposure_efd","visit1_efd"]
