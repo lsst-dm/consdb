@@ -115,7 +115,9 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
                 f" CREATE VIEW {schema_name}.visit1 AS SELECT * FROM {schema_name}.exposure;"
             )
 
-        yield TestClient(pqserver.app)
+            client = TestClient(pqserver.app)
+            client.connection = connection
+            yield client
 
 
 @pytest.fixture
@@ -319,6 +321,56 @@ def test_missing_primary_key(lsstcomcamsim):
         "instrument": "latiss",
         "obs_id": 2024032100003,
     }
+
+    # Add n_inputs to the visit1_quicklook table
+    response = client.post(
+        "/consdb/insert/latiss/visit1_quicklook/by_seq_num/20240327/2",
+        json={
+            "values": {
+                "visit_id": 2024032100003,
+                "n_inputs": 12345,
+            },
+        },
+    )
+    _assert_http_status(response, 200)
+    result = response.json()
+    assert result == {
+        "message": "Data inserted",
+        "table": "cdb_latiss.visit1_quicklook",
+        "instrument": "latiss",
+        "obs_id": [20240327, 2],
+    }
+
+    # Verify the result in the database
+    query_result = client.connection.execute(
+        sa.text("SELECT n_inputs FROM cdb_latiss.visit1_quicklook WHERE day_obs = 20240327 AND seq_num = 2")
+    ).scalar_one_or_none()
+    assert query_result == 12345
+
+    # Modify n_inputs
+    response = client.post(
+        "/consdb/insert/latiss/visit1_quicklook/by_seq_num/20240327/2?u=1",
+        json={
+            "values": {
+                "visit_id": 2024032100003,
+                "n_inputs": 54321,
+            },
+        },
+    )
+    _assert_http_status(response, 200)
+    result = response.json()
+    assert result == {
+        "message": "Data inserted",
+        "table": "cdb_latiss.visit1_quicklook",
+        "instrument": "latiss",
+        "obs_id": [20240327, 2],
+    }
+
+    # Verify that the database was modified
+    query_result = client.connection.execute(
+        sa.text("SELECT n_inputs FROM cdb_latiss.visit1_quicklook WHERE day_obs = 20240327 AND seq_num = 2")
+    ).scalar_one_or_none()
+    assert query_result == 54321
 
     response = client.post(
         "/consdb/insert/latiss/ccdexposure/obs/8675309",

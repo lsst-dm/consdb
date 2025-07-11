@@ -314,8 +314,7 @@ def insert_by_day_obs_seq_num(
     return InsertDataResponse(
         message="Data inserted",
         instrument=instrument,
-        day_obs=day_obs,
-        seq_num=seq_num,
+        obs_id=(day_obs, seq_num),
         table=table_name,
     )
 

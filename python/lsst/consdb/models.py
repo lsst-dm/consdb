@@ -88,9 +88,9 @@ class InsertFlexDataResponse(BaseModel):
 class InsertDataResponse(BaseModel):
     message: str = Field(title="Human-readable response message")
     instrument: str = Field(title="Instrument name (e.g., ``LATISS``)")
-    obs_id: ObservationIdType | list[ObservationIdType] | None = Field(default=None, title="Observation ID")
-    day_obs: int | None = Field(default=None, title="Observation day in YYYYMMDD format")
-    seq_num: int | None = Field(default=None, title="Sequence number of the observation")
+    obs_id: ObservationIdType | list[ObservationIdType] | list[int] = Field(
+        title="Observation ID or (day_obs, seq_num)"
+    )
     table: str = Field(title="Table name")
 
 
