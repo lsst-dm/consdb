@@ -273,6 +273,53 @@ def validate_columns(table_obj: sqlalchemy.sql.schema.Table, valdict: dict[str, 
 
 
 @external_router.post(
+    "/insert/{instrument}/{table}/by_seq_num/{day_obs}/{seq_num}",
+    summary="Insert data row indexed by day_obs and seq_num",
+)
+def insert_by_day_obs_seq_num(
+    instrument: InstrumentName,
+    table: str,
+    day_obs: int,
+    seq_num: int,
+    data: InsertDataModel = Body(title="Data to insert or update"),
+    u: int | None = Query(0, title="Update if data already exist"),
+    db: Session = Depends(get_db),
+    logger: logging.Logger = Depends(get_logger),
+    instrument_table: InstrumentTable = Depends(get_instrument_table),
+) -> InsertDataResponse:
+    """Insert or update column/value pairs in a ConsDB table."""
+
+    schema = f"cdb_{instrument}."
+    table_name = table.lower()
+    if not table.lower().startswith(schema):
+        table_name = schema + table_name
+
+    if table_name not in instrument_table.schemas.tables:
+        raise BadValueException("table", table_name, list(instrument_table.schemas.tables.keys()))
+
+    table_obj = instrument_table.schemas.tables[table_name]
+
+    valdict = data.values
+    valdict_insert = data.values | {"day_obs": day_obs, "seq_num": seq_num}
+    validate_columns(table_obj, valdict_insert)
+
+    # Do the insert with sqlalchemy.
+    stmt: sqlalchemy.sql.dml.Insert
+    stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict_insert)
+    if u != 0:
+        stmt = stmt.on_conflict_do_update(index_elements=["day_obs", "seq_num"], set_=valdict)
+    logger.debug(str(stmt))
+    _ = db.execute(stmt)
+    db.commit()
+    return InsertDataResponse(
+        message="Data inserted",
+        instrument=instrument,
+        obs_id=(day_obs, seq_num),
+        table=table_name,
+    )
+
+
+@external_router.post(
     "/insert/{instrument}/{table}/obs/{obs_id}",
     summary="Insert data row",
 )
@@ -286,7 +333,13 @@ def insert(
     logger: logging.Logger = Depends(get_logger),
     instrument_table: InstrumentTable = Depends(get_instrument_table),
 ) -> InsertDataResponse:
-    """Insert or update column/value pairs in a ConsDB table."""
+    """Insert or update column/value pairs in a ConsDB table.
+
+    If you are inserting into a table where the primary keys are
+    day_obs and seq_num, using the endpoint at
+    `/insert/{instrument}/{table}/by_seq_num/{day_obs}/{seq_num}`
+    is recommended (and required if using u=1).
+    """
 
     schema = f"cdb_{instrument}."
     table_name = table.lower()
