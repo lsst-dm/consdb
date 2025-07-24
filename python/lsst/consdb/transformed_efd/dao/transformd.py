@@ -350,7 +350,9 @@ class TransformdDao(DBBase):
             query = query.limit(limit)
         return self.fetch_all_dict(query)
 
-    def select_queued(self, butler_repo: str, status: str) -> List[Task]:
+    def select_queued(
+        self, butler_repo: str, status: str, start_time: datetime = None, end_time: datetime = None
+    ) -> List[Task]:
         """Get queued tasks by repo and status.
 
         Parameters
@@ -359,12 +361,27 @@ class TransformdDao(DBBase):
             Butler repository filter
         status : str
             Status filter ('pending' or 'idle')
+        start_time : datetime, optional
+            Minimum start time filter
+        end_time : datetime, optional
+            Maximum end time filter
 
         Returns
         -------
         List[Task]
             List of task records
         """
+        if start_time and end_time:
+            query = select(self.tbl.c).where(
+                and_(
+                    self.tbl.c.status == status,
+                    self.tbl.c.butler_repo == butler_repo,
+                    self.tbl.c.start_time >= start_time,
+                    self.tbl.c.end_time <= end_time,
+                )
+            )
+            return self.fetch_all_dict(query)
+
         query = select(self.tbl.c).where(
             and_(self.tbl.c.status == status, self.tbl.c.butler_repo == butler_repo)
         )
