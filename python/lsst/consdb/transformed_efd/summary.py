@@ -110,7 +110,7 @@ class Summary:
         return self._timestamps
 
     def _get_numeric_values(self) -> np.ndarray:
-        """Flatten and ensure numeric values. Result is cached for performance."""
+        """Flatten and ensure numeric values. Result cached for performance."""
         if self._flat_numeric_values is None:
             self._flat_numeric_values = self.data_array.astype(np.float64).flatten()
         return self._flat_numeric_values

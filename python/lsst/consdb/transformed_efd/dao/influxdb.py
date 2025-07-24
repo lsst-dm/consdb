@@ -460,13 +460,13 @@ class InfluxDBClient:
             which is the old CSC indexing name.
             (default is `False`).
         aggregate_interval : `str`, optional
-            If set, groups the results into time buckets of this duration (e.g.,
-            "1s", "5m", "1h"). Requires `aggregate_func` to be set.
+            If set, groups the results into time buckets of this duration
+            (e.g.,"1s", "5m", "1h"). Requires `aggregate_func` to be set.
             (default is `None`).
         aggregate_func : `str`, optional
             If set, applies an aggregation function to the fields within each
-            time bucket. Supported values are 'mean', 'max', 'min', and 'stddev'.
-            (default is `None`).
+            time bucket. Supported values are 'mean', 'max', 'min', and
+            'stddev'. (default is `None`).
 
         Returns
         -------
@@ -552,15 +552,16 @@ class InfluxDBClient:
         aggregate_func: str | None = None,
     ) -> pd.DataFrame:
         """
-        Executes a single, non-chunked time series query and returns a DataFrame.
+        Executes a single time series query and returns a DataFrame.
 
-        This is the core execution logic used by the public `select_time_series`
-        method. It builds the query, executes it, and converts the response
-        to a pandas DataFrame.
+        This is the core execution logic used by the public
+        `select_time_series` method. It builds the query, executes
+        it, and converts the response to a pandas DataFrame.
 
         Parameters
         ----------
-        All parameters are identical to the public `select_time_series` method.
+        All parameters are identical to the public `select_time_series`
+        method.
 
         Returns
         -------
@@ -620,14 +621,14 @@ class InfluxDBClient:
             which is the old CSC indexing name.
             (default is `False`).
         aggregate_interval : `str`, optional
-            If set, groups the results into time buckets of this duration (e.g.,
-            "1s", "5m", "1h"). Requires `aggregate_func` to be set.
+            If set, groups the results into time buckets of this duration
+            (e.g., "1s", "5m", "1h"). Requires `aggregate_func` to be set.
             (default is `None`).
         aggregate_func : `str`, optional
             If set, applies an aggregation function to the fields within each
-            time bucket. Supported values are 'mean', 'max', 'min', and 'stddev'.
-            If 'stddev' is chosen, the returned columns will be named
-            `{field}_count`, `{field}_sum`, and `{field}_stddev`.
+            time bucket. Supported values are 'mean', 'max', 'min', and
+            'stddev'. If 'stddev' is chosen, the returned columns will
+            be named `{field}_count`, `{field}_sum`, and `{field}_stddev`.
             (default is `None`).
         Returns
         -------
@@ -814,8 +815,8 @@ class InfluxDbDao(InfluxDBClient):
             The URL of the credentials service to use for authentication.
             Default is "https://roundtable.lsst.codes/segwarides/".
         max_fields_per_query : int, optional
-            The maximum number of fields per query. Passed to the parent client.
-            Default is 100.
+            The maximum number of fields per query. Passed to the parent
+            client. Default is 100.
         """
         # auth = NotebookAuth(service_endpoint=creds_service)
         # host, schema_registry_url, port, user,
