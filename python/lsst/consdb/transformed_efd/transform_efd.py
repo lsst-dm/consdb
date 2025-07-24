@@ -126,7 +126,15 @@ def build_argparser() -> argparse.ArgumentParser:
         "-w", "--timewindow", dest="timewindow", type=int, default=1, help="Overlap window in minutes"
     )
     opt.add_argument("-l", "--logfile", dest="logfile", help="Log file path")
-    opt.add_argument("-R", "--resume", dest="resume", action="store_true", help="Resume pending tasks")
+    opt.add_argument(
+        "-R",
+        "--resume",
+        dest="resume",
+        action="store_const",
+        const=True,
+        default=False,
+        help="Resume pending tasks",
+    )
 
     return parser
 
@@ -263,7 +271,7 @@ async def handle_job(
     log.info("-" * 51)
     if args.resume:
         log.info("Resuming idle tasks")
-        tasks = qm.waiting_tasks(args.repo, "idle")
+        tasks = qm.waiting_tasks(args.repo, "idle", start_time, end_time)
     else:
         log.debug(f"Creating new tasks: start_time={start_time} end_time={end_time}")
         log.info("Creating new tasks...")
