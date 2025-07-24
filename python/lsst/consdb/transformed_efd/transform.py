@@ -105,14 +105,6 @@ class Transform:
             self.log.debug("No exposures or visits found for the period.")
             return count
 
-        # Recalculate start and end times based on exposures and visits
-        # self.log.debug(f"Original Interval: start_time={start_time.iso} end_time={end_time.iso} delta=~{int((end_time - start_time).sec)} seconds")
-        # all_items = exposures + visits
-        # start_time = min(item['timespan'].begin for item in all_items).utc
-        # end_time = max(item['timespan'].end for item in all_items).utc
-
-        # self.log.debug(f"Adjusted Interval: start_time={start_time.iso} end_time={end_time.iso} delta=~{int((end_time - start_time).sec)} seconds")
-
         results = self._process_interval(exposures, visits, start_time, end_time)
 
         count = self._store_results(instrument, results)
@@ -138,9 +130,6 @@ class Transform:
 
         ts_end = pandas.to_datetime(end_time.utc.datetime, utc=True)
 
-        # valid_series = [
-        #     topic["series"].sort_index().loc[(topic["series"].index > ts_start) & (topic["series"].index < ts_end)] for topic in topics if not topic["series"].empty
-        # ]
         valid_series = []
 
         for topic in topics:
@@ -562,9 +551,9 @@ class Transform:
         Query EFD values for a topic within a specified time interval.
 
         This method acts as a high-level wrapper around the EFD client (DAO),
-        preparing parameters and delegating the actual database query. The underlying
-        DAO is responsible for handling query complexities, such as chunking
-        large requests.
+        preparing parameters and delegating the actual database query. The
+        underlying DAO is responsible for handling query complexities,
+        such as chunking large requests.
         """
         # 1. Prepare parameters from the input topic and interval
         start = topic_interval[0].utc
@@ -600,7 +589,8 @@ class Transform:
                     aggregate_func=aggregate_func,
                 )
         except Exception as e:
-            # 3. Handle any exceptions from the DAO and return an empty DataFrame
+            # 3. Handle any exceptions from the DAO and return an empty
+            # DataFrame
             self.log.error(
                 f"DAO query failed for topic '{topic['name']}': {e}",
                 exc_info=True,  # Provides a full traceback in the logs
