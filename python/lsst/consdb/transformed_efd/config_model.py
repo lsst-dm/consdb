@@ -75,14 +75,16 @@ class Column(BaseModel):
             transformation function.
         datatype (str): The data type of the column. Must match the
             Felis type.
-        unit (str): The unit of the column.
+        ivoa (Optional[Dict]): Dictionary containing IVOA metadata for TAP,
+            including units, UCDs, and other relevant accepted descriptors.
         description (str): A description of the column.
         packed_series (bool): Flag indicating whether the column will process
             a packed series.
         subset_field (Optional[str]): The field (InfluxDB column) used to
             filter data during the transformation.
-        subset_value (Optional[Union[str, int]]): The value of the field used
-            to filter data during the transformation.
+        subset_value (Optional[Union[str, int, List[Union[str, int]]]]):
+            The value or list of values of the field used to filter data
+            during the transformation.
         topics (List[Topic]): The EFD topic(s) used in the transformation.
 
     """
@@ -92,12 +94,13 @@ class Column(BaseModel):
     store_unpivoted: Optional[bool] = False
     function: str
     function_args: Optional[Dict] = None
+    pre_aggregate_interval: Optional[str] = None
     datatype: str
-    unit: str
+    ivoa: Optional[Dict] = None
     description: str
     packed_series: bool
     subset_field: Optional[str] = None
-    subset_value: Optional[Union[str, int]] = None
+    subset_value: Optional[Union[str, int, List[Union[str, int]]]] = None
     topics: List[Topic]
 
     @model_validator(mode="after")
@@ -130,8 +133,10 @@ class ConfigModel(BaseModel):
 
     Attributes
     ----------
-        columns (List[Column]): A list of columns in the configuration.
+        version (str): The version of the configuration file.
+        columns (List[Column]): A list of columns in the configuration file.
 
     """
 
+    version: str
     columns: List[Column]
