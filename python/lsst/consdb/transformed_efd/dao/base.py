@@ -283,7 +283,6 @@ class DBBase:
         """
         # Replace NaN with None for SQL compatibility
         df = df.replace(numpy.nan, None)
-
         # Validate that the DataFrame includes all primary key columns
         pk_columns = {c.name for c in tbl.primary_key.columns}
         if not pk_columns.issubset(df.columns):
@@ -341,7 +340,7 @@ class DBBase:
                 # account affected rows for two states on_conflict_do_nothing
                 # and on_conflict_do_update
                 affected_rows += result.rowcount
-                print(f"\nInserted PK: {result.inserted_primary_key}\nRowcount: {result.rowcount}\n")
+                print(f"Rowcount: {result.rowcount}\n")
 
         return affected_rows
 
