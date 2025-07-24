@@ -1,10 +1,11 @@
+version: 1.0.0
 columns:
 - name: at_mount_jitter_azimuth
   tables: ["exposure_efd"]
   function: rms_from_polynomial_fit
   function_args: {"degree": 4, "fit_basis": "index"}
   datatype: float
-  unit: unitless
+  ivoa: {"unit":"\"\"", "ucd":"stat.rms"}
   description: RMS after 4th order polynomial fit of azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
   packed_series: True
   topics:
@@ -12,13 +13,12 @@ columns:
     fields:
     - name: azimuthCalculatedAngle
 
-
 - name: at_mount_jitter_elevation
   tables: ["exposure_efd"]
   function: rms_from_polynomial_fit
   function_args: {"degree": 4, "fit_basis": "index"}
   datatype: float
-  unit: unitless
+  ivoa: {"unit":"\"\"", "ucd":"stat.rms"}
   description: RMS after 4th order polynomial fit of elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
   packed_series: True
   topics:
@@ -26,13 +26,12 @@ columns:
     fields:
     - name: elevationCalculatedAngle
 
-
 - name: at_mount_jitter_nasmyth
   tables: ["exposure_efd"]
   function: rms_from_polynomial_fit
   function_args: {"degree": 4, "fit_basis": "index"}
   datatype: float
-  unit: unitless
+  ivoa: {"unit":"\"\"", "ucd":"stat.rms"}
   description: RMS after 4th order polynomial fit of Nasmyth 1 axis position computed from the axis encoders, or nan if this axis is not in use. The range is the software limits (L1), approximately -175 to 175.
   packed_series: True
   topics:
@@ -45,7 +44,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
@@ -62,7 +61,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
@@ -78,8 +77,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
-  description: Mean standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -95,8 +94,8 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
-  description: Standard deviation of the standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -111,7 +110,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
@@ -128,7 +127,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
   packed_series: False
   subset_field: salIndex
@@ -144,8 +143,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
-  description: Mean standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -161,8 +160,8 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
-  description: Standard deviation of the standard devation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -177,7 +176,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -194,7 +193,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -210,7 +209,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -226,7 +225,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed (x, y, z) in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -242,7 +241,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -259,7 +258,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -275,7 +274,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -291,7 +290,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed (x, y, z) in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -307,7 +306,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -324,7 +323,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -340,7 +339,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -356,7 +355,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed (x, y, z) in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -368,11 +367,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_0_mean
+- name: at_salindex201_wind_speed_stddev_0_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -384,12 +383,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_0_stddev
+- name: at_salindex201_wind_speed_stddev_0_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -401,11 +400,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_0_min
+- name: at_salindex201_wind_speed_stddev_0_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -417,11 +416,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_0_max
+- name: at_salindex201_wind_speed_stddev_0_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 0 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -433,11 +432,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_1_mean
+- name: at_salindex201_wind_speed_stddev_1_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -449,12 +448,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_1_stddev
+- name: at_salindex201_wind_speed_stddev_1_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -466,11 +465,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_1_min
+- name: at_salindex201_wind_speed_stddev_1_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -482,11 +481,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_1_max
+- name: at_salindex201_wind_speed_stddev_1_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 1 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -498,11 +497,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_2_mean
+- name: at_salindex201_wind_speed_stddev_2_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -514,12 +513,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_2_stddev
+- name: at_salindex201_wind_speed_stddev_2_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -531,11 +530,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_2_min
+- name: at_salindex201_wind_speed_stddev_2_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -547,11 +546,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_wind_speed_speedstddev_2_max
+- name: at_salindex201_wind_speed_stddev_2_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-ESS04 along axis 2 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -567,7 +566,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -584,7 +583,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -600,7 +599,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -616,7 +615,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -632,7 +631,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -649,7 +648,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -665,7 +664,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -681,7 +680,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum maximum wind speed magnitude in AuxTel-ESS04 (salIndex 201).
   packed_series: False
   subset_field: salIndex
@@ -697,7 +696,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed (x, y, z) along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -714,7 +713,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed (x, y, z) along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -730,7 +729,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed (x, y, z) along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -746,7 +745,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed (x, y, z) along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -762,7 +761,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed (x, y, z) along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -779,7 +778,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed (x, y, z) along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -795,7 +794,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed (x, y, z) along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -811,7 +810,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed (x, y, z) along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -827,7 +826,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed (x, y, z) along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -844,7 +843,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed (x, y, z) along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -860,7 +859,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed (x, y, z) along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -876,7 +875,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed (x, y, z) along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -888,11 +887,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_0_mean
+- name: at_salindex204_wind_speed_stddev_0_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -904,12 +903,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_0_stddev
+- name: at_salindex204_wind_speed_stddev_0_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -921,11 +920,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_0_min
+- name: at_salindex204_wind_speed_stddev_0_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -937,11 +936,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_0_max
+- name: at_salindex204_wind_speed_stddev_0_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 0 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -953,11 +952,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_1_mean
+- name: at_salindex204_wind_speed_stddev_1_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -969,12 +968,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_1_stddev
+- name: at_salindex204_wind_speed_stddev_1_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -986,11 +985,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_1_min
+- name: at_salindex204_wind_speed_stddev_1_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1002,11 +1001,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_1_max
+- name: at_salindex204_wind_speed_stddev_1_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 1 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1018,11 +1017,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_2_mean
+- name: at_salindex204_wind_speed_stddev_2_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1034,12 +1033,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_2_stddev
+- name: at_salindex204_wind_speed_stddev_2_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1051,11 +1050,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_2_min
+- name: at_salindex204_wind_speed_stddev_2_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1067,11 +1066,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_wind_speed_speedstddev_2_max
+- name: at_salindex204_wind_speed_stddev_2_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles along axis 2 (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1087,7 +1086,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1104,7 +1103,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1120,7 +1119,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed magnitude (salIndex 204)s
   packed_series: False
   subset_field: salIndex
@@ -1136,7 +1135,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1152,7 +1151,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean maximum wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1169,7 +1168,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the maximum wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1185,7 +1184,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum maximum wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1201,7 +1200,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum maximum wind speed magnitude (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1217,7 +1216,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1234,7 +1233,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1250,7 +1249,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1266,7 +1265,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1282,7 +1281,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1299,7 +1298,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1315,7 +1314,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1331,7 +1330,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1347,7 +1346,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1364,7 +1363,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1380,7 +1379,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1396,7 +1395,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed (x, y, z) in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1408,11 +1407,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_0_mean
+- name: at_salindex205_wind_speed_stddev_0_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1424,12 +1423,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_0_stddev
+- name: at_salindex205_wind_speed_stddev_0_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1441,11 +1440,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_0_min
+- name: at_salindex205_wind_speed_stddev_0_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1457,11 +1456,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_0_max
+- name: at_salindex205_wind_speed_stddev_0_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 0 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1473,11 +1472,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_1_mean
+- name: at_salindex205_wind_speed_stddev_1_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1489,12 +1488,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_1_stddev
+- name: at_salindex205_wind_speed_stddev_1_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1506,11 +1505,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_1_min
+- name: at_salindex205_wind_speed_stddev_1_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1522,11 +1521,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_1_max
+- name: at_salindex205_wind_speed_stddev_1_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 1 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1538,11 +1537,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_2_mean
+- name: at_salindex205_wind_speed_stddev_2_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1554,12 +1553,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_2_stddev
+- name: at_salindex205_wind_speed_stddev_2_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1571,11 +1570,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_2_min
+- name: at_salindex205_wind_speed_stddev_2_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1587,11 +1586,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_wind_speed_speedstddev_2_max
+- name: at_salindex205_wind_speed_stddev_2_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in AuxTel-GillLabJack01 along axis 2 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1607,7 +1606,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1624,7 +1623,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1640,7 +1639,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1656,7 +1655,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1672,7 +1671,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1689,7 +1688,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1705,7 +1704,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1721,7 +1720,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum maximum wind speed magnitude in AuxTel-GillLabJack01 (salIndex 205).
   packed_series: False
   subset_field: salIndex
@@ -1737,8 +1736,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
-  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median (mean for some sensors) wind speed (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1754,8 +1753,8 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
-  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median (mean for some sensors) wind speed (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1770,8 +1769,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
-  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median (mean for some sensors) wind speed (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1786,8 +1785,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
-  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median (mean for some sensors) wind speed (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1798,12 +1797,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_airflow_speedstddev_mean
+- name: at_salindex201_airflow_speed_stddev_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
-  description: Mean standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 201). Not available for all sensor types.
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed estimated from quartiles (salIndex 201). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1814,13 +1813,13 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_airflow_speedstddev_stddev
+- name: at_salindex201_airflow_speed_stddev_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
-  description: Standard deviation of the standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 201). Not available for all sensor types.
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed estimated from quartiles (salIndex 201). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1831,12 +1830,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_airflow_speedstddev_min
+- name: at_salindex201_airflow_speed_stddev_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
-  description: Minimum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 201). Not available for all sensor types.
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed estimated from quartiles (salIndex 201). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1847,12 +1846,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex201_airflow_speedstddev_max
+- name: at_salindex201_airflow_speed_stddev_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
-  description: Maximum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 201). Not available for all sensor types.
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed estimated from quartiles (salIndex 201). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1867,8 +1866,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
-  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median (mean for some sensors) wind speed (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1884,8 +1883,8 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
-  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median (mean for some sensors) wind speed (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1900,8 +1899,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
-  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median (mean for some sensors) wind speed (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1916,8 +1915,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
-  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 201).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median (mean for some sensors) wind speed (salIndex 201).
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -1932,7 +1931,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1949,7 +1948,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1965,7 +1964,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1981,7 +1980,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -1993,11 +1992,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_airflow_speedstddev_mean
+- name: at_salindex204_airflow_speed_stddev_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
@@ -2009,12 +2008,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_airflow_speedstddev_stddev
+- name: at_salindex204_airflow_speed_stddev_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
@@ -2026,11 +2025,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_airflow_speedstddev_min
+- name: at_salindex204_airflow_speed_stddev_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
@@ -2042,11 +2041,11 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex204_airflow_speedstddev_max
+- name: at_salindex204_airflow_speed_stddev_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum standard deviation of wind speed estimated from quartiles in AuxTel-Windsonic (salIndex 204). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
@@ -2062,7 +2061,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
   description: Mean median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -2079,7 +2078,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
   description: Standard deviation of the median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -2095,7 +2094,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
   description: Minimum median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -2111,7 +2110,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
   description: Maximum median (mean for some sensors) wind speed in AuxTel-Windsonic (salIndex 204).
   packed_series: False
   subset_field: salIndex
@@ -2127,8 +2126,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
-  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median (mean for some sensors) wind speed (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2144,8 +2143,8 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
-  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median (mean for some sensors) wind speed (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2160,8 +2159,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
-  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median (mean for some sensors) wind speed (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2176,8 +2175,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
-  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median (mean for some sensors) wind speed (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2188,12 +2187,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_airflow_speedstddev_mean
+- name: at_salindex205_airflow_speed_stddev_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
-  description: Mean standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 205). Not available for all sensor types.
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed estimated from quartiles (salIndex 205). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2204,13 +2203,13 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_airflow_speedstddev_stddev
+- name: at_salindex205_airflow_speed_stddev_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
-  description: Standard deviation of the standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 205). Not available for all sensor types.
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed estimated from quartiles (salIndex 205). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2221,12 +2220,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_airflow_speedstddev_min
+- name: at_salindex205_airflow_speed_stddev_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
-  description: Minimum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 205). Not available for all sensor types.
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed estimated from quartiles (salIndex 205). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2237,12 +2236,12 @@ columns:
     - name: salIndex
 
 
-- name: at_salindex205_airflow_speedstddev_max
+- name: at_salindex205_airflow_speed_stddev_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
-  description: Maximum standard deviation of wind speed estimated from quartiles in UNKNOWN (salIndex 205). Not available for all sensor types.
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed estimated from quartiles (salIndex 205). Not available for all sensor types.
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2257,8 +2256,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s
-  description: Mean median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median (mean for some sensors) wind speed (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2274,8 +2273,8 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s
-  description: Standard deviation of the median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median (mean for some sensors) wind speed (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2290,8 +2289,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s
-  description: Minimum median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median (mean for some sensors) wind speed (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2306,8 +2305,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s
-  description: Maximum median (mean for some sensors) wind speed in UNKNOWN (salIndex 205).
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median (mean for some sensors) wind speed (salIndex 205).
   packed_series: False
   subset_field: salIndex
   subset_value: 205
@@ -2322,7 +2321,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
@@ -2339,7 +2338,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
@@ -2355,7 +2354,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
@@ -2371,7 +2370,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
@@ -2387,7 +2386,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
@@ -2404,7 +2403,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
@@ -2420,7 +2419,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
@@ -2436,7 +2435,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
@@ -2452,7 +2451,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
@@ -2469,7 +2468,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
@@ -2485,7 +2484,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
@@ -2501,7 +2500,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
@@ -2517,7 +2516,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
@@ -2534,7 +2533,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
@@ -2550,7 +2549,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
@@ -2566,7 +2565,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
@@ -2582,7 +2581,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
@@ -2599,7 +2598,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
@@ -2615,7 +2614,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
@@ -2631,7 +2630,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
@@ -2647,7 +2646,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
@@ -2664,7 +2663,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
@@ -2680,7 +2679,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
@@ -2696,7 +2695,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
@@ -2712,7 +2711,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
@@ -2729,7 +2728,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
@@ -2745,7 +2744,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
@@ -2761,7 +2760,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
@@ -2777,7 +2776,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
@@ -2794,7 +2793,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
@@ -2810,7 +2809,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
@@ -2826,7 +2825,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
@@ -2842,7 +2841,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
@@ -2859,7 +2858,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
@@ -2875,7 +2874,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
@@ -2891,7 +2890,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 0.
   packed_series: False
   subset_field: salIndex
@@ -2907,7 +2906,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
@@ -2924,7 +2923,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
@@ -2940,7 +2939,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
@@ -2956,7 +2955,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 1.
   packed_series: False
   subset_field: salIndex
@@ -2972,7 +2971,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
@@ -2989,7 +2988,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
@@ -3005,7 +3004,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
@@ -3021,7 +3020,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 2.
   packed_series: False
   subset_field: salIndex
@@ -3037,7 +3036,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
@@ -3054,7 +3053,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
@@ -3070,7 +3069,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
@@ -3086,7 +3085,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 3.
   packed_series: False
   subset_field: salIndex
@@ -3102,7 +3101,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
@@ -3119,7 +3118,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
@@ -3135,7 +3134,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
@@ -3151,7 +3150,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 4.
   packed_series: False
   subset_field: salIndex
@@ -3167,7 +3166,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
@@ -3184,7 +3183,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
@@ -3200,7 +3199,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
@@ -3216,7 +3215,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 5.
   packed_series: False
   subset_field: salIndex
@@ -3232,7 +3231,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
@@ -3249,7 +3248,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
@@ -3265,7 +3264,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
@@ -3281,7 +3280,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 6.
   packed_series: False
   subset_field: salIndex
@@ -3297,7 +3296,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
@@ -3314,7 +3313,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
   description: Standard deviation of the AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
@@ -3330,7 +3329,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.min"}
   description: Minimum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
@@ -3346,7 +3345,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.max"}
   description: Maximum AuxTel-ESS01, AuxTel-ESS02, AuxTel-ESS03 temperature item 7.
   packed_series: False
   subset_field: salIndex
@@ -3362,7 +3361,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: unitless
+  ivoa: {"unit":"\"\"", "ucd":"stat.rms"}
   description: Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3),  approximately -280 to 280.
   packed_series: True
   topics:
@@ -3375,7 +3374,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: unitless
+  ivoa: {"unit":"\"\"", "ucd":"stat.rms"}
   description: Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
   packed_series: True
   topics:
@@ -3388,7 +3387,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: arcsec
+  ivoa: {"unit":"arcsec", "ucd":"meta.ucd;stat.mean"}
   description: Mean combined full width half maximum.
   packed_series: False
   topics:
@@ -3401,8 +3400,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: degree
-  description: Mean Elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
+  ivoa: {"unit":"degree", "ucd":"meta.ucd;stat.mean"}
+  description: Mean elevation axis position computed from the axis encoders at 100 Hz beginning at the specified time.
   packed_series: False
   topics:
   - name: lsst.sal.ATMCS.mount_AzEl_Encoders
@@ -3414,7 +3413,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: degree
+  ivoa: {"unit":"degree", "ucd":"meta.ucd;stat.mean"}
   description: Mean Azimuth axis position computed from the axis encoders at 100 Hz beginning at the specified time. The range is the hard stop limits (L3), approximately -280 to 280.
   packed_series: False
   topics:
@@ -3427,8 +3426,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: mm
-  description: Mean Auxiliary telescope hexapod reported position in x.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.mean"}
+  description: Mean Auxiliary telescope hexapod reported in x position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3440,8 +3439,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: mm
-  description: Maximum auxiliary telescope hexapod reported position in x.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.max"}
+  description: Maximum auxiliary telescope hexapod reported in x position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3453,8 +3452,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: mm
-  description: Minimum auxiliary telescope hexapod reported position in x.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.min"}
+  description: Minimum auxiliary telescope hexapod reported in x position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3466,8 +3465,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: mm
-  description: Mean Auxiliary telescope hexapod reported position in x.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.mean"}
+  description: Mean Auxiliary telescope hexapod reported in x position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3479,8 +3478,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: mm
-  description: Maximum auxiliary telescope hexapod reported position in y.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.max"}
+  description: Maximum auxiliary telescope hexapod reported in y position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3492,8 +3491,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: mm
-  description: Minimum auxiliary telescope hexapod reported position in y.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.min"}
+  description: Minimum auxiliary telescope hexapod reported in y position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3505,8 +3504,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: mm
-  description: Mean auxiliary telescope hexapod reported position in z.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.mean"}
+  description: Mean auxiliary telescope hexapod reported in z position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3518,8 +3517,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: mm
-  description: Maximum auxiliary telescope hexapod reported position in z.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.max"}
+  description: Maximum auxiliary telescope hexapod reported in z position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3531,8 +3530,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: mm
-  description: Minimum auxiliary telescope hexapod reported position in z.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.min"}
+  description: Minimum auxiliary telescope hexapod reported in z position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3544,8 +3543,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: mm
-  description: Mean auxiliary telescope hexapod reported position in u.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.mean"}
+  description: Mean auxiliary telescope hexapod reported in u position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3557,8 +3556,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: mm
-  description: Maximum auxiliary telescope hexapod reported position in u.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.max"}
+  description: Maximum auxiliary telescope hexapod reported in u position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3570,8 +3569,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: mm
-  description: Minimum auxiliary telescope hexapod reported position in u.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.min"}
+  description: Minimum auxiliary telescope hexapod reported in u position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3583,8 +3582,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: mm
-  description: Mean auxiliary telescope hexapod reported position in v.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.mean"}
+  description: Mean auxiliary telescope hexapod reported in v position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3596,8 +3595,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: mm
-  description: Maximum uxiliary telescope hexapod reported position in v.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.max"}
+  description: Maximum auxiliary telescope hexapod reported in v position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3609,8 +3608,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: mm
-  description: Minimum auxiliary telescope hexapod reported position in v.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.min"}
+  description: Minimum auxiliary telescope hexapod reported in v position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3622,8 +3621,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: mm
-  description: Mean auxiliary telescope hexapod reported position in w.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.mean"}
+  description: Mean auxiliary telescope hexapod reported in w position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3635,8 +3634,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: mm
-  description: Maximum auxiliary telescope hexapod reported position in w.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.max"}
+  description: Maximum auxiliary telescope hexapod reported in w position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3648,8 +3647,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: mm
-  description: Minimum auxiliary telescope hexapod reported position in w.
+  ivoa: {"unit":"mm", "ucd":"meta.ucd;stat.min"}
+  description: Minimum auxiliary telescope hexapod reported in w position.
   packed_series: False
   topics:
   - name: lsst.sal.ATHexapod.positionStatus
@@ -3661,7 +3660,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.mean"}
   description: Mean acceleration in x direction.
   packed_series: False
   subset_field: salIndex
@@ -4077,7 +4076,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"stat.stdev"}
   description: Standard deviation of the acceleration in x direction.
   packed_series: False
   subset_field: salIndex
@@ -4492,7 +4491,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.min"}
   description: Minimum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
@@ -4907,7 +4906,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.max"}
   description: Maximum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
@@ -5322,7 +5321,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.mean"}
   description: Mean acceleration in y direction.
   packed_series: False
   subset_field: salIndex
@@ -5738,7 +5737,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"stat.stdev"}
   description: Standard deviation of the acceleration in y direction.
   packed_series: False
   subset_field: salIndex
@@ -6153,7 +6152,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.min"}
   description: Minimum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
@@ -6568,7 +6567,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.max"}
   description: Maximum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
@@ -6983,7 +6982,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.mean"}
   description: Mean acceleration in z direction.
   packed_series: False
   subset_field: salIndex
@@ -7399,7 +7398,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"stat.stdev"}
   description: Standard deviation of the acceleration in z direction.
   packed_series: False
   subset_field: salIndex
@@ -7814,7 +7813,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.min"}
   description: Minimum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
@@ -8229,7 +8228,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.max"}
   description: Maximum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
@@ -8644,7 +8643,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.mean"}
   description: Mean acceleration in x direction.
   packed_series: False
   subset_field: salIndex
@@ -8861,7 +8860,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"stat.stdev"}
   description: Standard deviation of the acceleration in x direction.
   packed_series: False
   subset_field: salIndex
@@ -9077,7 +9076,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.min"}
   description: Minimum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
@@ -9293,7 +9292,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.max"}
   description: Maximum acceleration in x direction.
   packed_series: False
   subset_field: salIndex
@@ -9509,7 +9508,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.mean"}
   description: Mean acceleration in y direction.
   packed_series: False
   subset_field: salIndex
@@ -9726,7 +9725,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"stat.stdev"}
   description: Standard deviation of the acceleration in y direction.
   packed_series: False
   subset_field: salIndex
@@ -9942,7 +9941,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.min"}
   description: Minimum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
@@ -10158,7 +10157,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2S", "ucd":"meta.ucd;stat.max"}
   description: Maximum acceleration in y direction.
   packed_series: False
   subset_field: salIndex
@@ -10374,7 +10373,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.mean"}
   description: Mean acceleration in z direction.
   packed_series: False
   subset_field: salIndex
@@ -10591,7 +10590,7 @@ columns:
   function: stddev
   function_args: {"ddof": 1}
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"stat.stdev"}
   description: Standard deviation of the acceleration in z direction.
   packed_series: False
   subset_field: salIndex
@@ -10807,7 +10806,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
-  unit: m/s2
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.min"}
   description: Minimum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
@@ -11023,8 +11022,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
-  unit: m/s2
-  description: Maximum cceleration in z direction.
+  ivoa: {"unit":"m/s**2", "ucd":"meta.ucd;stat.max"}
+  description: Maximum acceleration in z direction.
   packed_series: False
   subset_field: salIndex
   subset_value: 202
@@ -11239,7 +11238,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Celsius
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
   description: Mean dew point in AuxTel-ESS02.
   packed_series: False
   subset_field: salIndex
@@ -11255,7 +11254,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: percent
+  ivoa: {"unit":"\"%\"", "ucd":"meta.ucd;stat.mean"}
   description: Mean relative humidity in AuxTel-ESS02.
   packed_series: False
   subset_field: salIndex
@@ -11271,8 +11270,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Pa
-  description: Mean atmosferic pressure item 0 in AuxTel-ESS02.
+  ivoa: {"unit":"Pa", "ucd":"meta.ucd;stat.mean"}
+  description: Mean atmospheric pressure item 0 in AuxTel-ESS02.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -11287,8 +11286,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Pa
-  description: Mean atmosferic pressure item 1 in AuxTel-ESS02.
+  ivoa: {"unit":"Pa", "ucd":"meta.ucd;stat.mean"}
+  description: Mean atmospheric pressure item 1 in AuxTel-ESS02.
   packed_series: False
   subset_field: salIndex
   subset_value: 201
@@ -11303,8 +11302,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Pa
-  description: Mean atmosferic pressure item 0 in weather tower atmospheric pressure.
+  ivoa: {"unit":"Pa", "ucd":"meta.ucd;stat.mean"}
+  description: Mean atmospheric pressure item 0 in weather tower atmospheric pressure.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -11319,8 +11318,8 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: Pa
-  description: Mean atmosferic pressure item 1 in weather tower atmospheric pressure.
+  ivoa: {"unit":"Pa", "ucd":"meta.ucd;stat.mean"}
+  description: Mean atmospheric pressure item 1 in weather tower atmospheric pressure.
   packed_series: False
   subset_field: salIndex
   subset_value: 301
@@ -11335,7 +11334,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: degree
+  ivoa: {"unit":"deg", "ucd":"meta.ucd;stat.mean"}
   description: Mean RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
   topics:
@@ -11348,7 +11347,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   datatype: float
-  unit: degree
+  ivoa: {"unit":"deg", "ucd":"stat.stdev"}
   description: Standard deviation of the RA calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
   topics:
@@ -11361,7 +11360,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: degree
+  ivoa: {"unit":"deg", "ucd":"meta.ucd;stat.mean"}
   description: Mean Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
   topics:
@@ -11374,7 +11373,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   datatype: float
-  unit: degree
+  ivoa: {"unit":"deg", "ucd":"stat.stdev"}
   description: Standard deviation of the Dec calculated from the azimuthCalculatedAngle and elevationCalculatedAngle.
   packed_series: False
   topics:
@@ -11387,7 +11386,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  unit: degree
+  ivoa: {"unit":"deg", "ucd":"meta.ucd;stat.mean"}
   description: Mean c sky angle.
   packed_series: False
   topics:
@@ -11400,10 +11399,26 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   datatype: float
-  unit: degree
+  ivoa: {"unit":"deg", "ucd":"stat.stdev"}
   description: Standard deviation of the calculated sky angle.
   packed_series: False
   topics:
   - name: lsst.sal.ATPtg.mountPositions
     fields:
     - name: skyAngle
+
+
+- name: at_dome_temperature_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Mean dome temperature item 0.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: [111,112,113]
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: salIndex
