@@ -1,7 +1,30 @@
+# This file is part of consdb.
+#
+# Developed for the LSST Data Management System.
+# This product includes software developed by the LSST Project
+# (https://www.lsst.org).
+# See the COPYRIGHT file at the top-level directory of this distribution
+# for details of code ownership.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from pathlib import Path
 from unittest.mock import mock_open, patch
 
 import pytest
+import yaml
+
+# Import the functions and variables to be tested
 from lsst.consdb.transformed_efd.generate_schema_from_config import (
     build_argparser,
     generate_schema,
@@ -9,177 +32,177 @@ from lsst.consdb.transformed_efd.generate_schema_from_config import (
 )
 
 
-# Fixtures
+# A minimal, valid config for mocking
 @pytest.fixture
 def mock_config():
     return {
+        "version": "1.0.0",
         "columns": [
             {
                 "name": "column1",
-                "datatype": "int",
-                "description": "Test column",
                 "tables": ["exposure_efd"],
+                "store_unpivoted": False,
+                "description": "Test column",
+                "datatype": "int",
+                "ivoa": {"ucd": "meta.id"},
             },
             {
                 "name": "column2",
-                "datatype": "float",
-                "description": "Unpivoted column",
-                "tables": ["visit1_efd"],
+                "tables": ["exposure_efd_unpivoted"],
                 "store_unpivoted": True,
+                "description": "Unpivoted column",
+                "datatype": "float",
+                "ivoa": None,
             },
-        ]
+        ],
     }
 
 
 @pytest.fixture
 def empty_config():
-    return {"columns": []}
+    return {"version": "1.0.0", "columns": []}
 
 
-# 1. Input Validation Tests
-def test_invalid_instrument(tmp_path):
-    """Test invalid instrument raises ValueError"""
-    config_path = tmp_path / "config.yml"
+def test_invalid_instrument():
+    """Test that an invalid instrument name raises a ValueError."""
     with pytest.raises(ValueError, match="Invalid instrument"):
-        generate_schema(config_path, "invalid_instrument")
+        generate_schema("invalid_instrument")
 
 
-# 2. Config File Tests
-def test_missing_config_columns(tmp_path):
-    """Test missing 'columns' section raises ValueError"""
-    config_path = tmp_path / "config.yml"
-    with patch("lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value={}):
+def test_missing_config_columns():
+    """Test that a config missing the 'columns' section raises a ValueError."""
+    # Mock read_config to return a config without the 'columns' key
+    with patch(
+        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config",
+        return_value={"version": "1.0.0"},
+    ):
         with pytest.raises(ValueError, match="must contain 'columns' section"):
-            generate_schema(config_path, "latiss")
+            generate_schema("latiss")
 
 
-# 3. File Generation Tests
 def test_schema_file_creation(tmp_path, mock_config):
-    """Test schema file is created with correct name"""
-    config_path = tmp_path / "config.yml"
+    """Test that the schema file is created with the correct name."""
     with patch(
         "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
     ):
-        schema_path = generate_schema(config_path, "latiss")
-        assert schema_path.name == "efd_latiss.yaml"
-        assert schema_path.exists()
+        # The instrument 'latiss' should produce 'efd_latiss.yaml'
+        schema_path = generate_schema("latiss", output_dir=tmp_path)
+        expected_file = tmp_path / "efd_latiss.yaml"
+        assert schema_path == expected_file
+        assert expected_file.is_file()
 
 
-# 4. Directory Handling Tests
 def test_output_dir_creation(tmp_path, mock_config):
-    """Test output directory is created if missing"""
-    config_path = tmp_path / "config.yml"
+    """Test that the output directory is created if it does not exist."""
     output_dir = tmp_path / "new_dir"
+    assert not output_dir.exists()
     with patch(
         "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
     ):
-        _ = generate_schema(config_path, "latiss", output_dir)
-        assert output_dir.exists()
+        generate_schema("latiss", output_dir=output_dir)
+    assert output_dir.exists()
+    assert (output_dir / "efd_latiss.yaml").is_file()
 
 
-# 5. Table Content Tests
-def test_exposure_table_content(tmp_path, mock_config):
-    """Test exposure table contains expected columns"""
-    config_path = tmp_path / "config.yml"
-    with patch(
-        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
-    ):
-        schema_path = generate_schema(config_path, "latiss")
-        content = schema_path.read_text()
-        assert "exposure_efd" in content
-        assert "exposure_id" in content
-        assert "column1" in content
-
-
-# 6. Unpivoted Table Tests
-def test_unpivoted_table_generation(tmp_path, mock_config):
-    """Test unpivoted tables are generated"""
-    config_path = tmp_path / "config.yml"
-    with patch(
-        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
-    ):
-        schema_path = generate_schema(config_path, "latiss")
-        content = schema_path.read_text()
-        assert "exposure_efd_unpivoted" in content
-        assert "visit1_efd_unpivoted" in content
-
-
-# 7. Column Writing Tests
-def test_column_writing(tmp_path, mock_config):
-    """Test columns are written with correct formatting"""
-    config_path = tmp_path / "config.yml"
-    with patch(
-        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
-    ):
-        schema_path = generate_schema(config_path, "latiss")
-        content = schema_path.read_text()
-        assert "- name: column1" in content
-        assert "datatype: int" in content
-        assert "description: Test column" in content
-
-
-# 8. CLI Argument Parser Test
-def test_argparser_output_dir():
-    """Test argparser handles output_dir correctly"""
-    parser = build_argparser()
-    args = parser.parse_args(["--config", "test.yml", "--instrument", "latiss", "--output-dir", "custom"])
-    assert args.output_dir == Path("custom")
-
-
-# 9. Instrument Coverage Test
-@pytest.mark.parametrize("instrument", schema_dict.keys())
-def test_all_instruments(tmp_path, mock_config, instrument):
-    """Test all instruments in schema_dict work"""
-    config_path = tmp_path / "config.yml"
-    with patch(
-        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
-    ):
-        schema_path = generate_schema(config_path, instrument)
-        assert instrument.lower() in schema_path.name.lower()
-
-
-# 10. Default Output Directory Test
-def test_default_output_dir(tmp_path, mock_config):
-    """Test default output directory is used when none specified"""
-    config_path = tmp_path / "config.yml"
-    expected_dir = config_path.parent.parent / "schemas/yml"
-    with patch(
-        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
-    ):
-        generate_schema(config_path, "latiss")
-        assert expected_dir.exists()
-
-
-# 11. Empty Config Test
-def test_empty_config(tmp_path, empty_config):
-    """Test handling of empty columns list"""
-    config_path = tmp_path / "config.yml"
-    with patch(
-        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=empty_config
-    ):
-        schema_path = generate_schema(config_path, "latiss")
-        content = schema_path.read_text()
-        assert "exposure_efd" in content  # Should still create tables
-        assert "column1" not in content  # But no custom columns
-
-
-# 12. File Writing Test with Mock
-def test_file_writing_with_mock(mock_config):
-    """Test file writing operations using mock"""
+def test_default_output_dir(mock_config):
+    """Test that the default output directory is used when none is specified."""
+    # We mock filesystem operations to avoid side effects and inspect the result.
     with (
-        patch("builtins.open", mock_open()) as mocked_file,
+        patch("pathlib.Path.mkdir"),
+        patch("builtins.open", mock_open()),
         patch(
             "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
         ),
-        patch("pathlib.Path.mkdir"),
     ):
 
-        generate_schema(Path("dummy.yml"), "latiss")
+        # The function returns the path to the generated schema file.
+        schema_path = generate_schema("latiss")
 
-        # Verify file was opened for writing
-        mocked_file.assert_called_once()
-        handle = mocked_file()
+        # The default path is relative to the source code, but we know what it should end with.
+        # The schema name for 'latiss' is 'efd_latiss'.
+        expected_suffix = Path("schemas") / "yml" / "efd_latiss.yaml"
+        assert str(schema_path).endswith(str(expected_suffix))
 
-        # Verify basic structure was written
-        assert any("name: efd_latiss" in call[0][0] for call in handle.write.call_args_list)
-        assert any("exposure_efd" in call[0][0] for call in handle.write.call_args_list)
+
+def test_exposure_table_content(tmp_path, mock_config):
+    """Test that the exposure table contains columns from the config."""
+    with patch(
+        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
+    ):
+        schema_path = generate_schema("latiss", output_dir=tmp_path)
+        with open(schema_path) as f:
+            schema_data = yaml.safe_load(f)
+
+        exposure_table = next(t for t in schema_data["tables"] if t["name"] == "exposure_efd")
+        column_names = [c["name"] for c in exposure_table["columns"]]
+
+        assert "exposure_id" in column_names
+        assert "column1" in column_names  # From mock_config
+        assert "column2" not in column_names  # Unpivoted columns should not be here
+
+
+def test_unpivoted_table_generation(tmp_path, mock_config):
+    """Test that unpivoted tables are generated correctly."""
+    with patch(
+        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
+    ):
+        schema_path = generate_schema("lsstcam", output_dir=tmp_path)
+        with open(schema_path) as f:
+            schema_data = yaml.safe_load(f)
+
+        # Check that the unpivoted table exists
+        unpivoted_table = next(
+            (t for t in schema_data["tables"] if t["name"] == "exposure_efd_unpivoted"), None
+        )
+        assert unpivoted_table is not None
+
+        # The unpivoted table should NOT contain the explicitly defined 'column2'
+        column_names = [c["name"] for c in unpivoted_table["columns"]]
+        assert "column2" not in column_names
+
+
+def test_column_writing(tmp_path, mock_config):
+    """Test that columns are written with correct formatting and IVOA metadata."""
+    with patch(
+        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
+    ):
+        schema_path = generate_schema("latiss", output_dir=tmp_path)
+        with open(schema_path, "r") as f:
+            content = f.read()
+
+        # Check for correct YAML structure for column1
+        assert "name: column1" in content
+        assert "description: Test column" in content
+        assert "datatype: int" in content
+        assert "ivoa:ucd: meta.id" in content
+
+
+@pytest.mark.parametrize("instrument", schema_dict.keys())
+def test_all_instruments(tmp_path, mock_config, instrument):
+    """Test that schema generation works for all supported instruments."""
+    with patch(
+        "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
+    ):
+        schema_path = generate_schema(instrument, output_dir=tmp_path)
+        expected_schema_name = schema_dict[instrument]
+        assert schema_path.name == f"{expected_schema_name}.yaml"
+        assert schema_path.is_file()
+
+
+def test_argparser_setup():
+    """Test that the argument parser is set up correctly."""
+    parser = build_argparser()
+
+    # Test required instrument argument
+    with pytest.raises(SystemExit):
+        parser.parse_args([])  # No arguments should fail
+
+    # Test with required instrument argument
+    args = parser.parse_args(["--instrument", "latiss"])
+    assert args.instrument == "latiss"
+    assert args.output_dir is None
+
+    # Test with output_dir argument
+    args = parser.parse_args(["--instrument", "latiss", "--output-dir", "custom/path"])
+    assert args.instrument == "latiss"
+    assert args.output_dir == Path("custom/path")

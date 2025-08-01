@@ -2,8 +2,9 @@
 name: efd_scheduler
 "@id": "#efd_scheduler"
 description: Transformed EFD scheduler for all instruments
+version:
+  current: 1.0.0
 tables:
-
 - name: latiss
   "@id": "#latiss"
   description: Scheduler for latiss.
@@ -74,7 +75,6 @@ tables:
     datatype: timestamp
     value: 'CURRENT_TIMESTAMP'
     description: Timestamp when record was created, default current timestamp
-
 - name: lsstcam
   "@id": "#lsstcam"
   description: Scheduler for lsstcam.
@@ -145,7 +145,6 @@ tables:
     datatype: timestamp
     value: 'CURRENT_TIMESTAMP'
     description: Timestamp when record was created, default current timestamp
-
 - name: lsstcomcam
   "@id": "#lsstcomcam"
   description: Scheduler for lsstcomcam.

@@ -33,11 +33,10 @@ schema_dict = {
 }
 
 
-def generate_schema(config_path: Path, instrument: str, output_dir: Optional[Path] = None) -> Path:
+def generate_schema(instrument: str, output_dir: Optional[Path] = None) -> Path:
     """Generate database schema YAML file based on configuration
 
     Args:
-        config_path: Path to the configuration file
         instrument: Instrument name
         output_dir: Optional output directory (defaults to schemas/ directory)
 
@@ -52,6 +51,7 @@ def generate_schema(config_path: Path, instrument: str, output_dir: Optional[Pat
         raise ValueError(f"Invalid instrument: {instrument}. Valid options: {list(schema_dict.keys())}")
 
     # Read configuration
+    config_path = Path(__file__).parent / "config" / f"config_{instrument.lower()}.yaml"
     config = read_config(config_path)
     if "columns" not in config:
         raise ValueError("Configuration file must contain 'columns' section")
@@ -67,12 +67,13 @@ def generate_schema(config_path: Path, instrument: str, output_dir: Optional[Pat
     with open(schema_path, "w") as f:
         # Header
         f.write(
-            f"""---
+            """---
 name: {schema_name}
 "@id": "#{schema_name}"
-description: Transformed EFD Consolidated Database for {instrument}
-tables:
-"""
+description: Transformed EFD Consolidated Database for {instrument}.
+version:
+  current: {config["version"]}
+tables:"""
         )
 
         # Exposure tables
@@ -95,16 +96,15 @@ def write_exposure_tables(f, config):
   columns:
   - name: exposure_id
     "@id": "#exposure_efd.exposure_id"
+    description: Exposure unique ID.
     datatype: long
     nullable: false
-    autoincrement: false
-    description: Exposure unique ID.
+    ivoa:ucd: meta.id
   - name: created_at
     "@id": "#exposure_efd.created_at"
+    description: Timestamp when the record was created, default is current timestamp.
     datatype: timestamp
-    value: 'CURRENT_TIMESTAMP'
-    description: Timestamp when the record was created, default is current timestamp
-"""
+    value: 'CURRENT_TIMESTAMP'\n"""
     )
 
     # Add dynamic columns from config
@@ -126,35 +126,33 @@ def write_exposure_tables(f, config):
   columns:
   - name: exposure_id
     "@id": "#exposure_efd_unpivoted.exposure_id"
+    description: Unique identifier for the exposure.
     datatype: long
     nullable: false
-    autoincrement: false
-    description: Unique identifier for the exposure
+    ivoa:ucd: meta.id
   - name: property
     "@id": "#exposure_efd_unpivoted.property"
+    description: Property name for unpivoted data
     datatype: string
     length: 64
     nullable: false
     value: default_property
-    description: Property name for unpivoted data
   - name: field
     "@id": "#exposure_efd_unpivoted.field"
+    description: Field name for unpivoted data.
     datatype: string
     length: 32
     nullable: false
     value: default_field
-    description: Field name for unpivoted data
   - name: value
     "@id": "#exposure_efd_unpivoted.value"
-    datatype: float
-    nullable: true
     description: Value corresponding to the parameter
+    datatype: float
   - name: created_at
     "@id": "#exposure_efd_unpivoted.created_at"
+    description: Timestamp when record was created, default current timestamp.
     datatype: timestamp
-    value: 'CURRENT_TIMESTAMP'
-    description: Timestamp when record was created, default current timestamp
-"""
+    value: 'CURRENT_TIMESTAMP'\n"""
     )
 
 
@@ -171,16 +169,15 @@ def write_visit_tables(f, config):
   columns:
   - name: visit_id
     "@id": "#visit1_efd.visit_id"
+    description: Visit unique ID.
     datatype: long
     nullable: false
-    autoincrement: false
-    description: Visit unique ID.
+    ivoa:ucd: meta.id
   - name: created_at
     "@id": "#visit1_efd.created_at"
+    description: Timestamp when record was created, default current timestamp.
     datatype: timestamp
-    value: 'CURRENT_TIMESTAMP'
-    description: Timestamp when record was created, default current timestamp
-"""
+    value: 'CURRENT_TIMESTAMP'\n"""
     )
 
     # Add dynamic columns from config
@@ -202,35 +199,33 @@ def write_visit_tables(f, config):
   columns:
   - name: visit_id
     "@id": "#visit1_efd_unpivoted.visit_id"
+    description: Unique identifier for the visit.
     datatype: long
     nullable: false
-    autoincrement: false
-    description: Unique identifier for the visit
+    ivoa:ucd: meta.id
   - name: property
     "@id": "#visit1_efd_unpivoted.property"
+    description: Property name for unpivoted data.
     datatype: string
     length: 64
     nullable: false
     value: default_property
-    description: Property name for unpivoted data
   - name: field
     "@id": "#visit1_efd_unpivoted.field"
+    description: Field name for unpivoted data.
     datatype: string
     length: 32
     nullable: false
     value: default_field
-    description: Field name for unpivoted data
   - name: value
     "@id": "#visit1_efd_unpivoted.value"
+    description: Value corresponding to the parameter.
     datatype: float
-    nullable: true
-    description: Value corresponding to the parameter
   - name: created_at
     "@id": "#visit1_efd_unpivoted.created_at"
+    description: Timestamp when record was created, default current timestamp.
     datatype: timestamp
-    value: 'CURRENT_TIMESTAMP'
-    description: Timestamp when record was created, default current timestamp
-"""
+    value: 'CURRENT_TIMESTAMP'\n"""
     )
 
 
@@ -239,18 +234,20 @@ def write_column(f, column: dict, table: str):
     column_name = column["name"]
     f.write(f"  - name: {column_name}\n")
     f.write(f'    "@id": "#{table}.{column_name}"\n')
-    f.write(f'    datatype: {column["datatype"]}\n')
-    f.write("    nullable: true\n")
     f.write(f'    description: {column["description"]}\n')
+    f.write(f'    datatype: {column["datatype"]}\n')
+    # Check for 'ivoa' metadata and write it
+    if ("ivoa" in column) and column["ivoa"] is not None:
+        for key, value in sorted(column["ivoa"].items()):
+            f.write(f"    ivoa:{key}: {value}\n")
 
 
 def build_argparser() -> argparse.ArgumentParser:
     """Build CLI argument parser"""
-    parser = argparse.ArgumentParser(description="Generate EFD transform schema")
-    parser.add_argument("--config", type=Path, required=True, help="Path to configuration file")
-    parser.add_argument("--instrument", type=str, required=True, help="Instrument name (case-insensitive)")
+    parser = argparse.ArgumentParser(description="Generate EFD transform schema.")
+    parser.add_argument("--instrument", type=str, required=True, help="Instrument name (case-insensitive).")
     parser.add_argument(
-        "--output-dir", type=Path, help="Custom output directory (default: config/../schemas/)"
+        "--output-dir", type=Path, help="Custom output directory (default: config/../schemas/)."
     )
     return parser
 
@@ -259,8 +256,6 @@ if __name__ == "__main__":
     parser = build_argparser()
     args = parser.parse_args()
 
-    schema_path = generate_schema(
-        config_path=args.config, instrument=args.instrument, output_dir=args.output_dir
-    )
+    schema_path = generate_schema(instrument=args.instrument, output_dir=args.output_dir)
 
     print(f"Schema successfully generated at: {schema_path}")
