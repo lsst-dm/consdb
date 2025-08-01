@@ -238,7 +238,9 @@ def insert_flexible_metadata(
     )
 
 
-def validate_columns(table_obj: sqlalchemy.sql.schema.Table, valdict: dict[str, Any]) -> None:
+def validate_columns(
+    table_obj: sqlalchemy.sql.schema.Table, valdict: dict[str, Any], check_for_missing: bool = True
+) -> None:
     """Checks for extra or missing columns in the dictionary.
 
     All items in the dictionary must correspond to a column name in table_obj,
@@ -250,6 +252,9 @@ def validate_columns(table_obj: sqlalchemy.sql.schema.Table, valdict: dict[str, 
         The table into which valdict will be inserted.
     valdict : `dict[str, Any]`
         The data that will be inserted into the table.
+    check_for_missing : `bool`
+        If True, make sure all of the non-nullable columns
+        in the table_obj table are contained in valdict.
 
     Raises
     ------
@@ -257,13 +262,14 @@ def validate_columns(table_obj: sqlalchemy.sql.schema.Table, valdict: dict[str, 
         If valdict is not compatible with the table_obj table.
     """
     # Check for missing columns in valdict.
-    missing_columns = []
-    for column in table_obj.columns:
-        if not column.nullable and column.name not in valdict:
-            missing_columns.append(column.name)
+    if check_for_missing:
+        missing_columns = []
+        for column in table_obj.columns:
+            if not column.nullable and column.name not in valdict:
+                missing_columns.append(column.name)
 
-    if missing_columns:
-        raise BadValueException("missing columns", ",".join(missing_columns))
+        if missing_columns:
+            raise BadValueException("missing columns", ",".join(missing_columns))
 
     # Check for extra columns in valdict that would be unconsumed.
     valid_columns = set(column.name for column in table_obj.columns)
@@ -301,7 +307,7 @@ def insert_by_day_obs_seq_num(
 
     valdict = data.values
     valdict_insert = data.values | {"day_obs": day_obs, "seq_num": seq_num}
-    validate_columns(table_obj, valdict_insert)
+    validate_columns(table_obj, valdict_insert, u == 0)
 
     # Do the insert with sqlalchemy.
     stmt: sqlalchemy.sql.dml.Insert
@@ -370,7 +376,7 @@ def insert(
             if "seq_num" not in valdict:
                 valdict["seq_num"] = seq_num
 
-    validate_columns(table_obj, valdict)
+    validate_columns(table_obj, valdict, u == 0)
 
     # Do the insert with sqlalchemy.
     stmt: sqlalchemy.sql.dml.Insert
@@ -448,7 +454,7 @@ def insert_multiple(
                 timestamp = astropy.time.Time(timestamp, format="isot", scale="tai")
                 valdict[column] = timestamp.to_datetime()
 
-    validate_columns(table_obj, valdict)
+    validate_columns(table_obj, valdict, u == 0)
     bulk_data.append(valdict)
 
     try:
