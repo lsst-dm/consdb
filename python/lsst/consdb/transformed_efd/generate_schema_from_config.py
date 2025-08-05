@@ -67,7 +67,7 @@ def generate_schema(instrument: str, output_dir: Optional[Path] = None) -> Path:
     with open(schema_path, "w") as f:
         # Header
         f.write(
-            """---
+            f"""---
 name: {schema_name}
 "@id": "#{schema_name}"
 description: Transformed EFD Consolidated Database for {instrument}.
@@ -92,8 +92,34 @@ def write_exposure_tables(f, config):
   "@id": "#exposure_efd"
   description: Transformed EFD topics by exposure.
   primaryKey:
-  - "#exposure_efd.exposure_id"
+  - "#exposure_efd.day_obs"
+  - "#exposure_efd.seq_num"
+  constraints:
+  - name: un_exposure_efd_day_obs_seq_num
+    "@id": "#exposure_efd.un_exposure_efd_day_obs_seq_num"
+    "@type": Unique
+    description: Ensure day_obs plus seq_num is unique.
+    columns:
+    - "#exposure_efd.day_obs"
+    - "#exposure_efd.seq_num"
+  - name: un_exposure_efd_exposure_id
+    "@id": "#exposure_efd.un_exposure_efd_exposure_id"
+    "@type": Unique
+    description: Ensure exposure_id is unique.
+    columns:
+    - "#exposure_efd.exposure_id"
   columns:
+  - name: day_obs
+    "@id": "#exposure_efd.day_obs"
+    description: Day of observation in YYYYMMDD format.
+    datatype: int
+    nullable: false
+    ivoa:ucd: meta.id.part
+  - name: seq_num
+    "@id": "#exposure_efd.seq_num"
+    description: Sequence number for the exposure.
+    datatype: int
+    ivoa:ucd: meta.id.part
   - name: exposure_id
     "@id": "#exposure_efd.exposure_id"
     description: Exposure unique ID.
@@ -120,10 +146,24 @@ def write_exposure_tables(f, config):
   "@id": "#exposure_efd_unpivoted"
   description: Unpivoted EFD exposure data.
   primaryKey:
+  - "#exposure_efd_unpivoted.day_obs"
+  - "#exposure_efd_unpivoted.seq_num"
   - "#exposure_efd_unpivoted.exposure_id"
   - "#exposure_efd_unpivoted.property"
   - "#exposure_efd_unpivoted.field"
   columns:
+  - name: day_obs
+    "@id": "#exposure_efd_unpivoted.day_obs"
+    description: Day of observation in YYYYMMDD format.
+    datatype: int
+    nullable: false
+    ivoa:ucd: meta.id.part
+  - name: seq_num
+    "@id": "#exposure_efd_unpivoted.seq_num"
+    description: Sequence number for the exposure.
+    datatype: int
+    nullable: false
+    ivoa:ucd: meta.id.part
   - name: exposure_id
     "@id": "#exposure_efd_unpivoted.exposure_id"
     description: Unique identifier for the exposure.
@@ -165,8 +205,34 @@ def write_visit_tables(f, config):
   "@id": "#visit1_efd"
   description: Transformed EFD topics by visit.
   primaryKey:
-  - "#visit1_efd.visit_id"
+  - "#visit1_efd.day_obs"
+  - "#visit1_efd.seq_num"
+  constraints:
+  - name: un_visit1_efd_day_obs_seq_num
+    "@id": "#visit1_efd.un_visit1_efd_day_obs_seq_num"
+    "@type": Unique
+    description: Ensure day_obs plus seq_num is unique.
+    columns:
+    - "#visit1_efd.day_obs"
+    - "#visit1_efd.seq_num"
+  - name: un_visit1_efd_visit_id
+    "@id": "#visit1_efd.un_visit1_efd_visit_id"
+    "@type": Unique
+    description: Ensure visit_id is unique.
+    columns:
+    - "#visit1_efd.visit_id"
   columns:
+  - name: day_obs
+    "@id": "#visit1_efd.day_obs"
+    description: Day of observation in YYYYMMDD format.
+    datatype: int
+    nullable: false
+    ivoa:ucd: meta.id.part
+  - name: seq_num
+    "@id": "#visit1_efd.seq_num"
+    description: Sequence number for the visit.
+    datatype: int
+    ivoa:ucd: meta.id.part
   - name: visit_id
     "@id": "#visit1_efd.visit_id"
     description: Visit unique ID.
@@ -193,10 +259,24 @@ def write_visit_tables(f, config):
   "@id": "#visit1_efd_unpivoted"
   description: Unpivoted EFD visit data.
   primaryKey:
+  - "#visit1_efd_unpivoted.day_obs"
+  - "#visit1_efd_unpivoted.seq_num"
   - "#visit1_efd_unpivoted.visit_id"
   - "#visit1_efd_unpivoted.property"
   - "#visit1_efd_unpivoted.field"
   columns:
+  - name: day_obs
+    "@id": "#visit1_efd_unpivoted.day_obs"
+    description: Day of observation in YYYYMMDD format.
+    datatype: int
+    nullable: false
+    ivoa:ucd: meta.id.part
+  - name: seq_num
+    "@id": "#visit1_efd_unpivoted.seq_num"
+    description: Sequence number for the visit.
+    datatype: int
+    nullable: false
+    ivoa:ucd: meta.id.part
   - name: visit_id
     "@id": "#visit1_efd_unpivoted.visit_id"
     description: Unique identifier for the visit.
