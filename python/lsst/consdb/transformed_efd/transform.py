@@ -208,8 +208,22 @@ class Transform:
     ) -> Dict[str, Any]:
         """Process the given time interval for a specific instrument."""
         results = {
-            "exposures": {exp["id"]: {"exposure_id": exp["id"]} for exp in exposures},
-            "visits": {vis["id"]: {"visit_id": vis["id"]} for vis in visits},
+            "exposures": {
+                exp["id"]: {
+                    "day_obs": exp["day_obs"],
+                    "seq_num": exp["seq_num"],
+                    "exposure_id": exp["id"],
+                }
+                for exp in exposures
+            },
+            "visits": {
+                vis["id"]: {
+                    "day_obs": vis["day_obs"],
+                    "seq_num": vis["seq_num"],
+                    "visit_id": vis["id"],
+                }
+                for vis in visits
+            },
             "exposures_unpivoted": [],
             "visits_unpivoted": [],
         }
@@ -334,6 +348,8 @@ class Transform:
                 if column_value is not None:
                     results.append(
                         {
+                            "day_obs": exposure["day_obs"],
+                            "seq_num": exposure["seq_num"],
                             "exposure_id": exposure["id"],
                             "property": column["name"],
                             "field": col,
@@ -389,6 +405,8 @@ class Transform:
                 if column_value:
                     results.append(
                         {
+                            "day_obs": visit["day_obs"],
+                            "seq_num": visit["seq_num"],
                             "visit_id": visit["id"],
                             "property": column["name"],
                             "field": col,
