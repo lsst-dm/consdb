@@ -105,8 +105,8 @@ def test_output_dir_creation(tmp_path, mock_config):
 
 
 def test_default_output_dir(mock_config):
-    """Test that the default output directory is used when none is specified."""
-    # We mock filesystem operations to avoid side effects and inspect the result.
+    """The default output directory is used when none is specified."""
+
     with (
         patch("pathlib.Path.mkdir"),
         patch("builtins.open", mock_open()),
@@ -118,7 +118,8 @@ def test_default_output_dir(mock_config):
         # The function returns the path to the generated schema file.
         schema_path = generate_schema("latiss")
 
-        # The default path is relative to the source code, but we know what it should end with.
+        # The default path is relative to the source code,
+        # but we know what it should end with.
         # The schema name for 'latiss' is 'efd_latiss'.
         expected_suffix = Path("schemas") / "yml" / "efd_latiss.yaml"
         assert str(schema_path).endswith(str(expected_suffix))
@@ -156,13 +157,14 @@ def test_unpivoted_table_generation(tmp_path, mock_config):
         )
         assert unpivoted_table is not None
 
-        # The unpivoted table should NOT contain the explicitly defined 'column2'
+        # The unpivoted table should NOT contain the
+        # explicitly defined 'column2'
         column_names = [c["name"] for c in unpivoted_table["columns"]]
         assert "column2" not in column_names
 
 
 def test_column_writing(tmp_path, mock_config):
-    """Test that columns are written with correct formatting and IVOA metadata."""
+    """Test that columns are written with correct format and IVOA metadata."""
     with patch(
         "lsst.consdb.transformed_efd.generate_schema_from_config.read_config", return_value=mock_config
     ):
