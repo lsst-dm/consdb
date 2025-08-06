@@ -1,0 +1,126 @@
+name: Sync EFD schemas -> sdm_schemas
+
+# Triggers on merged PR to main or manual dispatch.
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'The consdb branch to sync (e.g., tickets/DM-1234)'
+        required: true
+      source_pr_url:
+        description: 'Source PR URL for manual trigger (optional)'
+        required: false
+        default: 'manually triggered run'
+
+# Permissions to read source repo and create a PR in the destination.
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  sync_yml:
+    # Run only on manual trigger or a successfully merged PR.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      # Set BRANCH_NAME and SOURCE_PR_URL from trigger context (PR or manual).
+      - name: Determine Event Context
+        id: context
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+            echo "SOURCE_PR_URL=${{ github.event.pull_request.html_url }}" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "BRANCH_NAME=${{ github.event.inputs.branch_name }}" >> $GITHUB_ENV
+            echo "SOURCE_PR_URL=${{ github.event.inputs.source_pr_url }}" >> $GITHUB_ENV
+          fi
+
+      # Ensure branch is a 'tickets/DM-...' branch. Abort if not.
+      - name: Validate branch name
+        id: validate
+        run: |
+          BRANCH="${{ env.BRANCH_NAME }}"
+          if [[ ! "$BRANCH" =~ ^tickets/DM-[0-9]+([a-zA-Z0-9-]*)?$ ]]; then
+            echo "Not a tickets/DM-... branch. Sync not required."
+            echo "should_sync=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "should_sync=true" >> $GITHUB_OUTPUT
+          TICKET_NAME=$(echo "$BRANCH" | sed -E 's/tickets\/(DM-[0-9]+).*/\1/')
+          echo "ticket_name=$TICKET_NAME" >> $GITHUB_OUTPUT
+
+      # Checkout source repo ('main' branch) to get latest schema files.
+      - name: Checkout consdb (source)
+        if: steps.validate.outputs.should_sync == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: 'main'
+          path: consdb_source
+          fetch-depth: 0
+
+      # Checkout destination repo using a PAT for write access.
+      - name: Checkout sdm_schemas (destination)
+        if: steps.validate.outputs.should_sync == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: lsst/sdm_schemas
+          path: sdm_schemas_dest
+          token: ${{ secrets.SDM_SCHEMAS_PR }}
+
+      # Copy new or modified schema files to destination. Set 'has_changes' output.
+      - name: Synchronize sdm_schemas from consdb (Safe, Add/Update Only)
+        if: steps.validate.outputs.should_sync == 'true'
+        id: apply_changes
+        run: |
+          set -e
+          SOURCE_YML_DIR="consdb_source/python/lsst/consdb/transformed_efd/schemas/yml"
+          DEST_YML_DIR="sdm_schemas_dest/python/lsst/sdm/schemas"
+          has_changes=false
+          if [ ! -d "$SOURCE_YML_DIR" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          mkdir -p "$DEST_YML_DIR"
+          while read -r source_file; do
+            filename=$(basename "$source_file")
+            dest_file="$DEST_YML_DIR/$filename"
+            if [ ! -f "$dest_file" ] || ! diff -q "$source_file" "$dest_file" >/dev/null 2>&1; then
+              echo "Syncing: $filename"
+              cp "$source_file" "$dest_file"
+              has_changes=true
+            fi
+          done < <(find "$SOURCE_YML_DIR" -type f -not -name "efd_scheduler.yaml")
+          echo "has_changes=$has_changes" >> $GITHUB_OUTPUT
+
+      # Create a PR in the destination repo if changes were found.
+      - name: Create Pull Request in sdm_schemas
+        if: steps.validate.outputs.should_sync == 'true' && steps.apply_changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: sdm_schemas_dest
+          token: ${{ secrets.SDM_SCHEMAS_PR }}
+          branch: ${{ env.BRANCH_NAME }}
+          base: main
+          delete-branch: true
+          title: "${{ steps.validate.outputs.ticket_name }}: Sync transformed EFD schema updates"
+          commit-message: "feat(${{ steps.validate.outputs.ticket_name }}): Sync transformed EFD schemas from ConsDB"
+          body: |
+            This PR synchronizes transformed EFD schema YAML files from the `consdb` repository
+            into `lsst/sdm_schemas`.
+
+            Source:
+            - Repository: `lsst-dm/consdb`
+            - Branch: `${{ env.BRANCH_NAME }}`
+            - Original PR: ${{ env.SOURCE_PR_URL }}
+
+            Changes:
+            - All added or updated files under `lsst-dm/consdb/python/lsst/consdb/transformed_efd/schemas/yml` have been copied to `lsst/sdm_schemas/python/lsst/sdm/schemas` (add/update only; no deletions).
+
+            Please review the updated schemas and merge once verified.
+          labels: automated, schemas, sync
+          draft: false
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
