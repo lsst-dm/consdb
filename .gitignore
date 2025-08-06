@@ -42,3 +42,4 @@ docker/pgdata
 
 # local testing
 local_testing/
+.cspell
