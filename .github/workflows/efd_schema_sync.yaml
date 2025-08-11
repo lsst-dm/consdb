@@ -1,4 +1,4 @@
-name: Sync EFD schemas -> sdm_schemas
+name: Sync EFD schemas to sdm_schemas
 
 # Triggers on merged PR to main or manual dispatch.
 on:
