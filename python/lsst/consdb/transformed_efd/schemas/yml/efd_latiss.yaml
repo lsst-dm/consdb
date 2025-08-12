@@ -12,13 +12,6 @@ tables:
   - "#exposure_efd.day_obs"
   - "#exposure_efd.seq_num"
   constraints:
-  - name: un_exposure_efd_day_obs_seq_num
-    "@id": "#exposure_efd.un_exposure_efd_day_obs_seq_num"
-    "@type": Unique
-    description: Ensure day_obs plus seq_num is unique.
-    columns:
-    - "#exposure_efd.day_obs"
-    - "#exposure_efd.seq_num"
   - name: un_exposure_efd_exposure_id
     "@id": "#exposure_efd.un_exposure_efd_exposure_id"
     "@type": Unique
@@ -1710,13 +1703,6 @@ tables:
   - "#visit1_efd.day_obs"
   - "#visit1_efd.seq_num"
   constraints:
-  - name: un_visit1_efd_day_obs_seq_num
-    "@id": "#visit1_efd.un_visit1_efd_day_obs_seq_num"
-    "@type": Unique
-    description: Ensure day_obs plus seq_num is unique.
-    columns:
-    - "#visit1_efd.day_obs"
-    - "#visit1_efd.seq_num"
   - name: un_visit1_efd_visit_id
     "@id": "#visit1_efd.un_visit1_efd_visit_id"
     "@type": Unique
