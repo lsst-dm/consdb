@@ -154,7 +154,7 @@ class Transform:
         """Map topics and fields to perform a single query per topic."""
         groups_map = {}
 
-        # 1. Itera e agrupa as informações
+        # 1. Iterate over and group the information
         for column in self.config["columns"]:
             start_offset = column.get("start_offset")
             packed_series = column.get("packed_series")
@@ -164,7 +164,7 @@ class Transform:
             for topic_info in column["topics"]:
                 topic_name = topic_info["name"]
 
-                # Cria a chave composta
+                # Create the composite key
                 group_key = (
                     topic_name,
                     packed_series,
@@ -173,7 +173,7 @@ class Transform:
                     function if pre_aggregate_interval is not None else None,
                 )
 
-                # Inicializa o grupo se for a primeira vez que o vemos
+                # Initialize the group if we're seeing it for the first time
                 if group_key not in groups_map:
                     groups_map[group_key] = {
                         "name": topic_name,
@@ -184,16 +184,16 @@ class Transform:
                         "columns": [],
                     }
 
-                # Agrega os campos necessários para a consulta
+                # Aggregate the necessary fields for the query
                 for field in topic_info["fields"]:
                     groups_map[group_key]["fields"].add(field["name"])
 
-                # Agrupa a configuração completa da coluna
+                # Group the full column configuration
                 groups_map[group_key]["columns"].append(column)
 
-        # 2. Finaliza a estrutura de dados para cada grupo
+        # 2. Finalize the data structure for each group
         for group_key, group_data in groups_map.items():
-            # Converte o set de campos para uma lista
+            # Convert the set of fields to a list
             group_data["fields"] = list(group_data["fields"])
 
         return groups_map
@@ -581,9 +581,9 @@ class Transform:
         aggregate_interval = topic.get("pre_aggregate_interval")
         aggregate_func = topic.get("function")
 
-        self.log.info(f"Querying topic '{topic['name']}' from {start.iso} to {end.iso}.")
+        self.log.debug(f"Querying topic '{topic['name']}' from {start.iso} to {end.iso}.")
         if aggregate_interval:
-            self.log.info(f"Aggregation: interval={aggregate_interval}, function={aggregate_func}")
+            self.log.debug(f"Aggregation: interval={aggregate_interval}, function={aggregate_func}")
 
         # 2. Delegate the query to the appropriate DAO method
         try:
