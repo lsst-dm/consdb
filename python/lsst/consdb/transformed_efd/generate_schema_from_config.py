@@ -20,6 +20,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import argparse
+import importlib.resources
 from pathlib import Path
 from typing import Optional
 
@@ -51,14 +52,15 @@ def generate_schema(instrument: str, output_dir: Optional[Path] = None) -> Path:
         raise ValueError(f"Invalid instrument: {instrument}. Valid options: {list(schema_dict.keys())}")
 
     # Read configuration
-    config_path = Path(__file__).parent / "config" / f"config_{instrument.lower()}.yaml"
+    config_files = importlib.resources.files("lsst.consdb.transformed_efd.config")
+    config_path = config_files / f"config_{instrument.lower()}.yaml"
     config = read_config(config_path)
     if "columns" not in config:
         raise ValueError("Configuration file must contain 'columns' section")
 
     # Determine output path
-    output_dir = output_dir or config_path.parent.parent / "schemas/yml"
-    output_dir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
+    output_dir = importlib.resources.files("lsst.consdb.transformed_efd").joinpath("schemas", "yml")
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     schema_name = schema_dict[instrument.lower()]
     schema_path = output_dir / f"{schema_name}.yaml"
@@ -95,13 +97,6 @@ def write_exposure_tables(f, config):
   - "#exposure_efd.day_obs"
   - "#exposure_efd.seq_num"
   constraints:
-  - name: un_exposure_efd_day_obs_seq_num
-    "@id": "#exposure_efd.un_exposure_efd_day_obs_seq_num"
-    "@type": Unique
-    description: Ensure day_obs plus seq_num is unique.
-    columns:
-    - "#exposure_efd.day_obs"
-    - "#exposure_efd.seq_num"
   - name: un_exposure_efd_exposure_id
     "@id": "#exposure_efd.un_exposure_efd_exposure_id"
     "@type": Unique
@@ -208,13 +203,6 @@ def write_visit_tables(f, config):
   - "#visit1_efd.day_obs"
   - "#visit1_efd.seq_num"
   constraints:
-  - name: un_visit1_efd_day_obs_seq_num
-    "@id": "#visit1_efd.un_visit1_efd_day_obs_seq_num"
-    "@type": Unique
-    description: Ensure day_obs plus seq_num is unique.
-    columns:
-    - "#visit1_efd.day_obs"
-    - "#visit1_efd.seq_num"
   - name: un_visit1_efd_visit_id
     "@id": "#visit1_efd.un_visit1_efd_visit_id"
     "@type": Unique
