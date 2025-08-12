@@ -55,6 +55,7 @@ def get_logger(path: str | Path | None = None) -> logging.Logger:
 
     log = logging.getLogger("transformed_efd")
     log.handlers.clear()
+    log.propagate = False
 
     # Get log level from environment variable, default to "INFO"
     env_level = os.getenv("LOG_LEVEL", "INFO").upper()
