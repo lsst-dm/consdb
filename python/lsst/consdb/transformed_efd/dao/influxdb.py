@@ -25,7 +25,9 @@ These classes support operations such as querying time-series data, retrieving
 field keys, and unpacking packed dataframes.
 """
 
+import itertools
 import logging
+import math
 import os
 from functools import partial
 from urllib.parse import urljoin
@@ -465,8 +467,8 @@ class InfluxDBClient:
             (default is `None`).
         aggregate_func : `str`, optional
             If set, applies an aggregation function to the fields within each
-            time bucket. Supported values are 'mean', 'max', 'min', and
-            'stddev'. (default is `None`).
+            time bucket. Supported values are 'mean', 'max', and 'min'.
+            (default is `None`).
 
         Returns
         -------
@@ -522,7 +524,7 @@ class InfluxDBClient:
             raise ValueError("aggregate_func must be provided if aggregate_interval is set.")
         else:
             # Original behavior: select raw, un-aggregated fields
-            select_clause = f'SELECT "{'", "'.join(fields)}"'
+            select_clause = f'SELECT {", ".join(f'"{f}"' for f in fields)}'
 
         # Build GROUP BY clause if aggregation is enabled
         group_by_clause = ""
@@ -626,10 +628,9 @@ class InfluxDBClient:
             (default is `None`).
         aggregate_func : `str`, optional
             If set, applies an aggregation function to the fields within each
-            time bucket. Supported values are 'mean', 'max', 'min', and
-            'stddev'. If 'stddev' is chosen, the returned columns will
-            be named `{field}_count`, `{field}_sum`, and `{field}_stddev`.
-            (default is `None`).
+            time bucket. Supported values are 'mean', 'max', and 'min'.
+            (default is `None`)
+
         Returns
         -------
         result : `pandas.DataFrame`
@@ -658,13 +659,12 @@ class InfluxDBClient:
         )
 
         all_series_dfs = []
-        field_chunks = [
-            fields[i : i + self.max_fields_per_query]
-            for i in range(0, len(fields), self.max_fields_per_query)
-        ]
+
+        total_chunks = math.ceil(len(fields) / self.max_fields_per_query)
+        field_chunks = itertools.batched(fields, self.max_fields_per_query)
 
         for i, chunk in enumerate(field_chunks):
-            self.log.debug(f"Querying field chunk {i+1}/{len(field_chunks)} ({len(chunk)} fields)...")
+            self.log.debug(f"Querying field chunk {i+1}/{total_chunks} ({len(chunk)} fields)...")
             try:
                 df_chunk = self._execute_single_timeseries_query(
                     topic_name,
