@@ -59,7 +59,8 @@ def generate_schema(instrument: str, output_dir: Optional[Path] = None) -> Path:
         raise ValueError("Configuration file must contain 'columns' section")
 
     # Determine output path
-    output_dir = importlib.resources.files("lsst.consdb.transformed_efd").joinpath("schemas", "yml")
+    if output_dir is None:
+        output_dir = importlib.resources.files("lsst.consdb.transformed_efd").joinpath("schemas", "yml")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     schema_name = schema_dict[instrument.lower()]
