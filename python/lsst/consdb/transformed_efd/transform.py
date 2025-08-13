@@ -21,6 +21,7 @@
 
 """Provides functions and utilities for transformed EFD."""
 
+import copy
 import logging
 from typing import Any, Dict, List, Tuple
 
@@ -34,12 +35,22 @@ from lsst.consdb.transformed_efd.summary import Summary
 from lsst.daf.butler import Butler
 
 
+def handle_processing_errors(func):
+    """Log error and re-raise to interrupt processing."""
+
+    def wrapper(self, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except Exception as e:
+            self.log.error(f"Error in {func.__name__}: {e}")
+            raise
+
+    return wrapper
+
+
 class Transform:
     """A class that represents a data transformation process."""
 
-    # ====================
-    # Public API Methods
-    # ====================
     def __init__(
         self,
         butler: Butler,
@@ -77,6 +88,7 @@ class Transform:
         }
         return instruments[instrument.lower()]
 
+    @handle_processing_errors
     def process_interval(
         self,
         instrument: str,
@@ -94,12 +106,14 @@ class Transform:
             return count
 
         results = self._process_interval(exposures, visits, start_time, end_time)
+
         count = self._store_results(instrument, results)
         return count
 
     # ====================
     # Private Helper Methods
     # ====================
+    @handle_processing_errors
     def _compute_column_value(
         self,
         start_time: astropy.time.Time,
@@ -109,11 +123,23 @@ class Transform:
         **function_kwargs: Any,
     ) -> Any:
         """Compute column value using named transformation."""
+
         ts_start = pandas.to_datetime(start_time.utc.datetime, utc=True)
+        if "start_offset" in function_kwargs:
+            ts_start += pandas.Timedelta(function_kwargs["start_offset"], unit="h")
+
         ts_end = pandas.to_datetime(end_time.utc.datetime, utc=True)
-        valid_series = [
-            topic["series"].sort_index().loc[ts_start:ts_end] for topic in topics if not topic["series"].empty
-        ]
+
+        valid_series = []
+
+        for topic in topics:
+            if not topic["series"].empty:
+                series = topic["series"].loc[
+                    (topic["series"].index >= ts_start) & (topic["series"].index <= ts_end)
+                ]
+                if not series.empty:
+                    valid_series.append(series)
+
         values = pandas.concat(valid_series, copy=False) if valid_series else pandas.DataFrame()
 
         if values.empty:
@@ -123,27 +149,56 @@ class Transform:
             transform_function, **function_kwargs
         )
 
+    @handle_processing_errors
     def _map_topics(self) -> Dict[str, Any]:
         """Map topics and fields to perform a single query per topic."""
-        topics_map = {}
+        groups_map = {}
+
+        # 1. Iterate over and group the information
         for column in self.config["columns"]:
-            for values in column["topics"]:
-                topic = values["name"]
-                if topic not in topics_map.keys():
-                    topics_map[topic] = {
-                        "name": topic,
-                        "fields": [],
-                        "packed_series": [],
+            start_offset = column.get("start_offset")
+            packed_series = column.get("packed_series")
+            pre_aggregate_interval = column.get("pre_aggregate_interval")
+            function = column.get("function")
+
+            for topic_info in column["topics"]:
+                topic_name = topic_info["name"]
+
+                # Create the composite key
+                group_key = (
+                    topic_name,
+                    packed_series,
+                    start_offset,
+                    pre_aggregate_interval,
+                    function if pre_aggregate_interval is not None else None,
+                )
+
+                # Initialize the group if we're seeing it for the first time
+                if group_key not in groups_map:
+                    groups_map[group_key] = {
+                        "name": topic_name,
+                        "start_offset": start_offset,
+                        "pre_aggregate_interval": pre_aggregate_interval,
+                        "function": function,
+                        "fields": set(),
                         "columns": [],
                     }
-                for field in values["fields"]:
-                    topics_map[topic]["fields"].append(field["name"])
-                topics_map[topic]["fields"] = list(set(topics_map[topic]["fields"]))
-                topics_map[topic]["packed_series"].append(column["packed_series"])
-                topics_map[topic]["columns"].append(column)
-            topics_map[topic]["is_packed"] = any(topics_map[topic]["packed_series"])
-        return topics_map
 
+                # Aggregate the necessary fields for the query
+                for field in topic_info["fields"]:
+                    groups_map[group_key]["fields"].add(field["name"])
+
+                # Group the full column configuration
+                groups_map[group_key]["columns"].append(column)
+
+        # 2. Finalize the data structure for each group
+        for group_key, group_data in groups_map.items():
+            # Convert the set of fields to a list
+            group_data["fields"] = list(group_data["fields"])
+
+        return groups_map
+
+    @handle_processing_errors
     def _process_interval(
         self,
         exposures: List[Dict[str, Any]],
@@ -153,8 +208,22 @@ class Transform:
     ) -> Dict[str, Any]:
         """Process the given time interval for a specific instrument."""
         results = {
-            "exposures": {exp["id"]: {"exposure_id": exp["id"]} for exp in exposures},
-            "visits": {vis["id"]: {"visit_id": vis["id"]} for vis in visits},
+            "exposures": {
+                exp["id"]: {
+                    "day_obs": exp["day_obs"],
+                    "seq_num": exp["seq_num"],
+                    "exposure_id": exp["id"],
+                }
+                for exp in exposures
+            },
+            "visits": {
+                vis["id"]: {
+                    "day_obs": vis["day_obs"],
+                    "seq_num": vis["seq_num"],
+                    "visit_id": vis["id"],
+                }
+                for vis in visits
+            },
             "exposures_unpivoted": [],
             "visits_unpivoted": [],
         }
@@ -162,12 +231,27 @@ class Transform:
         topic_interval = self._get_topic_interval(start_time, end_time, exposures, visits)
         self.log.debug(f"Topic Interval: start={topic_interval[0]} end={topic_interval[1]}")
         topics_map = self._map_topics()
+        for key, topic in topics_map.items():
+            processing_topic = copy.deepcopy(topic)
+            _, packed_series, start_offset, pre_aggregate_interval, function = key
+            processing_topic["is_packed"] = packed_series
+            processing_topic["pre_aggregate_interval"] = None
 
-        for topic_name, topic in topics_map.items():
-            self._process_topic(topic, topic_interval, exposures, visits, results)
+            if pre_aggregate_interval is not None and function in ["mean", "max", "min"]:
+                processing_topic["pre_aggregate_interval"] = pre_aggregate_interval
+
+            # apply offset to the topic interval if specified
+            if start_offset is not None:
+                processing_topic["function_args"]["start_offset"] = start_offset
+                offset_topic_interval = topic_interval.copy()
+                offset_topic_interval[0] += astropy.time.TimeDelta(float(start_offset) * 3600, format="sec")
+                self._process_topic(processing_topic, offset_topic_interval, exposures, visits, results)
+            else:
+                self._process_topic(processing_topic, topic_interval, exposures, visits, results)
 
         return results
 
+    @handle_processing_errors
     def _process_topic(
         self,
         topic: Dict[str, Any],
@@ -188,6 +272,7 @@ class Transform:
         for column in topic["columns"]:
             self._process_column(column, topic, topic_series, exposures, visits, results)
 
+    @handle_processing_errors
     def _process_column(
         self,
         column: Dict[str, Any],
@@ -213,6 +298,7 @@ class Transform:
         if "visit1_efd_unpivoted" in column["tables"]:
             self._process_visits_unpivoted(topic, column, data, visits, results["visits_unpivoted"])
 
+    @handle_processing_errors
     def _process_exposures(
         self,
         column: Dict[str, Any],
@@ -232,6 +318,7 @@ class Transform:
             )
             results[exposure["id"]][column["name"]] = column_value
 
+    @handle_processing_errors
     def _process_exposures_unpivoted(
         self,
         topic: Dict[str, Any],
@@ -243,12 +330,14 @@ class Transform:
         """Process exposure unpivoted data and update results."""
         for exposure in exposures:
             function_kwargs = column["function_args"] or {}
-            series_df = data[0]["series"]
+            series_df = data[0]["series"].copy()
             for col in series_df.columns:
+                col_series = series_df[[col]].copy()
                 new_topic = topic.copy()
                 new_topic["fields"] = [col]
                 new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
-                new_data = [{"topic": new_topic, "series": series_df[[col]]}]
+
+                new_data = [{"topic": new_topic, "series": col_series}]
                 column_value = self._compute_column_value(
                     start_time=exposure["timespan"].begin.utc,
                     end_time=exposure["timespan"].end.utc,
@@ -256,9 +345,11 @@ class Transform:
                     transform_function=column.get("function"),
                     **function_kwargs,
                 )
-                if column_value:
+                if column_value is not None:
                     results.append(
                         {
+                            "day_obs": exposure["day_obs"],
+                            "seq_num": exposure["seq_num"],
                             "exposure_id": exposure["id"],
                             "property": column["name"],
                             "field": col,
@@ -266,6 +357,7 @@ class Transform:
                         }
                     )
 
+    @handle_processing_errors
     def _process_visits(
         self,
         column: Dict[str, Any],
@@ -285,6 +377,7 @@ class Transform:
             )
             results[visit["id"]][column["name"]] = column_value
 
+    @handle_processing_errors
     def _process_visits_unpivoted(
         self,
         topic: Dict[str, Any],
@@ -312,6 +405,8 @@ class Transform:
                 if column_value:
                     results.append(
                         {
+                            "day_obs": visit["day_obs"],
+                            "seq_num": visit["seq_num"],
                             "visit_id": visit["id"],
                             "property": column["name"],
                             "field": col,
@@ -319,6 +414,7 @@ class Transform:
                         }
                     )
 
+    @handle_processing_errors
     def _prepare_column_data(
         self,
         column: Dict[str, Any],
@@ -330,13 +426,22 @@ class Transform:
             fields = [f["name"] for f in column["topics"][0]["fields"]]
             if column["subset_field"]:
                 subset_field = str(column["subset_field"])
-                subset_value = str(column["subset_value"])
+                raw_subset_value = column["subset_value"]
+
                 if subset_field in topic_series and not topic_series[subset_field].empty:
                     topic_series[subset_field] = topic_series[subset_field].fillna("").astype(str)
-                    subset_value = str(subset_value)
-                    filtered_df = topic_series.loc[topic_series[subset_field] == subset_value]
+
+                    # Handle single value or list of values for filtering
+                    if isinstance(raw_subset_value, list):
+                        subset_values_str = [str(val) for val in raw_subset_value]
+                        filtered_df = topic_series.loc[topic_series[subset_field].isin(subset_values_str)]
+                    else:
+                        subset_value_str = str(raw_subset_value)
+                        filtered_df = topic_series.loc[topic_series[subset_field] == subset_value_str]
+
                     fields.remove(subset_field)
                     valid_fields = [field for field in fields if field in filtered_df.columns]
+
                     if valid_fields:
                         data = [
                             {
@@ -345,7 +450,6 @@ class Transform:
                             }
                         ]
                     else:
-
                         self.log.debug(
                             f"No valid fields found in filtered DataFrame in Topic: " f"name={topic['name']}"
                         )
@@ -366,7 +470,6 @@ class Transform:
                 ]
         else:
             data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
-
         return data
 
     def _initialize_counts(self) -> Dict[str, int]:
@@ -378,6 +481,7 @@ class Transform:
             "visits1_unpivoted": 0,
         }
 
+    @handle_processing_errors
     def _retrieve_exposures_and_visits(
         self,
         instrument: str,
@@ -393,18 +497,14 @@ class Transform:
 
         return exposures, visits
 
+    @handle_processing_errors
     def _store_results(
         self,
         instrument: str,
         results: Dict[str, Any],
     ) -> Dict[str, int]:
         """Store the processed results into the database."""
-        count = {
-            "exposures": 0,
-            "visits1": 0,
-            "exposures_unpivoted": 0,
-            "visits1_unpivoted": 0,
-        }
+        count = {"exposures": 0, "visits1": 0}
 
         schema = self.get_schema_by_instrument(instrument)
 
@@ -440,6 +540,8 @@ class Transform:
                 )
                 count["exposures_unpivoted"] = affected_rows
                 self.log.debug(f"Stored unpivoted exposure records: affected_rows={affected_rows}")
+                if not count["exposures"]:
+                    count["exposures"] = len(results["exposures"])
 
         # Store unpivoted visits
         if results["visits_unpivoted"]:
@@ -451,47 +553,67 @@ class Transform:
                 )
                 count["visits1_unpivoted"] = affected_rows
                 self.log.debug(f"Stored unpivoted visit records: affected_rows={affected_rows}")
+                if not count["visits1"]:
+                    count["visits1"] = len(results["visits"])
 
         return count
 
+    @handle_processing_errors
     def _query_efd_values(
         self,
         topic: Dict[str, Any],
         topic_interval: List[astropy.time.Time],
         packed_series: bool = False,
     ) -> pandas.DataFrame:
-        """Query EFD values for a topic within a specified time interval."""
+        """
+        Query EFD values for a topic within a specified time interval.
+
+        This method acts as a high-level wrapper around the EFD client (DAO),
+        preparing parameters and delegating the actual database query. The
+        underlying DAO is responsible for handling query complexities,
+        such as chunking large requests.
+        """
+        # 1. Prepare parameters from the input topic and interval
         start = topic_interval[0].utc
         end = topic_interval[1].utc
-        window = astropy.time.TimeDelta(topic.get("window", 0.0), format="sec")
-        fields = [f for f in topic["fields"]]
-        chunk_size = 100
-        chunks = [fields[i : i + chunk_size] for i in range(0, len(fields), chunk_size)]
+        fields = list(topic["fields"])  # Use a list copy
 
-        all_series = []
-        for chunk in chunks:
-            try:
-                if packed_series:
-                    series = self.efd.select_packed_time_series(
-                        topic["name"],
-                        chunk,
-                        start - window,
-                        end + window,
-                        ref_timestamp_scale="utc",
-                    )
-                else:
-                    series = self.efd.select_time_series(
-                        topic["name"],
-                        chunk,
-                        start - window,
-                        end + window,
-                    )
-                if not series.empty:
-                    all_series.append(series)
-            except Exception as e:
-                self.log.error(f"Unexpected error: error={e}")
+        aggregate_interval = topic.get("pre_aggregate_interval")
+        aggregate_func = topic.get("function")
 
-        return pandas.concat(all_series, axis=1) if all_series else pandas.DataFrame()
+        self.log.debug(f"Querying topic '{topic['name']}' from {start.iso} to {end.iso}.")
+        if aggregate_interval:
+            self.log.debug(f"Aggregation: interval={aggregate_interval}, function={aggregate_func}")
+
+        # 2. Delegate the query to the appropriate DAO method
+        try:
+            if packed_series:
+                self.log.debug(f"Calling select_packed_time_series for {len(fields)} base fields.")
+                return self.efd.select_packed_time_series(
+                    topic_name=topic["name"],
+                    base_fields=fields,
+                    start=start,
+                    end=end,
+                    ref_timestamp_scale="utc",
+                )
+            else:
+                self.log.debug(f"Calling select_time_series for {len(fields)} fields.")
+                return self.efd.select_time_series(
+                    topic_name=topic["name"],
+                    fields=fields,
+                    start=start,
+                    end=end,
+                    aggregate_interval=aggregate_interval,
+                    aggregate_func=aggregate_func,
+                )
+        except Exception as e:
+            # 3. Handle any exceptions from the DAO and return an empty
+            # DataFrame
+            self.log.error(
+                f"DAO query failed for topic '{topic['name']}': {e}",
+                exc_info=True,  # Provides a full traceback in the logs
+            )
+            return pandas.DataFrame()
 
     def _update_bounds(
         self,
@@ -511,6 +633,7 @@ class Transform:
 
         return min_time, max_time
 
+    @handle_processing_errors
     def _get_topic_interval(
         self,
         start_time: astropy.time.Time,

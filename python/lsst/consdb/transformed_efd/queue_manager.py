@@ -274,7 +274,13 @@ class QueueManager:
 
         return task
 
-    def waiting_tasks(self, butler_repo: str, status: str = "pending") -> Optional[dict]:
+    def waiting_tasks(
+        self,
+        butler_repo: str,
+        status: str = "pending",
+        start_time: Optional[Time] = None,
+        end_time: Optional[Time] = None,
+    ) -> List[dict]:
         """Retrieves unprocessed tasks.
 
         Args:
@@ -286,8 +292,15 @@ class QueueManager:
         -------
         Optional[dict]: A dictionary representing the next task with the
             specified status. If no task is found, returns `None`.
+        Optional[Time]: The start time for the task.
+        Optional[Time]: The end time for the task.
         """
-        task = self.dao.select_queued(butler_repo, status)
+        start_utc = start_time.to_datetime(timezone.utc) if start_time else None
+        end_utc = end_time.to_datetime(timezone.utc) if end_time else None
+
+        task = self.dao.select_queued(
+            butler_repo=butler_repo, status=status, start_time=start_utc, end_time=end_utc
+        )
 
         return task
 
