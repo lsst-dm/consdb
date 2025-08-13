@@ -494,7 +494,7 @@ async def main() -> None:
 
         # Task queue management system
         qm = QueueManager(
-            db_uri=args.db_conn_str, instrument=args.instrument, schema="efd_scheduler", logger=log
+            db_uri=args.db_conn_str, instrument=args.instrument, schema="efd2_scheduler", logger=log
         )
 
         log.info("All components initialized successfully")

@@ -71,10 +71,10 @@ class Transform:
     def get_schema_by_instrument(self, instrument: str) -> str:
         """Get the schema name for the given instrument."""
         schemas = {
-            "latiss": "efd_latiss",
-            "lsstcomcam": "efd_lsstcomcam",
-            "lsstcomcamsim": "efd_lsstcomcamsim",
-            "lsstcam": "efd_lsstcam",
+            "latiss": "efd2_latiss",
+            "lsstcomcam": "efd2_lsstcomcam",
+            "lsstcomcamsim": "efd2_lsstcomcamsim",
+            "lsstcam": "efd2_lsstcam",
         }
         return schemas[instrument.lower()]
 
