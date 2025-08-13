@@ -92,7 +92,7 @@ def test_missing_config_columns(mock_config):
 
 
 def test_schema_generation_with_custom_output_dir(tmp_path, mock_config):
-    """Test that schema file and directories are created in a custom location."""
+    """Test schema file and directories are created in a custom location."""
     output_dir = tmp_path / "custom_schemas"
     assert not output_dir.exists()
 
@@ -116,7 +116,7 @@ def test_default_output_dir(tmp_path, mock_config):
     mock_traversable.joinpath.return_value = mock_schemas_dir
 
     # We patch `read_config` so we don't need a real config file on disk.
-    # The call to `importlib.resources.files` for the config still happens, however.
+    # The call to `importlib.resources.files` still happens, however.
     with (
         patch("importlib.resources.files", return_value=mock_traversable) as mock_files,
         patch(f"{gen_schema.__name__}.read_config", return_value=mock_config),
@@ -137,7 +137,7 @@ def test_default_output_dir(tmp_path, mock_config):
 
 
 def test_schema_content(tmp_path, mock_config):
-    """Test that tables and columns from the config appear correctly in the YAML."""
+    """Test tables and columns from the config appear correctly in the YAML."""
     with patch(f"{gen_schema.__name__}.read_config", return_value=mock_config):
         schema_path = gen_schema.generate_schema("latiss", output_dir=tmp_path)
         with open(schema_path) as f:
