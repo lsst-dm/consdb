@@ -99,7 +99,7 @@ def test_schema_generation_with_custom_output_dir(tmp_path, mock_config):
     with patch(f"{gen_schema.__name__}.read_config", return_value=mock_config):
         schema_path = gen_schema.generate_schema("latiss", output_dir=output_dir)
 
-    expected_file = output_dir / "efd_latiss.yaml"
+    expected_file = output_dir / "efd2_latiss.yaml"
     assert output_dir.exists()
     assert schema_path == expected_file
     assert expected_file.is_file()
@@ -130,7 +130,7 @@ def test_default_output_dir(tmp_path, mock_config):
         mock_files.assert_has_calls(expected_calls)
         assert mock_files.call_count == 2
 
-        expected_file = mock_schemas_dir / "efd_latiss.yaml"
+        expected_file = mock_schemas_dir / "efd2_latiss.yaml"
         assert schema_path == expected_file
         assert expected_file.is_file()
         assert mock_schemas_dir.exists()
@@ -143,7 +143,7 @@ def test_schema_content(tmp_path, mock_config):
         with open(schema_path) as f:
             schema_data = yaml.safe_load(f)
 
-    assert schema_data["name"] == "efd_latiss"
+    assert schema_data["name"] == "efd2_latiss"
     assert schema_data["version"]["current"] == "1.0.0"
 
     exposure_table = next((t for t in schema_data["tables"] if t["name"] == "exposure_efd"), None)
