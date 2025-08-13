@@ -328,7 +328,7 @@ class DBBase:
             pk_names = [col.name for col in tbl.primary_key.columns]
             for record in chunk:
                 pk_values = {name: record[name] for name in pk_names}
-                self.log.info(
+                self.log.debug(
                     f"event=row_upserted schema={tbl.schema} table={tbl.name} pk_values={pk_values}"
                 )
 
@@ -340,7 +340,7 @@ class DBBase:
                 # account affected rows for two states on_conflict_do_nothing
                 # and on_conflict_do_update
                 affected_rows += result.rowcount
-                print(f"Rowcount: {result.rowcount}\n")
+                self.log.debug(f"Rowcount: {result.rowcount}\n")
 
         return affected_rows
 
