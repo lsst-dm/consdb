@@ -1325,7 +1325,7 @@ columns:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex101_temperature_0_mean
+- name: mt_salindex111_temperature_0_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1333,14 +1333,14 @@ columns:
   description: Mean MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex101_temperature_0_stddev
+- name: mt_salindex111_temperature_0_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1349,14 +1349,14 @@ columns:
   description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex101_temperature_0_min
+- name: mt_salindex111_temperature_0_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1364,14 +1364,14 @@ columns:
   description: Minimum MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex101_temperature_1_mean
+- name: mt_salindex111_temperature_1_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1379,14 +1379,14 @@ columns:
   description: Mean MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex101_temperature_0_max
+- name: mt_salindex111_temperature_0_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1394,14 +1394,14 @@ columns:
   description: Maximum MTCameraAssembly-ESS01 temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex101_temperature_1_stddev
+- name: mt_salindex111_temperature_1_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1410,14 +1410,14 @@ columns:
   description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex101_temperature_1_min
+- name: mt_salindex111_temperature_1_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1425,14 +1425,14 @@ columns:
   description: Minimum MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex101_temperature_1_max
+- name: mt_salindex111_temperature_1_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1440,14 +1440,14 @@ columns:
   description: Maximum MTCameraAssembly-ESS01 temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex101_temperature_2_mean
+- name: mt_salindex111_temperature_2_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1455,14 +1455,14 @@ columns:
   description: Mean MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex101_temperature_2_stddev
+- name: mt_salindex111_temperature_2_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1471,14 +1471,14 @@ columns:
   description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex101_temperature_2_min
+- name: mt_salindex111_temperature_2_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1486,14 +1486,14 @@ columns:
   description: Minimum MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex101_temperature_2_max
+- name: mt_salindex111_temperature_2_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1501,14 +1501,14 @@ columns:
   description: Maximum MTCameraAssembly-ESS01 temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex101_temperature_3_mean
+- name: mt_salindex111_temperature_3_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1516,14 +1516,14 @@ columns:
   description: Mean MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex101_temperature_3_stddev
+- name: mt_salindex111_temperature_3_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1532,14 +1532,14 @@ columns:
   description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex101_temperature_3_min
+- name: mt_salindex111_temperature_3_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1547,14 +1547,14 @@ columns:
   description: Minimum MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex101_temperature_3_max
+- name: mt_salindex111_temperature_3_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1562,14 +1562,14 @@ columns:
   description: Maximum MTCameraAssembly-ESS01 temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex101_temperature_4_mean
+- name: mt_salindex111_temperature_4_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1577,14 +1577,14 @@ columns:
   description: Mean MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex101_temperature_4_stddev
+- name: mt_salindex111_temperature_4_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1593,14 +1593,14 @@ columns:
   description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex101_temperature_4_min
+- name: mt_salindex111_temperature_4_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1608,14 +1608,14 @@ columns:
   description: Minimum MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex101_temperature_4_max
+- name: mt_salindex111_temperature_4_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1623,14 +1623,14 @@ columns:
   description: Maximum MTCameraAssembly-ESS01 temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex101_temperature_5_mean
+- name: mt_salindex111_temperature_5_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1638,14 +1638,14 @@ columns:
   description: Mean MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex101_temperature_5_stddev
+- name: mt_salindex111_temperature_5_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1654,14 +1654,14 @@ columns:
   description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex101_temperature_5_min
+- name: mt_salindex111_temperature_5_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1669,14 +1669,14 @@ columns:
   description: Minimum MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex101_temperature_5_max
+- name: mt_salindex111_temperature_5_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1684,14 +1684,14 @@ columns:
   description: Maximum MTCameraAssembly-ESS01 temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex101_temperature_6_mean
+- name: mt_salindex111_temperature_6_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1699,14 +1699,14 @@ columns:
   description: Mean MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex101_temperature_6_stddev
+- name: mt_salindex111_temperature_6_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1715,14 +1715,14 @@ columns:
   description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex101_temperature_6_min
+- name: mt_salindex111_temperature_6_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1730,14 +1730,14 @@ columns:
   description: Minimum MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex101_temperature_6_max
+- name: mt_salindex111_temperature_6_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1745,14 +1745,14 @@ columns:
   description: Maximum MTCameraAssembly-ESS01 temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex101_temperature_7_mean
+- name: mt_salindex111_temperature_7_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1760,14 +1760,14 @@ columns:
   description: Mean MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex101_temperature_7_stddev
+- name: mt_salindex111_temperature_7_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1776,14 +1776,14 @@ columns:
   description: Standard deviation of the MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex101_temperature_7_min
+- name: mt_salindex111_temperature_7_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1791,14 +1791,14 @@ columns:
   description: Minimum MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex101_temperature_7_max
+- name: mt_salindex111_temperature_7_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1806,14 +1806,14 @@ columns:
   description: Maximum MTCameraAssembly-ESS01 temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 101
+  subset_value: [101,111]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex102_temperature_0_mean
+- name: mt_salindex112_temperature_0_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1821,14 +1821,14 @@ columns:
   description: Mean UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex102_temperature_0_stddev
+- name: mt_salindex112_temperature_0_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1837,14 +1837,14 @@ columns:
   description: Standard deviation of the UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex102_temperature_0_min
+- name: mt_salindex112_temperature_0_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1852,14 +1852,14 @@ columns:
   description: Minimum UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex102_temperature_1_mean
+- name: mt_salindex112_temperature_1_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1867,14 +1867,14 @@ columns:
   description: Mean UNKNOWN temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex102_temperature_0_max
+- name: mt_salindex112_temperature_0_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1882,14 +1882,14 @@ columns:
   description: Maximum UNKNOWN temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex102_temperature_1_stddev
+- name: mt_salindex112_temperature_1_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1898,14 +1898,14 @@ columns:
   description: Standard deviation of temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex102_temperature_1_min
+- name: mt_salindex112_temperature_1_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1913,14 +1913,14 @@ columns:
   description: Minimum temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex102_temperature_1_max
+- name: mt_salindex112_temperature_1_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1928,14 +1928,14 @@ columns:
   description: Maximum temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex102_temperature_2_mean
+- name: mt_salindex112_temperature_2_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -1943,14 +1943,14 @@ columns:
   description: Mean temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex102_temperature_2_stddev
+- name: mt_salindex112_temperature_2_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -1959,14 +1959,14 @@ columns:
   description: Standard deviation of temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex102_temperature_2_min
+- name: mt_salindex112_temperature_2_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -1974,14 +1974,14 @@ columns:
   description: Minimum temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex102_temperature_2_max
+- name: mt_salindex112_temperature_2_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -1989,14 +1989,14 @@ columns:
   description: Maximum temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex102_temperature_3_mean
+- name: mt_salindex112_temperature_3_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2004,14 +2004,14 @@ columns:
   description: Mean temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex102_temperature_3_stddev
+- name: mt_salindex112_temperature_3_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2020,14 +2020,14 @@ columns:
   description: Standard deviation of the UNKNOWN temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex102_temperature_3_min
+- name: mt_salindex112_temperature_3_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2035,14 +2035,14 @@ columns:
   description: Minimum temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex102_temperature_3_max
+- name: mt_salindex112_temperature_3_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2050,14 +2050,14 @@ columns:
   description: Maximum temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex102_temperature_4_mean
+- name: mt_salindex112_temperature_4_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2065,14 +2065,14 @@ columns:
   description: Mean temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex102_temperature_4_stddev
+- name: mt_salindex112_temperature_4_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2081,14 +2081,14 @@ columns:
   description: Standard deviation of temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex102_temperature_4_min
+- name: mt_salindex112_temperature_4_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2096,14 +2096,14 @@ columns:
   description: Minimum temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex102_temperature_4_max
+- name: mt_salindex112_temperature_4_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2111,14 +2111,14 @@ columns:
   description: Maximum temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex102_temperature_5_mean
+- name: mt_salindex112_temperature_5_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2126,14 +2126,14 @@ columns:
   description: Mean temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex102_temperature_5_stddev
+- name: mt_salindex112_temperature_5_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2142,14 +2142,14 @@ columns:
   description: Standard deviation of temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex102_temperature_5_min
+- name: mt_salindex112_temperature_5_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2157,14 +2157,14 @@ columns:
   description: Minimum temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex102_temperature_5_max
+- name: mt_salindex112_temperature_5_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2172,14 +2172,14 @@ columns:
   description: Maximum temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex102_temperature_6_mean
+- name: mt_salindex112_temperature_6_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2187,14 +2187,14 @@ columns:
   description: Mean temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex102_temperature_6_stddev
+- name: mt_salindex112_temperature_6_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2203,14 +2203,14 @@ columns:
   description: Standard deviation of temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex102_temperature_6_min
+- name: mt_salindex112_temperature_6_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2218,14 +2218,14 @@ columns:
   description: Minimum temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex102_temperature_6_max
+- name: mt_salindex112_temperature_6_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2233,14 +2233,14 @@ columns:
   description: Maximum temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex102_temperature_7_mean
+- name: mt_salindex112_temperature_7_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2248,14 +2248,14 @@ columns:
   description: Mean temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex102_temperature_7_stddev
+- name: mt_salindex112_temperature_7_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2264,14 +2264,14 @@ columns:
   description: Standard deviation of temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex102_temperature_7_min
+- name: mt_salindex112_temperature_7_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2279,14 +2279,14 @@ columns:
   description: Minimum temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex102_temperature_7_max
+- name: mt_salindex112_temperature_7_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2294,14 +2294,14 @@ columns:
   description: Maximum temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 102
+  subset_value: [102,112]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex103_temperature_0_mean
+- name: mt_salindex113_temperature_0_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2309,14 +2309,14 @@ columns:
   description: Mean temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex103_temperature_0_stddev
+- name: mt_salindex113_temperature_0_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2325,14 +2325,14 @@ columns:
   description: Standard deviation of temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex103_temperature_0_min
+- name: mt_salindex113_temperature_0_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2340,14 +2340,14 @@ columns:
   description: Minimum temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex103_temperature_1_mean
+- name: mt_salindex113_temperature_1_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2355,14 +2355,14 @@ columns:
   description: Mean temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex103_temperature_0_max
+- name: mt_salindex113_temperature_0_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2370,14 +2370,14 @@ columns:
   description: Maximum temperature item 0.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem0
     - name: salIndex
 
-- name: mt_salindex103_temperature_1_stddev
+- name: mt_salindex113_temperature_1_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2386,14 +2386,14 @@ columns:
   description: Standard deviation of temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex103_temperature_1_min
+- name: mt_salindex113_temperature_1_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2401,14 +2401,14 @@ columns:
   description: Minimum temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex103_temperature_1_max
+- name: mt_salindex113_temperature_1_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2416,14 +2416,14 @@ columns:
   description: Maximum temperature item 1.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem1
     - name: salIndex
 
-- name: mt_salindex103_temperature_2_mean
+- name: mt_salindex113_temperature_2_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2431,14 +2431,14 @@ columns:
   description: Mean temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex103_temperature_2_stddev
+- name: mt_salindex113_temperature_2_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2447,14 +2447,14 @@ columns:
   description: Standard deviation of temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex103_temperature_2_min
+- name: mt_salindex113_temperature_2_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2462,14 +2462,14 @@ columns:
   description: Minimum temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex103_temperature_2_max
+- name: mt_salindex113_temperature_2_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2477,14 +2477,14 @@ columns:
   description: Maximum temperature item 2.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem2
     - name: salIndex
 
-- name: mt_salindex103_temperature_3_mean
+- name: mt_salindex113_temperature_3_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2492,14 +2492,14 @@ columns:
   description: Mean temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex103_temperature_3_stddev
+- name: mt_salindex113_temperature_3_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2508,14 +2508,14 @@ columns:
   description: Standard deviation of temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex103_temperature_3_min
+- name: mt_salindex113_temperature_3_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2523,14 +2523,14 @@ columns:
   description: Minimum temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex103_temperature_3_max
+- name: mt_salindex113_temperature_3_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2538,14 +2538,14 @@ columns:
   description: Maximum temperature item 3.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem3
     - name: salIndex
 
-- name: mt_salindex103_temperature_4_mean
+- name: mt_salindex113_temperature_4_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2553,14 +2553,14 @@ columns:
   description: Mean temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex103_temperature_4_stddev
+- name: mt_salindex113_temperature_4_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2569,14 +2569,14 @@ columns:
   description: Standard deviation of temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex103_temperature_4_min
+- name: mt_salindex113_temperature_4_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2584,14 +2584,14 @@ columns:
   description: Minimum temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex103_temperature_4_max
+- name: mt_salindex113_temperature_4_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2599,14 +2599,14 @@ columns:
   description: Maximum temperature item 4.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem4
     - name: salIndex
 
-- name: mt_salindex103_temperature_5_mean
+- name: mt_salindex113_temperature_5_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2614,14 +2614,14 @@ columns:
   description: Mean temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex103_temperature_5_stddev
+- name: mt_salindex113_temperature_5_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2630,14 +2630,14 @@ columns:
   description: Standard deviation of temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex103_temperature_5_min
+- name: mt_salindex113_temperature_5_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2645,14 +2645,14 @@ columns:
   description: Minimum temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex103_temperature_5_max
+- name: mt_salindex113_temperature_5_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2660,14 +2660,14 @@ columns:
   description: Maximum temperature item 5.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem5
     - name: salIndex
 
-- name: mt_salindex103_temperature_6_mean
+- name: mt_salindex113_temperature_6_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2675,14 +2675,14 @@ columns:
   description: Mean temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex103_temperature_6_stddev
+- name: mt_salindex113_temperature_6_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2691,14 +2691,14 @@ columns:
   description: Standard deviation of temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex103_temperature_6_min
+- name: mt_salindex113_temperature_6_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2706,14 +2706,14 @@ columns:
   description: Minimum temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex103_temperature_6_max
+- name: mt_salindex113_temperature_6_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2721,14 +2721,14 @@ columns:
   description: Maximum temperature item 6.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: mt_salindex103_temperature_7_mean
+- name: mt_salindex113_temperature_7_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
@@ -2736,14 +2736,14 @@ columns:
   description: Mean temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex103_temperature_7_stddev
+- name: mt_salindex113_temperature_7_stddev
   tables: ["exposure_efd","visit1_efd"]
   function: stddev
   function_args: {"ddof": 1}
@@ -2752,14 +2752,14 @@ columns:
   description: Standard deviation of temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex103_temperature_7_min
+- name: mt_salindex113_temperature_7_min
   tables: ["exposure_efd","visit1_efd"]
   function: min
   datatype: float
@@ -2767,14 +2767,14 @@ columns:
   description: Minimum temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem7
     - name: salIndex
 
-- name: mt_salindex103_temperature_7_max
+- name: mt_salindex113_temperature_7_max
   tables: ["exposure_efd","visit1_efd"]
   function: max
   datatype: float
@@ -2782,7 +2782,7 @@ columns:
   description: Maximum temperature item 7.
   packed_series: False
   subset_field: salIndex
-  subset_value: 103
+  subset_value: [103,113]
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
