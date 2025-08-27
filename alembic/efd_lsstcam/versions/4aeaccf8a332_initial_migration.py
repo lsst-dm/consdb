@@ -5445,7 +5445,7 @@ def upgrade() -> None:
         mysql_engine="MyISAM",
     )
     # ### end Alembic commands ###
-    op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd TO oods")
+    op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd2 TO oods")
     op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd2_lsstcam TO oods")
     op.execute("GRANT SELECT ON ALL TABLES IN SCHEMA efd2_lsstcam TO usdf")
 

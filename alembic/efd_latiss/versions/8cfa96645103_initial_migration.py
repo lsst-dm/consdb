@@ -3400,7 +3400,7 @@ def upgrade() -> None:
     )
     # ### end Alembic commands ###
 
-    op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd TO oods")
+    op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd2 TO oods")
     op.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA efd2_latiss TO oods")
     op.execute("GRANT SELECT ON ALL TABLES IN SCHEMA efd2_latiss TO usdf")
 
