@@ -538,6 +538,7 @@ def get_all_metadata(
 @external_router.post("/query")
 def query(
     data: QueryRequestModel = Body(title="SQL query string"),
+    commit: int | None = Query(1, title="Apply commit to the transaction."),
     db: Session = Depends(get_db),
     logger: logging.Logger = Depends(get_logger),
 ) -> QueryResponseModel:
@@ -562,8 +563,15 @@ def query(
 
     with db.connection() as connection:
         result = connection.exec_driver_sql(data.query)
-        columns = result.keys()
-        rows = [list(row) for row in result]
+        if result.returns_rows:
+            columns = result.keys()
+            rows = [list(row) for row in result]
+        else:
+            columns = ["commit"]
+            rows = [[commit]]
+
+        if commit == 1:
+            db.commit()
 
     return QueryResponseModel(
         columns=columns,
