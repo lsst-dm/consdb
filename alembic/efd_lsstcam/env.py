@@ -105,8 +105,9 @@ def run_migrations_offline() -> None:
         include_schemas=True,
         include_name=include_name,
         include_object=include_object,
-        version_table=f"{schema_name}_version",
-        version_table_schema="efd",
+        version_table="efd_lsstcam_version",
+        # version_table=f"{schema_name}_version",
+        version_table_schema="efd2",
     )
 
     with context.begin_transaction():
@@ -133,8 +134,9 @@ def run_migrations_online() -> None:
             include_schemas=True,
             include_name=include_name,
             include_object=include_object,
-            version_table=f"{schema_name}_version",
-            version_table_schema="efd",
+            version_table="efd_lsstcam_version",
+            # version_table=f"{schema_name}_version",
+            version_table_schema="efd2",
         )
 
         with context.begin_transaction():
