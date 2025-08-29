@@ -299,6 +299,64 @@ def test_schema_table(lsstcomcamsim, astropy_tables):
 
 
 @pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
+def test_query_endpoint(lsstcomcamsim):
+    client = lsstcomcamsim
+
+    # A simple test of the query endpoint.
+    response = client.post(
+        "/consdb/query",
+        json={"query": "SELECT 1;"},
+    )
+    _assert_http_status(response, 200)
+    assert response.json() == {
+        "columns": ["?column?"],
+        "data": [[1]],
+    }
+
+    # Modify the database, but with commit=0. The
+    # actual content of the database should not be
+    # changed.
+    response = client.post(
+        "/consdb/query?commit=0",
+        json={"query": "DELETE FROM cdb_latiss.ccdexposure_flexdata;"},
+    )
+    _assert_http_status(response, 200)
+    assert response.json() == {
+        "columns": ["commit"],
+        "data": [[0]],
+    }
+
+    # Check that the rows are still present in the database
+    response = client.post(
+        "/consdb/query?commit=0",
+        json={"query": "SELECT count(*) FROM cdb_latiss.ccdexposure_flexdata;"},
+    )
+    _assert_http_status(response, 200)
+    response_json = response.json()
+    assert response_json["data"][0][0] != 0
+
+    # Run the query again with commit=1.
+    response = client.post(
+        "/consdb/query?commit=1",
+        json={"query": "DELETE FROM cdb_latiss.ccdexposure_flexdata;"},
+    )
+    _assert_http_status(response, 200)
+    assert response.json() == {
+        "columns": ["commit"],
+        "data": [[1]],
+    }
+
+    # This time, the rows were deleted, because commit=1.
+    response = client.post(
+        "/consdb/query?commit=0",
+        json={"query": "SELECT count(*) FROM cdb_latiss.ccdexposure_flexdata;"},
+    )
+    _assert_http_status(response, 200)
+    response_json = response.json()
+    assert response_json["data"][0][0] == 0
+
+
+@pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
 def test_missing_primary_key(lsstcomcamsim):
     client = lsstcomcamsim
 
