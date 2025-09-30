@@ -124,7 +124,9 @@ services:
 
   db:
     # The PostgreSQL database service
-    image: postgres:17.2-alpine3.21
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.db
     restart: always
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pgpassword}
@@ -187,6 +189,8 @@ services:
         then
             psql -h db -U postgres -d postgres \
                 -c "CREATE SCHEMA IF NOT EXISTS \"cdb\";"
+            psql -h db -U postgres -d postgres \
+                -c "CREATE EXTENSION IF NOT EXISTS pg_sphere;"
             psql -h db -U postgres -d postgres \
                 -c "CREATE USER \"usdf\";"
             psql -h db -U postgres -d postgres \

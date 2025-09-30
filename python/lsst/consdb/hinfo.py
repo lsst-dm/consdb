@@ -24,6 +24,8 @@ from sqlalchemy.dialects.postgresql import insert
 
 from .utils import setup_logging, setup_postgres
 
+from . import cdb_pgsphere
+
 if TYPE_CHECKING:
     import lsst.afw.cameraGeom  # type: ignore
 
@@ -31,12 +33,17 @@ if TYPE_CHECKING:
 # Header Processing Functions #
 ###############################
 
+RegionFormatter = Callable[
+    [lsst.afw.cameraGeom.Camera, float, float, float, list[tuple[str, int, int]]],
+    str,
+]
+
 
 def logical_or(*bools: int | str | None) -> bool:
     return any([b == 1 or b == "1" for b in bools])
 
 
-def region(
+def region_ivoa(
     camera: lsst.afw.cameraGeom.Camera,
     ra: float,
     dec: float,
@@ -58,6 +65,67 @@ def region(
     return region
 
 
+def region_spoly(
+    camera: lsst.afw.cameraGeom.Camera,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    points: list[tuple[str, int, int]],
+) -> str:
+    """
+    Build a pgSphere `spoly` string for the camera footprint sampled at the given detector/offset points.
+
+    Parameters
+    ----------
+    camera : `~lsst.afw.cameraGeom.Camera`
+        Camera object containing detectors and geometry.
+    ra : float
+        Boresight right ascension in (deg, ICRS)
+    dec : float
+        Boresight declination in (deg, ICRS)
+    rotpa : float
+        Rotator position angle (deg)
+    points : list[tuple[str, int, int]]
+        Sequence of (detector_name, offset_x, offset_y), with offset_x and
+        offset_y specifying a corner of the box.
+
+    Returns
+    -------
+    str
+        A pgSphere `spoly` literal of the form:
+        `{(lon_rad,lat_rad),(lon_rad,lat_rad),...}`
+        with longitude/latitude in radians.
+    """
+    # Build the WCS at the given boresight/rotator for each detector and sample the requested pixel.
+    verts_rad: list[tuple[float, float]] = []
+
+    for detector, offset_x, offset_y in points:
+        skywcs = LsstCamRawFormatter.makeRawSkyWcsFromBoresight(
+            lsst.geom.SpherePoint(ra, dec, lsst.geom.degrees),
+            rotpa * lsst.geom.degrees,
+            camera[detector],
+        )
+        bbox = camera[detector].getBBox()
+        x = bbox.getMinX() + bbox.getWidth() * offset_x
+        y = bbox.getMinY() + bbox.getHeight() * offset_y
+
+        sky_pt = skywcs.pixelToSky(x, y)
+        lon_deg = sky_pt.getLongitude().asDegrees()
+        lat_deg = sky_pt.getLatitude().asDegrees()
+
+        lon = np.radians(lon_deg)
+        lat = np.radians(lat_deg)
+
+        verts_rad.append((lon, lat))
+
+    if len(verts_rad) < 3:
+        raise ValueError("spoly requires at least 3 vertices")
+
+    # .8g format sufficient for sub-arcsecond precision in the range 0-2pi.
+    coords = ",".join(f"({lon:.8g},{lat:.8g})" for lon, lat in verts_rad)
+    return "{" + coords + "}"
+
+
 def ccdexposure_id(
     translator: lsst.obs.lsst.translators.lsst.LsstBaseTranslator, exposure_id: int, detector: int
 ) -> int:
@@ -68,11 +136,17 @@ def ccdexposure_id(
 
 
 def ccd_region(
-    camera: lsst.afw.cameraGeom.Camera, imgtype: str, ra: float, dec: float, rotpa: float, ccdname: str
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    ccdname: str,
+    region_formatter: RegionFormatter,
 ) -> str | None:
     if imgtype != "OBJECT":
         return None
-    return region(
+    return region_formatter(
         camera,
         ra,
         dec,
@@ -86,8 +160,35 @@ def ccd_region(
     )
 
 
+def ccd_region_ivoa(
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    ccdname: str,
+) -> str | None:
+    return ccd_region(camera, imgtype, ra, dec, rotpa, ccdname, region_ivoa)
+
+
+def ccd_region_spoly(
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    ccdname: str,
+) -> str | None:
+    return ccd_region(camera, imgtype, ra, dec, rotpa, ccdname, region_spoly)
+
+
 def fp_region(
-    camera: lsst.afw.cameraGeom.Camera, imgtype: str, ra: float, dec: float, rotpa: float
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    region_formatter: RegionFormatter,
 ) -> str | None:
     # global instrument
     if imgtype != "OBJECT":
@@ -139,7 +240,27 @@ def fp_region(
         ]
     else:
         return None
-    return region(camera, ra, dec, rotpa, corners)
+    return region_formatter(camera, ra, dec, rotpa, corners)
+
+
+def fp_region_ivoa(
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+) -> str | None:
+    return fp_region(camera, imgtype, ra, dec, rotpa, region_ivoa)
+
+
+def fp_region_spoly(
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+) -> str | None:
+    return fp_region(camera, imgtype, ra, dec, rotpa, region_spoly)
 
 
 #################################
@@ -158,7 +279,8 @@ KW_MAPPING: dict[str, ColumnMapping] = {
     "vignette": "VIGNETTE",
     "vignette_min": "VIGN_MIN",
     "scheduler_note": "OBSANNOT",
-    "s_region": (fp_region, "camera", "IMGTYPE", "RA", "DEC", "ROTPA"),
+    "s_region": (fp_region_ivoa, "camera", "IMGTYPE", "RA", "DEC", "ROTPA"),
+    "pgs_region": (fp_region_spoly, "camera", "IMGTYPE", "RA", "DEC", "ROTPA"),
 }
 
 # Instrument-specific mapping to column name from Header Service keyword
@@ -222,7 +344,8 @@ DETECTOR_MAPPING: dict[str, ColumnMapping] = {
     "ccdexposure_id": (ccdexposure_id, "translator", "exposure_id", "detector"),
     "exposure_id": "exposure_id",
     "detector": "detector",
-    "s_region": (ccd_region, "camera", "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
+    "s_region": (ccd_region_ivoa, "camera", "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
+    "pgs_region": (ccd_region_spoly, "camera", "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
 }
 
 

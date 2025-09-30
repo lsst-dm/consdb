@@ -1,0 +1,9 @@
+# A minimal docker file to create postgresql
+# with the pgSphere extension.
+
+FROM postgres:17.6-bookworm
+
+# Install the pgsphere extension
+RUN apt-get update \
+    && apt-get install -y postgresql-17-pgsphere \
+    && rm -rf /var/lib/apt/lists/*

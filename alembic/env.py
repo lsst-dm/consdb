@@ -1,3 +1,10 @@
+# flake8: noqa: E402
+
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent / "python"))
+from lsst.consdb.cdb_pgsphere import SPoly, add_shadow_column    # Must be imported before MetaDataBuilder
+
 import logging
 import os
 from logging.config import fileConfig
@@ -8,6 +15,7 @@ from felis.metadata import MetaDataBuilder
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -38,6 +46,10 @@ yaml_data = yaml.safe_load(open(schema_path, "r"))
 schema = Schema.model_validate(yaml_data)
 schema_metadata = MetaDataBuilder(schema).build()
 logger.info(f"Schema {schema_metadata.schema} loaded successfully")
+
+
+# Insert the pgs_region shadow column...
+add_shadow_column(schema_metadata)
 
 
 def generate_upgrade_sqls(schema_metadata, schema_name) -> list[str]:
@@ -130,6 +142,14 @@ target_metadata = schema_metadata
 # ... etc.
 
 
+# Make sure an import is provided when SPOLY is used.
+def _render_item(type_, obj, autogen_context):
+    if type_ == "type" and isinstance(obj, SPoly):
+        autogen_context.imports.add("from lsst.consdb.cdb_pgsphere import SPoly")
+        return "SPoly()"
+    return False  # let Alembic handle anything else
+
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -184,6 +204,7 @@ def run_migrations_online() -> None:
             include_object=include_object,
             version_table=f"{schema_name}_version",
             version_table_schema="cdb",
+            render_item=_render_item,
         )
         context.config.attributes["upgrade_sqls"] = generate_upgrade_sqls(schema_metadata, schema_name)
         context.config.attributes["drop_sqls"] = generate_drop_sqls(schema_name)
