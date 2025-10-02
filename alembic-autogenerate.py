@@ -64,21 +64,34 @@ for instrument in instruments:
             connection.commit()
 
         # Apply the HEAD schema to the database
-        run([
-            "alembic",
-            "-c", alembic_ini_path,
-            "-n", instrument,
-            "upgrade", "head",
-        ], env=env)
+        run(
+            [
+                "alembic",
+                "-c",
+                alembic_ini_path,
+                "-n",
+                instrument,
+                "upgrade",
+                "head",
+            ],
+            env=env,
+        )
 
         # Autogenerate a new migration
-        run([
-            "alembic",
-            "-c", alembic_ini_path,
-            "-n", instrument,
-            "revision", "--autogenerate",
-            "-m", revision_message,
-        ], env=env)
+        run(
+            [
+                "alembic",
+                "-c",
+                alembic_ini_path,
+                "-n",
+                instrument,
+                "revision",
+                "--autogenerate",
+                "-m",
+                revision_message,
+            ],
+            env=env,
+        )
 
 print(
     """

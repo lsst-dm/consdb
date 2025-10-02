@@ -224,6 +224,8 @@ services:
       - POSTGRES_URL=postgresql://postgres:${POSTGRES_PASSWORD:-pgpassword}@db:5432/postgres
       - INSTRUMENT=LATISS
       - LATISS_YAML=${LATISS_YAML}
+      - EXP_COLUMNS_TO_UPDATE=${EXP_COLUMNS_TO_UPDATE}
+      - CCD_COLUMNS_TO_UPDATE=${CCD_COLUMNS_TO_UPDATE}
     volumes:
       - ${LATISS_YAML:-/dev/null}:/yaml
     depends_on:
@@ -252,6 +254,8 @@ services:
       - POSTGRES_URL=postgresql://postgres:${POSTGRES_PASSWORD:-pgpassword}@db:5432/postgres
       - INSTRUMENT=LSSTComCam
       - COMCAM_YAML=${COMCAM_YAML}
+      - EXP_COLUMNS_TO_UPDATE=${EXP_COLUMNS_TO_UPDATE}
+      - CCD_COLUMNS_TO_UPDATE=${CCD_COLUMNS_TO_UPDATE}
     volumes:
       - ${COMCAM_YAML:-/dev/null}:/yaml
     depends_on:
@@ -280,6 +284,8 @@ services:
       - POSTGRES_URL=postgresql://postgres:${POSTGRES_PASSWORD:-pgpassword}@db:5432/postgres
       - INSTRUMENT=LSSTCam
       - LSSTCAM_YAML=${LSSTCAM_YAML}
+      - EXP_COLUMNS_TO_UPDATE=${EXP_COLUMNS_TO_UPDATE}
+      - CCD_COLUMNS_TO_UPDATE=${CCD_COLUMNS_TO_UPDATE}
     volumes:
       - ${LSSTCAM_YAML:-/dev/null}:/yaml
     depends_on:

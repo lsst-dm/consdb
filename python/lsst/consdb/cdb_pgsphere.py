@@ -26,6 +26,7 @@ from sqlalchemy.types import UserDefinedType
 
 class SPoly(UserDefinedType):
     """A bare-bones class representing the pgSphere SPOLY type."""
+
     cache_ok = True
 
     def get_col_spec(self, **kw):
@@ -53,9 +54,11 @@ def add_shadow_column(metadata: MetaData) -> None:
     """
     for table_name, table in metadata.tables.items():
         if "s_region" in table.columns:
-            table.append_column(Column(
-                "pgs_region",
-                SPoly(),
-                nullable=True,
-                comment="Spherical region type spoly corresponding to s_region.",
-            ))
+            table.append_column(
+                Column(
+                    "pgs_region",
+                    SPoly(),
+                    nullable=True,
+                    comment="Spherical region type spoly corresponding to s_region.",
+                )
+            )

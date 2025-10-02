@@ -2,8 +2,9 @@
 
 import sys
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).resolve().parent.parent / "python"))
-from lsst.consdb.cdb_pgsphere import SPoly, add_shadow_column    # Must be imported before MetaDataBuilder
+from lsst.consdb.cdb_pgsphere import SPoly, add_shadow_column  # Must be imported before MetaDataBuilder
 
 import logging
 import os
@@ -76,9 +77,7 @@ def generate_upgrade_sqls(schema_metadata, schema_name) -> list[str]:
         sql.append(view_sql.strip())
 
         for role in ("usdf", "oods"):
-            sql.append(
-                f"GRANT SELECT ON {schema_name}.{view_name} TO {role};"
-            )
+            sql.append(f"GRANT SELECT ON {schema_name}.{view_name} TO {role};")
 
     return sql
 

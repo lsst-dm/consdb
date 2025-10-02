@@ -24,10 +24,13 @@ from sqlalchemy.dialects.postgresql import insert
 
 from .utils import setup_logging, setup_postgres
 
-from . import cdb_pgsphere
-
 if TYPE_CHECKING:
     import lsst.afw.cameraGeom  # type: ignore
+
+
+# If set, only these columns will be updated.
+exp_columns_to_update: list[str] | None = None
+ccd_columns_to_update: list[str] | None = None
 
 ###############################
 # Header Processing Functions #
@@ -73,7 +76,7 @@ def region_spoly(
     points: list[tuple[str, int, int]],
 ) -> str:
     """
-    Build a pgSphere `spoly` string for the camera footprint sampled at the given detector/offset points.
+    Build a pgSphere `spoly` string for the camera footprint.
 
     Parameters
     ----------
@@ -96,7 +99,8 @@ def region_spoly(
         `{(lon_rad,lat_rad),(lon_rad,lat_rad),...}`
         with longitude/latitude in radians.
     """
-    # Build the WCS at the given boresight/rotator for each detector and sample the requested pixel.
+    # Build the WCS at the given boresight/rotator for each detector and
+    # sample the requested pixel.
     verts_rad: list[tuple[float, float]] = []
 
     for detector, offset_x, offset_y in points:
@@ -593,10 +597,6 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     resource : `ResourcePath`
         Path to the Header Service header resource.
     """
-    # global engine
-    # global logger
-    # global KW_MAPPING, OI_MAPPING
-
     assert engine is not None
 
     exposure_rec = dict()
@@ -615,12 +615,17 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     info["camera"] = instrument_obj.camera
     info["translator"] = instrument_obj.translator
     for column, column_def in KW_MAPPING.items():
-        exposure_rec[column] = process_column(column_def, info)
+        if exp_columns_to_update is None or column in exp_columns_to_update:
+            exposure_rec[column] = process_column(column_def, info)
     for column, column_def in instrument_obj.instrument_mapping.items():
-        exposure_rec[column] = process_column(column_def, info)
+        if exp_columns_to_update is None or column in exp_columns_to_update:
+            exposure_rec[column] = process_column(column_def, info)
 
     obs_info = ObservationInfo(info, translator_class=instrument_obj.translator)
     for column, column_def in OI_MAPPING.items():
+        if exp_columns_to_update is not None and column not in exp_columns_to_update:
+            continue
+
         try:
             exposure_rec[column] = process_oi_column(column_def, obs_info)
             if isinstance(exposure_rec[column], u.Quantity):
@@ -629,7 +634,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
                 exposure_rec[column] = float(exposure_rec[column])
         except Exception:
             exposure_rec[column] = None
-            logger.exception(f"Unable to process column: {column}")
+            logger.exception(f"Unable to process column: {column} ({resource=})")
 
     stmt = insert(instrument_obj.exposure_table).values(exposure_rec)
     if update:
@@ -641,6 +646,9 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
         conn.execute(stmt)
 
         detectors = [section for section in content if section.endswith("_PRIMARY")]
+        if ccd_columns_to_update is not None and "@skip" in ccd_columns_to_update:
+            detectors = []  # Special keyword "@skip" stops reprocessing of the ccdexposure table.
+
         for detector in detectors:
             det_exposure_rec = dict()
             det_info = info.copy()
@@ -653,7 +661,8 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
             for header in content[detector]:
                 det_info[header["keyword"]] = header["value"]
             for field, keyword in instrument_obj.det_mapping.items():
-                det_exposure_rec[field] = process_column(keyword, det_info)
+                if ccd_columns_to_update is None or field in ccd_columns_to_update:
+                    det_exposure_rec[field] = process_column(keyword, det_info)
 
             if "day_obs" in instrument_obj.ccdexposure_table.columns:  # schema version >= 3.2.0
                 det_exposure_rec["day_obs"] = exposure_rec["day_obs"]
@@ -687,13 +696,19 @@ def process_local_path(path: str) -> None:
                     try:
                         logger.info(f"Processing: {file}...")
                         process_resource(
-                            ResourcePath(os.path.join(root, file)), get_instrument_dict(instrument)
+                            ResourcePath(os.path.join(root, file)),
+                            get_instrument_dict(instrument),
+                            exp_columns_to_update is not None,
                         )
                     except Exception:
                         logger.exception(f"Failed to process resource {file}")
     # If a yaml file is provided on the command line, process it.
     elif os.path.isfile(path) and path.endswith(".yaml"):
-        process_resource(ResourcePath(path), get_instrument_dict(instrument))
+        process_resource(
+            ResourcePath(path),
+            get_instrument_dict(instrument),
+            exp_columns_to_update is not None,
+        )
 
 
 def process_date(day_obs: str, instrument_dict: dict, update: bool = False) -> None:
@@ -914,8 +929,41 @@ async def main() -> None:
         await asyncio.sleep(5)
 
 
+def parse_columns_to_update(env_name: str, required_columns: list[str]) -> list[str] | None:
+    if env_name in os.environ and os.environ[env_name] != "":
+        columns = os.environ[env_name].split(":")
+        if len(columns) > 0:
+            columns += required_columns
+            return columns
+
+    return None
+
+
 if __name__ == "__main__":
+    import os
     import sys
+
+    exp_columns_to_update = parse_columns_to_update(
+        "EXP_COLUMNS_TO_UPDATE",
+        required_columns=[
+            "exposure_id",
+            "exposure_name",
+            "day_obs",
+            "seq_num",
+            "controller",
+        ],
+    )
+
+    ccd_columns_to_update = parse_columns_to_update(
+        "CCD_COLUMNS_TO_UPDATE",
+        required_columns=[
+            "ccdexposure_id",
+            "exposure_id",
+            "day_obs",
+            "seq_num",
+            "detector",
+        ],
+    )
 
     engine = setup_postgres()
     if len(sys.argv) > 1:
