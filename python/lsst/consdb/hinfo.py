@@ -61,7 +61,7 @@ def region(
 def ccdexposure_id(
     translator: lsst.obs.lsst.translators.lsst.LsstBaseTranslator, exposure_id: int, detector: int
 ) -> int:
-    global logger
+    # global logger
     det_exp_id = translator.compute_detector_exposure_id(exposure_id, detector)
     logger.debug(f"t={translator}, eid={exposure_id}, d={detector}, cid={det_exp_id}")
     return det_exp_id
@@ -89,7 +89,7 @@ def ccd_region(
 def fp_region(
     camera: lsst.afw.cameraGeom.Camera, imgtype: str, ra: float, dec: float, rotpa: float
 ) -> str | None:
-    global instrument
+    # global instrument
     if imgtype != "OBJECT":
         return None
     if instrument == "LATISS":
@@ -251,7 +251,7 @@ def altaz_midpoint_from_radec(
         Altitude–azimuth coordinates at the midpoint, using the global
         *cerro_pachon* (Cerro Pachón).
     """
-    global cerro_pachon
+    # global cerro_pachon
     altaz_frame = AltAz(obstime=time_midpoint(t1, t2), location=cerro_pachon)
     return tracking_radec.transform_to(altaz_frame)
 
@@ -470,8 +470,9 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     resource : `ResourcePath`
         Path to the Header Service header resource.
     """
-    global KW_MAPPING, OI_MAPPING, logger
-    global engine
+    # global engine
+    # global logger
+    # global KW_MAPPING, OI_MAPPING
 
     assert engine is not None
 
@@ -580,7 +581,9 @@ def process_date(day_obs: str, instrument_dict: dict, update: bool = False) -> N
     day_obs : `str`
         Observation day to process, as YYYY-MM-DD.
     """
-    global TOPIC_MAPPING, bucket_prefix, instrument
+    # global instrument
+    # global bucket_prefix
+    # global TOPIC_MAPPING
 
     date = "/".join(day_obs.split("-"))
     d = ResourcePath(f"s3://{bucket_prefix}rubinobs-lfa-cp/{TOPIC_MAPPING[instrument]}/header/{date}/")
@@ -639,7 +642,7 @@ class Instrument:
     ccdexposure_table: Table
 
     def __init__(self, instrument_name, translator, instrument_mapping, det_mapping, camera):
-        global engine
+        # global engine
         self.instrument_name = instrument_name
         self.translator = translator
         self.instrument_mapping = instrument_mapping
@@ -745,7 +748,10 @@ async def handle_message(message, instrument_dict):
 
 async def main() -> None:
     """Handle Header Service largeFileObjectAvailable messages."""
-    global logger, instrument, bucket_prefix, TOPIC_MAPPING
+    # global logger
+    # global instrument
+    # global bucket_prefix
+    # global TOPIC_MAPPING
 
     handler_task_set = set()
     instrument_dict = get_instrument_dict(instrument)
