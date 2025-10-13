@@ -78,7 +78,7 @@ def get_logger(request: Request):
 
 
 def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
-    global _instrument_list
+    # global _instrument_list
     global _instrument_tables
 
     instrument = validate_instrument_name(instrument)
@@ -94,7 +94,7 @@ def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
 
 
 def get_instrument_list():
-    global _instrument_list
+    # global _instrument_list
     if _instrument_list is None:
         inspector = inspect(get_engine())
         instrument_list = [name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")]
