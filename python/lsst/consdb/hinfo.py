@@ -61,7 +61,7 @@ def region(
 def ccdexposure_id(
     translator: lsst.obs.lsst.translators.lsst.LsstBaseTranslator, exposure_id: int, detector: int
 ) -> int:
-    global logger
+    # global logger
     det_exp_id = translator.compute_detector_exposure_id(exposure_id, detector)
     logger.debug(f"t={translator}, eid={exposure_id}, d={detector}, cid={det_exp_id}")
     return det_exp_id
@@ -745,7 +745,8 @@ async def handle_message(message, instrument_dict):
 
 async def main() -> None:
     """Handle Header Service largeFileObjectAvailable messages."""
-    global logger, instrument, bucket_prefix, TOPIC_MAPPING
+    # global logger, 
+    global instrument, bucket_prefix, TOPIC_MAPPING
 
     handler_task_set = set()
     instrument_dict = get_instrument_dict(instrument)
