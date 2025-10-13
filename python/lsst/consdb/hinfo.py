@@ -89,7 +89,7 @@ def ccd_region(
 def fp_region(
     camera: lsst.afw.cameraGeom.Camera, imgtype: str, ra: float, dec: float, rotpa: float
 ) -> str | None:
-    global instrument
+    # global instrument
     if imgtype != "OBJECT":
         return None
     if instrument == "LATISS":
@@ -580,7 +580,8 @@ def process_date(day_obs: str, instrument_dict: dict, update: bool = False) -> N
     day_obs : `str`
         Observation day to process, as YYYY-MM-DD.
     """
-    global TOPIC_MAPPING, bucket_prefix, instrument
+    # global insrument
+    global TOPIC_MAPPING, bucket_prefix
 
     date = "/".join(day_obs.split("-"))
     d = ResourcePath(f"s3://{bucket_prefix}rubinobs-lfa-cp/{TOPIC_MAPPING[instrument]}/header/{date}/")
@@ -745,8 +746,9 @@ async def handle_message(message, instrument_dict):
 
 async def main() -> None:
     """Handle Header Service largeFileObjectAvailable messages."""
-    # global logger, 
-    global instrument, bucket_prefix, TOPIC_MAPPING
+    # global logger
+    # global instrument
+    global bucket_prefix, TOPIC_MAPPING
 
     handler_task_set = set()
     instrument_dict = get_instrument_dict(instrument)
