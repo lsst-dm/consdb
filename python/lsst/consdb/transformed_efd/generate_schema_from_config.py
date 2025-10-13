@@ -115,6 +115,7 @@ def write_exposure_tables(f, config):
     "@id": "#exposure_efd.seq_num"
     description: Sequence number for the exposure.
     datatype: int
+    nullable: false
     ivoa:ucd: meta.id.part
   - name: exposure_id
     "@id": "#exposure_efd.exposure_id"
@@ -221,6 +222,7 @@ def write_visit_tables(f, config):
     "@id": "#visit1_efd.seq_num"
     description: Sequence number for the visit.
     datatype: int
+    nullable: false
     ivoa:ucd: meta.id.part
   - name: visit_id
     "@id": "#visit1_efd.visit_id"
