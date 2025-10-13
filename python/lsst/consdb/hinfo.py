@@ -581,7 +581,7 @@ def process_date(day_obs: str, instrument_dict: dict, update: bool = False) -> N
     day_obs : `str`
         Observation day to process, as YYYY-MM-DD.
     """
-    # global insrument
+    # global instrument
     # global bucket_prefix
     # global TOPIC_MAPPING
 
