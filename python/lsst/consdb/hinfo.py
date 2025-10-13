@@ -582,7 +582,8 @@ def process_date(day_obs: str, instrument_dict: dict, update: bool = False) -> N
         Observation day to process, as YYYY-MM-DD.
     """
     # global insrument
-    global TOPIC_MAPPING, bucket_prefix
+    # global bucket_prefix
+    global TOPIC_MAPPING
 
     date = "/".join(day_obs.split("-"))
     d = ResourcePath(f"s3://{bucket_prefix}rubinobs-lfa-cp/{TOPIC_MAPPING[instrument]}/header/{date}/")
@@ -749,7 +750,8 @@ async def main() -> None:
     """Handle Header Service largeFileObjectAvailable messages."""
     # global logger
     # global instrument
-    global bucket_prefix, TOPIC_MAPPING
+    # global bucket_prefix
+    global TOPIC_MAPPING
 
     handler_task_set = set()
     instrument_dict = get_instrument_dict(instrument)
