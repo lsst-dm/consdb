@@ -251,7 +251,7 @@ def altaz_midpoint_from_radec(
         Altitude–azimuth coordinates at the midpoint, using the global
         *cerro_pachon* (Cerro Pachón).
     """
-    global cerro_pachon
+    # global cerro_pachon
     altaz_frame = AltAz(obstime=time_midpoint(t1, t2), location=cerro_pachon)
     return tracking_radec.transform_to(altaz_frame)
 
