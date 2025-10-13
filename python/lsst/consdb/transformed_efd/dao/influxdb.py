@@ -109,13 +109,16 @@ class InfluxDBClient:
             If an error occurs during the request to the InfluxDB API.
 
         """
-        params = {"db": self.database_name, "q": query}
+        params = {"db": self.database_name}
+        data = {"q": query}
         try:
-            response = requests.get(f"{self.url}/query", params=params, auth=self.auth)
+            response = requests.post(f"{self.url}/query", params=params, data=data, auth=self.auth)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as exc:
-            self.log.error(f"Request failed: url={self.url}/query params={params} error={exc}", exc_info=True)
+            self.log.error(
+                f"Request failed: url={self.url}/query params={params} data={data} error={exc}", exc_info=True
+            )
             raise Exception(f"An error occurred: error={exc}") from exc
 
     def get_fields(self, topic_name):
@@ -524,7 +527,8 @@ class InfluxDBClient:
             raise ValueError("aggregate_func must be provided if aggregate_interval is set.")
         else:
             # Original behavior: select raw, un-aggregated fields
-            select_clause = f'SELECT {", ".join(f'"{f}"' for f in fields)}'
+            quoted_fields = [f'"{f}"' for f in fields]
+            select_clause = f"SELECT {', '.join(quoted_fields)}"
 
         # Build GROUP BY clause if aggregation is enabled
         group_by_clause = ""
@@ -801,6 +805,7 @@ class InfluxDbDao(InfluxDBClient):
         efd_name: str,
         database_name="efd",
         creds_service="https://roundtable.lsst.codes/segwarides/",
+        logger: logging.Logger = None,
         max_fields_per_query: int = 100,
     ):
         """Initializes InfluxDbDao, extending the InfluxDBClient class.
@@ -834,5 +839,6 @@ class InfluxDbDao(InfluxDBClient):
             database_name=database_name,
             username=user,
             password=password,
+            logger=logger,
             max_fields_per_query=max_fields_per_query,
         )

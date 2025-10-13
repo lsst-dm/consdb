@@ -480,7 +480,7 @@ async def main() -> None:
     try:
         # Initialize core components
         butler = Butler(args.repo)
-        efd = InfluxDbDao(args.efd_conn_str)
+        efd = InfluxDbDao(args.efd_conn_str, logger=log, max_fields_per_query=100)
 
         # Main data transformation processor
         tm = Transform(
