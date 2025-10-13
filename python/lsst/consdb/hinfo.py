@@ -470,8 +470,9 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     resource : `ResourcePath`
         Path to the Header Service header resource.
     """
-    global KW_MAPPING, OI_MAPPING, logger
-    global engine
+    # global engine
+    # global logger
+    global KW_MAPPING, OI_MAPPING
 
     assert engine is not None
 
@@ -640,7 +641,7 @@ class Instrument:
     ccdexposure_table: Table
 
     def __init__(self, instrument_name, translator, instrument_mapping, det_mapping, camera):
-        global engine
+        # global engine
         self.instrument_name = instrument_name
         self.translator = translator
         self.instrument_mapping = instrument_mapping
