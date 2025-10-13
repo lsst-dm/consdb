@@ -93,7 +93,7 @@ def generate_drop_sqls(schema_name) -> list[str]:
 
 
 def include_name(name, type_, parent_names):
-    global schema_name
+    # global schema_name
     if type_ == "schema":
         return name == schema_name
     else:

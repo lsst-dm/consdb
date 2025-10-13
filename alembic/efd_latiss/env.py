@@ -49,7 +49,7 @@ logger.info(f"Schema {schema_metadata.schema} loaded successfully")
 
 
 def include_name(name, type_, parent_names):
-    global schema_name
+    # global schema_name
     if type_ == "schema":
         return name == schema_name
     else:
