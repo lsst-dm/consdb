@@ -674,9 +674,7 @@ def downgrade() -> None:
     op.drop_column("visit1_efd", "mt_m2_temperature_ring2", schema="efd_lsstcomcam")
     op.drop_column("visit1_efd", "mt_m2_temperature_ring1", schema="efd_lsstcomcam")
     op.drop_column("visit1_efd", "mt_m2_temperature_ring0", schema="efd_lsstcomcam")
-    op.drop_column(
-        "visit1_efd", "mt_m1m3_glycol_loop_temperature_above_mirror_temp", schema="efd_lsstcomcam"
-    )
+    op.drop_column("visit1_efd", "mt_m1m3_glycol_loop_temperature_above_mirror_temp", schema="efd_lsstcomcam")
     op.drop_column(
         "visit1_efd", "mt_m1m3_glycol_loop_temperature_inside_cell_temp_3", schema="efd_lsstcomcam"
     )

@@ -706,13 +706,7 @@ def downgrade() -> None:
     op.drop_column("exposure_efd", "mt_m2_temperature_ring1", schema="efd_lsstcam")
     op.drop_column("exposure_efd", "mt_m2_temperature_ring0", schema="efd_lsstcam")
     op.drop_column("exposure_efd", "mt_m1m3_glycol_loop_temperature_above_mirror_temp", schema="efd_lsstcam")
-    op.drop_column(
-        "exposure_efd", "mt_m1m3_glycol_loop_temperature_inside_cell_temp_3", schema="efd_lsstcam"
-    )
-    op.drop_column(
-        "exposure_efd", "mt_m1m3_glycol_loop_temperature_inside_cell_temp_2", schema="efd_lsstcam"
-    )
-    op.drop_column(
-        "exposure_efd", "mt_m1m3_glycol_loop_temperature_inside_cell_temp_1", schema="efd_lsstcam"
-    )
+    op.drop_column("exposure_efd", "mt_m1m3_glycol_loop_temperature_inside_cell_temp_3", schema="efd_lsstcam")
+    op.drop_column("exposure_efd", "mt_m1m3_glycol_loop_temperature_inside_cell_temp_2", schema="efd_lsstcam")
+    op.drop_column("exposure_efd", "mt_m1m3_glycol_loop_temperature_inside_cell_temp_1", schema="efd_lsstcam")
     # ### end Alembic commands ###
