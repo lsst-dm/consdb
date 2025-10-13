@@ -300,7 +300,7 @@ class DBBase:
 
         # Warn when update_cols is not empty
         if not update_cols:
-            self.log.debug(
+            self.log.info(
                 f"event=row_upserted schema={tbl.schema} table={tbl.name} "
                 f"warning='No data from the EFD to upsert'"
             )
@@ -328,7 +328,7 @@ class DBBase:
             pk_names = [col.name for col in tbl.primary_key.columns]
             for record in chunk:
                 pk_values = {name: record[name] for name in pk_names}
-                self.log.debug(
+                self.log.info(
                     f"event=row_upserted schema={tbl.schema} table={tbl.name} pk_values={pk_values}"
                 )
 
