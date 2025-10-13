@@ -79,7 +79,7 @@ def get_logger(request: Request):
 
 def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
     # global _instrument_list
-    global _instrument_tables
+    # global _instrument_tables
 
     instrument = validate_instrument_name(instrument)
     logger = logging.getLogger()
