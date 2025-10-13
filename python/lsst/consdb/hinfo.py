@@ -472,7 +472,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     """
     # global engine
     # global logger
-    global KW_MAPPING, OI_MAPPING
+    # global KW_MAPPING, OI_MAPPING
 
     assert engine is not None
 
