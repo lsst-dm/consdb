@@ -8,3 +8,4 @@ Contributor Guide
    adding-tables
    adding-columns
    inserting-information
+   transformed-efd
