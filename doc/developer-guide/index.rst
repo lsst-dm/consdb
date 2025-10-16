@@ -10,3 +10,4 @@ Developer Guide
    consdbclient-summit-utils
    standards-practices
    documentation
+   transformed-efd
