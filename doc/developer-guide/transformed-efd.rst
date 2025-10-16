@@ -188,6 +188,97 @@ Database access objects for different data sources:
 - Implements orphaned task detection and cleanup via fail\_orphaned\_tasks
 - Manages execution time tracking and retry counting for failed tasks
 
+Scheduler Tables and Task Management
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The transformed EFD system uses a dedicated ``efd_scheduler`` schema to manage processing tasks across all instruments. This schema contains separate tables for each instrument, tracking task lifecycle, execution status, and providing coordination for distributed processing.
+
+**Scheduler Schema Structure**
+
+The ``efd_scheduler`` schema contains individual tables for each instrument:
+
+- **efd_scheduler.latiss**: LATISS instrument task management
+- **efd_scheduler.lsstcam**: LSSTCam instrument task management
+- **efd_scheduler.lsstcomcam**: LSSTComCam instrument task management
+
+Each instrument table has the following columns:
+
+- **id**: Auto-incrementing primary key for unique task identification
+- **start_time**: Start time of the transformation interval (required)
+- **end_time**: End time of the transformation interval (required)
+- **timewindow**: Time window expansion in minutes for query boundaries
+- **status**: Task processing status (pending, idle, running, completed, failed)
+- **process_start_time**: Timestamp when task processing began
+- **process_end_time**: Timestamp when task processing completed
+- **process_exec_time**: Total execution time in seconds
+- **exposures**: Number of exposures processed in this task
+- **visits1**: Number of visits processed in this task
+- **retries**: Number of retry attempts for failed tasks
+- **error**: Error message if task failed
+- **butler_repo**: Butler repository path used for this task
+- **created_at**: Timestamp when task record was created
+
+**Task Lifecycle and Status Management**
+
+Tasks progress through the following lifecycle with different initial statuses based on execution mode:
+
+1. **Task Creation**:
+   - **Jobs**: Tasks created with status "idle" (waiting for processing)
+   - **CronJobs**: Tasks created with status "pending" (waiting for processing)
+2. **Task Selection**: Available tasks are selected using ``select_next()`` or similar methods
+3. **Task Execution**: Status updated to "running" via ``task_started()``
+4. **Task Completion**: Status updated to "completed" via ``task_completed()`` with execution metrics
+5. **Task Failure**: Status updated to "failed" via ``task_failed()`` with error details
+6. **Task Retry**: Failed tasks can be retried with exponential backoff via ``task_retries_increment()``
+
+**Task Status Meanings**:
+
+- **pending**: Default status for CronJob tasks, ready for processing
+- **idle**: Status for Job tasks, ready for processing
+- **running**: Task currently being processed
+- **completed**: Task finished successfully
+- **failed**: Task failed with error (eligible for retry)
+- **stale**: Task marked as stale after 72 hours (no longer eligible for retry)
+
+**Task Creation Process**
+
+The ``QueueManager.create_tasks()`` method:
+
+- Divides time ranges into processing intervals (default: 5-minute chunks)
+- Checks for existing tasks to avoid duplicates
+- Creates tasks with appropriate time boundaries and Butler repository references
+- Uses bulk insert operations for efficient database operations
+- Handles both one-time job creation and continuous cronjob task generation
+
+**Task Selection and Processing**
+
+The system provides multiple task selection strategies:
+
+- **select_next()**: Gets the next available task for processing
+- **select_last()**: Retrieves the most recently created task
+- **select_recent()**: Gets tasks within a recent time window
+- **select_queued()**: Finds tasks with specific status (pending, idle, etc.)
+- **waiting_tasks()**: Gets tasks ready for processing
+- **failed_tasks()**: Retrieves failed tasks eligible for retry
+
+**Orphaned Task Management**
+
+The system includes orphaned task detection and cleanup:
+
+- **fail_orphaned_tasks()**: Identifies and marks abandoned tasks as failed
+- **Orphaned Task Criteria**: Tasks in "running" status for extended periods
+- **Automatic Cleanup**: Prevents resource leaks and enables task recovery
+- **Retry Logic**: Failed tasks can be retried with exponential backoff (2.8^retries hours)
+- **Stale Task Management**: Tasks older than 72 hours are marked as "stale" and no longer eligible for retry
+
+**Task Coordination Features**
+
+- **Duplicate Prevention**: Checks for existing tasks before creation
+- **Time Window Management**: Handles overlapping time windows and gaps
+- **Butler Repository Tracking**: Links tasks to specific Butler repository versions
+- **Execution Metrics**: Tracks processing counts, execution times, and success rates
+- **Error Handling**: Comprehensive error logging and retry mechanisms
+
 Transformation Engine
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -465,6 +556,9 @@ The system follows a layered architecture with clear separation of concerns:
           +task_failed()
           +select_next()
           +bulk_insert()
+          +select_by_id()
+          +count()
+          +fail_orphaned_tasks()
       }
 
       class QueueManager {
@@ -1077,6 +1171,76 @@ Scenario 4: Modifying Data Processing Logic
          - name: domeAirTemperature
        preprocessing:
          apply_temperature_correction: true
+
+Scenario 5: Working with Scheduler Tables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Goal**: Monitor and manage processing tasks in the scheduler tables.
+
+**Complete workflow:**
+
+1. **Query task status:**
+
+.. code-block:: python
+
+   # In your monitoring script
+   from lsst.consdb.transformed_efd.dao.transformd import TransformdDao
+
+   dao = TransformdDao(db_uri, instrument="latiss", schema="efd_scheduler")
+
+   # Get recent tasks
+   recent_tasks = dao.select_recent(limit=10)
+   for task in recent_tasks:
+       print(f"Task {task['id']}: {task['status']} - {task['start_time']} to {task['end_time']}")
+
+2. **Monitor task processing:**
+
+.. code-block:: python
+
+   # Check task metrics
+   total_tasks = dao.count()
+   failed_tasks = dao.select_queued(status="failed")
+   running_tasks = dao.select_queued(status="running")
+   stale_tasks = dao.select_queued(status="stale")
+
+   print(f"Total tasks: {total_tasks}")
+   print(f"Failed tasks: {len(failed_tasks)}")
+   print(f"Running tasks: {len(running_tasks)}")
+   print(f"Stale tasks: {len(stale_tasks)}")
+
+3. **Handle orphaned tasks:**
+
+.. code-block:: python
+
+   # Clean up orphaned tasks
+   orphaned_count = dao.fail_orphaned_tasks()
+   print(f"Marked {orphaned_count} tasks as orphaned")
+
+4. **Create custom task management:**
+
+.. code-block:: python
+
+   # Custom task retry logic
+   def retry_failed_tasks(dao, max_retries=3):
+       failed_tasks = dao.select_queued(status="failed")
+       for task in failed_tasks:
+           if task['retries'] < max_retries:
+               dao.update(task['id'], {
+                   'status': 'pending',
+                   'retries': task['retries'] + 1,
+                   'error': None
+               })
+               print(f"Retrying task {task['id']}")
+
+   # Clean up stale tasks
+   def cleanup_stale_tasks(dao, days_old=30):
+       from datetime import datetime, timedelta
+       cutoff_date = datetime.now() - timedelta(days=days_old)
+       stale_tasks = dao.select_queued(status="stale")
+       for task in stale_tasks:
+           if task['created_at'] < cutoff_date:
+               dao.delete(task['id'])
+               print(f"Deleted stale task {task['id']}")
 
 Code Organization
 -----------------

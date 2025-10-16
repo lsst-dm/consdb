@@ -45,25 +45,7 @@ Prerequisites
 - **Development**: Access to dev cluster, dev Vault secrets, embargoed Butler data
 - **Production**: Access to prod cluster, prod Vault secrets, embargoed Butler data
 
-Pre-Deployment Verification
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Run these commands to verify your setup before attempting deployment:
-
-.. code-block:: bash
-
-   # 1. Check kubectl context and cluster access
-   kubectl config current-context
-   kubectl get nodes
-
-   # 2. Test Vault connection
-   vault status
-
-   # 3. Verify repository access
-   ls kubernetes/overlays/dev/latiss-job/
-
-   # 4. Check required tools
-   which kubectl make vault
 
 Quick Reference for Experienced Users
 -------------------------------------
@@ -98,10 +80,6 @@ Quick Reference for Experienced Users
 
    kubectl logs <pod-name> -n dev-latiss
 
-Quick Start
------------
-
-This section provides step-by-step deployment instructions for both development and production environments.
 
 Deploy to Development
 ---------------------
@@ -409,6 +387,47 @@ Jobs deploy to these namespaces:
 - ``prod-lsstcam``
 - ``prod-lsstcomcam``
 
+Scheduler Tables and Task Management
+------------------------------------
+
+The transformed EFD system uses a dedicated ``efd_scheduler`` schema to coordinate processing tasks across all instruments. Understanding this schema is essential for monitoring and troubleshooting the service.
+
+**Scheduler Schema Structure**
+
+The ``efd_scheduler`` schema contains separate tables for each instrument:
+
+- **efd_scheduler.latiss**: LATISS instrument task management
+- **efd_scheduler.lsstcam**: LSSTCam instrument task management
+- **efd_scheduler.lsstcomcam**: LSSTComCam instrument task management
+
+This schema is shared across all environments (development and production).
+
+**Key Table Columns**:
+
+- **id**: Unique task identifier (auto-incrementing)
+- **start_time/end_time**: Processing time window boundaries
+- **status**: Task state (pending, idle, running, completed, failed)
+- **process_start_time/process_end_time**: Execution timestamps
+- **exposures/visits1**: Processing counts and metrics
+- **retries**: Number of retry attempts
+- **error**: Error messages for failed tasks
+- **butler_repo**: Butler repository path used
+
+**Task Status Lifecycle**:
+
+1. **pending**: Default status for CronJob tasks, ready for processing
+2. **idle**: Status for Job tasks, ready for processing
+3. **running**: Task currently being processed
+4. **completed**: Task finished successfully
+5. **failed**: Task failed with error (eligible for retry)
+6. **stale**: Task marked as stale after 72 hours (no longer eligible for retry)
+
+**Execution Mode Differences**:
+
+- **Jobs**: Create tasks with "idle" status for one-time processing
+- **CronJobs**: Create tasks with "pending" status for continuous processing
+
+
 Failure Monitor
 ---------------
 
@@ -420,7 +439,7 @@ The failure monitor is a special CronJob that runs hourly to retry failed tasks:
 - Uses ``--resume`` flag to retry failed tasks
 - Implements exponential backoff (2.8^retries hours wait time)
 - Maximum 3 retries per task
-- Tasks older than 72 hours are marked as stale
+- Tasks older than 72 hours are marked as "stale" status and no longer eligible for retry
 
 **Deploy failure monitor**:
 
@@ -499,6 +518,13 @@ Common Issues
 - Deploy failure monitor: ``make apply file=failure-monitor.yaml embargo=true``
 - Check failure monitor logs: ``kubectl logs <failure-monitor-pod> -n <namespace>``
 - Verify exponential backoff timing (2.8^retries hours between retries)
+
+**Scheduler table issues**:
+
+- Check for orphaned tasks: Query tasks stuck in "running" status
+- Verify task creation: Ensure new tasks are being created for cronjobs
+- Monitor task queue: Check if tasks are accumulating in "pending" status
+- Database connectivity: Verify scheduler table access and permissions
 
 **Image pull errors**:
 
