@@ -12,3 +12,4 @@ User Guide
    consdb-client-library-in-summit-utils
    consdb-rest-api
    sql-clients
+   transformed-efd
