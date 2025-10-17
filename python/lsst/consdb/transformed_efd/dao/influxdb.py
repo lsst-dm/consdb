@@ -25,7 +25,9 @@ These classes support operations such as querying time-series data, retrieving
 field keys, and unpacking packed dataframes.
 """
 
+import itertools
 import logging
+import math
 import os
 from functools import partial
 from urllib.parse import urljoin
@@ -62,9 +64,9 @@ class InfluxDBClient:
         username: str | None = None,
         password: str | None = None,
         logger: logging.Logger = None,
+        max_fields_per_query: int = 100,
     ) -> None:
         """Initialize the InfluxDBClient class.
-
         Parameters
         ----------
         url : str
@@ -77,12 +79,16 @@ class InfluxDBClient:
             The password to authenticate with.
         logger : logging.Logger, optional
             A logger instance for logging messages.
-
+        max_fields_per_query : int, optional
+            The maximum number of fields to include in a single InfluxDB query
+            to avoid complexity errors. Defaults to 100.
         """
         self.url = url
         self.database_name = database_name
         self.auth = (username, password) if username and password else None
-        self.log = logger
+        # Ensure self.log is always a valid logger to prevent crashes.
+        self.log = logger or logging.getLogger(__name__)
+        self.max_fields_per_query = max_fields_per_query
 
     def query(self, query: str) -> dict:
         """Send a query to the InfluxDB API and retrieve the result.
@@ -103,13 +109,16 @@ class InfluxDBClient:
             If an error occurs during the request to the InfluxDB API.
 
         """
-        params = {"db": self.database_name, "q": query}
+        params = {"db": self.database_name}
+        data = {"q": query}
         try:
-            response = requests.get(f"{self.url}/query", params=params, auth=self.auth)
+            response = requests.post(f"{self.url}/query", params=params, data=data, auth=self.auth)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as exc:
-            self.log.error(f"Request failed: url={self.url}/query params={params} error={exc}", exc_info=True)
+            self.log.error(
+                f"Request failed: url={self.url}/query params={params} data={data} error={exc}", exc_info=True
+            )
             raise Exception(f"An error occurred: error={exc}") from exc
 
     def get_fields(self, topic_name):
@@ -425,8 +434,18 @@ class InfluxDBClient:
 
         return result
 
-    def build_time_range_query(self, topic_name, fields, start, end, index=None, use_old_csc_indexing=False):
-        """Build a query based on a time range.
+    def build_time_range_query(
+        self,
+        topic_name,
+        fields,
+        start,
+        end,
+        index=None,
+        use_old_csc_indexing=False,
+        aggregate_interval: str | None = None,
+        aggregate_func: str | None = None,
+    ):
+        """Build a query based on a time range, with optional aggregation.
 
         Parameters
         ----------
@@ -445,19 +464,32 @@ class InfluxDBClient:
             When index is used, add an 'AND {CSCName}ID = index' to the query
             which is the old CSC indexing name.
             (default is `False`).
+        aggregate_interval : `str`, optional
+            If set, groups the results into time buckets of this duration
+            (e.g.,"1s", "5m", "1h"). Requires `aggregate_func` to be set.
+            (default is `None`).
+        aggregate_func : `str`, optional
+            If set, applies an aggregation function to the fields within each
+            time bucket. Supported values are 'mean', 'max', and 'min'.
+            (default is `None`).
 
         Returns
         -------
         query : `str`
             A string containing the constructed query statement.
 
+        Raises
+        ------
+        ValueError
+            If inputs are invalid, such as providing `aggregate_interval`
+            without `aggregate_func` or an unsupported function name.
+        TypeError
+            If time arguments are not `astropy.time.Time` objects.
         """
         if not isinstance(start, Time):
             raise TypeError("The first time argument must be a time stamp")
-
         if not start.scale == "utc":
             raise ValueError("Timestamps must be in UTC.")
-
         elif isinstance(end, Time):
             if not end.scale == "utc":
                 raise ValueError("Timestamps must be in UTC.")
@@ -465,6 +497,7 @@ class InfluxDBClient:
             end_str = end.isot
         else:
             raise TypeError("The second time argument must be the time stamp for the end " "or a time delta.")
+
         index_str = ""
         if index:
             if use_old_csc_indexing:
@@ -473,40 +506,109 @@ class InfluxDBClient:
             else:
                 index_name = "salIndex"
             index_str = f" AND {index_name} = {index}"
+
+        # Ensure fields is a list for consistent processing
+        if isinstance(fields, str):
+            fields = [fields]
+        elif isinstance(fields, bytes):
+            fields = [fields.decode()]
+
+        select_clause = ""
+        # Build SELECT clause based on aggregation parameters
+        if aggregate_interval and aggregate_func:
+            # Standard aggregations: mean, max, min
+            valid_funcs = ["mean", "max", "min"]
+            if aggregate_func.lower() not in valid_funcs:
+                raise ValueError(f"aggregate_func must be one of {valid_funcs}")
+            # Use AS to keep original column names in the result
+            select_fields = [f'{aggregate_func.upper()}("{f}") AS "{f}"' for f in fields]
+            select_clause = f'SELECT {", ".join(select_fields)}'
+        elif aggregate_interval and not aggregate_func:
+            raise ValueError("aggregate_func must be provided if aggregate_interval is set.")
+        else:
+            # Original behavior: select raw, un-aggregated fields
+            quoted_fields = [f'"{f}"' for f in fields]
+            select_clause = f"SELECT {', '.join(quoted_fields)}"
+
+        # Build GROUP BY clause if aggregation is enabled
+        group_by_clause = ""
+        if aggregate_interval:
+            group_by_clause = f" GROUP BY time({aggregate_interval})"
+
         # influxdb demands last Z
         timespan = f"time >= '{start_str}Z' AND time <= '{end_str}Z'{index_str}"
 
-        if isinstance(fields, str):
-            fields = [
-                fields,
-            ]
-        elif isinstance(fields, bytes):
-            fields = fields.decode()
-            fields = [
-                fields,
-            ]
-
-        # Build query here
+        # Build the final query
         return (
-            f'SELECT {", ".join(fields)} '
+            f"{select_clause} "
             f'FROM "{self.database_name}"."autogen"."{topic_name}" '
             f"WHERE {timespan}"
+            f"{group_by_clause}"
         )
+
+    def _execute_single_timeseries_query(
+        self,
+        topic_name: str,
+        fields: list,
+        start: astropy.time.Time,
+        end: astropy.time.Time,
+        index: int | None = None,
+        use_old_csc_indexing: bool = False,
+        aggregate_interval: str | None = None,
+        aggregate_func: str | None = None,
+    ) -> pd.DataFrame:
+        """
+        Executes a single time series query and returns a DataFrame.
+
+        This is the core execution logic used by the public
+        `select_time_series` method. It builds the query, executes
+        it, and converts the response to a pandas DataFrame.
+
+        Parameters
+        ----------
+        All parameters are identical to the public `select_time_series`
+        method.
+
+        Returns
+        -------
+        result : `pandas.DataFrame`
+            A `~pandas.DataFrame` containing the results of the single query.
+        """
+        query = self.build_time_range_query(
+            topic_name,
+            fields,
+            start,
+            end,
+            index,
+            use_old_csc_indexing,
+            aggregate_interval=aggregate_interval,
+            aggregate_func=aggregate_func,
+        )
+        response = self.query(query)
+        if "series" not in response["results"][0]:
+            return pd.DataFrame()
+
+        return self._to_dataframe(response)
 
     def select_time_series(
         self,
-        topic_name,
+        topic_name: str,
         fields,
         start: astropy.time.Time,
         end: astropy.time.Time,
-        index=None,
-        use_old_csc_indexing=False,
+        index: int | None = None,
+        use_old_csc_indexing: bool = False,
+        aggregate_interval: str | None = None,
+        aggregate_func: str | None = None,
     ):
         """Select time series data from InfluxDB based on a time range.
-
         This function queries specific fields from the InfluxDB database
-        within a defined time range.
+        within a defined time range. It can optionally perform server-side
+        aggregation.
 
+        If the number of fields exceeds `self.max_fields_per_query`, the
+        request is automatically split into smaller chunks and the results
+        are concatenated.
         Parameters
         ----------
         topic_name : `str`
@@ -524,20 +626,73 @@ class InfluxDBClient:
             When index is used, add an 'AND {CSCName}ID = index' to the query
             which is the old CSC indexing name.
             (default is `False`).
+        aggregate_interval : `str`, optional
+            If set, groups the results into time buckets of this duration
+            (e.g., "1s", "5m", "1h"). Requires `aggregate_func` to be set.
+            (default is `None`).
+        aggregate_func : `str`, optional
+            If set, applies an aggregation function to the fields within each
+            time bucket. Supported values are 'mean', 'max', and 'min'.
+            (default is `None`)
 
         Returns
         -------
         result : `pandas.DataFrame`
             A `~pandas.DataFrame` containing the results of the query.
-
         """
-        query = self.build_time_range_query(topic_name, fields, start, end, index, use_old_csc_indexing)
-        response = self.query(query)
+        if not isinstance(fields, list):
+            fields = list(fields)
 
-        if "series" not in response["results"][0]:
+        # If the number of fields is within the limit, make a single call.
+        if len(fields) <= self.max_fields_per_query:
+            return self._execute_single_timeseries_query(
+                topic_name,
+                fields,
+                start,
+                end,
+                index,
+                use_old_csc_indexing,
+                aggregate_interval=aggregate_interval,
+                aggregate_func=aggregate_func,
+            )
+
+        # Otherwise, split the query into chunks and call the helper for each.
+        self.log.info(
+            f"Querying {len(fields)} fields for topic '{topic_name}', which exceeds the limit of "
+            f"{self.max_fields_per_query}. Splitting into chunks."
+        )
+
+        all_series_dfs = []
+
+        total_chunks = math.ceil(len(fields) / self.max_fields_per_query)
+        field_chunks = itertools.batched(fields, self.max_fields_per_query)
+
+        for i, chunk in enumerate(field_chunks):
+            self.log.debug(f"Querying field chunk {i+1}/{total_chunks} ({len(chunk)} fields)...")
+            try:
+                df_chunk = self._execute_single_timeseries_query(
+                    topic_name,
+                    chunk,
+                    start,
+                    end,
+                    index,
+                    use_old_csc_indexing,
+                    aggregate_interval=aggregate_interval,
+                    aggregate_func=aggregate_func,
+                )
+                if not df_chunk.empty:
+                    all_series_dfs.append(df_chunk)
+            except Exception as e:
+                self.log.error(f"Failed to query chunk {i+1} for topic {topic_name}: {e}", exc_info=True)
+
+        if not all_series_dfs:
+            self.log.warning(f"All query chunks for topic {topic_name} returned empty or failed.")
             return pd.DataFrame()
 
-        return self._to_dataframe(response)
+        # Concatenate all resulting dataframes horizontally and clean up.
+        final_df = pd.concat(all_series_dfs, axis=1)
+        final_df = final_df.loc[:, ~final_df.columns.duplicated()]
+        return final_df
 
     def select_packed_time_series(
         self,
@@ -650,9 +805,10 @@ class InfluxDbDao(InfluxDBClient):
         efd_name: str,
         database_name="efd",
         creds_service="https://roundtable.lsst.codes/segwarides/",
+        logger: logging.Logger = None,
+        max_fields_per_query: int = 100,
     ):
         """Initializes InfluxDbDao, extending the InfluxDBClient class.
-
         Parameters
         ----------
         efd_name : str
@@ -663,18 +819,26 @@ class InfluxDbDao(InfluxDBClient):
         creds_service : str, optional
             The URL of the credentials service to use for authentication.
             Default is "https://roundtable.lsst.codes/segwarides/".
-
+        max_fields_per_query : int, optional
+            The maximum number of fields per query. Passed to the parent
+            client. Default is 100.
         """
         # auth = NotebookAuth(service_endpoint=creds_service)
         # host, schema_registry_url, port, user,
         # password, path = auth.get_auth(efd_name)
-
         user = os.getenv("EFD_USERNAME", "efdreader")
         password = os.getenv("EFD_PASSWORD")
-        # database_name=os.getenv("EFD_DATABASE", "efd")
         host = os.getenv("EFD_HOST", "usdf-rsp.slac.stanford.edu")
         port = os.getenv("EFD_PORT", 443)
         path = os.getenv("EFD_PATH", "/influxdb-enterprise-data/")
         url = urljoin(f"https://{host}:{port}", f"{path}")
 
-        super(InfluxDbDao, self).__init__(url, database_name=database_name, username=user, password=password)
+        # Call the parent constructor with all relevant parameters
+        super().__init__(
+            url,
+            database_name=database_name,
+            username=user,
+            password=password,
+            logger=logger,
+            max_fields_per_query=max_fields_per_query,
+        )

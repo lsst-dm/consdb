@@ -9,3 +9,4 @@ Operator Guide
    schema-migration-process
    deployment
    monitoring
+   transformed-efd
