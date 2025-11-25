@@ -54,7 +54,11 @@ def get_engine():
             raise
 
     if _engine is None:
-        _engine = create_engine(config.database_url)
+        _engine = create_engine(
+            config.database_url,
+            pool_pre_ping=True,
+            pool_recycle=config.pool_recycle_time,
+        )
 
     return _engine
 
