@@ -1,10 +1,11 @@
 """initial version
 
 Revision ID: 13a360a555ca
-Revises: 
+Revises:
 Create Date: 2024-05-20 08:06:54.459937+00:00
 
 """
+
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -77,9 +78,7 @@ def upgrade() -> None:
             "exposure_id",
             sa.BIGINT()
             .with_variant(mysql.BIGINT(), "mysql")
-            .with_variant(
-                oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle"
-            )
+            .with_variant(oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle")
             .with_variant(sa.BIGINT(), "postgresql"),
             nullable=False,
             comment="Unique identifier.",
@@ -104,17 +103,13 @@ def upgrade() -> None:
         ),
         sa.Column(
             "day_obs",
-            sa.INTEGER()
-            .with_variant(mysql.INTEGER(), "mysql")
-            .with_variant(sa.INTEGER(), "postgresql"),
+            sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
             nullable=False,
             comment="Day of observation.",
         ),
         sa.Column(
             "seq_num",
-            sa.INTEGER()
-            .with_variant(mysql.INTEGER(), "mysql")
-            .with_variant(sa.INTEGER(), "postgresql"),
+            sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
             nullable=False,
             comment="Sequence number.",
         ),
@@ -336,17 +331,13 @@ def upgrade() -> None:
         ),
         sa.Column(
             "cur_index",
-            sa.INTEGER()
-            .with_variant(mysql.INTEGER(), "mysql")
-            .with_variant(sa.INTEGER(), "postgresql"),
+            sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
             nullable=True,
             comment="Number (1-based) of the observation within its group.",
         ),
         sa.Column(
             "max_index",
-            sa.INTEGER()
-            .with_variant(mysql.INTEGER(), "mysql")
-            .with_variant(sa.INTEGER(), "postgresql"),
+            sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
             nullable=True,
             comment="Expected number of observations within the group.",
         ),
@@ -581,9 +572,7 @@ def upgrade() -> None:
             "ccdexposure_id",
             sa.BIGINT()
             .with_variant(mysql.BIGINT(), "mysql")
-            .with_variant(
-                oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle"
-            )
+            .with_variant(oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle")
             .with_variant(sa.BIGINT(), "postgresql"),
             nullable=False,
             comment="Unique identifier.",
@@ -592,18 +581,14 @@ def upgrade() -> None:
             "exposure_id",
             sa.BIGINT()
             .with_variant(mysql.BIGINT(), "mysql")
-            .with_variant(
-                oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle"
-            )
+            .with_variant(oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle")
             .with_variant(sa.BIGINT(), "postgresql"),
             nullable=False,
             comment="Identifier of the exposure.",
         ),
         sa.Column(
             "detector",
-            sa.INTEGER()
-            .with_variant(mysql.INTEGER(), "mysql")
-            .with_variant(sa.INTEGER(), "postgresql"),
+            sa.INTEGER().with_variant(mysql.INTEGER(), "mysql").with_variant(sa.INTEGER(), "postgresql"),
             nullable=False,
             comment="Number of the detector in the focal plane.",
         ),
@@ -616,9 +601,7 @@ def upgrade() -> None:
             nullable=True,
             comment="Sky region in STC-S format (https://www.ivoa.net/documents/STC-S/20130917/index.html).",
         ),
-        sa.ForeignKeyConstraint(
-            ["exposure_id"], ["cdb_latiss.exposure.exposure_id"], name="fk_exposure_id"
-        ),
+        sa.ForeignKeyConstraint(["exposure_id"], ["cdb_latiss.exposure.exposure_id"], name="fk_exposure_id"),
         sa.PrimaryKeyConstraint("ccdexposure_id"),
         sa.UniqueConstraint("exposure_id", "detector", name="un_exposure_id_detector"),
         schema="cdb_latiss",
@@ -629,9 +612,7 @@ def upgrade() -> None:
             "obs_id",
             sa.BIGINT()
             .with_variant(mysql.BIGINT(), "mysql")
-            .with_variant(
-                oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle"
-            )
+            .with_variant(oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle")
             .with_variant(sa.BIGINT(), "postgresql"),
             nullable=False,
             comment="Unique identifier.",
@@ -654,12 +635,8 @@ def upgrade() -> None:
             nullable=True,
             comment="Content of value as a string.",
         ),
-        sa.ForeignKeyConstraint(
-            ["key"], ["cdb_latiss.exposure_flexdata_schema.key"], name="fk_key"
-        ),
-        sa.ForeignKeyConstraint(
-            ["obs_id"], ["cdb_latiss.exposure.exposure_id"], name="fk_obs_id"
-        ),
+        sa.ForeignKeyConstraint(["key"], ["cdb_latiss.exposure_flexdata_schema.key"], name="fk_key"),
+        sa.ForeignKeyConstraint(["obs_id"], ["cdb_latiss.exposure.exposure_id"], name="fk_obs_id"),
         sa.PrimaryKeyConstraint("obs_id", "key"),
         schema="cdb_latiss",
     )
@@ -669,9 +646,7 @@ def upgrade() -> None:
             "ccdexposure_id",
             sa.BIGINT()
             .with_variant(mysql.BIGINT(), "mysql")
-            .with_variant(
-                oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle"
-            )
+            .with_variant(oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle")
             .with_variant(sa.BIGINT(), "postgresql"),
             nullable=False,
             comment="Unique identifier.",
@@ -708,9 +683,7 @@ def upgrade() -> None:
             "obs_id",
             sa.BIGINT()
             .with_variant(mysql.BIGINT(), "mysql")
-            .with_variant(
-                oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle"
-            )
+            .with_variant(oracle.NUMBER(precision=38, scale=0, asdecimal=False), "oracle")
             .with_variant(sa.BIGINT(), "postgresql"),
             nullable=False,
             comment="Unique identifier.",
@@ -733,12 +706,8 @@ def upgrade() -> None:
             nullable=True,
             comment="Content of value as a string.",
         ),
-        sa.ForeignKeyConstraint(
-            ["key"], ["cdb_latiss.ccdexposure_flexdata_schema.key"], name="fk_key"
-        ),
-        sa.ForeignKeyConstraint(
-            ["obs_id"], ["cdb_latiss.ccdexposure.ccdexposure_id"], name="fk_obs_id"
-        ),
+        sa.ForeignKeyConstraint(["key"], ["cdb_latiss.ccdexposure_flexdata_schema.key"], name="fk_key"),
+        sa.ForeignKeyConstraint(["obs_id"], ["cdb_latiss.ccdexposure.ccdexposure_id"], name="fk_obs_id"),
         sa.PrimaryKeyConstraint("obs_id", "key"),
         schema="cdb_latiss",
     )

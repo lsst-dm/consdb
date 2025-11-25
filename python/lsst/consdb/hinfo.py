@@ -27,16 +27,26 @@ from .utils import setup_logging, setup_postgres
 if TYPE_CHECKING:
     import lsst.afw.cameraGeom  # type: ignore
 
+
+# If set, only these columns will be updated.
+exp_columns_to_update: list[str] | None = None
+ccd_columns_to_update: list[str] | None = None
+
 ###############################
 # Header Processing Functions #
 ###############################
+
+RegionFormatter = Callable[
+    [lsst.afw.cameraGeom.Camera, float, float, float, list[tuple[str, int, int]]],
+    str,
+]
 
 
 def logical_or(*bools: int | str | None) -> bool:
     return any([b == 1 or b == "1" for b in bools])
 
 
-def region(
+def region_ivoa(
     camera: lsst.afw.cameraGeom.Camera,
     ra: float,
     dec: float,
@@ -58,6 +68,68 @@ def region(
     return region
 
 
+def region_spoly(
+    camera: lsst.afw.cameraGeom.Camera,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    points: list[tuple[str, int, int]],
+) -> str:
+    """
+    Build a pgSphere `spoly` string for the camera footprint.
+
+    Parameters
+    ----------
+    camera : `~lsst.afw.cameraGeom.Camera`
+        Camera object containing detectors and geometry.
+    ra : float
+        Boresight right ascension in (deg, ICRS)
+    dec : float
+        Boresight declination in (deg, ICRS)
+    rotpa : float
+        Rotator position angle (deg)
+    points : list[tuple[str, int, int]]
+        Sequence of (detector_name, offset_x, offset_y), with offset_x and
+        offset_y specifying a corner of the box.
+
+    Returns
+    -------
+    str
+        A pgSphere `spoly` literal of the form:
+        `{(lon_rad,lat_rad),(lon_rad,lat_rad),...}`
+        with longitude/latitude in radians.
+    """
+    # Build the WCS at the given boresight/rotator for each detector and
+    # sample the requested pixel.
+    verts_rad: list[tuple[float, float]] = []
+
+    for detector, offset_x, offset_y in points:
+        skywcs = LsstCamRawFormatter.makeRawSkyWcsFromBoresight(
+            lsst.geom.SpherePoint(ra, dec, lsst.geom.degrees),
+            rotpa * lsst.geom.degrees,
+            camera[detector],
+        )
+        bbox = camera[detector].getBBox()
+        x = bbox.getMinX() + bbox.getWidth() * offset_x
+        y = bbox.getMinY() + bbox.getHeight() * offset_y
+
+        sky_pt = skywcs.pixelToSky(x, y)
+        lon_deg = sky_pt.getLongitude().asDegrees()
+        lat_deg = sky_pt.getLatitude().asDegrees()
+
+        lon = np.radians(lon_deg)
+        lat = np.radians(lat_deg)
+
+        verts_rad.append((lon, lat))
+
+    if len(verts_rad) < 3:
+        raise ValueError("spoly requires at least 3 vertices")
+
+    # .8g format sufficient for sub-arcsecond precision in the range 0-2pi.
+    coords = ",".join(f"({lon:.8g},{lat:.8g})" for lon, lat in verts_rad)
+    return "{" + coords + "}"
+
+
 def ccdexposure_id(
     translator: lsst.obs.lsst.translators.lsst.LsstBaseTranslator, exposure_id: int, detector: int
 ) -> int:
@@ -68,11 +140,17 @@ def ccdexposure_id(
 
 
 def ccd_region(
-    camera: lsst.afw.cameraGeom.Camera, imgtype: str, ra: float, dec: float, rotpa: float, ccdname: str
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    ccdname: str,
+    region_formatter: RegionFormatter,
 ) -> str | None:
     if imgtype != "OBJECT":
         return None
-    return region(
+    return region_formatter(
         camera,
         ra,
         dec,
@@ -86,8 +164,35 @@ def ccd_region(
     )
 
 
+def ccd_region_ivoa(
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    ccdname: str,
+) -> str | None:
+    return ccd_region(camera, imgtype, ra, dec, rotpa, ccdname, region_ivoa)
+
+
+def ccd_region_spoly(
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    ccdname: str,
+) -> str | None:
+    return ccd_region(camera, imgtype, ra, dec, rotpa, ccdname, region_spoly)
+
+
 def fp_region(
-    camera: lsst.afw.cameraGeom.Camera, imgtype: str, ra: float, dec: float, rotpa: float
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+    region_formatter: RegionFormatter,
 ) -> str | None:
     # global instrument
     if imgtype != "OBJECT":
@@ -110,36 +215,56 @@ def fp_region(
         corners = [
             ("R01_S00", 0, 0),
             ("R03_S02", 1, 0),
-            ("R03_S02", 1, 1),
             ("R04_SG1", 1, 0),
             ("R04_SG1", 1, 1),
-            ("R04_SG0", 1, 0),
-            ("R04_SG0", 1, 1),
+            ("R04_SG1", 0, 1),
+            ("R04_SG0", 0, 1),
+            ("R04_SG0", 0, 0),
             ("R14_S02", 1, 0),
             ("R34_S22", 1, 1),
-            ("R34_S22", 0, 1),
+            ("R44_SG1", 1, 0),
             ("R44_SG1", 1, 1),
-            ("R44_SG1", 0, 1),
             ("R44_SG0", 1, 1),
             ("R44_SG0", 0, 1),
+            ("R44_SG0", 0, 0),
             ("R43_S22", 1, 1),
             ("R41_S20", 0, 1),
-            ("R41_S20", 0, 0),
-            ("R40_SG1", 0, 1),
-            ("R40_SG1", 0, 0),
+            ("R40_SG1", 1, 0),
+            ("R40_SG1", 1, 1),
+            ("R40_SG0", 1, 1),
             ("R40_SG0", 0, 1),
             ("R40_SG0", 0, 0),
             ("R30_S20", 0, 1),
             ("R10_S00", 0, 0),
-            ("R10_S00", 1, 0),
-            ("R00_SG1", 0, 0),
             ("R00_SG1", 1, 0),
+            ("R00_SG1", 1, 1),
+            ("R00_SG1", 0, 1),
+            ("R00_SG0", 0, 1),
             ("R00_SG0", 0, 0),
-            ("R00_SG0", 1, 0),
         ]
     else:
         return None
-    return region(camera, ra, dec, rotpa, corners)
+    return region_formatter(camera, ra, dec, rotpa, corners)
+
+
+def fp_region_ivoa(
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+) -> str | None:
+    return fp_region(camera, imgtype, ra, dec, rotpa, region_ivoa)
+
+
+def fp_region_spoly(
+    camera: lsst.afw.cameraGeom.Camera,
+    imgtype: str,
+    ra: float,
+    dec: float,
+    rotpa: float,
+) -> str | None:
+    return fp_region(camera, imgtype, ra, dec, rotpa, region_spoly)
 
 
 #################################
@@ -158,7 +283,8 @@ KW_MAPPING: dict[str, ColumnMapping] = {
     "vignette": "VIGNETTE",
     "vignette_min": "VIGN_MIN",
     "scheduler_note": "OBSANNOT",
-    "s_region": (fp_region, "camera", "IMGTYPE", "RA", "DEC", "ROTPA"),
+    "s_region": (fp_region_ivoa, "camera", "IMGTYPE", "RA", "DEC", "ROTPA"),
+    "pgs_region": (fp_region_spoly, "camera", "IMGTYPE", "RA", "DEC", "ROTPA"),
 }
 
 # Instrument-specific mapping to column name from Header Service keyword
@@ -222,7 +348,8 @@ DETECTOR_MAPPING: dict[str, ColumnMapping] = {
     "ccdexposure_id": (ccdexposure_id, "translator", "exposure_id", "detector"),
     "exposure_id": "exposure_id",
     "detector": "detector",
-    "s_region": (ccd_region, "camera", "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
+    "s_region": (ccd_region_ivoa, "camera", "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
+    "pgs_region": (ccd_region_spoly, "camera", "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
 }
 
 
@@ -470,10 +597,6 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     resource : `ResourcePath`
         Path to the Header Service header resource.
     """
-    # global engine
-    # global logger
-    # global KW_MAPPING, OI_MAPPING
-
     assert engine is not None
 
     exposure_rec = dict()
@@ -492,12 +615,17 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     info["camera"] = instrument_obj.camera
     info["translator"] = instrument_obj.translator
     for column, column_def in KW_MAPPING.items():
-        exposure_rec[column] = process_column(column_def, info)
+        if exp_columns_to_update is None or column in exp_columns_to_update:
+            exposure_rec[column] = process_column(column_def, info)
     for column, column_def in instrument_obj.instrument_mapping.items():
-        exposure_rec[column] = process_column(column_def, info)
+        if exp_columns_to_update is None or column in exp_columns_to_update:
+            exposure_rec[column] = process_column(column_def, info)
 
     obs_info = ObservationInfo(info, translator_class=instrument_obj.translator)
     for column, column_def in OI_MAPPING.items():
+        if exp_columns_to_update is not None and column not in exp_columns_to_update:
+            continue
+
         try:
             exposure_rec[column] = process_oi_column(column_def, obs_info)
             if isinstance(exposure_rec[column], u.Quantity):
@@ -506,7 +634,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
                 exposure_rec[column] = float(exposure_rec[column])
         except Exception:
             exposure_rec[column] = None
-            logger.exception(f"Unable to process column: {column}")
+            logger.exception(f"Unable to process column: {column} ({resource=})")
 
     stmt = insert(instrument_obj.exposure_table).values(exposure_rec)
     if update:
@@ -518,6 +646,9 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
         conn.execute(stmt)
 
         detectors = [section for section in content if section.endswith("_PRIMARY")]
+        if ccd_columns_to_update is not None and "@skip" in ccd_columns_to_update:
+            detectors = []  # Special keyword "@skip" stops reprocessing of the ccdexposure table.
+
         for detector in detectors:
             det_exposure_rec = dict()
             det_info = info.copy()
@@ -530,7 +661,8 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
             for header in content[detector]:
                 det_info[header["keyword"]] = header["value"]
             for field, keyword in instrument_obj.det_mapping.items():
-                det_exposure_rec[field] = process_column(keyword, det_info)
+                if ccd_columns_to_update is None or field in ccd_columns_to_update:
+                    det_exposure_rec[field] = process_column(keyword, det_info)
 
             if "day_obs" in instrument_obj.ccdexposure_table.columns:  # schema version >= 3.2.0
                 det_exposure_rec["day_obs"] = exposure_rec["day_obs"]
@@ -564,13 +696,19 @@ def process_local_path(path: str) -> None:
                     try:
                         logger.info(f"Processing: {file}...")
                         process_resource(
-                            ResourcePath(os.path.join(root, file)), get_instrument_dict(instrument)
+                            ResourcePath(os.path.join(root, file)),
+                            get_instrument_dict(instrument),
+                            exp_columns_to_update is not None,
                         )
                     except Exception:
                         logger.exception(f"Failed to process resource {file}")
     # If a yaml file is provided on the command line, process it.
     elif os.path.isfile(path) and path.endswith(".yaml"):
-        process_resource(ResourcePath(path), get_instrument_dict(instrument))
+        process_resource(
+            ResourcePath(path),
+            get_instrument_dict(instrument),
+            exp_columns_to_update is not None,
+        )
 
 
 def process_date(day_obs: str, instrument_dict: dict, update: bool = False) -> None:
@@ -791,8 +929,41 @@ async def main() -> None:
         await asyncio.sleep(5)
 
 
+def parse_columns_to_update(env_name: str, required_columns: list[str]) -> list[str] | None:
+    if env_name in os.environ and os.environ[env_name] != "":
+        columns = os.environ[env_name].split(":")
+        if len(columns) > 0:
+            columns += required_columns
+            return columns
+
+    return None
+
+
 if __name__ == "__main__":
+    import os
     import sys
+
+    exp_columns_to_update = parse_columns_to_update(
+        "EXP_COLUMNS_TO_UPDATE",
+        required_columns=[
+            "exposure_id",
+            "exposure_name",
+            "day_obs",
+            "seq_num",
+            "controller",
+        ],
+    )
+
+    ccd_columns_to_update = parse_columns_to_update(
+        "CCD_COLUMNS_TO_UPDATE",
+        required_columns=[
+            "ccdexposure_id",
+            "exposure_id",
+            "day_obs",
+            "seq_num",
+            "detector",
+        ],
+    )
 
     engine = setup_postgres()
     if len(sys.argv) > 1:

@@ -25,6 +25,11 @@ def pg_engine(request, scope="module"):
     schema = Schema.model_validate(yaml_data)
     md = MetaDataBuilder(schema).build()
 
+    # Manually add the shadow column, since it is not listed in the schema.
+    tables_to_modify = [t for t in md.tables.values() if t.name == "exposure" or t.name == "ccdexposure"]
+    for table in tables_to_modify:
+        table.append_column(sa.Column("pgs_region", sa.String(1024)))
+
     with setup_postgres_test_db() as instance:
         context = DatabaseContext(md, instance.engine)
         context.initialize()

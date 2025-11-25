@@ -124,7 +124,9 @@ services:
 
   db:
     # The PostgreSQL database service
-    image: postgres:17.2-alpine3.21
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.db
     restart: always
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pgpassword}
@@ -188,6 +190,8 @@ services:
             psql -h db -U postgres -d postgres \
                 -c "CREATE SCHEMA IF NOT EXISTS \"cdb\";"
             psql -h db -U postgres -d postgres \
+                -c "CREATE EXTENSION IF NOT EXISTS pg_sphere;"
+            psql -h db -U postgres -d postgres \
                 -c "CREATE USER \"usdf\";"
             psql -h db -U postgres -d postgres \
                 -c "CREATE USER \"oods\";"
@@ -220,6 +224,8 @@ services:
       - POSTGRES_URL=postgresql://postgres:${POSTGRES_PASSWORD:-pgpassword}@db:5432/postgres
       - INSTRUMENT=LATISS
       - LATISS_YAML=${LATISS_YAML}
+      - EXP_COLUMNS_TO_UPDATE=${EXP_COLUMNS_TO_UPDATE}
+      - CCD_COLUMNS_TO_UPDATE=${CCD_COLUMNS_TO_UPDATE}
     volumes:
       - ${LATISS_YAML:-/dev/null}:/yaml
     depends_on:
@@ -248,6 +254,8 @@ services:
       - POSTGRES_URL=postgresql://postgres:${POSTGRES_PASSWORD:-pgpassword}@db:5432/postgres
       - INSTRUMENT=LSSTComCam
       - COMCAM_YAML=${COMCAM_YAML}
+      - EXP_COLUMNS_TO_UPDATE=${EXP_COLUMNS_TO_UPDATE}
+      - CCD_COLUMNS_TO_UPDATE=${CCD_COLUMNS_TO_UPDATE}
     volumes:
       - ${COMCAM_YAML:-/dev/null}:/yaml
     depends_on:
@@ -276,6 +284,8 @@ services:
       - POSTGRES_URL=postgresql://postgres:${POSTGRES_PASSWORD:-pgpassword}@db:5432/postgres
       - INSTRUMENT=LSSTCam
       - LSSTCAM_YAML=${LSSTCAM_YAML}
+      - EXP_COLUMNS_TO_UPDATE=${EXP_COLUMNS_TO_UPDATE}
+      - CCD_COLUMNS_TO_UPDATE=${CCD_COLUMNS_TO_UPDATE}
     volumes:
       - ${LSSTCAM_YAML:-/dev/null}:/yaml
     depends_on:

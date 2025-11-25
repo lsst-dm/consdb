@@ -19,12 +19,10 @@
 
 import os
 import sys
+import subprocess
 
 from felis.tests.postgresql import setup_postgres_test_db
 from sqlalchemy.sql import text
-
-from alembic import command
-from alembic.config import Config
 
 if len(sys.argv) <= 1:
     print(
@@ -41,31 +39,59 @@ revision_message = " ".join(sys.argv[1:])
 # Configuration for Alembic
 alembic_ini_path = "alembic.ini"
 
+
+def run(cmd, env=None):
+    print("+", " ".join(cmd))
+    subprocess.run(cmd, check=True, env=env)
+
+
 # Loop over each of the instruments
 pattern = os.environ["SDM_SCHEMAS_DIR"] + "/yml/cdb_*.yaml"
 instruments = ["latiss", "lsstcomcam", "lsstcomcamsim", "lsstcam"]
 for instrument in instruments:
     # Set up a temporary PostgreSQL instance using testing.postgresql
     with setup_postgres_test_db() as instance:
-        os.environ["CONSDB_URL"] = instance.url
+        db_url = instance.url
+        env = os.environ.copy()
+        env["CONSDB_URL"] = db_url
         # Create schema
         with instance.engine.connect() as connection:
+            connection.execute(text("CREATE EXTENSION IF NOT EXISTS pg_sphere;"))
             connection.execute(text("CREATE SCHEMA cdb;"))
             connection.execute(text(f"CREATE SCHEMA cdb_{instrument};"))
             connection.execute(text("CREATE USER usdf;"))
             connection.execute(text("CREATE USER oods;"))
             connection.commit()
 
-        # Initialize Alembic configuration
-        alembic_cfg = Config(alembic_ini_path)
-        alembic_cfg.set_main_option("sqlalchemy.url", instance.url)
-        alembic_cfg.config_ini_section = instrument
-
         # Apply the HEAD schema to the database
-        command.upgrade(alembic_cfg, "head")
+        run(
+            [
+                "alembic",
+                "-c",
+                alembic_ini_path,
+                "-n",
+                instrument,
+                "upgrade",
+                "head",
+            ],
+            env=env,
+        )
 
         # Autogenerate a new migration
-        command.revision(alembic_cfg, autogenerate=True, message=revision_message)
+        run(
+            [
+                "alembic",
+                "-c",
+                alembic_ini_path,
+                "-n",
+                instrument,
+                "revision",
+                "--autogenerate",
+                "-m",
+                revision_message,
+            ],
+            env=env,
+        )
 
 print(
     """
