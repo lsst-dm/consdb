@@ -27,6 +27,13 @@ class Configuration(BaseSettings):
 
     db_name: str | None = Field(None, title="The name of the SQL database to connect to.")
 
+    pool_recycle_time: int | None = Field(
+        # Based on idle_session_timeout at summit, 60 minutes.
+        # This should be a bit less to avoid a possible race condition.
+        50 * 60,
+        title="Maximum time to allow a database connection to idle (seconds).",
+    )
+
     log_config: str = Field(
         "",
         title="Log levels",
