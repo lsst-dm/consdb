@@ -106,7 +106,7 @@ jobs:
           base: main
           delete-branch: true
           title: "${{ steps.validate.outputs.ticket_name }}: Sync transformed EFD schema updates"
-          commit-message: "feat(${{ steps.validate.outputs.ticket_name }}): Sync transformed EFD schemas from ConsDB"
+          commit-message: "Sync transformed EFD schemas from CDB"
           body: |
             This PR synchronizes transformed EFD schema YAML files from the `consdb` repository
             into `lsst/sdm_schemas`.
