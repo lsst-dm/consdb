@@ -42,6 +42,8 @@ docker/pgdata
 
 # local testing
 local_testing/
+sdm_schemas/
+sdm_schemas-old/
 
 # spelling
 .cspell/
