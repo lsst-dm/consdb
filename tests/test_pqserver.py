@@ -143,10 +143,13 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
                 f" CREATE SCHEMA efd_scheduler; CREATE TABLE efd_scheduler.{schema_name[4:]} (id int);"
             )
 
-        with instance.engine.begin() as connection:
-            client = TestClient(pqserver.app)
+        client = TestClient(pqserver.app)
+        connection = instance.engine.connect()
+        try:
             client.connection = connection
             yield client
+        finally:
+            connection.close()
 
 
 @pytest.fixture
