@@ -135,9 +135,13 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
                 f" ALTER VIEW {schema_name}.visit1 RENAME COLUMN exposure_id TO visit_id;"
             )
 
-            client = TestClient(pqserver.app)
+        client = TestClient(pqserver.app)
+        connection = instance.engine.connect()
+        try:
             client.connection = connection
             yield client
+        finally:
+            connection.close()
 
 
 @pytest.fixture
