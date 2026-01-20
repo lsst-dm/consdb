@@ -10,9 +10,16 @@ Usage:
 
 import argparse
 from dataclasses import dataclass
+from enum import IntEnum
 from pathlib import Path
 
 import yaml
+
+
+class ExitCode(IntEnum):
+    SUCCESS = 0
+    INVALID_INPUT = 1
+    DIFFS_FOUND = 2
 
 
 @dataclass(frozen=True)
@@ -116,7 +123,7 @@ def main() -> int:
     b_path = args.schema_b.expanduser()
     if not a_path.is_file() or not b_path.is_file():
         print(f"Both inputs must be files. Got: {a_path} and {b_path}")
-        return 1
+        return ExitCode.INVALID_INPUT
 
     left = load_schema(a_path)
     right = load_schema(b_path)
@@ -125,13 +132,13 @@ def main() -> int:
         print("Differences found:")
         for line in diffs:
             print(f"- {line}")
-        return 2
+        return ExitCode.DIFFS_FOUND
 
     if args.ignore_columns:
         print("Schemas match on tables, primary keys, and constraints.")
     else:
         print("Schemas match on tables, columns, primary keys, and constraints.")
-    return 0
+    return ExitCode.SUCCESS
 
 
 if __name__ == "__main__":
