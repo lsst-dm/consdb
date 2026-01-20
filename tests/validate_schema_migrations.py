@@ -31,7 +31,6 @@ from enum import IntEnum
 from pathlib import Path
 
 import sqlalchemy as sa
-import yaml
 from felis.datamodel import Schema
 from felis.metadata import MetaDataBuilder
 from felis.tests.postgresql import setup_postgres_test_db
