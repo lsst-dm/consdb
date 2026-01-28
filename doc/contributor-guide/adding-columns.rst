@@ -10,25 +10,25 @@ Checklist
   See the :ref:`add-columns-structure` section below.
 
 - Identify the source of the data.
-  ConsDB does not produce any data itself, nor does the ConsDB team request that sources produce data.
+  ConsDB does not produce any data itself (besides aggregating EFD entries), nor does the ConsDB team request that sources produce data.
   All values must be generated from other systems.
   See the :ref:`add-columns-data-sources` section below.
 
 - Identify consumers of the data.
   ConsDB should not be write-only storage.
 
-- Provide information about the requested columns including a brief description in the appropriate Confluence page: `Transformed EFD <https://rubinobs.atlassian.net/wiki/x/Ii7pAg>`__ or `Non-EFD <https://rubinobs.atlassian.net/wiki/x/GICzDg>`__.
-  This provides an opportunity for discussion and comment on the suitability of the columns.
+- File a Jira ticket containing information on the specific columns to be added, their source, and their consumers.
+  A complete description of the columns as in the :ref:`add-column-descriptions` section below should be provided.
+  For non-EFD-derived columns, this ticket should be in the OSW project with a ``ConsDB`` label.
+  For EFD-derived columns, it should be in the DM project with component ``consdb`` (and optionally label ``ConsDB``) and should include how the value is to be computed from the EFD, including whether the result is pivoted or unpivoted (see :ref:`transformed-efd` for more details).
 
-- For non-EFD columns, file a Jira ticket and start a corresponding pull request to modify the `sdm_schemas <https://github.com/lsst/sdm_schemas>`__ repository with appropriate entries for the desired columns.
-  See the :ref:`add-columns-descriptions` section below for more details on how to write a good Felis description for a column.
+  The ConsDB Product Owner (or designate) will ensure that the columns to be added are needed and that all information is present.
+
+- For non-EFD-derived columns, start a corresponding pull request to modify the `sdm_schemas <https://github.com/lsst/sdm_schemas>`__ repository with appropriate entries for the desired columns.
 
   - Get the ``sdm_schemas`` pull request reviewed by a member of the Data Engineering team for syntax, description, unit, and IVOA compliance.
 
   - Get the ``sdm_schemas`` pull request reviewed by a member of the ConsDB team for structure, table location, and data source.
-
-- For Transformed EFD columns, file a Jira ticket to request that the a member of the ConsDB team will arrange to include the columns in the EFD Transformer configuration.
-  You will need to provide the Felis description information in addition to how the value is to be computed from the EFD.
 
 - The ConsDB team will then generate a schema migration and deploy it at an appropriate time.
   After the schema has been migrated, the data source can begin to populate it.
@@ -52,11 +52,13 @@ Possible sources of data include:
 
 - EFD:
 
-  - Determine whether the information is required at the Summit or if the information is required with very low latency (less than a few minutes).
-    In those cases, the Header Service is the recommended source for ConsDB.
+  - If the information is required by Prompt Processing (especially its Alert Production payload), the Header Service is the recommended source for ConsDB.
     Arrangements must be made for the data to appear in the headers before ConsDB can store it.
     Arrangements must also be made with the ConsDB team for the value to be extracted from the headers.
     This data will go into the ``exposure`` or ``ccdexposure`` table.
+
+  - If the information is not required by Prompt Processing but is needed at the Summit or with latencies on the order of seconds, Rapid Analysis is the recommended source.
+    This data will go into a ``*_quickLook`` table.
 
   - If the original data source is the EFD but the data is only needed at USDF and can wait for a few minutes before appearing, the Transformed EFD service should be used.
     This data will go into a ``*_efd`` table.
@@ -73,5 +75,5 @@ Column descriptions
 - Ensure that descriptions sufficiently explain the values within the columns, providing details like how they are summarized (if they are) or at what time point they are measured during the exposure.
 - Explain what the column values can be used for if it's not self-evident.
 - The description can be several sentences; completeness is more important than conciseness.
-- Include `units <https://www.ivoa.net/documents/VOUnits/>`__ for measurements.  Note that these should follow IVOA standards, not Astropy unit standards.
+- Include `units <https://www.ivoa.net/documents/VOUnits/>`__ for measurements.  Note that these should follow IVOA standards whenever possible, and Astropy unit standards if not.
 - Include a `Unified Content Descriptor (UCD) <https://ivoa.net/documents/UCD1+/20230125/index.html>`__ indicating the meaning of the column.
