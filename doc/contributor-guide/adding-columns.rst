@@ -18,9 +18,9 @@ Checklist
   ConsDB should not be write-only storage.
 
 - File a Jira ticket containing information on the specific columns to be added, their source, and their consumers.
-  A complete description of the columns as in the :ref:`add-column-descriptions` section below should be provided.
+  A complete description of the columns as in the :ref:`add-columns-descriptions` section below should be provided.
   For non-EFD-derived columns, this ticket should be in the OSW project with a ``ConsDB`` label.
-  For EFD-derived columns, it should be in the DM project with component ``consdb`` (and optionally label ``ConsDB``) and should include how the value is to be computed from the EFD, including whether the result is pivoted or unpivoted (see :ref:`transformed-efd` for more details).
+  For EFD-derived columns, it should be in the DM project with component ``consdb`` (and optionally label ``ConsDB``) and should include how the value is to be computed from the EFD, including whether the result is pivoted or unpivoted (see :doc:`transformed-efd` for more details).
 
   The ConsDB Product Owner (or designate) will ensure that the columns to be added are needed and that all information is present.
 
