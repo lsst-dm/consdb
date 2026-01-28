@@ -5,14 +5,18 @@ Deployment
 Database
 ========
 
-Deployments of the Consolidated Database are currently located at
+Deployments of the Postgres database are currently located at
 
--  Summit
--  USDF (+ dev, use the same underlying database, a replication of Summit)
--  Base Test Stand (BTS)
--  Tucson Test Stand (TTS)
+-  Summit (using ``postgresdb01.cp.lsst.org``)
+-  Base Test Stand (BTS) (using ``postgresdb01.ls.lsst.org``)
+-  Tucson Test Stand (TTS) (using TBD)
+-  USDF
 
-Updates to these deployments may be needed when there are edits to the schema for any of the cdb_* tables defined in <link to> sdm_schemas.
+  - production (using ``usdf-summitdb-logical-replica-tx.sdf.slac.stanford.edu``, a logical replica of the Summit version with USDF additions)
+  - integration (using TBD, a logical replica of the Summit version with USDF additions)
+  - development (using TBD, a standalone test database)
+
+When the Summit schema is migrated to a new version, corresponding migrations need to be applied to the USDF production and integration instances.
 
 Tools:
 ------
@@ -84,5 +88,29 @@ Summit Deployment Steps
 Once deployment succeeds, set the ``Target Revision`` in Argo-CD back to ``main`` and complete the ``phalanx`` PR for the tested ConsDB tag.
 
 
-REST API Server
-===============
+REST API Service
+================
+
+Deployments of the REST API service (``pqserver``) are currently located in Phalanx environments at
+
+-  Summit
+-  Base Test Stand (BTS)
+-  Tucson Test Stand (TTS)?
+-  USDF
+
+  - production in ``usdf-rsp.slac.stanford.edu``
+  - integration in ``usdf-rsp-int.slac.stanford.edu``
+  - development IN ``usdf-rsp-dev.slac.stanford.edu``
+
+Deployment and maintenance of this service is the same as for any other `Phalanx application <https://phalanx.lsst.io/developers/index.html>`__.
+
+
+HInfo Service
+=============
+
+The ``hinfo`` service retrieves primary keys and associated values from HeaderService output metadata and inserts them into the appropriate tables in ConsDB.
+
+It is only deployed in Phalanx at the Summit.
+
+Deployment and maintenance of this service is the same as for any other `Phalanx application <https://phalanx.lsst.io/developers/index.html>`__.
+

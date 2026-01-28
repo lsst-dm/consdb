@@ -30,9 +30,8 @@ Relevant policies
 S3DF Dependencies
 -----------------
 
-Kubernetes
-Weka storage for Kubernetes
-...
+- Kubernetes
+- Weka storage for Kubernetes
 
 Systems
 -------
@@ -77,37 +76,47 @@ Grafana or other links
 Maintenance
 ===========
 
-Periodic tasks
+Testing procedures
+------------------
+
+First, test changes and schema migrations in the USDF dev environment.
+The database in this environment contains only test data, but that data should ideally exercise most corner cases.
+When done with tests, restore the database (if necessary) to its normal schema and test content.
+
+Next, "claim" the USDF int environment by informing ConsDB consumers in the ``#consolidated-database`` channel.
+Pause the replication from the Summit (and the EFD Transformer if necessary).
+Apply any migrations, modifications, and application synchronizations needed.
+Test ConsDB services (such as the ``pqserver`` REST API, TAP, and direct SQL access) as well as downstream applications such as the Nightly Digest.
+When done, either restore the USDF int environment by backing out any migrations and changes or roll forward as in the next paragraph.
+
+When all testing is successful, roll forward by updating the Summit and USDF production and restoring replication to both USDF production and int, following the procedures in :doc:`schema-migration-process`.
 
 Documentation and Training
 ==========================
 
-Links to documentation and training resources
-
-LSST io page at `consdb.lsst.io <https://consdb.lsst.io>`__
+Primary documentation is located at `consdb.lsst.io <https://consdb.lsst.io>`__
 
 Support
 =======
 
-#consolidated-database
+``#consolidated-database`` channel in Rubin Observatory Slack
 
 Overall complaints:
 -------------------
 
-Kian-Tat Lim
+- Product Owner: Lynne Jones
 
 ConsDB services (hinfo, pqserver):
 --------------------------------------
 
-Brian Brondel , Valerie Becker
+- Developer: Brian Brondel
+- OSW project, ``ConsDB`` label in Jira
 
 Transformed EFD component:
 --------------------------
 
-Rodrigo Boufleur , Glauber Costa Vila Verde
-
-``consdb`` component in Jira.
-
+- Developer: Rodrigo Boufleur
+- DM project, ``consdb`` component in Jira.
 
 Known Issues
 ============
