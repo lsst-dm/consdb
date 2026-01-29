@@ -3,7 +3,7 @@ name: efd_lsstcam
 "@id": "#efd_lsstcam"
 description: Transformed EFD Consolidated Database for lsstcam.
 version:
-  current: 1.0.0
+  current: 1.1.0
 tables:
 - name: exposure_efd
   "@id": "#exposure_efd"
@@ -2854,6 +2854,18 @@ tables:
     datatype: float
     ivoa:ucd: meta.ucd
     ivoa:unit: um
+  - name: truss_temp_plus_x_plus_y
+    "@id": "#exposure_efd.truss_temp_plus_x_plus_y"
+    description: Temperature of the TMA truss at the plus X position and plus Y structure position
+    datatype: float
+    ivoa:ucd: meta.ucd;stat.mean
+    ivoa:unit: deg_C
+  - name: truss_temp_minus_x_minus_y
+    "@id": "#exposure_efd.truss_temp_minus_x_minus_y"
+    description: Temperature of the TMA truss at the minus X minus Y structure position
+    datatype: float
+    ivoa:ucd: meta.ucd;stat.mean
+    ivoa:unit: deg_C
 
 - name: exposure_efd_unpivoted
   "@id": "#exposure_efd_unpivoted"
@@ -5708,6 +5720,18 @@ tables:
     datatype: float
     ivoa:ucd: meta.ucd
     ivoa:unit: um
+  - name: truss_temp_plus_x_plus_y
+    "@id": "#visit1_efd.truss_temp_plus_x_plus_y"
+    description: Temperature of the TMA truss at the plus X position and plus Y structure position
+    datatype: float
+    ivoa:ucd: meta.ucd;stat.mean
+    ivoa:unit: deg_C
+  - name: truss_temp_minus_x_minus_y
+    "@id": "#visit1_efd.truss_temp_minus_x_minus_y"
+    description: Temperature of the TMA truss at the minus X minus Y structure position
+    datatype: float
+    ivoa:ucd: meta.ucd;stat.mean
+    ivoa:unit: deg_C
 
 - name: visit1_efd_unpivoted
   "@id": "#visit1_efd_unpivoted"
