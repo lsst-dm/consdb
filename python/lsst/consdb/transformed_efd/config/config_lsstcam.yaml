@@ -1,4 +1,4 @@
-version: 1.0.0
+version: 1.1.0
 columns:
 - name: mt_azimuth_encoder_absolute_position_0_rms_jitter
   tables: ["exposure_efd"]
@@ -16852,3 +16852,33 @@ columns:
     - name: absoluteTemperature93
     - name: absoluteTemperature94
     - name: absoluteTemperature95
+
+- name: truss_temp_plus_x_plus_y
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Temperature of the TMA truss at the plus X position and plus Y structure position
+  packed_series: False
+  subset_field: salIndex
+  subset_value: [121,122]
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: truss_temp_minus_x_minus_y
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Temperature of the TMA truss at the minus X minus Y structure position
+  packed_series: False
+  subset_field: salIndex
+  subset_value: [121,122]
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
