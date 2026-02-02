@@ -16853,30 +16853,30 @@ columns:
     - name: absoluteTemperature94
     - name: absoluteTemperature95
 
-- name: truss_temp_plus_x_plus_y
+- name: mt_salindex122_temperature_6
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
-  description: Temperature of the TMA truss at the plus X position and plus Y structure position
+  ivoa: {"unit":"deg_C", "ucd":"phys.temperature;stat.mean"}
+  description: M2-ESS02, temperature item 6, plus X plus Y Truss Structure
   packed_series: False
   subset_field: salIndex
-  subset_value: [121,122]
+  subset_value: 122
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
     - name: temperatureItem6
     - name: salIndex
 
-- name: truss_temp_minus_x_minus_y
+- name: mt_salindex122_temperature_7
   tables: ["exposure_efd","visit1_efd"]
   function: mean
   datatype: float
-  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
-  description: Temperature of the TMA truss at the minus X minus Y structure position
+  ivoa: {"unit":"deg_C", "ucd":"phys.temperature;stat.mean"}
+  description: M2-ESS02, temperature item 7, minus X minus Y Truss Structure
   packed_series: False
   subset_field: salIndex
-  subset_value: [121,122]
+  subset_value: 122
   topics:
   - name: lsst.sal.ESS.temperature
     fields:
