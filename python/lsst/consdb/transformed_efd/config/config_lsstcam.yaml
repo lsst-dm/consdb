@@ -1,4 +1,4 @@
-version: 1.0.0
+version: 1.1.0
 columns:
 - name: mt_azimuth_encoder_absolute_position_0_rms_jitter
   tables: ["exposure_efd"]
@@ -16852,3 +16852,33 @@ columns:
     - name: absoluteTemperature93
     - name: absoluteTemperature94
     - name: absoluteTemperature95
+
+- name: mt_salindex122_temperature_6
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"phys.temperature;stat.mean"}
+  description: M2-ESS02, temperature item 6, plus X plus Y Truss Structure
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 122
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem6
+    - name: salIndex
+
+- name: mt_salindex122_temperature_7
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"phys.temperature;stat.mean"}
+  description: M2-ESS02, temperature item 7, minus X minus Y Truss Structure
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 122
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem7
+    - name: salIndex
