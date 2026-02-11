@@ -86,38 +86,62 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
                 for row in astropy_table
             ]
 
-            fk_column = {
-                "ccdexposure": "exposure_id",
-                "visit1_quicklook": "visit_id",
-                "exposure_flexdata": "obs_id",
-            }
             with instance.engine.begin() as connection:
-                if table_name in fk_column.keys() and "day_obs" in sql_table.columns:
-                    # Adjust for multi-column primary keys
-                    exposure_table = sa.Table(
-                        "exposure", metadata, schema=schema_name, autoload_with=instance.engine
-                    )
-                    for row in rows:
-                        stmt = sa.select(exposure_table.c["day_obs", "seq_num"]).where(
-                            exposure_table.c.exposure_id == row[fk_column[table_name]]
+                fk_fill = {
+                    "ccdexposure": ("exposure", "exposure_id", "exposure_id", ("day_obs", "seq_num")),
+                    "visit1_quicklook": ("exposure", "visit_id", "exposure_id", ("day_obs", "seq_num")),
+                    "exposure_flexdata": ("exposure", "obs_id", "exposure_id", ("day_obs", "seq_num")),
+                    "ccdvisit1_quicklook": (
+                        "ccdexposure",
+                        "ccdvisit_id",
+                        "ccdexposure_id",
+                        ("day_obs", "seq_num", "detector"),
+                    ),
+                    "ccdexposure_flexdata": (
+                        "ccdexposure",
+                        "obs_id",
+                        "ccdexposure_id",
+                        ("day_obs", "seq_num", "detector"),
+                    ),
+                }
+                if table_name in fk_fill:
+                    ref_table_name, child_key, ref_key, fill_cols = fk_fill[table_name]
+                    if all(col in sql_table.columns for col in fill_cols):
+                        # Fill composite PK parts from the referenced row.
+                        ref_table = sa.Table(
+                            ref_table_name, metadata, schema=schema_name, autoload_with=instance.engine
                         )
-                        query_result = connection.execute(stmt).first()
-
-                        row["day_obs"] = query_result.day_obs
-                        row["seq_num"] = query_result.seq_num
+                        for row in rows:
+                            stmt = sa.select(*[ref_table.c[col] for col in fill_cols]).where(
+                                ref_table.c[ref_key] == row[child_key]
+                            )
+                            query_result = connection.execute(stmt).first()
+                            if query_result is None:
+                                continue
+                            for col in fill_cols:
+                                row[col] = getattr(query_result, col)
 
                 # Insert rows into the SQL table
                 connection.execute(sql_table.insert(), rows)
 
         with instance.engine.begin() as connection:
             connection.exec_driver_sql(
-                f"DROP TABLE IF EXISTS {schema_name}.visit1;"
+                f"DROP TABLE IF EXISTS {schema_name}.ccdvisit1;"
+                f" DROP TABLE IF EXISTS {schema_name}.visit1;"
+                f" CREATE VIEW {schema_name}.ccdvisit1 AS SELECT * FROM {schema_name}.ccdexposure;"
                 f" CREATE VIEW {schema_name}.visit1 AS SELECT * FROM {schema_name}.exposure;"
+                f" ALTER VIEW {schema_name}.ccdvisit1 RENAME COLUMN ccdexposure_id TO ccdvisit_id;"
+                f" ALTER VIEW {schema_name}.ccdvisit1 RENAME COLUMN exposure_id TO visit_id;"
+                f" ALTER VIEW {schema_name}.visit1 RENAME COLUMN exposure_id TO visit_id;"
             )
 
-            client = TestClient(pqserver.app)
+        client = TestClient(pqserver.app)
+        connection = instance.engine.connect()
+        try:
             client.connection = connection
             yield client
+        finally:
+            connection.close()
 
 
 @pytest.fixture

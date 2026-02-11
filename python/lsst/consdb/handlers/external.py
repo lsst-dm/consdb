@@ -26,7 +26,6 @@ import astropy
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
-from packaging.version import Version
 from sqlalchemy.orm import Session
 
 from ..cdb_schema import (
@@ -200,31 +199,26 @@ def insert_flexible_metadata(
         if dtype != type(value).__name__:
             raise BadValueException(f"{dtype} value", value, [type(value).__name__])
 
-    has_multi_column_primary_keys = (
-        instrument_table.get_schema_version() >= Version("3.2.0") and obs_type == "exposure"
-    )
-
-    if has_multi_column_primary_keys:
+    if obs_type == "exposure":
         day_obs, seq_num = instrument_table.get_day_obs_and_seq_num(obs_id)
+        primary_key_columns = ["day_obs", "seq_num", "key"]
+        primary_key_values = {"day_obs": day_obs, "seq_num": seq_num}
+    elif obs_type == "ccdexposure":
+        day_obs, seq_num, detector = instrument_table.get_day_obs_and_seq_num_and_detector(obs_id)
+        primary_key_columns = ["day_obs", "seq_num", "detector", "key"]
+        primary_key_values = {"day_obs": day_obs, "seq_num": seq_num, "detector": detector}
+    else:
+        raise BadValueException("obs_type", obs_type, ["exposure", "ccdexposure"])
 
     for key, value in value_dict.items():
         value_str = str(value)
 
-        values = {"obs_id": obs_id, "key": key, "value": value_str}
-        if has_multi_column_primary_keys:
-            values["day_obs"] = day_obs
-            values["seq_num"] = seq_num
+        values = {"obs_id": obs_id, "key": key, "value": value_str} | primary_key_values
 
         stmt: sqlalchemy.sql.dml.Insert
         stmt = sqlalchemy.dialects.postgresql.insert(table).values(**values)
-        logger.error(f"{u=}")
         if u != 0:
-            if has_multi_column_primary_keys:
-                stmt = stmt.on_conflict_do_update(
-                    index_elements=["day_obs", "seq_num", "key"], set_={"value": value_str}
-                )
-            else:
-                stmt = stmt.on_conflict_do_update(index_elements=["obs_id", "key"], set_={"value": value_str})
+            stmt = stmt.on_conflict_do_update(index_elements=primary_key_columns, set_={"value": value_str})
 
         logger.debug(str(stmt))
         _ = db.execute(stmt)
@@ -278,6 +272,100 @@ def validate_columns(
         raise BadValueException("extra columns", ",".join(extra_columns))
 
 
+def fill_day_obs_seq_num_detector(
+    table_obj: sqlalchemy.sql.schema.Table,
+    valdict: dict[str, Any],
+    obs_id: int,
+    instrument_table: InstrumentTable,
+) -> None:
+    """Fill day_obs/seq_num/detector in valdict when missing."""
+    need_day_obs = "day_obs" not in valdict
+    need_seq_num = "seq_num" not in valdict
+    need_detector = "detector" not in valdict and "detector" in table_obj.columns
+    if not (need_day_obs or need_seq_num or need_detector):
+        return
+
+    if need_day_obs or need_seq_num:
+        primary_key = obs_id
+        for primary_key_name in ("obs_id", "exposure_id", "visit_id"):
+            if primary_key_name in valdict:
+                primary_key = valdict[primary_key_name]
+        day_obs, seq_num = instrument_table.get_day_obs_and_seq_num(primary_key)
+        if need_day_obs:
+            valdict["day_obs"] = day_obs
+        if need_seq_num:
+            valdict["seq_num"] = seq_num
+
+    if need_detector:
+        if "detector" in valdict:
+            detector = valdict["detector"]
+        else:
+            day_obs_d, seq_num_d, detector = instrument_table.get_day_obs_and_seq_num_and_detector(obs_id)
+            if need_day_obs:
+                valdict["day_obs"] = day_obs_d
+            if need_seq_num:
+                valdict["seq_num"] = seq_num_d
+        valdict["detector"] = detector
+
+
+def _insert_by_day_obs_seq_num(
+    instrument: InstrumentName,
+    table: str,
+    day_obs: int,
+    seq_num: int,
+    detector: int | None,
+    data: InsertDataModel = Body(title="Data to insert or update"),
+    u: int | None = Query(0, title="Update if data already exist"),
+    db: Session = Depends(get_db),
+    logger: logging.Logger = Depends(get_logger),
+    instrument_table: InstrumentTable = Depends(get_instrument_table),
+) -> InsertDataResponse:
+    """Insert or update column/value pairs in a ConsDB table."""
+
+    schema = f"cdb_{instrument}."
+    table_name = table.lower()
+    if not table.lower().startswith(schema):
+        table_name = schema + table_name
+
+    if table_name not in instrument_table.schemas.tables:
+        valid_tables = [
+            name for name, table in instrument_table.schemas.tables.items() if "day_obs" in table.columns
+        ]
+        raise BadValueException("table", table_name, valid_tables)
+
+    table_obj = instrument_table.schemas.tables[table_name]
+    if "day_obs" not in table_obj.columns:
+        valid_tables = [
+            name for name, table in instrument_table.schemas.tables.items() if "day_obs" in table.columns
+        ]
+        raise BadValueException("table", table_name, valid_tables)
+
+    valdict = data.values
+    valdict_insert = data.values | {"day_obs": day_obs, "seq_num": seq_num}
+    if detector is not None:
+        valdict_insert["detector"] = detector
+    validate_columns(table_obj, valdict_insert, u == 0)
+
+    # Do the insert with sqlalchemy.
+    stmt: sqlalchemy.sql.dml.Insert
+    stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict_insert)
+    if u != 0:
+        conflict_columns = ["day_obs", "seq_num"]
+        if detector is not None:
+            conflict_columns.append("detector")
+        stmt = stmt.on_conflict_do_update(index_elements=conflict_columns, set_=valdict)
+    logger.debug(str(stmt))
+    _ = db.execute(stmt)
+    db.commit()
+    obs_id = (day_obs, seq_num, detector) if detector is not None else (day_obs, seq_num)
+    return InsertDataResponse(
+        message="Data inserted",
+        instrument=instrument,
+        obs_id=obs_id,
+        table=table_name,
+    )
+
+
 @external_router.post(
     "/insert/{instrument}/{table}/by_seq_num/{day_obs}/{seq_num}",
     summary="Insert data row indexed by day_obs and seq_num",
@@ -293,35 +381,47 @@ def insert_by_day_obs_seq_num(
     logger: logging.Logger = Depends(get_logger),
     instrument_table: InstrumentTable = Depends(get_instrument_table),
 ) -> InsertDataResponse:
-    """Insert or update column/value pairs in a ConsDB table."""
+    return _insert_by_day_obs_seq_num(
+        instrument,
+        table,
+        day_obs,
+        seq_num,
+        None,
+        data,
+        u,
+        db,
+        logger,
+        instrument_table,
+    )
 
-    schema = f"cdb_{instrument}."
-    table_name = table.lower()
-    if not table.lower().startswith(schema):
-        table_name = schema + table_name
 
-    if table_name not in instrument_table.schemas.tables:
-        raise BadValueException("table", table_name, list(instrument_table.schemas.tables.keys()))
-
-    table_obj = instrument_table.schemas.tables[table_name]
-
-    valdict = data.values
-    valdict_insert = data.values | {"day_obs": day_obs, "seq_num": seq_num}
-    validate_columns(table_obj, valdict_insert, u == 0)
-
-    # Do the insert with sqlalchemy.
-    stmt: sqlalchemy.sql.dml.Insert
-    stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict_insert)
-    if u != 0:
-        stmt = stmt.on_conflict_do_update(index_elements=["day_obs", "seq_num"], set_=valdict)
-    logger.debug(str(stmt))
-    _ = db.execute(stmt)
-    db.commit()
-    return InsertDataResponse(
-        message="Data inserted",
-        instrument=instrument,
-        obs_id=(day_obs, seq_num),
-        table=table_name,
+@external_router.post(
+    "/insert/{instrument}/{table}/by_seq_num/{day_obs}/{seq_num}/{detector}",
+    summary="Insert data row indexed by day_obs, seq_num, and detector",
+)
+def insert_by_day_obs_seq_num_detector(
+    instrument: InstrumentName,
+    table: str,
+    day_obs: int,
+    seq_num: int,
+    detector: int = Path(title="Detector number (if applicable)"),
+    data: InsertDataModel = Body(title="Data to insert or update"),
+    u: int | None = Query(0, title="Update if data already exist"),
+    db: Session = Depends(get_db),
+    logger: logging.Logger = Depends(get_logger),
+    instrument_table: InstrumentTable = Depends(get_instrument_table),
+) -> InsertDataResponse:
+    return _insert_by_day_obs_seq_num(
+        instrument,
+        table,
+        day_obs,
+        seq_num,
+        detector,
+        data,
+        u,
+        db,
+        logger,
+        instrument_table,
     )
 
 
@@ -341,10 +441,10 @@ def insert(
 ) -> InsertDataResponse:
     """Insert or update column/value pairs in a ConsDB table.
 
-    If you are inserting into a table where the primary keys are
-    day_obs and seq_num, using the endpoint at
-    `/insert/{instrument}/{table}/by_seq_num/{day_obs}/{seq_num}`
-    is recommended (and required if using u=1).
+    Not recommended for new code. Instead, using the endpoint at
+    `/insert/{instrument}/{table}/by_seq_num/{day_obs}/{seq_num}` or
+    `/insert/{instrument}/{table}/by_seq_num/{day_obs}/{seq_num}/{detector}`
+    is recommended.
     """
 
     schema = f"cdb_{instrument}."
@@ -352,29 +452,22 @@ def insert(
     if not table.lower().startswith(schema):
         table_name = schema + table_name
 
+    # Verify that this table is allowed with this endpoint.
+    def day_obs_tables() -> list[str]:
+        return [name for name, table in instrument_table.schemas.tables.items() if "day_obs" in table.columns]
+
     if table_name not in instrument_table.schemas.tables:
-        raise BadValueException("table", table_name, list(instrument_table.schemas.tables.keys()))
+        raise BadValueException("table", table_name, day_obs_tables())
 
     table_obj = instrument_table.schemas.tables[table_name]
+    if "day_obs" not in table_obj.columns:
+        raise BadValueException("table", table_name, day_obs_tables())
 
     valdict = data.values
     obs_id_colname = instrument_table.obs_id_column[table_name]
     valdict[obs_id_colname] = obs_id
 
-    # If needed, cross-reference day_obs and seq_num from the exposure table.
-    if "day_obs" in table_obj.columns and "seq_num" in table_obj.columns:
-        if "day_obs" not in valdict or "seq_num" not in valdict:
-
-            primary_key = obs_id
-            for primary_key_name in ("obs_id", "exposure_id", "visit_id"):
-                if primary_key_name in valdict:
-                    primary_key = valdict[primary_key_name]
-
-            day_obs, seq_num = instrument_table.get_day_obs_and_seq_num(primary_key)
-            if "day_obs" not in valdict:
-                valdict["day_obs"] = day_obs
-            if "seq_num" not in valdict:
-                valdict["seq_num"] = seq_num
+    fill_day_obs_seq_num_detector(table_obj, valdict, obs_id, instrument_table)
 
     validate_columns(table_obj, valdict, u == 0)
 
@@ -382,7 +475,10 @@ def insert(
     stmt: sqlalchemy.sql.dml.Insert
     stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(valdict)
     if u != 0:
-        stmt = stmt.on_conflict_do_update(index_elements=[obs_id_colname], set_=valdict)
+        primary_key_columns = [col.name for col in table_obj.primary_key.columns]
+        if not primary_key_columns:
+            primary_key_columns = [obs_id_colname]
+        stmt = stmt.on_conflict_do_update(index_elements=primary_key_columns, set_=valdict)
     logger.debug(str(stmt))
     _ = db.execute(stmt)
     db.commit()
@@ -422,8 +518,18 @@ def insert_multiple(
     table_name = table.lower()
     if not table.lower().startswith(schema):
         table_name = schema + table_name
+
+    # Verify that this table is allowed with this endpoint.
+    def day_obs_tables() -> list[str]:
+        return [name for name, table in instrument_table.schemas.tables.items() if "day_obs" in table.columns]
+
+    if table_name not in instrument_table.schemas.tables:
+        raise BadValueException("table", table_name, day_obs_tables())
+
     table_obj = instrument_table.schemas.tables[table_name]
-    table_name = f"cdb_{instrument}." + table.lower()
+    if "day_obs" not in table_obj.columns:
+        raise BadValueException("table", table_name, day_obs_tables())
+
     obs_id_colname = instrument_table.obs_id_column[table_name]
 
     timestamp_columns = instrument_table.get_timestamp_columns(table_name)
@@ -432,20 +538,7 @@ def insert_multiple(
     for obs_id, valdict in data.obs_dict.items():
         valdict[obs_id_colname] = obs_id
 
-        # If needed, cross-reference day_obs and seq_num from the
-        # exposure table.
-        if "day_obs" in table_obj.columns and "seq_num" in table_obj.columns:
-            if "day_obs" not in valdict or "seq_num" not in valdict:
-                primary_key = obs_id
-                for primary_key_name in ("obs_id", "exposure_id", "visit_id"):
-                    if primary_key_name in valdict:
-                        primary_key = valdict[primary_key_name]
-
-                day_obs, seq_num = instrument_table.get_day_obs_and_seq_num(primary_key)
-                if "day_obs" not in valdict:
-                    valdict["day_obs"] = day_obs
-                if "seq_num" not in valdict:
-                    valdict["seq_num"] = seq_num
+        fill_day_obs_seq_num_detector(table_obj, valdict, obs_id, instrument_table)
 
         # Convert timestamps in the input from string to datetime
         for column in timestamp_columns:
@@ -454,8 +547,8 @@ def insert_multiple(
                 timestamp = astropy.time.Time(timestamp, format="isot", scale="tai")
                 valdict[column] = timestamp.to_datetime()
 
-    validate_columns(table_obj, valdict, u == 0)
-    bulk_data.append(valdict)
+        validate_columns(table_obj, valdict, u == 0)
+        bulk_data.append(valdict)
 
     try:
         if bulk_data:
@@ -463,7 +556,10 @@ def insert_multiple(
             if u != 0:
                 # Specify update behavior for conflicts
                 update_dict = {col: stmt.excluded[col] for col in table_obj.columns.keys()}
-                stmt = stmt.on_conflict_do_update(index_elements=[obs_id_colname], set_=update_dict)
+                primary_key_columns = [col.name for col in table_obj.primary_key.columns]
+                if not primary_key_columns:
+                    primary_key_columns = [obs_id_colname]
+                stmt = stmt.on_conflict_do_update(index_elements=primary_key_columns, set_=update_dict)
 
             db.execute(stmt)
         db.commit()

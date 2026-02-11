@@ -193,6 +193,22 @@ class InstrumentTable:
             raise BadValueException("exposure_id", exposure_id)
         return (query_result.day_obs, query_result.seq_num)
 
+    def get_day_obs_and_seq_num_and_detector(self, ccdexposure_id: int) -> tuple[int, int, int]:
+        ccd_table_name = f"cdb_{self.instrument}.ccdexposure"
+        ccd_table = self.schemas.tables[ccd_table_name]
+        query = sqlalchemy.select(
+            ccd_table.c.day_obs,
+            ccd_table.c.seq_num,
+            ccd_table.c.detector,
+        ).where(ccd_table.c.ccdexposure_id == ccdexposure_id)
+
+        db = next(self.get_db())
+        query_result = db.execute(query).first()
+
+        if not query_result:
+            raise BadValueException("ccdexposure_id", ccdexposure_id)
+        return (query_result.day_obs, query_result.seq_num, query_result.detector)
+
     def refresh_flexible_metadata_schema(self, obs_type: str):
         schema = dict()
         schema_table = self.get_flexible_metadata_schema(obs_type)
