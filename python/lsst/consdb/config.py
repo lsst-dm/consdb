@@ -34,6 +34,12 @@ class Configuration(BaseSettings):
         title="Maximum time to allow a database connection to idle (seconds).",
     )
 
+    statement_timeout: str = Field("10min", title="Timeout duration for sqlalchemy queries.")
+
+    max_rows: int = Field(1_000_000, title="Maximum rows allowed by the query endpoint.")
+
+    fetch_size: int = Field(10_000, title="Number of rows to fetch at once in the query endpoint.")
+
     log_config: str = Field(
         "",
         title="Log levels",

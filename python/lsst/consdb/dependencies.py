@@ -24,7 +24,7 @@ from typing import Annotated
 
 from fastapi import Depends, Path, Request
 from pydantic import AfterValidator
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine, event, inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
@@ -59,6 +59,14 @@ def get_engine():
             pool_pre_ping=True,
             pool_recycle=config.pool_recycle_time,
         )
+
+        @event.listens_for(_engine, "connect")
+        def set_limits(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            try:
+                cursor.execute(f"SET statement_timeout = '{config.statement_timeout}'")
+            finally:
+                cursor.close()
 
     return _engine
 
