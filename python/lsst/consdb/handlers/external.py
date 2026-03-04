@@ -556,6 +556,12 @@ def query(
         Response is a dict with a ``columns`` key with value being a list
         of string column names and a ``data`` key with value being a list
         of rows.
+
+    Notes
+    -----
+    Results are capped at ``config.max_rows`` rows. This is 1 million rows
+    by default. If the query returns more rows than this limit, the remaining
+    rows are discarded.
     """
 
     columns = []
@@ -563,15 +569,30 @@ def query(
 
     with db.connection() as connection:
         result = connection.exec_driver_sql(data.query)
-        if result.returns_rows:
-            columns = result.keys()
-            rows = [list(row) for row in result]
-        else:
-            columns = ["commit"]
-            rows = [[commit]]
+        try:
+            if result.returns_rows:
+                columns = list(result.keys())
+                rows_fetched = 0
 
-        if commit == 1:
-            db.commit()
+                while rows_fetched < config.max_rows:
+                    batch = result.fetchmany(min(config.fetch_size, config.max_rows - rows_fetched))
+                    if not batch:
+                        break
+                    rows.extend([list(r) for r in batch])
+                    rows_fetched += len(batch)
+            else:
+                columns = ["commit"]
+                rows = [[commit]]
+
+            if commit == 1:
+                db.commit()
+            else:
+                db.rollback()
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            result.close()
 
     return QueryResponseModel(
         columns=columns,
