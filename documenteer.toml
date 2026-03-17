@@ -1,0 +1,14 @@
+[project]
+title = "consdb"
+# Copyright information displayed on the footer of each page
+copyright = "2019-2026 Association of Universities for Research in Astronomy, Inc. (AURA)"
+
+[project.python]
+package = "consdb"
+documentation_url_key = "documentation"
+github_url_key = "source_code"
+
+[sphinx.intersphinx.projects]
+ts-xml = "https://ts-xml.lsst.io"
+salobj = "https://ts-salobj.lsst.io"
+python = "https://docs.python.org/3.13/"

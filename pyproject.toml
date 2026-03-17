@@ -16,7 +16,7 @@ Source = "https://github.com/lsst-dm/consdb"
 
 [tool.black]
 line-length = 110
-target-version = ["py311"]
+target-version = ["py313"]
 
 [tool.isort]
 profile = "black"
@@ -43,5 +43,5 @@ asyncio_mode = "auto"
 [project.optional-dependencies]
 test = ["pytest"]
 dev = [
-    "documenteer[guide] < 2",
+    "documenteer[guide]",
 ]
