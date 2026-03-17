@@ -217,7 +217,6 @@ def insert_flexible_metadata(
 
         stmt: sqlalchemy.sql.dml.Insert
         stmt = sqlalchemy.dialects.postgresql.insert(table).values(**values)
-        logger.error(f"{u=}")
         if u != 0:
             if has_multi_column_primary_keys:
                 stmt = stmt.on_conflict_do_update(
@@ -563,6 +562,8 @@ def query(
     by default. If the query returns more rows than this limit, the remaining
     rows are discarded.
     """
+
+    logger.info("pqserver query endpoint:\n{query!r}")
 
     columns = []
     rows = []

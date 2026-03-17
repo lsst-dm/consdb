@@ -573,7 +573,7 @@ def process_oi_column(column_def: ColumnMapping, obs_info: ObservationInfo) -> A
             val = getattr(obs_info, column_def)
             if val is not None:
                 return val
-        logger.warning(f"Value missing in processing of OI: {column_def}")
+        logger.debug(f"Value missing in processing of OI: {column_def}")
     elif isinstance(column_def, tuple):
         fn = column_def[0]
 
@@ -583,7 +583,7 @@ def process_oi_column(column_def: ColumnMapping, obs_info: ObservationInfo) -> A
         arg_values = [process_oi_column(a, obs_info) for a in arg_names]
         if accepts_null or all(v is not None for v in arg_values):
             return fn(*arg_values)
-        logger.warning(f"Missing values in processing of OI: {fn} {arg_values=}")
+        logger.debug(f"Missing values in processing of OI: {fn} {arg_values=}")
 
 
 def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool = False) -> None:
@@ -599,6 +599,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     """
     assert engine is not None
 
+    logger.info(f"Obtained for processing: {resource.basename()}")
     exposure_rec = dict()
 
     info = dict()
@@ -622,6 +623,8 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
             exposure_rec[column] = process_column(column_def, info)
 
     obs_info = ObservationInfo(info, translator_class=instrument_obj.translator)
+    logger.info(f"Completed metadata translation: {resource.basename()}")
+
     for column, column_def in OI_MAPPING.items():
         if exp_columns_to_update is not None and column not in exp_columns_to_update:
             continue
@@ -679,6 +682,10 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
             conn.execute(det_stmt)
 
         conn.commit()
+        logger.info(
+            f"Committed to exposure and ccdexposure table: {resource.basename()} "
+            f"({exposure_rec['day_obs']}/{exposure_rec['seq_num']})"
+        )
 
 
 def process_local_path(path: str) -> None:
@@ -744,6 +751,9 @@ class KafkaConfig:
     username: str
     password: str
     schema_url: str
+    session_timeout_ms: int
+    heartbeat_interval_ms: int
+    max_poll_interval_ms: int
 
 
 def get_kafka_config() -> KafkaConfig:
@@ -753,6 +763,9 @@ def get_kafka_config() -> KafkaConfig:
         username=os.environ.get("KAFKA_USERNAME", "consdb"),
         password=os.environ["KAFKA_PASSWORD"],
         schema_url=os.environ["SCHEMA_URL"],
+        session_timeout_ms=int(os.environ.get("KAFKA_SESSION_TIMEOUT_MS", "30000")),
+        heartbeat_interval_ms=int(os.environ.get("KAFKA_HEARTBEAT_INTERVAL_MS", "10000")),
+        max_poll_interval_ms=int(os.environ.get("KAFKA_MAX_POLL_INTERVAL_MS", "300000")),
     )
 
 
@@ -840,7 +853,7 @@ def get_instrument_dict(instrument: str) -> dict:
     return instrument_dict
 
 
-async def wait_for_resource(resource):
+async def wait_for_resource(resource: ResourcePath) -> None:
     """Wait for a resource to become available.
 
     Returns if and when `resource.exists()`.
@@ -854,7 +867,10 @@ async def wait_for_resource(resource):
         await asyncio.sleep(random.uniform(0.1, 2.0))
 
 
-async def handle_message(message, instrument_dict):
+async def handle_message(
+    message: dict[str, Any],
+    instrument_dict: dict,
+) -> None:
     """Handles the received Kafka message.
 
     This function processes a Kafka message by transforming
@@ -871,6 +887,8 @@ async def handle_message(message, instrument_dict):
         A dictionary mapping a controller type to its metadata.
     """
     url = message["url"]
+    logger.info("Received Kafka message for resource: {url}")
+
     # Replace local HTTP access URL with generic S3 access URL.
     url = re.sub(r"https://s3\.\w+\.lsst\.org/", "s3://", url)
     if bucket_prefix:
@@ -882,6 +900,9 @@ async def handle_message(message, instrument_dict):
         process_resource(resource, instrument_dict)
     except asyncio.TimeoutError:
         logger.warning(f"Timeout reached while waiting for {url}. Skipping.")
+    except Exception:
+        logger.exception("Exception while handling {url}")
+        raise
 
 
 async def main() -> None:
@@ -910,6 +931,9 @@ async def main() -> None:
             sasl_mechanism="SCRAM-SHA-512",
             sasl_plain_username=kafka_config.username,
             sasl_plain_password=kafka_config.password,
+            session_timeout_ms=kafka_config.session_timeout_ms,
+            heartbeat_interval_ms=kafka_config.heartbeat_interval_ms,
+            max_poll_interval_ms=kafka_config.max_poll_interval_ms,
         )
 
         await consumer.start()
