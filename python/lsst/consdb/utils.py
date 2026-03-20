@@ -103,6 +103,7 @@ def setup_logging(module: str) -> logging.Logger:
         stream=sys.stderr,
         force=True,
     )
+    logging.getLogger("astro_metadata_translator").setLevel(logging.ERROR)
 
     logger = logging.getLogger(module)
 

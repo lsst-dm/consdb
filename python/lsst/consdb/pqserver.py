@@ -21,6 +21,8 @@
 
 # The main application factory for consdb.pqserver.
 
+import logging
+
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from safir.middleware.x_forwarded import XForwardedMiddleware
@@ -32,6 +34,28 @@ from .handlers.external import external_router
 from .handlers.internal import internal_router
 
 __all__ = ["app", "config"]
+
+logger = logging.getLogger("consdb.pqserver")
+
+
+class UvicornHeartbeatAccessFilter(logging.Filter):
+    """Suppress routine access logs for successful root heartbeat checks."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if record.name != "uvicorn.access":
+            return True
+
+        args = record.args
+        if not isinstance(args, tuple) or len(args) < 5:
+            return True
+
+        method = args[1]
+        path = args[2]
+        status_code = args[4]
+        return not (method == "GET" and path == "/" and status_code == 200)
+
+
+logging.getLogger("uvicorn.access").addFilter(UvicornHeartbeatAccessFilter())
 
 app = FastAPI(
     title="consdb-pqserver",
@@ -62,5 +86,11 @@ def bad_value_exception_handler(request: Request, exc: BadValueException):
 
 @app.exception_handler(SQLAlchemyError)
 def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
+    logger.exception(
+        "SQLAlchemy error while handling %s %s",
+        request.method,
+        request.url.path,
+        exc_info=exc,
+    )
     content = {"message": str(exc)}
     return JSONResponse(content=content, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

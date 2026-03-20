@@ -86,7 +86,7 @@ def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
     # global _instrument_tables
 
     instrument = validate_instrument_name(instrument)
-    logger = logging.getLogger()
+    logger = logging.getLogger("consdb.pqserver")
 
     if instrument in _instrument_tables:
         instrument_table = _instrument_tables[instrument]
