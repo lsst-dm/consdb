@@ -9,7 +9,7 @@ This guide shows how to deploy the Transformed EFD service to staging or product
 
 - **One-time Jobs**: Process specific date ranges or historical data
 - **CronJobs**: Continuous processing for ongoing telemetry transformation
-- **Failure Monitors**: Automatic retry mechanisms for failed processing tasks
+- **Failure Monitors**: Retry failed processing tasks and reconcile missing data from Butler
 
 **Supported Instruments**: LATISS, LSSTCam, LSSTComCam
 
@@ -146,7 +146,7 @@ Each instrument has its own directory with these files:
 
 - ``job.yaml`` - One-time processing job
 - ``cronjob.yaml`` - Continuous processing
-- ``failure-monitor.yaml`` - Special CronJob that retries failed tasks hourly
+- ``failure-monitor.yaml`` - CronJob that retries failed tasks and reconciles missing data from Butler
 - ``kustomization.yaml`` - Kustomize configuration
 
 **Multiple Configuration Files**
@@ -162,6 +162,12 @@ Each directory can contain multiple job and cronjob files with different configu
 - ``TIMEDELTA`` - Processing chunk size in minutes (default: 5)
 - ``TIMEWINDOW`` - Overlap between chunks in minutes (default: 1)
 - ``EFD_PATH`` - Specific InfluxDB instance path (optional, for different database instances)
+
+**Multi-Database Write**:
+
+The pipeline accepts multiple database URIs for writing. The first URI is the primary (reads + writes); additional URIs receive writes only.
+
+In Kubernetes, configure the container entrypoint/args so it passes multiple values to ``--db`` (primary first).
 
 Configuration Examples
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -431,21 +437,40 @@ This schema is shared across all environments (development and production).
 Failure Monitor
 ---------------
 
-The failure monitor is a special CronJob that runs hourly to retry failed tasks:
+The failure monitor is a special CronJob that runs periodically and performs two checks:
 
-**How it works**:
+**1. Failed task retry**
 
-- Runs every hour (``"0 * * * *"`` schedule)
-- Uses ``--resume`` flag to retry failed tasks
+Selects failed tasks eligible for retry using exponential backoff:
+
 - Implements exponential backoff (2.8^retries hours wait time)
 - Maximum 3 retries per task
-- Tasks older than 72 hours are marked as "stale" status and no longer eligible for retry
+- Tasks older than 72 hours are marked as "stale" and no longer eligible for retry
+
+**2. Butler reconciliation**
+
+Compares Butler exposure and visit records against the database for a configurable day_obs window:
+
+- Queries Butler for all exposures and visits within the window (default: last 7 days)
+- Checks ``exposure_efd`` and ``visit1_efd`` tables for which IDs are already present
+- Creates processing tasks for any missing exposures or visits
+- The window size is controlled by ``--monitor-window-days`` (default: 7)
+
+.. important::
+
+   The failure monitor uses ``--failure-monitor`` (not ``--resume``). The ``--resume`` flag is reserved for **job mode** only and causes a validation error if used with cronjob mode.
 
 **Deploy failure monitor**:
 
 .. code-block:: bash
 
    make apply file=failure-monitor.yaml embargo=true
+
+To enable this behaviour, the ``failure-monitor.yaml`` CronJob must start the container with:
+
+- ``--mode cronjob``
+- ``--failure-monitor``
+- Optional: ``--monitor-window-days`` (default: ``7``)
 
 **Check failed tasks**:
 
@@ -518,11 +543,12 @@ Common Issues
 - Deploy failure monitor: ``make apply file=failure-monitor.yaml embargo=true``
 - Check failure monitor logs: ``kubectl logs <failure-monitor-pod> -n <namespace>``
 - Verify exponential backoff timing (2.8^retries hours between retries)
+- Confirm ``failure-monitor.yaml`` uses ``--failure-monitor`` flag (not ``--resume``); using ``--resume`` with cronjob mode raises a validation error
 
 **Scheduler table issues**:
 
 - Check for orphaned tasks: Query tasks stuck in "running" status
-- Verify task creation: Ensure new tasks are being created for cronjobs
+- Verify task creation: Ensure tasks are being created for cronjobs
 - Monitor task queue: Check if tasks are accumulating in "pending" status
 - Database connectivity: Verify scheduler table access and permissions
 
@@ -699,7 +725,7 @@ Scenario 4: Troubleshooting Failed Deployment
    # 6. Redeploy with corrected configuration
    make apply file=cronjob.yaml embargo=true
 
-   # 7. Monitor new deployment
+   # 7. Monitor deployment
    kubectl logs -f <new-pod-name> -n dev-latiss
 
 Repository Structure

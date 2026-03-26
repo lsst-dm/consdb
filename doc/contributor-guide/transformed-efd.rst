@@ -758,6 +758,7 @@ Testing Strategies
    - Test complete configuration files
    - Verify schema generation works correctly
    - Test with actual EFD data when available
+   - If your contribution modifies any DAO write path (upsert, insert, or update), validate behaviour for single-URI and multi-URI configurations using ``tests/transformed_efd/test_multi_db.py`` as a reference
 
 3. **Validation Testing**
 
