@@ -887,7 +887,7 @@ async def handle_message(
         A dictionary mapping a controller type to its metadata.
     """
     url = message["url"]
-    logger.info("Received Kafka message for resource: {url}")
+    logger.info(f"Received Kafka message for resource: {url}")
 
     # Replace local HTTP access URL with generic S3 access URL.
     url = re.sub(r"https://s3\.\w+\.lsst\.org/", "s3://", url)
@@ -901,7 +901,7 @@ async def handle_message(
     except asyncio.TimeoutError:
         logger.warning(f"Timeout reached while waiting for {url}. Skipping.")
     except Exception:
-        logger.exception("Exception while handling {url}")
+        logger.exception(f"Exception while handling {url}")
         raise
 
 
