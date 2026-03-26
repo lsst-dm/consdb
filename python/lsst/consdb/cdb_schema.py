@@ -115,21 +115,27 @@ class InstrumentTable:
         self.get_db = get_db
 
         self.table_names = set()
-        self.schemas = dict()
+        self.schemas = sqlalchemy.MetaData()
         self.flexible_metadata_schemas = dict()
         self.obs_id_column = dict()
         self.timestamp_columns = dict()
 
-        md = sqlalchemy.MetaData(schema=f"cdb_{self.instrument}")
-        md.reflect(engine, views=True)
-        self.table_names.update([str(table) for table in md.tables])
-        self.schemas = md
-        for table in md.tables:
+        self.schemas.reflect(engine, schema=f"cdb_{self.instrument}", views=True)
+        self.schemas.reflect(engine, schema=f"efd_{self.instrument}", views=True)
+        if self.instrument in ("latiss", "lsstcam", "lsstcomcam"):
+            sqlalchemy.Table(
+                self.instrument,
+                self.schemas,
+                schema="efd_scheduler",
+                autoload_with=engine,
+            )
+        self.table_names.update(self.schemas.tables)
+        for table in self.schemas.tables:
             # Find all timestamp columns in the table
             self.timestamp_columns[table] = set(
                 [
                     column.name
-                    for column in md.tables[table].columns
+                    for column in self.schemas.tables[table].columns
                     if isinstance(column.type, sqlalchemy.DateTime)
                 ]
             )
@@ -141,7 +147,7 @@ class InstrumentTable:
                 # this breaks ties by selecting the first one found based
                 # on the ordering defined in the ObsIdColname enum.
                 col_name = col_name.value
-                if col_name in md.tables[table].columns:
+                if col_name in self.schemas.tables[table].columns:
                     self.obs_id_column[table] = col_name
                     break
 
@@ -149,7 +155,7 @@ class InstrumentTable:
             obs_type = obs_type.value.lower()
             table_name = f"cdb_{self.instrument}.{obs_type}_flexdata"
             schema_table_name = table_name + "_schema"
-            if table_name in md.tables and schema_table_name in md.tables:
+            if table_name in self.schemas.tables and schema_table_name in self.schemas.tables:
                 self.flexible_metadata_schemas[obs_type] = None
                 self.refresh_flexible_metadata_schema(obs_type)
 
