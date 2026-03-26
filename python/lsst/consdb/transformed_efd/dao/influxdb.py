@@ -586,6 +586,10 @@ class InfluxDBClient:
         )
         response = self.query(query)
         if "series" not in response["results"][0]:
+            self.log.warning(
+                f"No data returned for topic {topic_name} in requested time range; "
+                "query result has no 'series'."
+            )
             return pd.DataFrame()
 
         return self._to_dataframe(response)

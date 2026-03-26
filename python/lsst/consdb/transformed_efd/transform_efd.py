@@ -32,14 +32,15 @@ import os
 import signal
 import sys
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 import yaml
 from astropy.time import Time, TimeDelta
 from lsst.consdb.transformed_efd.config_model import ConfigModel
 from lsst.consdb.transformed_efd.dao.influxdb import InfluxDbDao
+from lsst.consdb.transformed_efd.failure_monitor import FailureMonitor
 from lsst.consdb.transformed_efd.queue_manager import QueueManager
 from lsst.consdb.transformed_efd.transform import Transform
 from lsst.daf.butler import Butler
@@ -141,7 +142,22 @@ def build_argparser() -> argparse.ArgumentParser:
         action="store_const",
         const=True,
         default=False,
-        help="Resume pending tasks",
+        help="Resume pending tasks in job mode",
+    )
+    opt.add_argument(
+        "--failure-monitor",
+        dest="failure_monitor",
+        action="store_const",
+        const=True,
+        default=False,
+        help="Run failure monitor checks (cronjob mode only)",
+    )
+    opt.add_argument(
+        "--monitor-window-days",
+        dest="monitor_window_days",
+        type=int,
+        default=7,
+        help="Day_obs window size for Butler reconciliation checks",
     )
 
     return parser
@@ -229,13 +245,15 @@ async def _process_task(
     dict
         Processed counts: {'exposures': int, 'visits1': int}
     """
-    log.info("-" * 51)
-    log.info(
+    log.debug("-" * 51)
+    log.debug(
         f"Processing Task: id={task['id']} start_time={task['start_time']} end_time={task['end_time']} "
         f"timewindow={task['timewindow']}"
     )
 
     qm.dao.task_started(task["id"])
+    if retry:
+        qm.dao.task_retries_increment(task["id"])
     try:
         counts = tm.process_interval(
             instrument,
@@ -244,8 +262,6 @@ async def _process_task(
         )
         qm.dao.task_update_counts(task["id"], exposures=counts["exposures"], visits1=counts["visits1"])
         qm.dao.task_completed(task["id"])
-        if retry:
-            qm.dao.task_retries_increment(task["id"])
         return counts
     except Exception as e:
         log.error(f"Task failure: id={task['id']} error={str(e)}")
@@ -276,13 +292,13 @@ async def handle_job(
     list[dict]
         Tasks to process (queued + failed)
     """
-    log.info("-" * 51)
+    log.debug("-" * 51)
     if args.resume:
         log.info("Resuming idle tasks")
         tasks = qm.waiting_tasks(args.repo, "idle", start_time, end_time)
     else:
         log.debug(f"Creating new tasks: start_time={start_time} end_time={end_time}")
-        log.info("Creating new tasks...")
+        log.debug("Creating new tasks...")
         qm.create_tasks(
             start_time=start_time,
             end_time=end_time,
@@ -296,66 +312,9 @@ async def handle_job(
     return tasks + qm.failed_tasks(args.repo, max_retries=3)
 
 
-def _get_retryable_tasks(
-    qm: QueueManager,
-    repo: str,
-    base_hour: float = 2.82843,
-    max_retries: int = 3,
-    max_age_hours: float = 72.0,
-    log: logging.Logger = None,
-) -> List[Dict]:
-    """
-    Return failed tasks eligible for retry based on exponential backoff.
-
-    Parameters
-    ----------
-    qm : QueueManager
-        Queue management object.
-    repo : str
-        Repository identifier.
-    base_hour : float
-        Backoff base in hours. Default is 2.82843.
-    max_retries : int
-        Maximum retry attempts. Default is 3.
-    max_age_hours : float
-        Max age in hours before a task is considered stale. Default is 72.
-
-    Returns
-    -------
-    List[Dict]
-        Tasks where (now – created_at) exceeds base_hour**(retries+1)
-        but is less than max_age_hours.
-    """
-    tasks = qm.failed_tasks(repo, max_retries=max_retries)
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
-    max_age = timedelta(hours=max_age_hours)
-    selected: List[Dict] = []
-
-    for t in tasks:
-        retries = t["retries"]
-        created = t["created_at"]
-        if created.tzinfo:
-            created = created.astimezone(timezone.utc).replace(tzinfo=None)
-
-        since_created = now - created
-        next_wait = timedelta(hours=base_hour ** (retries + 1))
-        if next_wait < since_created < max_age:
-            selected.append(t)
-            log.debug(
-                f"Task {t['id']} retryable: created_at={t['created_at']} elapsed={since_created}"
-                f" required_wait={next_wait}"
-            )
-        elif since_created >= max_age:
-            log.debug(
-                f"Task {t['id']} stale: created_at={t['created_at']} elapsed={since_created}"
-                f" required_wait={next_wait}"
-            )
-            qm._mark_task_stale(t["id"])
-
-    return selected
-
-
-async def handle_cronjob(qm: QueueManager, log: logging.Logger, args: argparse.Namespace) -> list[dict]:
+async def handle_cronjob(
+    qm: QueueManager, tm: Transform, log: logging.Logger, args: argparse.Namespace
+) -> list[dict]:
     """Manage periodic cronjob tasks.
 
     Parameters
@@ -372,26 +331,26 @@ async def handle_cronjob(qm: QueueManager, log: logging.Logger, args: argparse.N
     list[dict]
         Tasks ready for processing
     """
-    if args.resume:
-        log.info("-" * 51)
-        log.info("Checking for eligible failed tasks")
-        return _get_retryable_tasks(
+    if args.failure_monitor:
+        log.debug("-" * 51)
+        log.info("Running failure monitor checks")
+        monitor = FailureMonitor(
             qm,
-            args.repo,
-            base_hour=2.82843,
-            max_retries=3,
-            max_age_hours=72.0,
+            db_uri=args.db_conn_str,
+            instrument=args.instrument,
+            butler_dao=tm.butler_dao,
             log=log,
         )
+        return monitor.run(args)
 
     else:
-        log.info("-" * 51)
+        log.debug("-" * 51)
         log.debug("Checking for pending tasks")
-        tasks = qm.recent_tasks_to_run(margin_seconds=-60)
+        tasks = qm.recent_tasks_to_run(margin_seconds=-300)
         waiting_tasks = qm.waiting_tasks(args.repo, "pending")
 
         if not tasks and not waiting_tasks:
-            log.info("Creating new periodic tasks...")
+            log.debug("Creating new periodic tasks...")
             qm.create_tasks(
                 start_time=None,
                 end_time=None,
@@ -399,7 +358,7 @@ async def handle_cronjob(qm: QueueManager, log: logging.Logger, args: argparse.N
                 time_window=int(args.timewindow),
                 butler_repo=args.repo,
             )
-            tasks = qm.recent_tasks_to_run(margin_seconds=-60)
+            tasks = qm.recent_tasks_to_run(margin_seconds=-300)
 
         return tasks
 
@@ -460,7 +419,7 @@ async def process_tasks(
         if shutdown_event.is_set():
             break  # Exit batch loop
 
-    log.info("-" * 51)
+    log.debug("-" * 51)
     log.info(
         f"Summary (inserted/updated): tasks={totals['tasks']} exposures={totals['exposures']}"
         f" visits={totals['visits1']}"
@@ -485,6 +444,11 @@ async def main() -> None:
         loop.add_signal_handler(sig, _signal_handler)
 
     try:
+        if args.mode == "cronjob" and args.resume:
+            raise ValueError("--resume is only supported with --mode job")
+        if args.mode == "job" and args.failure_monitor:
+            raise ValueError("--failure-monitor is only supported with --mode cronjob")
+
         # Initialize core components
         butler = Butler(args.repo)
         efd = InfluxDbDao(args.efd_conn_str, logger=log, max_fields_per_query=100)
@@ -532,8 +496,10 @@ async def main() -> None:
             }
 
         # Execute workflow
-        handler = handle_job if args.mode == "job" else handle_cronjob
-        tasks = await handler(qm, log, args, **time_params)
+        if args.mode == "job":
+            tasks = await handle_job(qm, log, args, **time_params)
+        else:
+            tasks = await handle_cronjob(qm, tm, log, args)
 
         await process_tasks(
             tasks=tasks,

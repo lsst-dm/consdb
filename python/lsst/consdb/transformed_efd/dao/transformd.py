@@ -168,7 +168,7 @@ class TransformdDao(DBBase):
                 task_dict = dict(row._mapping)
                 chunk_tasks.append(task_dict)
                 pk_values = {k: task_dict[k] for k in pk_names}
-                self.log.info(
+                self.log.debug(
                     f"event=row_inserted schema={self.tbl.schema} table={self.tbl.name} pk_values={pk_values}"
                 )
 
@@ -458,6 +458,7 @@ class TransformdDao(DBBase):
             query = query.where(
                 and_(self.tbl.c.retries <= max_retries, self.tbl.c.butler_repo == butler_repo)
             )
+        query = query.order_by(self.tbl.c.created_at.asc(), self.tbl.c.id.asc())
         return self.fetch_all_dict(query)
 
     def get_task_by_interval(
