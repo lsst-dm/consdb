@@ -25,6 +25,8 @@ It includes methods to query dimensions and retrieve exposures or visits within
 specified time periods.
 """
 
+from typing import Any, Dict, List
+
 import astropy.time
 import pandas
 from lsst.daf.butler import Butler, EmptyQueryResultError
@@ -148,5 +150,59 @@ class ButlerDao:
 
             return self.query_dimension_to_list(resultset)
 
+        except EmptyQueryResultError:
+            return []
+
+    def exposures_by_day_obs(
+        self, instrument: str, day_obs_start: int, day_obs_end: int
+    ) -> List[Dict[str, Any]]:
+        """Retrieve exposure records in a day_obs range.
+
+        Parameters
+        ----------
+        instrument : str
+            Butler instrument name (e.g. LSSTCam).
+        day_obs_start : int
+            Inclusive start day_obs in YYYYMMDD format.
+        day_obs_end : int
+            Inclusive end day_obs in YYYYMMDD format.
+        """
+        where_clause = "instrument=inst and day_obs >= day_start and day_obs <= day_end"
+        try:
+            resultset = self.butler.query_dimension_records(
+                "exposure",
+                where=where_clause,
+                bind={"inst": instrument, "day_start": day_obs_start, "day_end": day_obs_end},
+                order_by="day_obs",
+                limit=None,
+            )
+            return self.query_dimension_to_list(resultset)
+        except EmptyQueryResultError:
+            return []
+
+    def visits_by_day_obs(
+        self, instrument: str, day_obs_start: int, day_obs_end: int
+    ) -> List[Dict[str, Any]]:
+        """Retrieve visit records in a day_obs range.
+
+        Parameters
+        ----------
+        instrument : str
+            Butler instrument name (e.g. LSSTCam).
+        day_obs_start : int
+            Inclusive start day_obs in YYYYMMDD format.
+        day_obs_end : int
+            Inclusive end day_obs in YYYYMMDD format.
+        """
+        where_clause = "instrument=inst and day_obs >= day_start and day_obs <= day_end"
+        try:
+            resultset = self.butler.query_dimension_records(
+                "visit",
+                where=where_clause,
+                bind={"inst": instrument, "day_start": day_obs_start, "day_end": day_obs_end},
+                order_by="day_obs",
+                limit=None,
+            )
+            return self.query_dimension_to_list(resultset)
         except EmptyQueryResultError:
             return []
