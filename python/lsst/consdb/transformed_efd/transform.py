@@ -54,7 +54,7 @@ class Transform:
     def __init__(
         self,
         butler: Butler,
-        db_uri: str,
+        db_uri: str | list[str],
         efd: InfluxDbDao,
         config: Dict[str, Any],
         logger: logging.Logger,

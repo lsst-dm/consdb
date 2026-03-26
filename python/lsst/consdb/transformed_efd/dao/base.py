@@ -38,27 +38,27 @@ from sqlalchemy.pool import NullPool
 class DBBase:
     """The base class for database access objects.
 
+    Supports writing to multiple databases simultaneously. The first URI
+    is the primary (production) database used for all reads. Additional
+    URIs are secondary replicas that receive writes only.
+
     Attributes
     ----------
-        engine (Engine): The database engine.
-        connexion: The database connection.
+        db_uris (list[str]): All database URIs.
+        db_uri (str): The primary database URI (first in list).
+        connexion: The database connection (primary).
         dialect: The database dialect.
-        db_uri (str): The URI of the database.
         logger (logging.Logger): The logger for the class.
 
     """
 
-    engine: Engine = None
-    connexion = None
-    dialect = None
-    db_uri: str
-
-    def __init__(self, db_uri: str, schema: str = None, logger: logging.Logger = None):
+    def __init__(self, db_uri: str | list[str], schema: str = None, logger: logging.Logger = None):
         """Initialize a BaseDAO object.
 
         Args:
         ----
-            db_uri (str): The URI of the database.
+            db_uri (str | list[str]): One or more database URIs. The first
+                is the primary (reads + writes), others are write-only replicas.
             schema (str, optional): The schema to use. Defaults to None.
             logger (logging.Logger, optional): The logger to use.
                 Defaults to None.
@@ -68,7 +68,14 @@ class DBBase:
             Exception: If the dialect has not been implemented.
 
         """
-        self.db_uri = db_uri
+        if isinstance(db_uri, str):
+            self.db_uris = [db_uri]
+        else:
+            self.db_uris = list(db_uri)
+
+        self.db_uri = self.db_uris[0]
+        self._engines: list[Engine | None] = [None] * len(self.db_uris)
+        self.connexion = None
         self.log = logger
 
         sgbd = self.db_uri.split(":")[0]
@@ -80,21 +87,26 @@ class DBBase:
         else:
             raise Exception(f"The dialect for {sgbd} has not yet been implemented.")
 
-    def get_db_engine(self) -> Engine:
-        """Return the database engine.
+    def get_db_engine(self, index: int = 0) -> Engine:
+        """Return the database engine for the given index.
 
         If the engine is not already created, it creates a new engine
-        using the provided database URI and returns it.
+        using the corresponding database URI and returns it.
+
+        Parameters
+        ----------
+        index : int
+            Index into db_uris. 0 = primary (default).
 
         Returns
         -------
             The database engine.
 
         """
-        if self.engine is None:
-            self.engine = create_engine(self.db_uri, poolclass=NullPool)
+        if self._engines[index] is None:
+            self._engines[index] = create_engine(self.db_uris[index], poolclass=NullPool)
 
-        return self.engine
+        return self._engines[index]
 
     def get_con(self):
         """Return the database connection.
@@ -113,6 +125,41 @@ class DBBase:
             self.connexion = engine.connect()
 
         return self.connexion
+
+    def _write_to_all_engines(self, write_fn):
+        """Execute write_fn(engine) on every configured engine.
+
+        Primary (index 0) failure is fatal and re-raised. Secondary
+        failures are logged as partial success and do not interrupt
+        processing.
+
+        Parameters
+        ----------
+        write_fn : Callable[[Engine], T]
+            A function that receives an Engine and performs a write.
+
+        Returns
+        -------
+        T
+            The result from the primary engine.
+        """
+        primary_result = None
+
+        for i, uri in enumerate(self.db_uris):
+            safe_uri = uri.split("@")[-1] if "@" in uri else uri
+            db_label = f"db_{i+1}/{len(self.db_uris)}"
+            try:
+                engine = self.get_db_engine(i)
+                result = write_fn(engine)
+                if i == 0:
+                    primary_result = result
+                self.log.debug(f"Write succeeded on {db_label} uri=...@{safe_uri}")
+            except Exception as e:
+                if i == 0:
+                    raise
+                self.log.error(f"Write failed on {db_label} uri=...@{safe_uri} error={e}")
+
+        return primary_result
 
     def get_table(self, tablename, schema=None) -> Table:
         """Retrieve a table object from the database.
@@ -332,15 +379,15 @@ class DBBase:
                     f"event=row_upserted schema={tbl.schema} table={tbl.name} pk_values={pk_values}"
                 )
 
-            # Execute the upsert statement
-            engine = self.get_db_engine()
-            with engine.connect() as con:
-                result = con.execute(upsert_stm)
-                con.commit()
-                # account affected rows for two states on_conflict_do_nothing
-                # and on_conflict_do_update
-                affected_rows += result.rowcount
-                self.log.debug(f"Rowcount: {result.rowcount}\n")
+            def _do_upsert(engine, _stm=upsert_stm):
+                with engine.connect() as con:
+                    result = con.execute(_stm)
+                    con.commit()
+                    return result.rowcount
+
+            primary_rowcount = self._write_to_all_engines(_do_upsert)
+            affected_rows += primary_rowcount
+            self.log.debug(f"Rowcount: {primary_rowcount}\n")
 
         return affected_rows
 
@@ -379,11 +426,14 @@ class DBBase:
                 pk_values = {name: record[name] for name in pk_names}
                 self.log.info(f"event=insert schema={tbl.schema} table={tbl.name} pk_values={pk_values}")
 
-            engine = self.get_db_engine()
-            with engine.connect() as con:
-                result = con.execute(insert_stm)
-                con.commit()
-                affected_rows += result.rowcount
+            def _do_insert(engine, _stm=insert_stm):
+                with engine.connect() as con:
+                    result = con.execute(_stm)
+                    con.commit()
+                    return result.rowcount
+
+            primary_rowcount = self._write_to_all_engines(_do_insert)
+            affected_rows += primary_rowcount
 
         return affected_rows
 

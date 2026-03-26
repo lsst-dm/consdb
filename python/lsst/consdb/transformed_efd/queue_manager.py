@@ -48,7 +48,7 @@ class QueueManager:
 
     def __init__(
         self,
-        db_uri: str,
+        db_uri: str | list[str],
         instrument: str,
         schema: str,
         logger: logging.Logger,
@@ -57,7 +57,8 @@ class QueueManager:
 
         Args:
         ----
-            db_uri (str): The URI of the database.
+            db_uri (str | list[str]): One or more database URIs. First is
+                primary (reads + writes), additional are write-only replicas.
             instrument (str): The name of the instrument.
             schema (str): The schema name in the database.
             logger (Logger): Logger instance for logging queue operations.

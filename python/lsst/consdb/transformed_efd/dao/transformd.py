@@ -50,13 +50,15 @@ class Task(TypedDict):
 class TransformdDao(DBBase):
     """DAO for transformed_efd_scheduler table operations."""
 
-    def __init__(self, db_uri: str, instrument: str, schema: str, logger: logging.Logger = None) -> None:
+    def __init__(
+        self, db_uri: str | list[str], instrument: str, schema: str, logger: logging.Logger = None
+    ) -> None:
         """Initialize DAO.
 
         Parameters
         ----------
-        db_uri : str
-            Database connection URI
+        db_uri : str | list[str]
+            Database connection URI(s). First is primary, rest are replicas.
         instrument : str
             Instrument name
         schema : str
@@ -130,6 +132,9 @@ class TransformdDao(DBBase):
     def bulk_insert(self, df: pandas.DataFrame, commit_every: int = 100) -> List[Dict]:
         """Bulk insert DataFrame and return the inserted task records.
 
+        Inserts into the primary database first to obtain generated IDs,
+        then replicates the complete rows (with IDs) to secondary databases.
+
         Parameters
         ----------
         df : pandas.DataFrame
@@ -140,37 +145,60 @@ class TransformdDao(DBBase):
         Returns
         -------
         List[Dict]
-            A list of dicts representing the inserted tasks.
+            A list of dicts representing the inserted tasks (from primary).
         """
         df = df.replace(numpy.nan, None)
         records = df.to_dict("records")
-
         inserted_tasks = []
-        engine = self.get_db_engine()
 
         for i in range(0, len(records), commit_every):
             chunk = records[i : i + commit_every]
-            insert_stm = self.dialect.insert(self.tbl).values(chunk).returning(self.tbl)
 
-            with engine.connect() as con:
+            insert_stm = self.dialect.insert(self.tbl).values(chunk).returning(self.tbl)
+            primary_engine = self.get_db_engine(0)
+
+            with primary_engine.connect() as con:
                 result = con.execute(insert_stm)
-                rows = result.fetchall()  # ✅ Must be BEFORE commit
+                rows = result.fetchall()
                 con.commit()
 
             pk_names = [col.name for col in self.tbl.primary_key.columns]
-
+            chunk_tasks = []
             for row in rows:
                 task_dict = dict(row._mapping)
-                inserted_tasks.append(task_dict)
+                chunk_tasks.append(task_dict)
                 pk_values = {k: task_dict[k] for k in pk_names}
                 self.log.info(
                     f"event=row_inserted schema={self.tbl.schema} table={self.tbl.name} pk_values={pk_values}"
                 )
 
+            inserted_tasks.extend(chunk_tasks)
+
+            for db_idx in range(1, len(self.db_uris)):
+                safe_uri = (
+                    self.db_uris[db_idx].split("@")[-1]
+                    if "@" in self.db_uris[db_idx]
+                    else self.db_uris[db_idx]
+                )
+                try:
+                    sec_engine = self.get_db_engine(db_idx)
+                    sec_stm = self.dialect.insert(self.tbl).values(chunk_tasks)
+                    with sec_engine.connect() as con:
+                        con.execute(sec_stm)
+                        con.commit()
+                except Exception as e:
+                    self.log.error(
+                        f"bulk_insert failed on db_{db_idx+1}/{len(self.db_uris)} "
+                        f"uri=...@{safe_uri} error={e}"
+                    )
+
         return inserted_tasks
 
     def insert(self, data: Dict) -> Task:
         """Insert new task.
+
+        Inserts into primary first to obtain the generated ID, then
+        replicates the complete row to secondary databases.
 
         Parameters
         ----------
@@ -180,16 +208,35 @@ class TransformdDao(DBBase):
         Returns
         -------
         Task
-            Inserted task record
+            Inserted task record (from primary)
         """
         stm = self.tbl.insert().values(**data)
-        with self.get_db_engine().connect() as con:
+
+        with self.get_db_engine(0).connect() as con:
             result = con.execute(stm)
             con.commit()
-            return self.select_by_id(result.inserted_primary_key[0])
+            primary_id = result.inserted_primary_key[0]
+
+        task = self.select_by_id(primary_id)
+
+        for db_idx in range(1, len(self.db_uris)):
+            safe_uri = (
+                self.db_uris[db_idx].split("@")[-1] if "@" in self.db_uris[db_idx] else self.db_uris[db_idx]
+            )
+            try:
+                sec_stm = self.tbl.insert().values(**task)
+                with self.get_db_engine(db_idx).connect() as con:
+                    con.execute(sec_stm)
+                    con.commit()
+            except Exception as e:
+                self.log.error(
+                    f"insert failed on db_{db_idx+1}/{len(self.db_uris)} " f"uri=...@{safe_uri} error={e}"
+                )
+
+        return task
 
     def update(self, id: int, data: Dict) -> int:
-        """Update task by ID.
+        """Update task by ID on all databases.
 
         Parameters
         ----------
@@ -201,13 +248,17 @@ class TransformdDao(DBBase):
         Returns
         -------
         int
-            Number of rows affected
+            Number of rows affected (from primary)
         """
         stm = self.tbl.update().where(self.tbl.c.id == id).values(**data)
-        with self.get_db_engine().connect() as con:
-            result = con.execute(stm)
-            con.commit()
-            return result.rowcount
+
+        def _do_update(engine, _stm=stm):
+            with engine.connect() as con:
+                result = con.execute(_stm)
+                con.commit()
+                return result.rowcount
+
+        return self._write_to_all_engines(_do_update)
 
     def task_started(self, id: int) -> None:
         """Mark task as running.
@@ -441,12 +492,12 @@ class TransformdDao(DBBase):
         return self.fetch_one_dict(query)
 
     def fail_orphaned_tasks(self) -> int:
-        """Mark orphaned running tasks as failed.
+        """Mark orphaned running tasks as failed on all databases.
 
         Returns
         -------
         int
-            Number of tasks updated
+            Number of tasks updated (from primary)
         """
         query = (
             self.tbl.update()
@@ -462,7 +513,11 @@ class TransformdDao(DBBase):
                 process_end_time=self._ensure_utc(datetime.now(timezone.utc)),
             )
         )
-        with self.get_db_engine().connect() as con:
-            result = con.execute(query)
-            con.commit()
-            return result.rowcount
+
+        def _do_update(engine, _q=query):
+            with engine.connect() as con:
+                result = con.execute(_q)
+                con.commit()
+                return result.rowcount
+
+        return self._write_to_all_engines(_do_update)

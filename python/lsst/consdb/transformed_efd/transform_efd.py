@@ -110,7 +110,14 @@ def build_argparser() -> argparse.ArgumentParser:
         default="s3://rubin-summit-users/butler.yaml",
         help="Butler repository path",
     )
-    req.add_argument("-d", "--db", dest="db_conn_str", required=True, help="Database connection string")
+    req.add_argument(
+        "-d",
+        "--db",
+        dest="db_conn_str",
+        nargs="+",
+        required=True,
+        help="Database connection string(s). First URI is primary (production), additional URIs are secondary replicas.",
+    )
     req.add_argument("-E", "--efd", dest="efd_conn_str", required=True, help="EFD connection string")
     req.add_argument(
         "-m", "--mode", dest="mode", required=True, choices=["job", "cronjob"], help="Execution mode"
@@ -498,6 +505,15 @@ async def main() -> None:
         )
 
         log.info("All components initialized successfully")
+
+        if len(args.db_conn_str) > 1:
+            safe_primary = (
+                args.db_conn_str[0].split("@")[-1] if "@" in args.db_conn_str[0] else args.db_conn_str[0]
+            )
+            log.info(
+                f"Multi-DB mode: writing to {len(args.db_conn_str)} databases. "
+                f"Primary (reads+writes): ...@{safe_primary}"
+            )
 
         # Cleanup orphaned tasks
         fixed = qm.dao.fail_orphaned_tasks()
