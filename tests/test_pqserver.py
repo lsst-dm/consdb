@@ -23,6 +23,13 @@ def _assert_http_status(response: Response, status: int):
     assert response.status_code == status, f"{response.status_code} {response.json()}"
 
 
+def _load_schema_metadata(schema_file: Path) -> sa.MetaData:
+    with open(schema_file) as f:
+        yaml_data = yaml.safe_load(f)
+    schema = Schema.model_validate(yaml_data)
+    return MetaDataBuilder(schema).build()
+
+
 @pytest.fixture
 def astropy_tables(scope="module"):
     t = dict()
@@ -113,8 +120,10 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
             connection.exec_driver_sql(
                 f"DROP TABLE IF EXISTS {schema_name}.visit1;"
                 f" CREATE VIEW {schema_name}.visit1 AS SELECT * FROM {schema_name}.exposure;"
+                f"CREATE SCHEMA efd_scheduler; CREATE TABLE efd_scheduler.{schema_name[4:]} (id int);"
             )
 
+        with instance.engine.begin() as connection:
             client = TestClient(pqserver.app)
             client.connection = connection
             yield client
@@ -252,6 +261,52 @@ def test_insert_multiple_update(lsstcomcamsim):
 def test_schema(lsstcomcamsim):
     response = lsstcomcamsim.get("/consdb/schema/lsstcomcamsim")
     _assert_http_status(response, 200)
+
+
+@pytest.fixture
+def lsstcam_schema_client(scope="module"):
+    reset_dependencies()
+
+    cdb_schema_file = Path(lsst.utils.getPackageDir("sdm_schemas")) / "yml" / "cdb_lsstcam.yaml"
+    efd_schema_file = Path(lsst.utils.getPackageDir("sdm_schemas")) / "yml" / "efd_lsstcam.yaml"
+    scheduler_schema_file = (
+        Path(__file__).resolve().parents[1]
+        / "python"
+        / "lsst"
+        / "consdb"
+        / "transformed_efd"
+        / "schemas"
+        / "yml"
+        / "efd_scheduler.yaml"
+    )
+
+    cdb_md = _load_schema_metadata(cdb_schema_file)
+    efd_md = _load_schema_metadata(efd_schema_file)
+    scheduler_md = _load_schema_metadata(scheduler_schema_file)
+
+    with setup_postgres_test_db() as instance:
+        os.environ["POSTGRES_URL"] = instance.url
+        config.postgres_url = instance.url
+
+        DatabaseContext(cdb_md, instance.engine).initialize()
+        DatabaseContext(cdb_md, instance.engine).create_all()
+        DatabaseContext(efd_md, instance.engine).initialize()
+        DatabaseContext(efd_md, instance.engine).create_all()
+        DatabaseContext(scheduler_md, instance.engine).initialize()
+        DatabaseContext(scheduler_md, instance.engine).create_all()
+
+        client = TestClient(pqserver.app)
+        yield client
+
+
+def test_schema_lsstcam_includes_efd_exposure(lsstcam_schema_client):
+    response = lsstcam_schema_client.get("/consdb/schema/lsstcam")
+    _assert_http_status(response, 200)
+
+    result = response.json()
+    assert "efd_lsstcam.exposure_efd" in result
+    assert "efd_scheduler.lsstcam" in result
+    assert "efd_scheduler.latiss" not in result
 
 
 def test_schema_non_instrument(lsstcomcamsim):
