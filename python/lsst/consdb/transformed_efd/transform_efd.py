@@ -117,7 +117,10 @@ def build_argparser() -> argparse.ArgumentParser:
         dest="db_conn_str",
         nargs="+",
         required=True,
-        help="Database connection string(s). First URI is primary (production), additional URIs are secondary replicas.",
+        help=(
+            "Database connection string(s). First URI is primary (production), "
+            "additional URIs are secondary replicas."
+        ),
     )
     req.add_argument("-E", "--efd", dest="efd_conn_str", required=True, help="EFD connection string")
     req.add_argument(

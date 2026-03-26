@@ -58,7 +58,8 @@ class DBBase:
         Args:
         ----
             db_uri (str | list[str]): One or more database URIs. The first
-                is the primary (reads + writes), others are write-only replicas.
+                is the primary (reads + writes), others are write-only
+                replicas.
             schema (str, optional): The schema to use. Defaults to None.
             logger (logging.Logger, optional): The logger to use.
                 Defaults to None.

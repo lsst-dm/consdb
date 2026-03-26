@@ -78,7 +78,8 @@ class TestDBBaseInit:
 
 class TestWriteToAllEngines:
     def test_single_engine_returns_result(self, logger):
-        """With one engine, _write_to_all_engines should return write_fn result."""
+        """With one engine, _write_to_all_engines should return
+        write_fn result."""
         with patch.object(DBBase, "get_db_engine"):
             db = DBBase("sqlite:///test.db", logger=logger)
 
