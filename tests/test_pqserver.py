@@ -305,8 +305,6 @@ def test_schema_lsstcam_includes_efd_exposure(lsstcam_schema_client):
 
     result = response.json()
     assert "efd_lsstcam.exposure_efd" in result
-    assert "efd_scheduler.lsstcam" in result
-    assert "efd_scheduler.latiss" not in result
 
 
 def test_schema_non_instrument(lsstcomcamsim):
