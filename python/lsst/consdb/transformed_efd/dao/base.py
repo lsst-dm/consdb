@@ -154,11 +154,11 @@ class DBBase:
                 result = write_fn(engine)
                 if i == 0:
                     primary_result = result
-                self.log.debug(f"Write succeeded on {db_label} uri=...@{safe_uri}")
+                self.log.debug("event=db_write_succeeded db=%s uri=...@%s", db_label, safe_uri)
             except Exception as e:
                 if i == 0:
                     raise
-                self.log.error(f"Write failed on {db_label} uri=...@{safe_uri} error={e}")
+                self.log.error("event=db_write_failed db=%s uri=...@%s error=%s", db_label, safe_uri, e)
 
         return primary_result
 
@@ -348,10 +348,7 @@ class DBBase:
 
         # Warn when update_cols is not empty
         if not update_cols:
-            self.log.debug(
-                f"event=row_upserted schema={tbl.schema} table={tbl.name} "
-                f"warning='No data from the EFD to upsert'"
-            )
+            self.log.debug("event=row_upserted_no_data schema=%s table=%s", tbl.schema, tbl.name)
 
         # Convert the dataframe to a list of dicts
         records = df.to_dict("records")
@@ -377,7 +374,7 @@ class DBBase:
             for record in chunk:
                 pk_values = {name: record[name] for name in pk_names}
                 self.log.debug(
-                    f"event=row_upserted schema={tbl.schema} table={tbl.name} pk_values={pk_values}"
+                    "event=row_upserted schema=%s table=%s pk_values=%s", tbl.schema, tbl.name, pk_values
                 )
 
             def _do_upsert(engine, _stm=upsert_stm):
@@ -388,7 +385,7 @@ class DBBase:
 
             primary_rowcount = self._write_to_all_engines(_do_upsert)
             affected_rows += primary_rowcount
-            self.log.debug(f"Rowcount: {primary_rowcount}\n")
+            self.log.debug("event=upsert_rowcount rowcount=%s", primary_rowcount)
 
         return affected_rows
 
@@ -425,7 +422,9 @@ class DBBase:
             pk_names = [col.name for col in tbl.primary_key.columns]
             for record in chunk:
                 pk_values = {name: record[name] for name in pk_names}
-                self.log.debug(f"event=insert schema={tbl.schema} table={tbl.name} pk_values={pk_values}")
+                self.log.debug(
+                    "event=row_inserted schema=%s table=%s pk_values=%s", tbl.schema, tbl.name, pk_values
+                )
 
             def _do_insert(engine, _stm=insert_stm):
                 with engine.connect() as con:

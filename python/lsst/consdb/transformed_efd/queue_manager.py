@@ -142,8 +142,10 @@ class QueueManager:
             # Check if task already exists and is idle to avoid duplicates
             if self.check_existing_task_by_interval(t[0], t[1], butler_repo, "idle"):
                 self.log.debug(
-                    f"Task already exists and is idle for interval {t[0]} to {t[1]}. "
-                    f" Skipping task creation."
+                    "event=task_creation_skipped_existing_idle start=%s end=%s repo=%s",
+                    t[0],
+                    t[1],
+                    butler_repo,
                 )
             else:
                 task = {
@@ -162,10 +164,13 @@ class QueueManager:
                 df = pandas.DataFrame(rows)
                 tasks = self.dao.bulk_insert(df)
             except Exception as e:
-                self.log.error(f"Failed to insert tasks: error={e}")
+                self.log.error("event=task_bulk_insert_failed error=%s", e, exc_info=True)
                 return []
 
-        self.log.debug(f"Created {len(tasks)} new tasks.")
+        if tasks:
+            self.log.info("event=tasks_created count=%s", len(tasks))
+        else:
+            self.log.debug("event=tasks_created count=0")
         return tasks
 
     def create_time_intervals(
@@ -268,8 +273,10 @@ class QueueManager:
         current_time_with_margin = Time.now().utc + TimeDelta(margin_seconds, format="sec")
         if task is not None and task["end_time"] >= current_time_with_margin:
             self.log.debug(
-                f"Task end time {task['end_time']} is not at least "
-                f"{abs(margin_seconds)} seconds in the past. Skipping task."
+                "event=task_skipped_by_margin id=%s task_end_time=%s required_margin_seconds=%s",
+                task["id"],
+                task["end_time"],
+                abs(margin_seconds),
             )
             return None
 

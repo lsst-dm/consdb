@@ -82,7 +82,7 @@ def get_logger(path: str | Path | None = None) -> logging.Logger:
             file_handler.setFormatter(file_fmt)
             log.addHandler(file_handler)
         except (IOError, PermissionError, OSError) as e:
-            log.warning(f"Failed to initialize file logging: error={str(e)}")
+            log.warning("event=logging_file_init_failed error=%s", e)
 
     return log
 
@@ -248,10 +248,13 @@ async def _process_task(
     dict
         Processed counts: {'exposures': int, 'visits1': int}
     """
-    log.debug("-" * 51)
     log.debug(
-        f"Processing Task: id={task['id']} start_time={task['start_time']} end_time={task['end_time']} "
-        f"timewindow={task['timewindow']}"
+        "event=task_processing_start id=%s start_time=%s end_time=%s timewindow=%s retry=%s",
+        task["id"],
+        task["start_time"],
+        task["end_time"],
+        task["timewindow"],
+        retry,
     )
 
     qm.dao.task_started(task["id"])
@@ -262,12 +265,13 @@ async def _process_task(
             instrument,
             _to_astropy_time(task["start_time"]) - TimeDelta(timewindow * 60, format="sec"),
             _to_astropy_time(task["end_time"]) + TimeDelta(timewindow * 60, format="sec"),
+            task_context=task,
         )
         qm.dao.task_update_counts(task["id"], exposures=counts["exposures"], visits1=counts["visits1"])
         qm.dao.task_completed(task["id"])
         return counts
     except Exception as e:
-        log.error(f"Task failure: id={task['id']} error={str(e)}")
+        log.error("event=task_processing_failed id=%s error=%s", task["id"], e, exc_info=True)
         qm.dao.task_failed(task["id"], error=str(e))
         return {"exposures": 0, "visits1": 0}
 
@@ -295,13 +299,11 @@ async def handle_job(
     list[dict]
         Tasks to process (queued + failed)
     """
-    log.debug("-" * 51)
     if args.resume:
-        log.info("Resuming idle tasks")
+        log.info("event=job_resume_idle_tasks")
         tasks = qm.waiting_tasks(args.repo, "idle", start_time, end_time)
     else:
-        log.debug(f"Creating new tasks: start_time={start_time} end_time={end_time}")
-        log.debug("Creating new tasks...")
+        log.debug("event=job_create_tasks start_time=%s end_time=%s", start_time, end_time)
         qm.create_tasks(
             start_time=start_time,
             end_time=end_time,
@@ -335,8 +337,7 @@ async def handle_cronjob(
         Tasks ready for processing
     """
     if args.failure_monitor:
-        log.debug("-" * 51)
-        log.info("Running failure monitor checks")
+        log.debug("event=failure_monitor_run_start")
         monitor = FailureMonitor(
             qm,
             db_uri=args.db_conn_str,
@@ -347,13 +348,12 @@ async def handle_cronjob(
         return monitor.run(args)
 
     else:
-        log.debug("-" * 51)
-        log.debug("Checking for pending tasks")
+        log.debug("event=cronjob_check_pending_tasks")
         tasks = qm.recent_tasks_to_run(margin_seconds=-300)
         waiting_tasks = qm.waiting_tasks(args.repo, "pending")
 
         if not tasks and not waiting_tasks:
-            log.debug("Creating new periodic tasks...")
+            log.debug("event=cronjob_create_periodic_tasks")
             qm.create_tasks(
                 start_time=None,
                 end_time=None,
@@ -400,12 +400,16 @@ async def process_tasks(
     for i in range(0, len(tasks), batch_size):
         # Check between batches
         if shutdown_event and shutdown_event.is_set():
-            log.warning("Graceful shutdown completed between batches.")
+            log.warning("event=graceful_shutdown_between_batches")
             break
 
         batch = tasks[i : i + batch_size]
-        log.debug("")  # Empty line as separator
-        log.debug(f"Processing batch: {i//batch_size + 1}/{(len(tasks)-1)//batch_size + 1}")
+        log.debug(
+            "event=task_batch_processing batch=%s total_batches=%s batch_size=%s",
+            i // batch_size + 1,
+            (len(tasks) - 1) // batch_size + 1,
+            len(batch),
+        )
 
         for task in batch:
             await asyncio.sleep(0)  # Yield control to event loop
@@ -416,16 +420,17 @@ async def process_tasks(
 
             # Check between tasks
             if shutdown_event and shutdown_event.is_set():
-                log.warning("Graceful shutdown completed between tasks.")
+                log.warning("event=graceful_shutdown_between_tasks")
                 break  # Exit task loop
 
         if shutdown_event.is_set():
             break  # Exit batch loop
 
-    log.debug("-" * 51)
     log.info(
-        f"Summary (inserted/updated): tasks={totals['tasks']} exposures={totals['exposures']}"
-        f" visits={totals['visits1']}"
+        "event=task_processing_summary tasks=%s exposures=%s visits=%s",
+        totals["tasks"],
+        totals["exposures"],
+        totals["visits1"],
     )
 
 
@@ -439,7 +444,7 @@ async def main() -> None:
     def _signal_handler() -> None:
         """Handle shutdown signals gracefully."""
         shutdown_event.set()
-        log.warning("Received shutdown signal, finishing current task/batch...")
+        log.warning("event=shutdown_signal_received action=finish_current_task_or_batch")
 
     # Set up signal handlers
     loop = asyncio.get_running_loop()
@@ -447,6 +452,19 @@ async def main() -> None:
         loop.add_signal_handler(sig, _signal_handler)
 
     try:
+        log.info(
+            "event=execution_config mode=%s instrument=%s repo=%s timedelta_min=%s timewindow_min=%s "
+            "resume=%s failure_monitor=%s monitor_window_days=%s",
+            args.mode,
+            args.instrument,
+            args.repo,
+            args.timedelta,
+            args.timewindow,
+            args.resume,
+            args.failure_monitor,
+            args.monitor_window_days,
+        )
+
         if args.mode == "cronjob" and args.resume:
             raise ValueError("--resume is only supported with --mode job")
         if args.mode == "job" and args.failure_monitor:
@@ -471,21 +489,22 @@ async def main() -> None:
             db_uri=args.db_conn_str, instrument=args.instrument, schema="efd_scheduler", logger=log
         )
 
-        log.info("All components initialized successfully")
+        log.debug("event=components_initialized")
 
-        if len(args.db_conn_str) > 1:
-            safe_primary = (
-                args.db_conn_str[0].split("@")[-1] if "@" in args.db_conn_str[0] else args.db_conn_str[0]
-            )
-            log.info(
-                f"Multi-DB mode: writing to {len(args.db_conn_str)} databases. "
-                f"Primary (reads+writes): ...@{safe_primary}"
-            )
+        safe_uris = [uri.split("@")[-1] if "@" in uri else uri for uri in args.db_conn_str]
+        safe_primary = safe_uris[0]
+        safe_secondaries = safe_uris[1:]
+        log.info(
+            "event=db_targets_configured db_count=%s primary=...@%s secondaries=%s",
+            len(args.db_conn_str),
+            safe_primary,
+            safe_secondaries,
+        )
 
         # Cleanup orphaned tasks
         fixed = qm.dao.fail_orphaned_tasks()
         if fixed:
-            log.debug(f"Marked {fixed} orphaned task(s) as failed")
+            log.info("event=orphaned_tasks_marked_failed count=%s", fixed)
 
         # Handle time parameters
         time_params = {}
@@ -515,15 +534,15 @@ async def main() -> None:
         )
 
     except asyncio.CancelledError:
-        log.warning("Shutdown completed")
+        log.warning("event=shutdown_completed")
     except ValueError as e:
-        log.error(f"Configuration error: error={e}")
+        log.error("event=configuration_error error=%s", e)
         exit_code = 1
     except Exception as e:
-        log.error(f"Processing failed: error={e}", exc_info=True)
+        log.error("event=processing_failed error=%s", e, exc_info=True)
         exit_code = 1
     finally:
-        log.info(f"Runtime: {datetime.now(timezone.utc).replace(tzinfo=None) - exec_start}")
+        log.info("event=runtime duration=%s", datetime.now(timezone.utc).replace(tzinfo=None) - exec_start)
         sys.exit(exit_code)
 
 

@@ -84,7 +84,7 @@ class TransformdDao(DBBase):
         try:
             self.update(id, {"status": status, **kwargs})
         except Exception as e:
-            self.log.error(f"Task update failed: id={id} status={status} error={e}", exc_info=True)
+            self.log.error("event=task_update_failed id=%s status=%s error=%s", id, status, e, exc_info=True)
             raise Exception(f"Error updating task: error={e}") from e
 
     @staticmethod
@@ -169,7 +169,10 @@ class TransformdDao(DBBase):
                 chunk_tasks.append(task_dict)
                 pk_values = {k: task_dict[k] for k in pk_names}
                 self.log.debug(
-                    f"event=row_inserted schema={self.tbl.schema} table={self.tbl.name} pk_values={pk_values}"
+                    "event=row_inserted schema=%s table=%s pk_values=%s",
+                    self.tbl.schema,
+                    self.tbl.name,
+                    pk_values,
                 )
 
             inserted_tasks.extend(chunk_tasks)
@@ -188,8 +191,10 @@ class TransformdDao(DBBase):
                         con.commit()
                 except Exception as e:
                     self.log.error(
-                        f"bulk_insert failed on db_{db_idx+1}/{len(self.db_uris)} "
-                        f"uri=...@{safe_uri} error={e}"
+                        "event=bulk_insert_replication_failed db=%s uri=...@%s error=%s",
+                        f"db_{db_idx+1}/{len(self.db_uris)}",
+                        safe_uri,
+                        e,
                     )
 
         return inserted_tasks
@@ -233,7 +238,10 @@ class TransformdDao(DBBase):
                     con.commit()
             except Exception as e:
                 self.log.error(
-                    f"insert failed on db_{db_idx+1}/{len(self.db_uris)} " f"uri=...@{safe_uri} error={e}"
+                    "event=insert_replication_failed db=%s uri=...@%s error=%s",
+                    f"db_{db_idx+1}/{len(self.db_uris)}",
+                    safe_uri,
+                    e,
                 )
 
         return task

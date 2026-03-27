@@ -173,13 +173,19 @@ class FailedTaskRetryCheck:
             if next_wait < since_created < max_age:
                 selected.append(task)
                 log.debug(
-                    f"Task {task['id']} retryable: created_at={task['created_at']} elapsed={since_created}"
-                    f" required_wait={next_wait}"
+                    "event=retry_candidate_selected id=%s created_at=%s elapsed=%s required_wait=%s",
+                    task["id"],
+                    task["created_at"],
+                    since_created,
+                    next_wait,
                 )
             elif since_created >= max_age:
                 log.debug(
-                    f"Task {task['id']} stale: created_at={task['created_at']} elapsed={since_created}"
-                    f" required_wait={next_wait}"
+                    "event=retry_candidate_stale id=%s created_at=%s elapsed=%s required_wait=%s",
+                    task["id"],
+                    task["created_at"],
+                    since_created,
+                    next_wait,
                 )
                 qm._mark_task_stale(task["id"])
 
@@ -224,10 +230,13 @@ class ButlerReconciliationCheck:
         missing_exp = [record for record in exp_records if record["id"] not in existing_exp_ids]
         missing_vis = [record for record in vis_records if record["id"] not in existing_vis_ids]
 
-        self.log.debug(
-            "Butler reconciliation window: "
-            f"day_obs_start={day_start} day_obs_end={day_end} "
-            f"missing_exposures={len(missing_exp)} missing_visits={len(missing_vis)}"
+        self.log.info(
+            "event=butler_reconciliation_window day_obs_start=%s day_obs_end=%s missing_exposures=%s "
+            "missing_visits=%s",
+            day_start,
+            day_end,
+            len(missing_exp),
+            len(missing_vis),
         )
 
         exp_intervals = _intervals_from_sequential_records(missing_exp)
@@ -246,10 +255,13 @@ class ButlerReconciliationCheck:
                 )
             )
 
-        self.log.debug(
-            "Butler reconciliation result: "
-            f"exposure_intervals={len(exp_intervals)} visit_intervals={len(vis_intervals)} "
-            f"intervals_merged={len(merged)} tasks_created={len(created_tasks)}"
+        self.log.info(
+            "event=butler_reconciliation_result exposure_intervals=%s visit_intervals=%s intervals_merged=%s "
+            "tasks_created=%s",
+            len(exp_intervals),
+            len(vis_intervals),
+            len(merged),
+            len(created_tasks),
         )
         return created_tasks
 
@@ -292,8 +304,10 @@ class FailureMonitor:
             dedup[task_id] = task
 
         ordered = sorted(dedup.values(), key=lambda task: task["id"])
-        self.log.debug(
-            f"Failure monitor selected tasks: retry={len(retry_tasks)} "
-            f"created={len(reconciled_tasks)} total={len(ordered)}"
+        self.log.info(
+            "event=failure_monitor_selected_tasks retry=%s created=%s total=%s",
+            len(retry_tasks),
+            len(reconciled_tasks),
+            len(ordered),
         )
         return ordered
