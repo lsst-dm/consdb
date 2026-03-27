@@ -99,6 +99,14 @@ class VisitEfdDao(DBBase):
         """
         return self.execute_upsert(tbl=self.tbl, df=df, commit_every=commit_every)
 
+    def select_ids_by_day_obs(self, day_obs_start: int, day_obs_end: int) -> set[int]:
+        """Return visit IDs stored within an inclusive day_obs range."""
+        stm = select(self.tbl.c.visit_id).where(
+            and_(self.tbl.c.day_obs >= day_obs_start, self.tbl.c.day_obs <= day_obs_end)
+        )
+        ids = self.fetch_scalars(stm)
+        return {int(visit_id) for visit_id in ids if visit_id is not None}
+
 
 class VisitEfdUnpivotedDao(DBBase):
     """Data Access Object for visit1_efd_unpivoted table.

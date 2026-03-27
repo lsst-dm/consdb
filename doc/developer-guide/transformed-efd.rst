@@ -146,11 +146,13 @@ Database access objects for different data sources:
 **DBBase (base.py)**
 
 - Abstract base class providing common database operations and connection management
-- Implements SQLAlchemy engine creation with NullPool for connection management
+- Accepts ``db_uri`` as a single string or a list of strings; the first URI is the **primary** (reads + writes), any additional URIs are **write-only replicas**
+- Implements SQLAlchemy engine creation with NullPool; one engine per URI, lazy-initialized via ``get_db_engine(index)``
+- Provides ``_write_to_all_engines(write_fn)`` to fan-out writes: primary failure raises immediately, secondary failure logs an error and continues
 - Provides transaction management with automatic commit handling
 - Handles database-specific SQL dialect differences (SQLite and PostgreSQL)
-- Includes upsert and bulk insert operations with chunked processing
-- Provides query execution methods (fetch_all_dict, fetch_one_dict, fetch_scalar)
+- Includes upsert and bulk insert operations with chunked processing, all replicated across configured databases
+- Provides query execution methods (fetch_all_dict, fetch_one_dict, fetch_scalar, fetch_scalars)
 
 **InfluxDbDao (influxdb.py)**
 
@@ -164,7 +166,8 @@ Database access objects for different data sources:
 **ButlerDao (butler.py)**
 
 - Exposure/visit metadata retrieval from LSST Butler system
-- Queries exposure and visit information within specified time ranges using timespan overlaps
+- Queries exposure and visit information within specified time ranges using timespan overlaps via ``exposures_by_period()`` / ``visits_by_period()``
+- ``exposures_by_day_obs(instrument, day_obs_start, day_obs_end)`` and ``visits_by_day_obs(instrument, day_obs_start, day_obs_end)`` for day_obs range queries used by the failure monitor reconciliation
 - Handles Butler repository configuration through Butler object initialization
 - Provides metadata filtering by instrument and time period
 - Converts Butler resultsets to pandas DataFrames and dictionaries
@@ -176,6 +179,7 @@ Database access objects for different data sources:
 - Implements upsert operations using execute_upsert method from DBBase
 - Manages both regular and unpivoted table variants (exposure_efd, exposure_efd_unpivoted)
 - Handles primary key validation and missing column detection
+- ``select_ids_by_day_obs(day_obs_start, day_obs_end) -> set[int]`` — returns the set of exposure/visit IDs already stored for a day_obs range; used by the failure monitor reconciliation to detect missing records
 - Provides row counting and retrieval by ID operations
 - Uses chunked processing for large dataset inserts (commit_every=100)
 
@@ -184,9 +188,33 @@ Database access objects for different data sources:
 - Task scheduling metadata management for the transformed\_efd\_scheduler table
 - Manages processing queue state with status tracking (pending, running, completed, failed)
 - Handles task lifecycle methods: task\_started, task\_completed, task\_failed, task\_retries\_increment
-- Provides task selection methods: select\_next, select\_last, select\_recent, select\_queued
-- Implements orphaned task detection and cleanup via fail\_orphaned\_tasks
+- Provides task selection methods: select\_next, select\_last, select\_recent, select\_queued; task queries are ordered by ``created_at`` and ``id`` for deterministic ordering
+- Implements orphaned task detection and cleanup via fail\_orphaned\_tasks — replicated across all configured databases
+- Write operations (insert, bulk\_insert, update, fail\_orphaned\_tasks) fan-out to secondary databases via DBBase._write_to_all_engines; insert operations insert into primary first to capture auto-generated IDs, then replicate complete rows to secondaries
 - Manages execution time tracking and retry counting for failed tasks
+
+Failure Monitor (failure_monitor.py)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The failure monitor is a separate module that orchestrates two types of recovery checks, invoked when the pipeline runs with ``--failure-monitor`` in cronjob mode.
+
+**FailedTaskRetryCheck**
+
+- Selects failed tasks eligible for retry using exponential backoff: ``base_hour ** (retries + 1)`` hours must have elapsed since creation before the task is retried
+- Tasks are retried at most ``max_retries`` times (default: 3)
+- Tasks older than ``max_age_hours`` (default: 72 h) are marked stale via ``QueueManager._mark_task_stale()`` and excluded from further retries
+
+**ButlerReconciliationCheck**
+
+- Queries Butler for all exposures and visits in a day_obs window (controlled by ``--monitor-window-days``, default: 7)
+- Queries the primary database for IDs already stored in ``exposure_efd`` / ``visit1_efd`` via ``select_ids_by_day_obs()``
+- Builds time intervals from contiguous missing records (grouped by day_obs and seq_num) and merges overlapping intervals
+- Creates scheduler tasks for each merged interval via ``QueueManager.create_tasks()``
+
+**FailureMonitor**
+
+- Orchestrates both checks and deduplicates the resulting task list by ID
+- Returns the combined, ordered list of tasks for immediate processing in the same pipeline execution
 
 Scheduler Tables and Task Management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -397,7 +425,10 @@ The main application entry point that orchestrates the entire transformed EFD wo
 
 - **parse\_utc\_naive()**: Converts ISO datetime strings to UTC-naive datetime objects
 - **\_to\_astropy\_time()**: Converts datetime objects to Astropy Time objects in UTC scale
-- **\_get\_retryable\_tasks()**: Implements exponential backoff logic for failed task retries
+
+.. note::
+
+   The ``_get_retryable_tasks()`` helper that previously lived in ``transform_efd.py`` has been moved into ``FailureMonitor`` / ``FailedTaskRetryCheck`` in ``failure_monitor.py``.
 
 **Component Initialization Sequence**
 
@@ -414,13 +445,15 @@ The main application entry point that orchestrates the entire transformed EFD wo
 **Job Mode**: One-time processing of specific time ranges
 
 - Requires start\_time and end\_time parameters
-- Supports resume functionality for interrupted jobs
+- Supports ``--resume`` to pick up existing idle tasks for interrupted jobs
 - Creates tasks for the specified time window
 
 **Cronjob Mode**: Continuous periodic processing
 
 - Automatically creates tasks based on current time
-- Handles failed task retries with exponential backoff
+- Default behaviour: picks up pending/recent tasks, creates tasks if none exist
+- With ``--failure-monitor``: runs ``FailureMonitor`` instead of normal task creation — performs failed-task retry and Butler reconciliation, then processes the resulting tasks
+- ``--resume`` is not valid in cronjob mode and raises a ``ValueError`` at startup
 - Manages orphaned task detection and cleanup
 
 **Error Handling and Recovery**
@@ -525,12 +558,23 @@ The system follows a layered architecture with clear separation of concerns:
           -butler: Butler
           +exposures_by_period()
           +visits_by_period()
+          +exposures_by_day_obs()
+          +visits_by_day_obs()
+      }
+
+      class FailureMonitor {
+          -qm: QueueManager
+          -retry_check: FailedTaskRetryCheck
+          -reconciliation_check: ButlerReconciliationCheck
+          +run(args)
       }
 
       class DBBase {
-          -engine: Engine
+          -db_uris: list[str]
           -db_uri: str
-          +get_db_engine()
+          -_engines: list[Engine]
+          +get_db_engine(index)
+          +_write_to_all_engines(write_fn)
           +execute_upsert()
           +fetch_all_dict()
       }
@@ -539,6 +583,7 @@ The system follows a layered architecture with clear separation of concerns:
           -tbl: Table
           +upsert()
           +get_by_exposure_id()
+          +select_ids_by_day_obs()
           +count()
       }
 
@@ -546,6 +591,7 @@ The system follows a layered architecture with clear separation of concerns:
           -tbl: Table
           +upsert()
           +get_by_visit_id()
+          +select_ids_by_day_obs()
           +count()
       }
 
@@ -602,6 +648,13 @@ The system follows a layered architecture with clear separation of concerns:
       TransformEfd --> Butler : "creates Butler instance"
       TransformEfd --> InfluxDbDao : "creates EFD connection"
       TransformEfd --> ConfigModel : "validates configuration"
+      TransformEfd --> FailureMonitor : "instantiates in cronjob+failure-monitor mode"
+
+      %% FailureMonitor relationships
+      FailureMonitor --> QueueManager : "selects and creates tasks"
+      FailureMonitor --> ButlerDao : "queries for reconciliation"
+      FailureMonitor --> ExposureEfdDao : "checks existing IDs"
+      FailureMonitor --> VisitEfdDao : "checks existing IDs"
 
       %% Queue management relationships
       QueueManager --> TransformdDao : "manages via"
@@ -898,9 +951,9 @@ Required arguments:
 - ``-c, --config``: YAML config file path
 - ``-i, --instrument``: Instrument name (converted to lowercase)
 - ``-r, --repo``: Butler repository path (default: s3://rubin-summit-users/butler.yaml)
-- ``-d, --db``: Database connection string
+- ``-d, --db``: One or more database connection URI(s). The first URI is the **primary** (reads + writes); additional URIs are **write-only replicas**. Example: ``-d postgresql://primary/db postgresql://replica/db``
 - ``-E, --efd``: EFD connection string
-- ``-m, --mode``: Execution mode (job or cronjob)
+- ``-m, --mode``: Execution mode (``job`` or ``cronjob``)
 
 Optional arguments:
 
@@ -909,7 +962,9 @@ Optional arguments:
 - ``-t, --timedelta``: Processing interval in minutes (default: 5)
 - ``-w, --timewindow``: Overlap window in minutes (default: 1)
 - ``-l, --logfile``: Log file path (optional, logs to console if not specified)
-- ``-R, --resume``: Resume pending tasks (flag, no value required)
+- ``-R, --resume``: Resume existing idle tasks (job mode only; invalid with cronjob mode)
+- ``--failure-monitor``: Run failure monitor checks — retry eligible failed tasks and reconcile missing Butler records (cronjob mode only; invalid with job mode)
+- ``--monitor-window-days``: Day_obs window size for Butler reconciliation (default: 7; used with ``--failure-monitor``)
 
 Docker Container Execution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1253,12 +1308,13 @@ Code Organization
     ├── config_model.py      # Pydantic validation models
     ├── dao/                 # Data access objects
     │   ├── __init__.py
-    │   ├── base.py          # DBBase foundation class
-    │   ├── butler.py        # Butler metadata access
+    │   ├── base.py          # DBBase foundation class (multi-DB write fanout)
+    │   ├── butler.py        # Butler metadata access (incl. day_obs range queries)
     │   ├── influxdb.py      # EFD data querying
-    │   ├── exposure_efd.py  # Output table operations
-    │   ├── visit_efd.py
-    │   └── transformd.py    # Task scheduling
+    │   ├── exposure_efd.py  # Output table operations (incl. select_ids_by_day_obs)
+    │   ├── visit_efd.py     # Output table operations (incl. select_ids_by_day_obs)
+    │   └── transformd.py    # Task scheduling (multi-DB writes)
+    ├── failure_monitor.py   # FailureMonitor, FailedTaskRetryCheck, ButlerReconciliationCheck
     ├── generate_schema_from_config.py  # Schema generation
     ├── queue_manager.py     # Task scheduling
     ├── schemas/             # Generated database schemas

@@ -127,6 +127,8 @@ Understanding when and how data becomes available is important for effective que
   - The EFD telemetry was not available during the observation
   - The transformation process encountered errors
   - The observation occurred before the transformation service was active
+
+When the **failure monitor** cronjob is configured and running, it reconciles missing data by comparing Butler exposure and visit records against what is stored in the database for a configurable day_obs window (default: last 7 days) and requeues any gaps for processing.
 - **Data Completeness**: Not all telemetry topics may be available for every observation, depending on instrument configuration and operational status
 
 To check data availability for a specific time period, you can query the count of records for your time range of interest using the indexed ``day_obs`` column.

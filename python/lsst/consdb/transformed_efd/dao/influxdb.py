@@ -117,7 +117,12 @@ class InfluxDBClient:
             return response.json()
         except requests.exceptions.RequestException as exc:
             self.log.error(
-                f"Request failed: url={self.url}/query params={params} data={data} error={exc}", exc_info=True
+                "event=influx_request_failed url=%s/query params=%s data=%s error=%s",
+                self.url,
+                params,
+                data,
+                exc,
+                exc_info=True,
             )
             raise Exception(f"An error occurred: error={exc}") from exc
 
@@ -148,7 +153,7 @@ class InfluxDBClient:
                                     field_keys.append(value[0])
             return field_keys
         except Exception as e:
-            self.log.error(f"Error fetching topic fields: topic={topic_name} error={e}")
+            self.log.error("event=influx_topic_fields_fetch_failed topic=%s error=%s", topic_name, e)
             return None
 
     def _make_fields(self, fields, base_fields):
@@ -371,7 +376,7 @@ class InfluxDBClient:
             # vals.update({"times": df["times"]})
             return pd.DataFrame(vals, index=df.index)
         except Exception as e:
-            self.log.error(f"Error merging field: field={f} error={e}")
+            self.log.error("event=influx_merge_packed_failed field=%s error=%s", f, e)
             raise
 
     def _convert_index_format(self, x):
@@ -556,6 +561,7 @@ class InfluxDBClient:
         use_old_csc_indexing: bool = False,
         aggregate_interval: str | None = None,
         aggregate_func: str | None = None,
+        log_context: dict[str, object] | None = None,
     ) -> pd.DataFrame:
         """
         Executes a single time series query and returns a DataFrame.
@@ -586,6 +592,20 @@ class InfluxDBClient:
         )
         response = self.query(query)
         if "series" not in response["results"][0]:
+            self.log.warning(
+                "event=influx_no_series topic=%s task_id=%s day_obs=%s day_obs_min=%s "
+                "day_obs_max=%s exposure_id_min=%s "
+                "exposure_id_max=%s visit_id_min=%s visit_id_max=%s",
+                topic_name,
+                log_context.get("task_id") if log_context else None,
+                log_context.get("day_obs") if log_context else None,
+                log_context.get("day_obs_min") if log_context else None,
+                log_context.get("day_obs_max") if log_context else None,
+                log_context.get("exposure_id_min") if log_context else None,
+                log_context.get("exposure_id_max") if log_context else None,
+                log_context.get("visit_id_min") if log_context else None,
+                log_context.get("visit_id_max") if log_context else None,
+            )
             return pd.DataFrame()
 
         return self._to_dataframe(response)
@@ -600,6 +620,7 @@ class InfluxDBClient:
         use_old_csc_indexing: bool = False,
         aggregate_interval: str | None = None,
         aggregate_func: str | None = None,
+        log_context: dict[str, object] | None = None,
     ):
         """Select time series data from InfluxDB based on a time range.
         This function queries specific fields from the InfluxDB database
@@ -654,12 +675,15 @@ class InfluxDBClient:
                 use_old_csc_indexing,
                 aggregate_interval=aggregate_interval,
                 aggregate_func=aggregate_func,
+                log_context=log_context,
             )
 
         # Otherwise, split the query into chunks and call the helper for each.
-        self.log.info(
-            f"Querying {len(fields)} fields for topic '{topic_name}', which exceeds the limit of "
-            f"{self.max_fields_per_query}. Splitting into chunks."
+        self.log.debug(
+            "event=influx_chunked_query topic=%s fields=%s max_fields_per_query=%s",
+            topic_name,
+            len(fields),
+            self.max_fields_per_query,
         )
 
         all_series_dfs = []
@@ -668,7 +692,13 @@ class InfluxDBClient:
         field_chunks = itertools.batched(fields, self.max_fields_per_query)
 
         for i, chunk in enumerate(field_chunks):
-            self.log.debug(f"Querying field chunk {i+1}/{total_chunks} ({len(chunk)} fields)...")
+            self.log.debug(
+                "event=influx_query_chunk topic=%s chunk=%s total_chunks=%s fields_in_chunk=%s",
+                topic_name,
+                i + 1,
+                total_chunks,
+                len(chunk),
+            )
             try:
                 df_chunk = self._execute_single_timeseries_query(
                     topic_name,
@@ -679,14 +709,44 @@ class InfluxDBClient:
                     use_old_csc_indexing,
                     aggregate_interval=aggregate_interval,
                     aggregate_func=aggregate_func,
+                    log_context=log_context,
                 )
                 if not df_chunk.empty:
                     all_series_dfs.append(df_chunk)
             except Exception as e:
-                self.log.error(f"Failed to query chunk {i+1} for topic {topic_name}: {e}", exc_info=True)
+                self.log.error(
+                    "event=influx_query_chunk_failed topic=%s chunk=%s error=%s "
+                    "task_id=%s day_obs=%s day_obs_min=%s "
+                    "day_obs_max=%s exposure_id_min=%s exposure_id_max=%s visit_id_min=%s visit_id_max=%s",
+                    topic_name,
+                    i + 1,
+                    e,
+                    log_context.get("task_id") if log_context else None,
+                    log_context.get("day_obs") if log_context else None,
+                    log_context.get("day_obs_min") if log_context else None,
+                    log_context.get("day_obs_max") if log_context else None,
+                    log_context.get("exposure_id_min") if log_context else None,
+                    log_context.get("exposure_id_max") if log_context else None,
+                    log_context.get("visit_id_min") if log_context else None,
+                    log_context.get("visit_id_max") if log_context else None,
+                    exc_info=True,
+                )
 
         if not all_series_dfs:
-            self.log.warning(f"All query chunks for topic {topic_name} returned empty or failed.")
+            self.log.warning(
+                "event=influx_all_chunks_empty_or_failed topic=%s task_id=%s day_obs=%s "
+                "day_obs_min=%s day_obs_max=%s "
+                "exposure_id_min=%s exposure_id_max=%s visit_id_min=%s visit_id_max=%s",
+                topic_name,
+                log_context.get("task_id") if log_context else None,
+                log_context.get("day_obs") if log_context else None,
+                log_context.get("day_obs_min") if log_context else None,
+                log_context.get("day_obs_max") if log_context else None,
+                log_context.get("exposure_id_min") if log_context else None,
+                log_context.get("exposure_id_max") if log_context else None,
+                log_context.get("visit_id_min") if log_context else None,
+                log_context.get("visit_id_max") if log_context else None,
+            )
             return pd.DataFrame()
 
         # Concatenate all resulting dataframes horizontally and clean up.
@@ -705,6 +765,7 @@ class InfluxDBClient:
         ref_timestamp_fmt="unix_tai",
         ref_timestamp_scale="tai",
         use_old_csc_indexing=False,
+        log_context: dict[str, object] | None = None,
     ):
         """Select and unpack fields that are time samples into a dataframe.
 
@@ -772,6 +833,7 @@ class InfluxDBClient:
             end,
             index=index,
             use_old_csc_indexing=use_old_csc_indexing,
+            log_context=log_context,
         )
         return self.merge_packed_time_series(
             result,

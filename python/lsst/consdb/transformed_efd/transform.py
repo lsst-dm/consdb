@@ -42,7 +42,9 @@ def handle_processing_errors(func):
         try:
             return func(self, *args, **kwargs)
         except Exception as e:
-            self.log.error(f"Error in {func.__name__}: {e}")
+            self.log.error(
+                "event=transform_handler_error function=%s error=%s", func.__name__, e, exc_info=True
+            )
             raise
 
     return wrapper
@@ -54,7 +56,7 @@ class Transform:
     def __init__(
         self,
         butler: Butler,
-        db_uri: str,
+        db_uri: str | list[str],
         efd: InfluxDbDao,
         config: Dict[str, Any],
         logger: logging.Logger,
@@ -94,18 +96,21 @@ class Transform:
         instrument: str,
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
+        task_context: Dict[str, Any] | None = None,
     ) -> Dict[str, int]:
         """Process the given time interval for a specific instrument."""
         count = self._initialize_counts()
-        self.log.debug(f"Interval + Time Window: start_time={start_time} end_time={end_time}")
+        self.log.debug("event=process_interval start_time=%s end_time=%s", start_time, end_time)
 
         exposures, visits = self._retrieve_exposures_and_visits(instrument, start_time, end_time)
+        log_context = self._build_log_context(task_context, exposures, visits)
+        self._log_task_impact_scope(log_context, start_time, end_time)
 
         if not exposures and not visits:
             self.log.debug("No exposures or visits found for the period.")
             return count
 
-        results = self._process_interval(exposures, visits, start_time, end_time)
+        results = self._process_interval(exposures, visits, start_time, end_time, log_context=log_context)
 
         count = self._store_results(instrument, results)
         return count
@@ -205,6 +210,7 @@ class Transform:
         visits: List[Dict[str, Any]],
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
+        log_context: Dict[str, Any] | None = None,
     ) -> Dict[str, Any]:
         """Process the given time interval for a specific instrument."""
         results = {
@@ -229,7 +235,7 @@ class Transform:
         }
 
         topic_interval = self._get_topic_interval(start_time, end_time, exposures, visits)
-        self.log.debug(f"Topic Interval: start={topic_interval[0]} end={topic_interval[1]}")
+        self.log.debug("event=topic_interval start=%s end=%s", topic_interval[0], topic_interval[1])
         topics_map = self._map_topics()
         for key, topic in topics_map.items():
             processing_topic = copy.deepcopy(topic)
@@ -245,9 +251,18 @@ class Transform:
                 processing_topic["function_args"]["start_offset"] = start_offset
                 offset_topic_interval = topic_interval.copy()
                 offset_topic_interval[0] += astropy.time.TimeDelta(float(start_offset) * 3600, format="sec")
-                self._process_topic(processing_topic, offset_topic_interval, exposures, visits, results)
+                self._process_topic(
+                    processing_topic,
+                    offset_topic_interval,
+                    exposures,
+                    visits,
+                    results,
+                    log_context=log_context,
+                )
             else:
-                self._process_topic(processing_topic, topic_interval, exposures, visits, results)
+                self._process_topic(
+                    processing_topic, topic_interval, exposures, visits, results, log_context=log_context
+                )
 
         return results
 
@@ -259,14 +274,29 @@ class Transform:
         exposures: List[Dict[str, Any]],
         visits: List[Dict[str, Any]],
         results: Dict[str, Any],
+        log_context: Dict[str, Any] | None = None,
     ) -> None:
         """Process a single topic and update results."""
-        self.log.debug(f"Querying Topic: name={topic['name']}")
-        topic_series = self._query_efd_values(topic, topic_interval, topic["is_packed"])
+        self.log.debug("event=query_topic name=%s", topic["name"])
+        topic_series = self._query_efd_values(
+            topic, topic_interval, topic["is_packed"], log_context=log_context
+        )
 
         if topic_series.empty:
-            if self.log.isEnabledFor(logging.DEBUG):
-                self.log.warning(f"No data in topic: name={topic['name']}")
+            self.log.warning(
+                "event=topic_no_data name=%s task_id=%s day_obs=%s day_obs_min=%s "
+                "day_obs_max=%s exposure_id_min=%s "
+                "exposure_id_max=%s visit_id_min=%s visit_id_max=%s",
+                topic["name"],
+                log_context.get("task_id") if log_context else None,
+                log_context.get("day_obs") if log_context else None,
+                log_context.get("day_obs_min") if log_context else None,
+                log_context.get("day_obs_max") if log_context else None,
+                log_context.get("exposure_id_min") if log_context else None,
+                log_context.get("exposure_id_max") if log_context else None,
+                log_context.get("visit_id_min") if log_context else None,
+                log_context.get("visit_id_max") if log_context else None,
+            )
             return
 
         for column in topic["columns"]:
@@ -283,7 +313,7 @@ class Transform:
         results: Dict[str, Any],
     ) -> None:
         """Process a single column and update results."""
-        self.log.debug(f"Processing Column: name={column['name']}")
+        self.log.debug("event=process_column name=%s", column["name"])
         data = self._prepare_column_data(column, topic, topic_series)
 
         if "exposure_efd" in column["tables"]:
@@ -450,9 +480,7 @@ class Transform:
                             }
                         ]
                     else:
-                        self.log.debug(
-                            f"No valid fields found in filtered DataFrame in Topic: " f"name={topic['name']}"
-                        )
+                        self.log.debug("event=topic_filtered_no_valid_fields name=%s", topic["name"])
                         data = [
                             {
                                 "topic": topic["name"],
@@ -491,9 +519,9 @@ class Transform:
         """Retrieve exposures and visits from Butler"""
         instrument_name = self.get_instrument(instrument)
         exposures = self.butler_dao.exposures_by_period(instrument_name, start_time, end_time)
-        self.log.debug(f"Exposures fetched from Butler: count={len(exposures)}")
+        self.log.debug("event=butler_exposures_fetched count=%s", len(exposures))
         visits = self.butler_dao.visits_by_period(instrument_name, start_time, end_time)
-        self.log.debug(f"Visits fetched from Butler: count={len(visits)}")
+        self.log.debug("event=butler_visits_fetched count=%s", len(visits))
 
         return exposures, visits
 
@@ -516,7 +544,7 @@ class Transform:
                 exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=schema, logger=self.log)
                 affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
                 count["exposures"] = affected_rows
-                self.log.debug(f"Stored exposure records: affected_rows={affected_rows}")
+                self.log.debug("event=store_exposure_records affected_rows=%s", affected_rows)
 
         # Store visits
         if results["visits"]:
@@ -526,7 +554,7 @@ class Transform:
                 vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=schema, logger=self.log)
                 affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
                 count["visits1"] = affected_rows
-                self.log.debug(f"Stored visit records: affected_rows={affected_rows}")
+                self.log.debug("event=store_visit_records affected_rows=%s", affected_rows)
 
         # Store unpivoted exposures
         if results["exposures_unpivoted"]:
@@ -539,7 +567,7 @@ class Transform:
                     df=df_exposures_unpivoted, commit_every=self.commit_every
                 )
                 count["exposures_unpivoted"] = affected_rows
-                self.log.debug(f"Stored unpivoted exposure records: affected_rows={affected_rows}")
+                self.log.debug("event=store_exposure_unpivoted_records affected_rows=%s", affected_rows)
                 if not count["exposures"]:
                     count["exposures"] = len(results["exposures"])
 
@@ -552,7 +580,7 @@ class Transform:
                     df=df_visits_unpivoted, commit_every=self.commit_every
                 )
                 count["visits1_unpivoted"] = affected_rows
-                self.log.debug(f"Stored unpivoted visit records: affected_rows={affected_rows}")
+                self.log.debug("event=store_visit_unpivoted_records affected_rows=%s", affected_rows)
                 if not count["visits1"]:
                     count["visits1"] = len(results["visits"])
 
@@ -564,6 +592,7 @@ class Transform:
         topic: Dict[str, Any],
         topic_interval: List[astropy.time.Time],
         packed_series: bool = False,
+        log_context: Dict[str, Any] | None = None,
     ) -> pandas.DataFrame:
         """
         Query EFD values for a topic within a specified time interval.
@@ -581,23 +610,26 @@ class Transform:
         aggregate_interval = topic.get("pre_aggregate_interval")
         aggregate_func = topic.get("function")
 
-        self.log.debug(f"Querying topic '{topic['name']}' from {start.iso} to {end.iso}.")
+        self.log.debug("event=efd_query topic=%s start=%s end=%s", topic["name"], start.iso, end.iso)
         if aggregate_interval:
-            self.log.debug(f"Aggregation: interval={aggregate_interval}, function={aggregate_func}")
+            self.log.debug(
+                "event=efd_query_aggregation interval=%s function=%s", aggregate_interval, aggregate_func
+            )
 
         # 2. Delegate the query to the appropriate DAO method
         try:
             if packed_series:
-                self.log.debug(f"Calling select_packed_time_series for {len(fields)} base fields.")
+                self.log.debug("event=efd_select_packed_time_series base_fields_count=%s", len(fields))
                 return self.efd.select_packed_time_series(
                     topic_name=topic["name"],
                     base_fields=fields,
                     start=start,
                     end=end,
                     ref_timestamp_scale="utc",
+                    log_context=log_context,
                 )
             else:
-                self.log.debug(f"Calling select_time_series for {len(fields)} fields.")
+                self.log.debug("event=efd_select_time_series fields_count=%s", len(fields))
                 return self.efd.select_time_series(
                     topic_name=topic["name"],
                     fields=fields,
@@ -605,15 +637,73 @@ class Transform:
                     end=end,
                     aggregate_interval=aggregate_interval,
                     aggregate_func=aggregate_func,
+                    log_context=log_context,
                 )
         except Exception as e:
             # 3. Handle any exceptions from the DAO and return an empty
             # DataFrame
-            self.log.error(
-                f"DAO query failed for topic '{topic['name']}': {e}",
-                exc_info=True,  # Provides a full traceback in the logs
-            )
+            self.log.error("event=efd_query_failed topic=%s error=%s", topic["name"], e, exc_info=True)
             return pandas.DataFrame()
+
+    @staticmethod
+    def _min_max(records: List[Dict[str, Any]], key: str) -> tuple[Any, Any]:
+        values = [record.get(key) for record in records if record.get(key) is not None]
+        if not values:
+            return None, None
+        return min(values), max(values)
+
+    def _build_log_context(
+        self,
+        task_context: Dict[str, Any] | None,
+        exposures: List[Dict[str, Any]],
+        visits: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        exposure_min, exposure_max = self._min_max(exposures, "id")
+        visit_min, visit_max = self._min_max(visits, "id")
+        day_obs_exp_min, day_obs_exp_max = self._min_max(exposures, "day_obs")
+        day_obs_vis_min, day_obs_vis_max = self._min_max(visits, "day_obs")
+
+        day_obs_values = [
+            v for v in (day_obs_exp_min, day_obs_exp_max, day_obs_vis_min, day_obs_vis_max) if v is not None
+        ]
+        day_obs_min = min(day_obs_values) if day_obs_values else None
+        day_obs_max = max(day_obs_values) if day_obs_values else None
+        day_obs = day_obs_min if day_obs_min is not None and day_obs_min == day_obs_max else None
+
+        return {
+            "task_id": task_context.get("id") if task_context else None,
+            "day_obs": day_obs,
+            "day_obs_min": day_obs_min,
+            "day_obs_max": day_obs_max,
+            "exposure_id_min": exposure_min,
+            "exposure_id_max": exposure_max,
+            "visit_id_min": visit_min,
+            "visit_id_max": visit_max,
+            "exposure_count": len(exposures),
+            "visit_count": len(visits),
+        }
+
+    def _log_task_impact_scope(
+        self, log_context: Dict[str, Any], start_time: astropy.time.Time, end_time: astropy.time.Time
+    ) -> None:
+        self.log.info(
+            "event=task_impact_scope task_id=%s start_time=%s end_time=%s day_obs=%s "
+            "day_obs_min=%s day_obs_max=%s "
+            "exposure_id_min=%s exposure_id_max=%s visit_id_min=%s visit_id_max=%s "
+            "exposure_count=%s visit_count=%s",
+            log_context.get("task_id"),
+            start_time,
+            end_time,
+            log_context.get("day_obs"),
+            log_context.get("day_obs_min"),
+            log_context.get("day_obs_max"),
+            log_context.get("exposure_id_min"),
+            log_context.get("exposure_id_max"),
+            log_context.get("visit_id_min"),
+            log_context.get("visit_id_max"),
+            log_context.get("exposure_count"),
+            log_context.get("visit_count"),
+        )
 
     def _update_bounds(
         self,
