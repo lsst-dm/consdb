@@ -140,9 +140,11 @@ def _intervals_from_sequential_records(records: List[Dict[str, Any]]) -> List[Tu
 
 
 def _day_obs_window(window_days: int) -> Tuple[int, int]:
-    now = datetime.now(timezone.utc).date()
-    start = now - timedelta(days=window_days - 1)
-    return int(start.strftime("%Y%m%d")), int(now.strftime("%Y%m%d"))
+    now = datetime.now(timezone.utc)
+    # Rubin day_obs rolls over at 12:00 UTC, not midnight.
+    end_day = now.date() if now.hour >= 12 else (now - timedelta(days=1)).date()
+    start_day = end_day - timedelta(days=window_days - 1)
+    return int(start_day.strftime("%Y%m%d")), int(end_day.strftime("%Y%m%d"))
 
 
 class FailedTaskRetryCheck:
