@@ -122,13 +122,6 @@ class InstrumentTable:
 
         self.schemas.reflect(engine, schema=f"cdb_{self.instrument}", views=True)
         self.schemas.reflect(engine, schema=f"efd_{self.instrument}", views=True)
-        if self.instrument in ("latiss", "lsstcam", "lsstcomcam"):
-            sqlalchemy.Table(
-                self.instrument,
-                self.schemas,
-                schema="efd_scheduler",
-                autoload_with=engine,
-            )
         self.table_names.update(self.schemas.tables)
         for table in self.schemas.tables:
             # Find all timestamp columns in the table
