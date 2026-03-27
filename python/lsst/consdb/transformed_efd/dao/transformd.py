@@ -210,14 +210,17 @@ class TransformdDao(DBBase):
         Task
             Inserted task record (from primary)
         """
-        stm = self.tbl.insert().values(**data)
+        stm = self.dialect.insert(self.tbl).values(**data).returning(self.tbl)
 
         with self.get_db_engine(0).connect() as con:
             result = con.execute(stm)
+            row = result.fetchone()
             con.commit()
-            primary_id = result.inserted_primary_key[0]
 
-        task = self.select_by_id(primary_id)
+        if row is None:
+            raise Exception("Insert failed: no row returned from primary database.")
+
+        task = dict(row._mapping)
 
         for db_idx in range(1, len(self.db_uris)):
             safe_uri = (
