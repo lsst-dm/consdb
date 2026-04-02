@@ -54,7 +54,7 @@ class BadValueException(Exception):
             valid values.
         """
         data = {
-            "message": f"Unknown {self.kind}",
+            "message": f"Invalid {self.kind}",
             "value": self.value,
         }
         if self.valid:
