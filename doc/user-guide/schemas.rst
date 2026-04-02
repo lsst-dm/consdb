@@ -15,8 +15,9 @@ These other systems include Prompt Processing and Data Release Production, possi
 
 Release for science users
 -------------------------
-* Near-real-time "prompt" ConsDB replicates a subset of the USDF version
-* Data Release (DR) ConsDB is a snapshot of a subset of the USDF version with data pertaining to the exposures/visits in the DR
+As of 2026-03, DM has decided that ConsDB will be internal-only, although information from it may be copied to Data Services for release to science users.
+
+Use of a snapshot of ConsDB as an input to Data Release Production is contemplated but not yet implemented.
 
 Schema browser
 ==============
