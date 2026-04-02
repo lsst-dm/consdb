@@ -299,6 +299,25 @@ def lsstcam_schema_client(scope="module"):
         yield client
 
 
+@pytest.fixture
+def lsstcam_no_efd_schema_client(scope="module"):
+    reset_dependencies()
+
+    cdb_schema_file = Path(lsst.utils.getPackageDir("sdm_schemas")) / "yml" / "cdb_lsstcam.yaml"
+
+    cdb_md = _load_schema_metadata(cdb_schema_file)
+
+    with setup_postgres_test_db() as instance:
+        os.environ["POSTGRES_URL"] = instance.url
+        config.postgres_url = instance.url
+
+        DatabaseContext(cdb_md, instance.engine).initialize()
+        DatabaseContext(cdb_md, instance.engine).create_all()
+
+        client = TestClient(pqserver.app)
+        yield client
+
+
 def test_schema_lsstcam_includes_efd_exposure(lsstcam_schema_client):
     response = lsstcam_schema_client.get("/consdb/schema/lsstcam")
     _assert_http_status(response, 200)
@@ -307,11 +326,23 @@ def test_schema_lsstcam_includes_efd_exposure(lsstcam_schema_client):
     assert "efd_lsstcam.exposure_efd" in result
 
 
+def test_schema_lsstcam_without_efd_schema(lsstcam_no_efd_schema_client):
+    response = lsstcam_no_efd_schema_client.get("/consdb/schema/lsstcam")
+    _assert_http_status(response, 200)
+
+    result = response.json()
+    assert "cdb_lsstcam.exposure" in result
+    assert "efd_lsstcam.exposure_efd" not in result
+
+    response = lsstcam_no_efd_schema_client.get("/consdb/schema/lsstcam/visit1_quicklook")
+    _assert_http_status(response, 200)
+
+
 def test_schema_non_instrument(lsstcomcamsim):
     response = lsstcomcamsim.get("/consdb/schema/asdf")
     _assert_http_status(response, 404)
     result = response.json()
-    assert "Unknown instrument" in result["message"]
+    assert "Invalid instrument" in result["message"]
 
 
 def test_schema_instrument(lsstcomcamsim):
@@ -339,7 +370,7 @@ def test_schema_instrument(lsstcomcamsim):
 def test_schema_non_table(lsstcomcamsim):
     response = lsstcomcamsim.get("/consdb/schema/lsstcomcamsim/asdf")
     _assert_http_status(response, 404)
-    assert "Unknown table" in response.json()["message"]
+    assert "Invalid table" in response.json()["message"]
 
 
 def test_schema_table(lsstcomcamsim, astropy_tables):
@@ -581,7 +612,7 @@ def test_flexible_metadata(lsstcomcamsim):
     )
     _assert_http_status(response, 404)
     result = response.json()
-    assert "Unknown instrument" in result["message"]
+    assert "Invalid instrument" in result["message"]
 
     response = client.get("/consdb/flex/latiss/exposure/schema")
     _assert_http_status(response, 200)
@@ -617,7 +648,7 @@ def test_flexible_metadata(lsstcomcamsim):
     )
     _assert_http_status(response, 404)
     result = response.json()
-    assert result["message"] == "Unknown key"
+    assert result["message"] == "Invalid key"
     assert result["value"] == "bad_key"
 
     response = client.get("/consdb/flex/latiss/exposure/obs/7024040300451")
