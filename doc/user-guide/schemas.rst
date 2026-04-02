@@ -21,6 +21,8 @@ Release for science users
 Schema browser
 ==============
 
+The `Science Data Model Schemas site <https://sdm-schemas.lsst.io>`__ provides a web-based browser for ConsDB schemas, including Summit-generated schemas and Transformed EFD schemas..
+
 Versioning
 ==========
 
