@@ -51,7 +51,10 @@ from ..models import (
     InsertMultipleResponseModel,
     QueryRequestModel,
     QueryResponseModel,
+    TableConsistencyModel,
 )
+
+from ..consistency_queries import CONSISTENCY_QUERIES
 
 external_router = APIRouter()
 """FastAPI router for all external handlers."""
@@ -77,6 +80,36 @@ def external_root(
         obs_types=[o.value for o in ObsTypeEnum],
         dtypes=[d.value for d in AllowedFlexTypeEnum],
     )
+
+
+@external_router.get(
+    "/table_consistency/{instrument}/{day_obs}",
+    summary="Report table consistency gaps for one observing day",
+    description=(
+        "Return missing-row counts per (day_obs, seq_num) for the requested "
+        "instrument using the current expected row-count rules."
+    ),
+)
+def table_consistency(
+    instrument: str = Path(title="Instrument name"),
+    day_obs: int = Path(title="Observation day in YYYYMMDD format"),
+    db: Session = Depends(get_db),
+    logger: logging.Logger = Depends(get_logger),
+) -> list[TableConsistencyModel]:
+    """Summarize missing rows for one observing day."""
+
+    instrument_lower = instrument.lower()
+    if instrument_lower not in CONSISTENCY_QUERIES:
+        raise BadValueException("instrument", instrument, list(CONSISTENCY_QUERIES.keys()))
+    query = CONSISTENCY_QUERIES[instrument_lower]
+
+    logger.info(
+        "table consistency query for instrument=%s day_obs=%s",
+        instrument_lower,
+        day_obs,
+    )
+    result = db.execute(sqlalchemy.text(query), {"day_obs": day_obs})
+    return [TableConsistencyModel.model_validate(dict(row._mapping)) for row in result]
 
 
 @external_router.post(

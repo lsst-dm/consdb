@@ -114,3 +114,12 @@ class QueryRequestModel(BaseModel):
 class QueryResponseModel(BaseModel):
     columns: list[str] = Field(title="Column names")
     data: list[Any] = Field(title="Data rows")
+
+
+class TableConsistencyModel(BaseModel):
+    """Missing-row summary for one table and one exposure identity."""
+
+    table_name: str = Field(title="Table name")
+    day_obs: int = Field(title="Observation day in YYYYMMDD format")
+    seq_num: int = Field(title="Sequence number within the observing day")
+    num_rows_missing: int = Field(title="Number of rows missing from the table")
