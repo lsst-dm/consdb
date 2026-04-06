@@ -10,6 +10,7 @@ COPY \
     python/lsst/consdb/pqserver.py \
     python/lsst/consdb/cdb_schema.py \
     python/lsst/consdb/config.py \
+    python/lsst/consdb/consistency_queries.py \
     python/lsst/consdb/dependencies.py \
     python/lsst/consdb/exceptions.py \
     python/lsst/consdb/models.py \
