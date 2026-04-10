@@ -3,7 +3,7 @@ import os
 import random
 import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Union
 
 import aiokafka  # type: ignore
 import astropy.time  # type: ignore
@@ -14,7 +14,6 @@ import kafkit.registry.httpx  # type: ignore
 import lsst.geom  # type: ignore
 import lsst.obs.lsst  # type: ignore
 import numpy as np  # type: ignore
-import yaml
 from astro_metadata_translator import ObservationInfo
 from astropy.coordinates import AltAz, CartesianRepresentation, EarthLocation, SkyCoord  # type: ignore
 from lsst.obs.lsst.rawFormatter import LsstCamRawFormatter  # type: ignore
@@ -22,7 +21,15 @@ from lsst.resources import ResourcePath
 from sqlalchemy import MetaData, Table
 from sqlalchemy.dialects.postgresql import insert
 
+# Set up C-based YAML loader falling back to Python
+from yaml import load
+
 from .utils import setup_logging, setup_postgres
+
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
 
 if TYPE_CHECKING:
     import lsst.afw.cameraGeom  # type: ignore
@@ -36,10 +43,46 @@ ccd_columns_to_update: list[str] | None = None
 # Header Processing Functions #
 ###############################
 
-RegionFormatter = Callable[
-    [lsst.afw.cameraGeom.Camera, float, float, float, list[tuple[str, int, int]]],
-    str,
+VerticesType = dict[
+    str, tuple[lsst.geom.SpherePoint, lsst.geom.SpherePoint, lsst.geom.SpherePoint, lsst.geom.SpherePoint]
 ]
+
+RegionFormatter = Callable[[VerticesType, Iterable[tuple[str, int]]], str]
+
+
+def get_vertices(
+    camera: lsst.afw.cameraGeom.Camera,
+    ra: float,
+    dec: float,
+    rotpa: float,
+) -> VerticesType:
+    """Return a dictionary with the geometry of all CCDs in the camera.
+
+    The dictionary maps CCD name (as a string) to a tuple containing
+    four SpherePoint objects. They correspond to the (0, 0), (0, 1),
+    (1, 0), (1, 1) corners of the CCD, in that order.
+    """
+    skywcs_all = {
+        ccd.getName(): (
+            LsstCamRawFormatter.makeRawSkyWcsFromBoresight(
+                lsst.geom.SpherePoint(ra, dec, lsst.geom.degrees),
+                rotpa * lsst.geom.degrees,
+                ccd,
+            ),
+            ccd.getBBox(),
+        )
+        for ccd in camera
+    }
+    vertices = {
+        ccdname: (
+            skywcs.pixelToSky(bbox.getMinX(), bbox.getMinY()),
+            skywcs.pixelToSky(bbox.getMinX(), bbox.getMinY() + bbox.getHeight()),
+            skywcs.pixelToSky(bbox.getMinX() + bbox.getWidth(), bbox.getMinY()),
+            skywcs.pixelToSky(bbox.getMinX() + bbox.getWidth(), bbox.getMinY() + bbox.getHeight()),
+        )
+        for ccdname, (skywcs, bbox) in skywcs_all.items()
+    }
+    return vertices
 
 
 def logical_or(*bools: int | str | None) -> bool:
@@ -47,50 +90,32 @@ def logical_or(*bools: int | str | None) -> bool:
 
 
 def region_ivoa(
-    camera: lsst.afw.cameraGeom.Camera,
-    ra: float,
-    dec: float,
-    rotpa: float,
-    points: list[tuple[str, int, int]],
+    vertices: VerticesType,
+    corners: Iterable[tuple[str, int]],
 ) -> str:
     region = "Polygon ICRS"
-    for detector, offset_x, offset_y in points:
-        skywcs = LsstCamRawFormatter.makeRawSkyWcsFromBoresight(
-            lsst.geom.SpherePoint(ra, dec, lsst.geom.degrees),
-            rotpa * lsst.geom.degrees,
-            camera[detector],
-        )
-        bbox = camera[detector].getBBox()
-        x = bbox.getMinX() + bbox.getWidth() * offset_x
-        y = bbox.getMinY() + bbox.getHeight() * offset_y
-        point = skywcs.pixelToSky(x, y)
+    for ccdname, corner_index in corners:
+        point = vertices[ccdname][corner_index]
         region += f" {point.getLongitude().asDegrees():.6f} {point.getLatitude().asDegrees():.6f}"
     return region
 
 
 def region_spoly(
-    camera: lsst.afw.cameraGeom.Camera,
-    ra: float,
-    dec: float,
-    rotpa: float,
-    points: list[tuple[str, int, int]],
+    vertices: VerticesType,
+    corners: Iterable[tuple[str, int]],
 ) -> str:
     """
     Build a pgSphere `spoly` string for the camera footprint.
 
     Parameters
     ----------
-    camera : `~lsst.afw.cameraGeom.Camera`
-        Camera object containing detectors and geometry.
-    ra : float
-        Boresight right ascension in (deg, ICRS)
-    dec : float
-        Boresight declination in (deg, ICRS)
-    rotpa : float
-        Rotator position angle (deg)
-    points : list[tuple[str, int, int]]
-        Sequence of (detector_name, offset_x, offset_y), with offset_x and
-        offset_y specifying a corner of the box.
+    vertices : `VerticesType`
+        Pre-computed dictionary of the corner positions of each CCD.
+    corners : `Iterable`[`tuple`[`str`, `int`]]
+        A list of the desired corners to populate into the region,
+        with each item being the CCD name as a string (e.g., "R43_S21")
+        and the index of the desired corner with the order being
+        (0, 0), (0, 1), (1, 0), (1, 1).
 
     Returns
     -------
@@ -103,22 +128,10 @@ def region_spoly(
     # sample the requested pixel.
     verts_rad: list[tuple[float, float]] = []
 
-    for detector, offset_x, offset_y in points:
-        skywcs = LsstCamRawFormatter.makeRawSkyWcsFromBoresight(
-            lsst.geom.SpherePoint(ra, dec, lsst.geom.degrees),
-            rotpa * lsst.geom.degrees,
-            camera[detector],
-        )
-        bbox = camera[detector].getBBox()
-        x = bbox.getMinX() + bbox.getWidth() * offset_x
-        y = bbox.getMinY() + bbox.getHeight() * offset_y
-
-        sky_pt = skywcs.pixelToSky(x, y)
-        lon_deg = sky_pt.getLongitude().asDegrees()
-        lat_deg = sky_pt.getLatitude().asDegrees()
-
-        lon = np.radians(lon_deg)
-        lat = np.radians(lat_deg)
+    for ccdname, corner_index in corners:
+        sky_pt = vertices[ccdname][corner_index]
+        lon = sky_pt.getLongitude().asRadians()
+        lat = sky_pt.getLatitude().asRadians()
 
         verts_rad.append((lon, lat))
 
@@ -140,58 +153,43 @@ def ccdexposure_id(
 
 
 def ccd_region(
-    camera: lsst.afw.cameraGeom.Camera,
+    vertices: VerticesType,
     imgtype: str,
-    ra: float,
-    dec: float,
-    rotpa: float,
     ccdname: str,
     region_formatter: RegionFormatter,
 ) -> str | None:
     if imgtype != "OBJECT":
         return None
     return region_formatter(
-        camera,
-        ra,
-        dec,
-        rotpa,
+        vertices,
         [
-            (ccdname, 0, 0),
-            (ccdname, 1, 0),
-            (ccdname, 1, 1),
-            (ccdname, 0, 1),
+            (ccdname, 0),
+            (ccdname, 2),
+            (ccdname, 3),
+            (ccdname, 1),
         ],
     )
 
 
 def ccd_region_ivoa(
-    camera: lsst.afw.cameraGeom.Camera,
+    vertices: VerticesType,
     imgtype: str,
-    ra: float,
-    dec: float,
-    rotpa: float,
     ccdname: str,
 ) -> str | None:
-    return ccd_region(camera, imgtype, ra, dec, rotpa, ccdname, region_ivoa)
+    return ccd_region(vertices, imgtype, ccdname, region_ivoa)
 
 
 def ccd_region_spoly(
-    camera: lsst.afw.cameraGeom.Camera,
+    vertices: VerticesType,
     imgtype: str,
-    ra: float,
-    dec: float,
-    rotpa: float,
     ccdname: str,
 ) -> str | None:
-    return ccd_region(camera, imgtype, ra, dec, rotpa, ccdname, region_spoly)
+    return ccd_region(vertices, imgtype, ccdname, region_spoly)
 
 
 def fp_region(
-    camera: lsst.afw.cameraGeom.Camera,
+    vertices: VerticesType,
     imgtype: str,
-    ra: float,
-    dec: float,
-    rotpa: float,
     region_formatter: RegionFormatter,
 ) -> str | None:
     # global instrument
@@ -199,72 +197,66 @@ def fp_region(
         return None
     if instrument == "LATISS":
         corners = [
-            ("RXX_S00", 0, 0),
-            ("RXX_S00", 1, 0),
-            ("RXX_S00", 1, 1),
-            ("RXX_S00", 0, 1),
+            ("RXX_S00", 0),
+            ("RXX_S00", 2),
+            ("RXX_S00", 3),
+            ("RXX_S00", 1),
         ]
     elif instrument == "LSSTComCam" or instrument == "LSSTComCamSim":
         corners = [
-            ("R22_S00", 0, 0),
-            ("R22_S02", 1, 0),
-            ("R22_S20", 0, 1),
-            ("R22_S22", 1, 1),
+            ("R22_S00", 0),
+            ("R22_S02", 2),
+            ("R22_S20", 1),
+            ("R22_S22", 3),
         ]
     elif instrument == "LSSTCam":
         corners = [
-            ("R01_S00", 0, 0),
-            ("R03_S02", 1, 0),
-            ("R04_SG1", 1, 0),
-            ("R04_SG1", 1, 1),
-            ("R04_SG1", 0, 1),
-            ("R04_SG0", 0, 1),
-            ("R04_SG0", 0, 0),
-            ("R14_S02", 1, 0),
-            ("R34_S22", 1, 1),
-            ("R44_SG1", 1, 0),
-            ("R44_SG1", 1, 1),
-            ("R44_SG0", 1, 1),
-            ("R44_SG0", 0, 1),
-            ("R44_SG0", 0, 0),
-            ("R43_S22", 1, 1),
-            ("R41_S20", 0, 1),
-            ("R40_SG1", 1, 0),
-            ("R40_SG1", 1, 1),
-            ("R40_SG0", 1, 1),
-            ("R40_SG0", 0, 1),
-            ("R40_SG0", 0, 0),
-            ("R30_S20", 0, 1),
-            ("R10_S00", 0, 0),
-            ("R00_SG1", 1, 0),
-            ("R00_SG1", 1, 1),
-            ("R00_SG1", 0, 1),
-            ("R00_SG0", 0, 1),
-            ("R00_SG0", 0, 0),
+            ("R01_S00", 0),
+            ("R03_S02", 2),
+            ("R04_SG1", 2),
+            ("R04_SG1", 3),
+            ("R04_SG1", 1),
+            ("R04_SG0", 1),
+            ("R04_SG0", 0),
+            ("R14_S02", 2),
+            ("R34_S22", 3),
+            ("R44_SG1", 2),
+            ("R44_SG1", 3),
+            ("R44_SG0", 3),
+            ("R44_SG0", 1),
+            ("R44_SG0", 0),
+            ("R43_S22", 3),
+            ("R41_S20", 1),
+            ("R40_SG1", 2),
+            ("R40_SG1", 3),
+            ("R40_SG0", 3),
+            ("R40_SG0", 1),
+            ("R40_SG0", 0),
+            ("R30_S20", 1),
+            ("R10_S00", 0),
+            ("R00_SG1", 2),
+            ("R00_SG1", 3),
+            ("R00_SG1", 1),
+            ("R00_SG0", 1),
+            ("R00_SG0", 0),
         ]
     else:
         return None
-    return region_formatter(camera, ra, dec, rotpa, corners)
+    return region_formatter(vertices, corners)
 
 
 def fp_region_ivoa(
-    camera: lsst.afw.cameraGeom.Camera,
+    vertices: VerticesType,
     imgtype: str,
-    ra: float,
-    dec: float,
-    rotpa: float,
 ) -> str | None:
-    return fp_region(camera, imgtype, ra, dec, rotpa, region_ivoa)
+    return fp_region(vertices, imgtype, region_ivoa)
 
 
 def fp_region_spoly(
-    camera: lsst.afw.cameraGeom.Camera,
+    vertices: VerticesType,
     imgtype: str,
-    ra: float,
-    dec: float,
-    rotpa: float,
 ) -> str | None:
-    return fp_region(camera, imgtype, ra, dec, rotpa, region_spoly)
+    return fp_region(vertices, imgtype, region_spoly)
 
 
 #################################
@@ -283,8 +275,8 @@ KW_MAPPING: dict[str, ColumnMapping] = {
     "vignette": "VIGNETTE",
     "vignette_min": "VIGN_MIN",
     "scheduler_note": "OBSANNOT",
-    "s_region": (fp_region_ivoa, "camera", "IMGTYPE", "RA", "DEC", "ROTPA"),
-    "pgs_region": (fp_region_spoly, "camera", "IMGTYPE", "RA", "DEC", "ROTPA"),
+    "s_region": (fp_region_ivoa, "vertices", "IMGTYPE"),
+    "pgs_region": (fp_region_spoly, "vertices", "IMGTYPE"),
 }
 
 # Instrument-specific mapping to column name from Header Service keyword
@@ -348,8 +340,8 @@ DETECTOR_MAPPING: dict[str, ColumnMapping] = {
     "ccdexposure_id": (ccdexposure_id, "translator", "exposure_id", "detector"),
     "exposure_id": "exposure_id",
     "detector": "detector",
-    "s_region": (ccd_region_ivoa, "camera", "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
-    "pgs_region": (ccd_region_spoly, "camera", "IMGTYPE", "RA", "DEC", "ROTPA", "ccdname"),
+    "s_region": (ccd_region_ivoa, "vertices", "IMGTYPE", "ccdname"),
+    "pgs_region": (ccd_region_spoly, "vertices", "IMGTYPE", "ccdname"),
 }
 
 
@@ -603,7 +595,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     exposure_rec = dict()
 
     info = dict()
-    content = yaml.safe_load(resource.read())
+    content = load(resource.read(), Loader=Loader)
 
     for header in content["PRIMARY"]:
         info[header["keyword"]] = header["value"]
@@ -615,6 +607,16 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     instrument_obj = instrument_dict[info["CONTRLLR"]]
     info["camera"] = instrument_obj.camera
     info["translator"] = instrument_obj.translator
+
+    # Pre-compute the WCS vertices
+    if info.get("IMGTYPE") == "OBJECT" and "RA" in info and "DEC" in info and "ROTPA" in info:
+        info["vertices"] = get_vertices(
+            instrument_obj.camera,
+            info["RA"],
+            info["DEC"],
+            info["ROTPA"],
+        )
+
     for column, column_def in KW_MAPPING.items():
         if exp_columns_to_update is None or column in exp_columns_to_update:
             exposure_rec[column] = process_column(column_def, info)
@@ -652,6 +654,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
         if ccd_columns_to_update is not None and "@skip" in ccd_columns_to_update:
             detectors = []  # Special keyword "@skip" stops reprocessing of the ccdexposure table.
 
+        det_exposure_recs = []
         for detector in detectors:
             det_exposure_rec = dict()
             det_info = info.copy()
@@ -671,14 +674,20 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
                 det_exposure_rec["day_obs"] = exposure_rec["day_obs"]
                 det_exposure_rec["seq_num"] = exposure_rec["seq_num"]
 
-            det_stmt = insert(instrument_obj.ccdexposure_table).values(det_exposure_rec)
+            logger.debug(det_exposure_rec)
+            det_exposure_recs.append(det_exposure_rec)
+
+        if det_exposure_recs:
+            det_stmt = insert(instrument_obj.ccdexposure_table).values(det_exposure_recs)
             if update:
+                # ON CONFLICT DO UPDATE requires a SET clause. Use `excluded`
+                # so each conflicting row is updated with its own prior values
                 det_stmt = det_stmt.on_conflict_do_update(
-                    index_elements=["ccdexposure_id"], set_=det_exposure_rec
+                    index_elements=["ccdexposure_id"],
+                    set_={col: det_stmt.excluded[col] for col in det_exposure_recs[0]},
                 )
             else:
                 det_stmt = det_stmt.on_conflict_do_nothing()
-            logger.debug(det_exposure_rec)
             conn.execute(det_stmt)
 
         conn.commit()
