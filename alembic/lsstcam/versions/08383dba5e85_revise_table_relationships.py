@@ -1,7 +1,7 @@
 """Revise table relationships
 
 Revision ID: 08383dba5e85
-Revises: a322490c4e0f
+Revises: 95626bd65229
 Create Date: 2026-01-03 21:48:56.084145+00:00
 
 """
@@ -15,7 +15,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "08383dba5e85"
-down_revision: Union[str, None] = "a322490c4e0f"
+down_revision: Union[str, None] = "95626bd65229"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -709,7 +709,8 @@ def downgrade() -> None:
         "un_ccdexposure_day_obs_seq_num_detector", "ccdexposure", schema="cdb_lsstcam", type_="primary"
     )
     op.drop_constraint("un_ccdexposure_ccdexposure_id", "ccdexposure", schema="cdb_lsstcam", type_="unique")
-    op.create_primary_key(
+    op.create_primary_key("ccdexposure_pkey", "ccdexposure", ["ccdexposure_id"], schema="cdb_lsstcam")
+    op.create_unique_constraint(
         "un_ccdexposure_ccdexposure_id", "ccdexposure", ["ccdexposure_id"], schema="cdb_lsstcam"
     )
     op.create_unique_constraint(
@@ -759,11 +760,13 @@ def downgrade() -> None:
         "un_exposure_flexdata_day_obs_seq_num_key", "exposure_flexdata", schema="cdb_lsstcam", type_="unique"
     )
     op.drop_constraint("un_exposure_day_obs_seq_num", "exposure", schema="cdb_lsstcam", type_="unique")
-    op.execute(
-        "ALTER TABLE cdb_lsstcam.exposure_flexdata "
-        "RENAME CONSTRAINT exposure_flexdata_pkey TO un_exposure_flexdata_day_obs_seq_num_key"
+    op.create_unique_constraint(
+        "un_exposure_flexdata_day_obs_seq_num_key",
+        "exposure_flexdata",
+        ["day_obs", "seq_num", "key"],
+        schema="cdb_lsstcam",
     )
-    op.execute(
-        "ALTER TABLE cdb_lsstcam.exposure " "RENAME CONSTRAINT exposure_pkey TO un_exposure_day_obs_seq_num"
+    op.create_unique_constraint(
+        "un_exposure_day_obs_seq_num", "exposure", ["day_obs", "seq_num"], schema="cdb_lsstcam"
     )
     # ### end Alembic commands ###
