@@ -54,7 +54,8 @@ class ExitCode(IntEnum):
 
 def run(cmd: list[str], *, env: dict[str, str] | None = None) -> None:
     """Run a subprocess command and echo it to stdout."""
-    print("+", " ".join(cmd))
+    print("+", " ".join(cmd), flush=True)
+    sys.stderr.flush()
     subprocess.run(cmd, check=True, env=env)
 
 
@@ -127,6 +128,15 @@ def _compare_schema(connection: sa.engine.Connection, metadata: sa.MetaData, sch
     return compare_metadata(context, metadata)
 
 
+def _normalize_diffs(diffs: list) -> list[str]:
+    """Return a stable, comparable representation of Alembic diffs.
+
+    ``compare_metadata`` returns structures containing SQLAlchemy objects whose
+    equality is not reliably semantic. Compare their string forms instead.
+    """
+    return sorted(repr(diff) for diff in diffs)
+
+
 def main() -> int:
     """CLI entry point for migration validation."""
     parser = argparse.ArgumentParser(description="Validate ConsDB migrations.")
@@ -175,16 +185,23 @@ def main() -> int:
     delete_me_path = _find_new_delete_me(versions_dir, before_delete_me)
     pass_count = _read_autogen_pass_count(delete_me_path)
     if pass_count != 2:
+        print("🔴 Additional migration was not a no-op.")
         raise RuntimeError(f"Expected exactly 2 pass lines in {delete_me_path.name}, found {pass_count}")
+    else:
+        print("🟢 Additional migration was a no-op.")
     if not args.keep_delete_me:
         delete_me_path.unlink()
 
     schema_name = f"cdb_{instrument}"
     old_yaml_path = sdm_schemas_old_dir / "yml" / f"{schema_name}.yaml"
+    new_yaml_path = sdm_schemas_dir / "yml" / f"{schema_name}.yaml"
     if not old_yaml_path.is_file():
         raise RuntimeError(f"Old YAML not found: {old_yaml_path}")
+    if not new_yaml_path.is_file():
+        raise RuntimeError(f"New YAML not found: {new_yaml_path}")
 
     metadata = _load_metadata(old_yaml_path)
+    new_metadata = _load_metadata(new_yaml_path)
 
     with setup_postgres_test_db() as instance:
         with instance.engine.begin() as connection:
@@ -196,20 +213,49 @@ def main() -> int:
 
         temp_env = env.copy()
         temp_env["CONSDB_URL"] = instance.url
-        run(["alembic", "-c", "alembic.ini", "-n", instrument, "upgrade", "head"], env=temp_env)
-        run(["alembic", "-c", "alembic.ini", "-n", instrument, "downgrade", "-1"], env=temp_env)
+        run(["alembic", "-c", "alembic.ini", "-n", instrument, "upgrade", "head-1"], env=temp_env)
 
         with instance.engine.connect() as connection:
-            diffs = _compare_schema(connection, metadata, schema_name)
+            pre_diffs = _compare_schema(connection, metadata, schema_name)
+        normalized_pre_diffs = _normalize_diffs(pre_diffs)
+        if pre_diffs:
+            print("🟡 Schema differences at pre-upgrade state (vs old YAML):")
+            for diff in pre_diffs:
+                print(diff)
+        else:
+            print("🟢 Pre-upgrade schema consistent with old YAML")
+
+        run(["alembic", "-c", "alembic.ini", "-n", instrument, "upgrade", "head"], env=temp_env)
+        with instance.engine.connect() as connection:
+            diffs = _compare_schema(connection, new_metadata, schema_name)
         if diffs:
-            print("Schema differences found after downgrade:")
+            print("🔴 Schema differences found after upgrade:")
             for diff in diffs:
                 print(diff)
             return ExitCode.DIFFS_FOUND
+        else:
+            print("🟢 Schema consistent after upgrade")
+
+        run(["alembic", "-c", "alembic.ini", "-n", instrument, "downgrade", "-1"], env=temp_env)
+
+        with instance.engine.connect() as connection:
+            post_diffs = _compare_schema(connection, metadata, schema_name)
+        normalized_post_diffs = _normalize_diffs(post_diffs)
+        if normalized_pre_diffs != normalized_post_diffs:
+            print("🔴 Schema differences changed after downgrade:")
+            print("pre_diffs:")
+            for diff in normalized_pre_diffs:
+                print(diff)
+            print("post_diffs:")
+            for diff in normalized_post_diffs:
+                print(diff)
+            return ExitCode.DIFFS_FOUND
+        else:
+            print("🟢 Schema consistent after downgrade")
 
     consdb_url = os.environ.get("CONSDB_URL")
     if not consdb_url:
-        print("WARNING: CONSDB_URL not set. Skipping test on live postgresql instance.")
+        print("🟡 WARNING: CONSDB_URL not set. Skipping test on live postgresql instance.")
     else:
         live_env = env.copy()
         live_env["CONSDB_URL"] = consdb_url
@@ -218,7 +264,7 @@ def main() -> int:
             run(["alembic", "-c", "alembic.ini", "-n", instrument, "upgrade", "head"], env=live_env)
             run(["alembic", "-c", "alembic.ini", "-n", instrument, "downgrade", "-1"], env=live_env)
 
-    print("All checks passed.")
+    print("🟢 --- All checks passed. ---")
     return ExitCode.OK
 
 
