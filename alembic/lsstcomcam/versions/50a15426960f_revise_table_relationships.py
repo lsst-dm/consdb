@@ -1,8 +1,8 @@
 """Revise table relationships
 
-Revision ID: 8b10030b5307
-Revises: b3bf526692dd
-Create Date: 2026-01-04 00:09:52.988718+00:00
+Revision ID: 50a15426960f
+Revises: 283fe87848b1
+Create Date: 2026-04-13 23:56:40.256284+00:00
 
 """
 
@@ -14,8 +14,8 @@ from sqlalchemy.dialects import mysql
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "8b10030b5307"
-down_revision: Union[str, None] = "b3bf526692dd"
+revision: str = "50a15426960f"
+down_revision: Union[str, None] = "283fe87848b1"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -67,10 +67,28 @@ def upgrade() -> None:
         ["ccdexposure_id", "day_obs", "seq_num", "detector"],
         schema="cdb_lsstcomcam",
     )
+    op.alter_column(
+        "ccdexposure",
+        "ccdexposure_id",
+        existing_type=sa.BIGINT(),
+        existing_nullable=False,
+        server_default=None,
+        schema="cdb_lsstcomcam",
+    )
     op.create_unique_constraint(
         "un_exposure_exposure_id_day_obs_seq_num",
         "exposure",
         ["exposure_id", "day_obs", "seq_num"],
+        schema="cdb_lsstcomcam",
+    )
+    op.alter_column(
+        "exposure",
+        "exposure_id",
+        existing_type=sa.BIGINT()
+        .with_variant(mysql.BIGINT(), "mysql")
+        .with_variant(sa.BIGINT(), "postgresql"),
+        server_default=None,
+        existing_nullable=False,
         schema="cdb_lsstcomcam",
     )
     op.create_foreign_key(
@@ -564,23 +582,6 @@ def upgrade() -> None:
         ["day_obs", "seq_num", "detector"],
         schema="cdb_lsstcomcam",
     )
-    op.drop_constraint("visit1_quicklook_pkey", "visit1_quicklook", schema="cdb_lsstcomcam", type_="primary")
-    op.create_primary_key(
-        "visit1_quicklook_pkey",
-        "visit1_quicklook",
-        ["day_obs", "seq_num"],
-        schema="cdb_lsstcomcam",
-    )
-    op.drop_constraint(
-        "exposure_flexdata_pkey", "exposure_flexdata", schema="cdb_lsstcomcam", type_="primary"
-    )
-    op.create_primary_key(
-        "exposure_flexdata_pkey",
-        "exposure_flexdata",
-        ["day_obs", "seq_num", "key"],
-        schema="cdb_lsstcomcam",
-    )
-    op.create_primary_key("exposure_pkey", "exposure", ["day_obs", "seq_num"], schema="cdb_lsstcomcam")
     op.create_foreign_key(
         "fk_ccdexposure_exposure_id",
         "ccdexposure",
@@ -589,6 +590,15 @@ def upgrade() -> None:
         ["exposure_id"],
         source_schema="cdb_lsstcomcam",
         referent_schema="cdb_lsstcomcam",
+    )
+    op.alter_column(
+        "exposure",
+        "dimm_seeing",
+        existing_type=sa.DOUBLE_PRECISION(precision=53),
+        comment="Atmospheric seeing as measured by external DIMM (FWHM).",
+        existing_comment="Seeing as measured by external DIMM (FWHM).",
+        existing_nullable=True,
+        schema="cdb_lsstcomcam",
     )
     op.create_foreign_key(
         "fk_exposure_flexdata_obs_id",
@@ -625,11 +635,14 @@ def downgrade() -> None:
     op.drop_constraint(
         "fk_visit1_quicklook_obs_id", "visit1_quicklook", schema="cdb_lsstcomcam", type_="foreignkey"
     )
-    op.drop_constraint(
-        "fk_exposure_quicklook_obs_id", "exposure_quicklook", schema="cdb_lsstcomcam", type_="foreignkey"
-    )
-    op.drop_constraint(
-        "fk_exposure_flexdata_obs_id", "exposure_flexdata", schema="cdb_lsstcomcam", type_="foreignkey"
+    op.alter_column(
+        "exposure",
+        "dimm_seeing",
+        existing_type=sa.DOUBLE_PRECISION(precision=53),
+        comment="Seeing as measured by external DIMM (FWHM).",
+        existing_comment="Atmospheric seeing as measured by external DIMM (FWHM).",
+        existing_nullable=True,
+        schema="cdb_lsstcomcam",
     )
     op.drop_constraint(
         "fk_ccdexposure_exposure_id", "ccdexposure", schema="cdb_lsstcomcam", type_="foreignkey"
@@ -664,13 +677,6 @@ def downgrade() -> None:
         schema="cdb_lsstcomcam",
         type_="foreignkey",
     )
-    op.drop_constraint("visit1_quicklook_pkey", "visit1_quicklook", schema="cdb_lsstcomcam", type_="primary")
-    op.create_primary_key(
-        "visit1_quicklook_pkey",
-        "visit1_quicklook",
-        ["visit_id"],
-        schema="cdb_lsstcomcam",
-    )
     op.drop_constraint(
         "fk_exposure_quicklook_exposure_id_day_obs_seq_num",
         "exposure_quicklook",
@@ -689,15 +695,10 @@ def downgrade() -> None:
     op.drop_constraint(
         "un_exposure_exposure_id_day_obs_seq_num", "exposure", schema="cdb_lsstcomcam", type_="unique"
     )
-    op.alter_column(
-        "exposure",
-        "exposure_id",
-        existing_type=sa.BIGINT()
-        .with_variant(mysql.BIGINT(), "mysql")
-        .with_variant(sa.BIGINT(), "postgresql"),
-        server_default=None,
-        existing_nullable=False,
-        schema="cdb_lsstcomcam",
+    op.create_primary_key("exposure_pkey", "exposure", ["exposure_id"], schema="cdb_lsstcomcam")
+    op.execute(
+        "ALTER TABLE cdb_lsstcomcam.exposure "
+        "ALTER COLUMN exposure_id SET DEFAULT nextval('cdb_lsstcomcam.exposure_exposure_id_seq'::regclass)"
     )
     op.drop_constraint(
         "fk_ccdvisit1_quicklook_day_obs_seq_num_detector",
@@ -715,10 +716,7 @@ def downgrade() -> None:
         "ccdvisit1_quicklook_pkey", "ccdvisit1_quicklook", schema="cdb_lsstcomcam", type_="primary"
     )
     op.create_primary_key(
-        "ccdvisit1_quicklook_pkey",
-        "ccdvisit1_quicklook",
-        ["ccdvisit_id"],
-        schema="cdb_lsstcomcam",
+        "ccdvisit1_quicklook_pkey", "ccdvisit1_quicklook", ["ccdvisit_id"], schema="cdb_lsstcomcam"
     )
     op.drop_column("ccdvisit1_quicklook", "detector", schema="cdb_lsstcomcam")
     op.drop_column("ccdvisit1_quicklook", "seq_num", schema="cdb_lsstcomcam")
@@ -739,10 +737,7 @@ def downgrade() -> None:
         "ccdexposure_quicklook_pkey", "ccdexposure_quicklook", schema="cdb_lsstcomcam", type_="primary"
     )
     op.create_primary_key(
-        "ccdexposure_quicklook_pkey",
-        "ccdexposure_quicklook",
-        ["ccdexposure_id"],
-        schema="cdb_lsstcomcam",
+        "ccdexposure_quicklook_pkey", "ccdexposure_quicklook", ["ccdexposure_id"], schema="cdb_lsstcomcam"
     )
     op.drop_column("ccdexposure_quicklook", "detector", schema="cdb_lsstcomcam")
     op.drop_column("ccdexposure_quicklook", "seq_num", schema="cdb_lsstcomcam")
@@ -763,10 +758,7 @@ def downgrade() -> None:
         "ccdexposure_flexdata_pkey", "ccdexposure_flexdata", schema="cdb_lsstcomcam", type_="primary"
     )
     op.create_primary_key(
-        "ccdexposure_flexdata_pkey",
-        "ccdexposure_flexdata",
-        ["obs_id", "key"],
-        schema="cdb_lsstcomcam",
+        "ccdexposure_flexdata_pkey", "ccdexposure_flexdata", ["obs_id", "key"], schema="cdb_lsstcomcam"
     )
     op.drop_column("ccdexposure_flexdata", "detector", schema="cdb_lsstcomcam")
     op.drop_column("ccdexposure_flexdata", "seq_num", schema="cdb_lsstcomcam")
@@ -787,10 +779,7 @@ def downgrade() -> None:
         "ccdexposure_camera_pkey", "ccdexposure_camera", schema="cdb_lsstcomcam", type_="primary"
     )
     op.create_primary_key(
-        "ccdexposure_camera_pkey",
-        "ccdexposure_camera",
-        ["ccdexposure_id"],
-        schema="cdb_lsstcomcam",
+        "ccdexposure_camera_pkey", "ccdexposure_camera", ["ccdexposure_id"], schema="cdb_lsstcomcam"
     )
     op.drop_column("ccdexposure_camera", "detector", schema="cdb_lsstcomcam")
     op.drop_column("ccdexposure_camera", "seq_num", schema="cdb_lsstcomcam")
@@ -802,10 +791,7 @@ def downgrade() -> None:
         type_="unique",
     )
     op.drop_constraint(
-        "un_ccdexposure_day_obs_seq_num_detector",
-        "ccdexposure",
-        schema="cdb_lsstcomcam",
-        type_="primary",
+        "un_ccdexposure_day_obs_seq_num_detector", "ccdexposure", schema="cdb_lsstcomcam", type_="primary"
     )
     op.drop_constraint(
         "un_ccdexposure_ccdexposure_id", "ccdexposure", schema="cdb_lsstcomcam", type_="unique"
@@ -819,45 +805,6 @@ def downgrade() -> None:
         "ccdexposure",
         ["day_obs", "seq_num", "detector"],
         schema="cdb_lsstcomcam",
-        postgresql_nulls_not_distinct=False,
-    )
-    op.drop_constraint(
-        "exposure_flexdata_pkey", "exposure_flexdata", schema="cdb_lsstcomcam", type_="primary"
-    )
-    op.create_primary_key(
-        "exposure_flexdata_pkey",
-        "exposure_flexdata",
-        ["obs_id", "key"],
-        schema="cdb_lsstcomcam",
-    )
-    op.drop_constraint("exposure_pkey", "exposure", schema="cdb_lsstcomcam", type_="primary")
-    op.create_primary_key("exposure_pkey", "exposure", ["exposure_id"], schema="cdb_lsstcomcam")
-    op.create_foreign_key(
-        "fk_ccdexposure_exposure_id",
-        "ccdexposure",
-        "exposure",
-        ["exposure_id"],
-        ["exposure_id"],
-        source_schema="cdb_lsstcomcam",
-        referent_schema="cdb_lsstcomcam",
-    )
-    op.create_foreign_key(
-        "fk_exposure_flexdata_obs_id",
-        "exposure_flexdata",
-        "exposure",
-        ["obs_id"],
-        ["exposure_id"],
-        source_schema="cdb_lsstcomcam",
-        referent_schema="cdb_lsstcomcam",
-    )
-    op.create_foreign_key(
-        "fk_exposure_quicklook_obs_id",
-        "exposure_quicklook",
-        "exposure",
-        ["exposure_id"],
-        ["exposure_id"],
-        source_schema="cdb_lsstcomcam",
-        referent_schema="cdb_lsstcomcam",
     )
     op.create_foreign_key(
         "fk_ccdexposure_id",
@@ -896,6 +843,15 @@ def downgrade() -> None:
         referent_schema="cdb_lsstcomcam",
     )
     op.create_foreign_key(
+        "fk_ccdexposure_exposure_id",
+        "ccdexposure",
+        "exposure",
+        ["exposure_id"],
+        ["exposure_id"],
+        source_schema="cdb_lsstcomcam",
+        referent_schema="cdb_lsstcomcam",
+    )
+    op.create_foreign_key(
         "fk_obs_id",
         "visit1_quicklook",
         "exposure",
@@ -904,5 +860,4 @@ def downgrade() -> None:
         source_schema="cdb_lsstcomcam",
         referent_schema="cdb_lsstcomcam",
     )
-
     # ### end Alembic commands ###

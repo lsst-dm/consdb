@@ -50,6 +50,16 @@ def upgrade() -> None:
         ["ccdexposure_id", "day_obs", "seq_num", "detector"],
         schema="cdb_latiss",
     )
+    op.alter_column(
+        "ccdexposure",
+        "ccdexposure_id",
+        existing_type=sa.BIGINT()
+        .with_variant(mysql.BIGINT(), "mysql")
+        .with_variant(sa.BIGINT(), "postgresql"),
+        server_default=None,
+        existing_nullable=False,
+        schema="cdb_latiss",
+    )
     op.create_foreign_key(
         "fk_ccdexposure_camera_ccdexposure_id",
         "ccdexposure_camera",
@@ -339,6 +349,16 @@ def upgrade() -> None:
         "un_exposure_exposure_id_day_obs_seq_num",
         "exposure",
         ["exposure_id", "day_obs", "seq_num"],
+        schema="cdb_latiss",
+    )
+    op.alter_column(
+        "exposure",
+        "exposure_id",
+        existing_type=sa.BIGINT()
+        .with_variant(mysql.BIGINT(), "mysql")
+        .with_variant(sa.BIGINT(), "postgresql"),
+        server_default=None,
+        existing_nullable=False,
         schema="cdb_latiss",
     )
     op.create_unique_constraint(
@@ -753,6 +773,10 @@ def downgrade() -> None:
         server_default=None,
         existing_nullable=False,
         schema="cdb_latiss",
+    )
+    op.execute(
+        "ALTER TABLE cdb_latiss.exposure "
+        "ALTER COLUMN exposure_id SET DEFAULT nextval('cdb_latiss.exposure_exposure_id_seq'::regclass)"
     )
     op.drop_constraint(
         "fk_ccdvisit1_quicklook_ccdvisit_id_day_obs_seq_num_detector",
