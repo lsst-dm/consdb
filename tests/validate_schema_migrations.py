@@ -23,6 +23,7 @@ Both of these can be changed by arguments to this script.
 """
 
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -132,9 +133,48 @@ def _normalize_diffs(diffs: list) -> list[str]:
     """Return a stable, comparable representation of Alembic diffs.
 
     ``compare_metadata`` returns structures containing SQLAlchemy objects whose
-    equality is not reliably semantic. Compare their string forms instead.
+    repr may include memory addresses. Normalize them structurally first.
     """
-    return sorted(repr(diff) for diff in diffs)
+
+    def normalize(value):
+        if isinstance(value, dict):
+            return {key: normalize(val) for key, val in sorted(value.items())}
+        if isinstance(value, (list, tuple)):
+            normalized = [normalize(item) for item in value]
+            return tuple(normalized) if isinstance(value, tuple) else normalized
+        if isinstance(value, sa.schema.DefaultClause):
+            arg = value.arg
+            if hasattr(arg, "text"):
+                arg = arg.text
+            else:
+                arg = str(arg)
+            return ("DefaultClause", arg, bool(getattr(value, "for_update", False)))
+        if isinstance(value, sa.Column):
+            table_name = value.table.name if value.table is not None else None
+            return ("Column", table_name, value.name)
+        return value
+
+    return sorted(repr(normalize(diff)) for diff in diffs)
+
+
+def _serialize_reflected_schema(connection: sa.engine.Connection, schema_name: str) -> dict[str, object]:
+    """Serialize reflected constraint state for debugging."""
+    inspector = sa.inspect(connection)
+    tables = sorted(inspector.get_table_names(schema=schema_name))
+    reflected: dict[str, object] = {}
+    for table in tables:
+        reflected[table] = {
+            "primary_key": inspector.get_pk_constraint(table, schema=schema_name),
+            "unique_constraints": sorted(
+                inspector.get_unique_constraints(table, schema=schema_name),
+                key=lambda item: item.get("name") or "",
+            ),
+            "foreign_keys": sorted(
+                inspector.get_foreign_keys(table, schema=schema_name),
+                key=lambda item: item.get("name") or "",
+            ),
+        }
+    return reflected
 
 
 def main() -> int:
@@ -202,6 +242,13 @@ def main() -> int:
 
     metadata = _load_metadata(old_yaml_path)
     new_metadata = _load_metadata(new_yaml_path)
+    debug_path = REPO_ROOT / "validate_schema_debug.json"
+    debug_data: dict[str, object] = {
+        "instrument": instrument,
+        "schema_name": schema_name,
+        "old_yaml_path": str(old_yaml_path),
+        "new_yaml_path": str(new_yaml_path),
+    }
 
     with setup_postgres_test_db() as instance:
         with instance.engine.begin() as connection:
@@ -217,6 +264,10 @@ def main() -> int:
 
         with instance.engine.connect() as connection:
             pre_diffs = _compare_schema(connection, metadata, schema_name)
+            debug_data["pre_upgrade"] = {
+                "normalized_diffs": _normalize_diffs(pre_diffs),
+                "reflected_schema": _serialize_reflected_schema(connection, schema_name),
+            }
         normalized_pre_diffs = _normalize_diffs(pre_diffs)
         if pre_diffs:
             print("🟡 Schema differences at pre-upgrade state (vs old YAML):")
@@ -228,10 +279,16 @@ def main() -> int:
         run(["alembic", "-c", "alembic.ini", "-n", instrument, "upgrade", "head"], env=temp_env)
         with instance.engine.connect() as connection:
             diffs = _compare_schema(connection, new_metadata, schema_name)
+            debug_data["post_upgrade"] = {
+                "normalized_diffs": _normalize_diffs(diffs),
+                "reflected_schema": _serialize_reflected_schema(connection, schema_name),
+            }
         if diffs:
             print("🔴 Schema differences found after upgrade:")
             for diff in diffs:
                 print(diff)
+            debug_path.write_text(json.dumps(debug_data, indent=2, sort_keys=True) + "\n")
+            print(f"🟡 Wrote debug artifact: {debug_path}")
             return ExitCode.DIFFS_FOUND
         else:
             print("🟢 Schema consistent after upgrade")
@@ -240,7 +297,13 @@ def main() -> int:
 
         with instance.engine.connect() as connection:
             post_diffs = _compare_schema(connection, metadata, schema_name)
+            debug_data["post_downgrade"] = {
+                "normalized_diffs": _normalize_diffs(post_diffs),
+                "reflected_schema": _serialize_reflected_schema(connection, schema_name),
+            }
         normalized_post_diffs = _normalize_diffs(post_diffs)
+        debug_path.write_text(json.dumps(debug_data, indent=2, sort_keys=True) + "\n")
+        print(f"🟡 Wrote debug artifact: {debug_path}")
         if normalized_pre_diffs != normalized_post_diffs:
             print("🔴 Schema differences changed after downgrade:")
             print("pre_diffs:")
@@ -262,6 +325,15 @@ def main() -> int:
         for cycle in range(1, 3):
             print(f"Cycle {cycle}: upgrade -> downgrade")
             run(["alembic", "-c", "alembic.ini", "-n", instrument, "upgrade", "head"], env=live_env)
+            with sa.create_engine(consdb_url).connect() as connection:
+                live_diffs = _compare_schema(connection, new_metadata, schema_name)
+            if live_diffs:
+                print(f"🔴 Live schema differences found after upgrade in cycle {cycle}:")
+                for diff in live_diffs:
+                    print(diff)
+                return ExitCode.DIFFS_FOUND
+            else:
+                print(f"🟢 Live schema consistent after upgrade in cycle {cycle}")
             run(["alembic", "-c", "alembic.ini", "-n", instrument, "downgrade", "-1"], env=live_env)
 
     print("🟢 --- All checks passed. ---")
