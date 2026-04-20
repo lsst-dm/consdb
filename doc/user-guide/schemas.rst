@@ -5,10 +5,11 @@ Schemas
 ConsDB is a relational database and uses schemas expressed in SQL.
 
 The `Science Data Model Schemas site <https://sdm-schemas.lsst.io>`__ provides a web-based browser for ConsDB schemas, including Summit-generated schemas and Transformed EFD schemas.
-All ConsDB schemas (one per instrument) are labeled as "ConsDB" on that site.
+All ConsDB schemas (one per instrument) are labeled as "ConsDB" or "Transformed EFD" on that site.
 
-There are currently three main schemas: ``cdb_latiss``, ``cdb_lsstcomcam``, and ``cdb_lsstcam``.
-Each schema has ``exposure`` and ``visit1`` tables; the ``visit1`` tables are using the one-to-one visit system (each exposure is a visit) and hence are cheaply implemented as views, although formally visits should only include on-sky exposures.
+There are currently four main schemas: ``cdb_latiss``, ``cdb_lsstcam``, ``efd_latiss``, and ``efd_lsstcam``.
+
+Each ``cdb_*`` schema has ``exposure`` and ``visit1`` tables; the ``visit1`` tables are using the one-to-one visit system (each exposure is a visit) and hence are cheaply implemented as views, although formally visits should only include on-sky exposures.
 Each schema also has a ``ccdexposure`` table and ``ccdvisit1`` view for per-CCD values.
 
 There is a ``ccdexposure_camera`` table for certain values the Camera Control System is responsible for.
@@ -20,7 +21,7 @@ Finally, flexible metadata tables named ``exposure_flexdata`` and ``ccdexposure_
 (Visit flexdata can be added if there is a need.)
 See :doc:`this page <flexible-metadata>` for more on flexible metadata.
 
-The Transformed EFD tables, which have their own schemas, are described in :doc:`a separate page <transformed-efd>`.
+The ``efd_*`` Transformed EFD tables, which have their own schemas, are described in :doc:`a separate page <transformed-efd>`.
 
 Generally the tables within each schema are normalized so that there is minimal duplication of data other than exposure/visit identifiers between tables.
 This may mean that a join is needed to get the desired information or to query on columns in more than one table.
