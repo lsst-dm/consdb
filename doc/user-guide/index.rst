@@ -22,6 +22,7 @@ The following sections describe the contents of the Consolidated Database and pr
 
    schemas
    transformed-efd
+   flexible-metadata
    tap-clients
    rest-api-and-clients
    sql-clients
