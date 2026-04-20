@@ -88,32 +88,5 @@ Client access
 Third-party TAP clients such as PyVO and TOPCAT can also be used with the TAP service.
 `The examples for DP1 <https://dp1.lsst.io/tutorials/api/index.html#how-to-rsp-functionality>`__ show how to configure the clients, although the connection URL should be the ConsDB version given above.
 
-
-.. _creating-a-token:
-
-Creating a token
-----------------
-
-To access the USDF RSP from an external client, you will need an authorized token.
-To create this token, follow these steps:
-
-- In a browser, login to ``usdf-rsp.slac.stanford.edu``.
-  You don't need to start a notebook.
-
-- In the upper right corner is a menu with your username.
-  Choose "Settings" and then "Access tokens" from it.
-  Click on "Create a token".
-
-- Enter a name for your token like "ConsDB token".
-  Choose the ``read:image`` scope.
-  (This should probably be ``read:tap``.)
-  Best practice is to choose a lifetime or expiration date, but you can also do "Never" if you really want.
-
-- Click on the "Create token" button.
-
-- Copy the token text from the window that appears.
-  This text will never be visible again.
-
-- Once you have copied the text, click "Done".
-
-- You can go back to the "Access tokens" page at any time to see your tokens and remove any that you no longer need.
+To access the USDF RSP from an external client, you will need an authorized token with ``read:tap`` scope.
+See `the RSP documentation <https://rsp.lsst.io/guides/auth/creating-user-tokens.html>`__ for instructions on creating a token.

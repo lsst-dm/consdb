@@ -25,7 +25,8 @@ You will need to add ``.consdb`` to the ``no_proxy`` environment variable (``set
 
 Outside the USDF RSP, including access from the sdfiana interactive machines, use the connection URL ``https://usdf-rsp.slac.stanford.edu/consdb``.
 There is no need for proxy manipulation in this case.
-An authorized USDF RSP token is required; see :ref:`this section <creating-a-token>` for details.
+An authorized USDF RSP token with ``read:image`` scope (may change to ``read:tap`` later) is required.
+See `the RSP documentation <https://rsp.lsst.io/guides/auth/creating-user-tokens.html>`__ for instructions on creating a token.
 Best practice is to keep the token in a file that is readable only by you (Unix mode 600).
 
 
