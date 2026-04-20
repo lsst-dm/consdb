@@ -7,7 +7,6 @@ Developer Guide
 
    repository-structure
    building-artifacts
-   consdbclient-summit-utils
    standards-practices
    documentation
    transformed-efd
