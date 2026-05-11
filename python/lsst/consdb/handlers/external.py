@@ -276,39 +276,6 @@ def validate_columns(
         raise BadValueException("extra columns", ",".join(extra_columns))
 
 
-def fill_day_obs_seq_num_detector(
-    table_obj: sqlalchemy.sql.schema.Table,
-    valdict: dict[str, Any],
-    obs_id: int,
-    instrument_table: InstrumentTable,
-) -> None:
-    """Fill day_obs/seq_num/detector in valdict when missing."""
-    need_day_obs = "day_obs" not in valdict
-    need_seq_num = "seq_num" not in valdict
-    need_detector = "detector" not in valdict and "detector" in table_obj.columns
-    if not (need_day_obs or need_seq_num or need_detector):
-        return
-
-    if need_day_obs or need_seq_num:
-        primary_key = obs_id
-        for primary_key_name in ("obs_id", "exposure_id", "visit_id"):
-            if primary_key_name in valdict:
-                primary_key = valdict[primary_key_name]
-        day_obs, seq_num = instrument_table.get_day_obs_and_seq_num(primary_key)
-        if need_day_obs:
-            valdict["day_obs"] = day_obs
-        if need_seq_num:
-            valdict["seq_num"] = seq_num
-
-    if need_detector:
-        day_obs_d, seq_num_d, detector = instrument_table.get_day_obs_and_seq_num_and_detector(obs_id)
-        if need_day_obs:
-            valdict["day_obs"] = day_obs_d
-        if need_seq_num:
-            valdict["seq_num"] = seq_num_d
-        valdict["detector"] = detector
-
-
 # ---------------------------------------------------------------------------
 # /insert/ endpoint family
 #
@@ -333,19 +300,16 @@ def fill_day_obs_seq_num_detector(
 #   POST /insert/{instr}/{table}/obs/{obs_id}
 #       Older, more permissive form. The URL carries the natural-id column
 #       (``visit_id``, ``exposure_id``, ``ccdvisit_id``, ``ccdexposure_id``,
-#       ...) and ``fill_day_obs_seq_num_detector`` looks up any missing
-#       composite-key columns from the parent table. New code should prefer
-#       the ``by_seq_num`` forms above.
+#       ...) and any missing composite-key columns are looked up from the
+#       parent table via ``InstrumentTable.composite_key_for``. New code
+#       should prefer the ``by_seq_num`` forms above.
 #
 #   POST /insert/{instr}/{table}
 #       Bulk variant of the ``obs/`` form. Body is an ``obs_dict`` keyed by
 #       natural id; each value follows the per-row path.
 #
-# Validation lives in two shared helpers:
-#   * validate_columns(): rejects extra columns and (when ``u=0``) missing
-#     non-nullable columns.
-#   * fill_day_obs_seq_num_detector(): populates composite-key columns on
-#     the ``/obs/`` and bulk paths when the caller didn't supply them.
+# Column validation lives in ``validate_columns()``: it rejects extra
+# columns and (when ``u=0``) missing non-nullable columns.
 # ---------------------------------------------------------------------------
 
 
@@ -393,7 +357,6 @@ def _insert_by_day_obs_seq_num(
     # The URL provides day_obs/seq_num/detector authoritatively; the body
     # carries everything else. Layer URL values on top of body values so the
     # URL wins on any accidental overlap.
-    valdict = data.values
     valdict_insert = data.values | {"day_obs": day_obs, "seq_num": seq_num}
     if detector is not None:
         valdict_insert["detector"] = detector
@@ -531,10 +494,10 @@ def insert(
     obs_id_colname = instrument_table.obs_id_column[table_name]
     valdict[obs_id_colname] = obs_id
 
-    # Auto-fill day_obs/seq_num/detector from the parent table when the
-    # caller omitted them. Unlike by_seq_num, this endpoint does not carry
-    # composite-key columns in the URL.
-    fill_day_obs_seq_num_detector(table_obj, valdict, obs_id, instrument_table)
+    # Look up any composite-key columns the body omitted; merge so body
+    # values win on collisions. Unlike ``by_seq_num``, this endpoint
+    # doesn't carry composite-key columns in the URL.
+    valdict = instrument_table.composite_key_for(table_name, obs_id, valdict) | valdict
 
     validate_columns(table_obj, valdict, u == 0)
 
@@ -617,7 +580,7 @@ def insert_multiple(
     for obs_id, valdict in data.obs_dict.items():
         valdict[obs_id_colname] = obs_id
 
-        fill_day_obs_seq_num_detector(table_obj, valdict, obs_id, instrument_table)
+        valdict = instrument_table.composite_key_for(table_name, obs_id, valdict) | valdict
 
         # Convert timestamps in the input from string to datetime
         for column in timestamp_columns:

@@ -321,3 +321,30 @@ def test_insert_multiple(lsstcam_client, lsstcam_tables, row_builder):
         row = row_builder(table_name, seed=2)
         _call_insert_multiple(lsstcam_client, table_name, table, row, u=0)
         _call_insert_multiple(lsstcam_client, table_name, table, row, u=1)
+
+
+def test_insert_autofills_day_obs_seq_num_for_ccd_table(lsstcam_client, lsstcam_tables, row_builder):
+    """Posting to /insert/{instrument}/{table}/obs/{obs_id} for a
+    ccdexposure-level table without supplying day_obs/seq_num must backfill
+    those fields from the parent ccdexposure row.
+    """
+    md, table_names = lsstcam_tables
+    target = "cdb_lsstcam.ccdvisit1_quicklook"
+    assert target in table_names, f"{target} missing from schema"
+
+    seed = 100
+    for table_name in table_names:
+        table = md.tables[table_name]
+        row = row_builder(table_name, seed=seed)
+        if table_name != target:
+            _call_insert(lsstcam_client, table_name, table, row, u=0)
+            continue
+
+        payload = {k: v for k, v in row.items() if k not in ("day_obs", "seq_num")}
+        obs_id_col = _obs_id_column(table)
+        path = _insert_path("lsstcam", target, int(row[obs_id_col]))
+        response = lsstcam_client.post(path, params={"u": 0}, json={"values": payload})
+        _assert_http_status(response, 200)
+        return
+
+    pytest.fail(f"target table {target} not visited")
