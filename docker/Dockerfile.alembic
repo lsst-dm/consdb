@@ -24,4 +24,6 @@ RUN pip install \
     psycopg2-binary
 
 COPY . /app/
+# Pulled in separately because .dockerignore excludes docker/ from COPY above.
+COPY docker/alembic-setup.sql /app/alembic-setup.sql
 CMD [ "/bin/sh", "-c" ]

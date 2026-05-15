@@ -1,1 +1,3 @@
 **/docker
+!docker/alembic-setup.sql
+!docker/run-pytest.sh

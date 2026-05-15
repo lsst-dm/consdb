@@ -21,7 +21,7 @@
 
 import logging
 from enum import StrEnum
-from typing import Generator
+from typing import Any, Generator
 
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
@@ -191,6 +191,70 @@ class InstrumentTable:
         if not query_result:
             raise BadValueException("exposure_id", exposure_id)
         return (query_result.day_obs, query_result.seq_num)
+
+    def get_day_obs_and_seq_num_and_detector(self, ccdexposure_id: int) -> tuple[int, int, int]:
+        ccd_table_name = f"cdb_{self.instrument}.ccdexposure"
+        ccd_table = self.schemas.tables[ccd_table_name]
+        query = sqlalchemy.select(
+            ccd_table.c.day_obs,
+            ccd_table.c.seq_num,
+            ccd_table.c.detector,
+        ).where(ccd_table.c.ccdexposure_id == ccdexposure_id)
+
+        db = next(self.get_db())
+        query_result = db.execute(query).first()
+
+        if not query_result:
+            raise BadValueException("ccdexposure_id", ccdexposure_id)
+        return (query_result.day_obs, query_result.seq_num, query_result.detector)
+
+    def composite_key_for(self, table_name: str, obs_id: int, valdict: dict[str, Any]) -> dict[str, int]:
+        """Return composite-key columns for a row in ``table_name``.
+
+        Looks up the parent row and returns whichever of ``day_obs``,
+        ``seq_num``, and ``detector`` the target table needs but ``valdict``
+        doesn't already supply. Returns an empty dict when ``valdict``
+        already carries every composite-key column the table requires.
+
+        Dispatch:
+          * ccdexposure-level children (have a ``detector`` column and no
+            ``exposure_id`` FK) resolve via ``ccdexposure.ccdexposure_id``
+            using the URL ``obs_id``;
+          * everything else resolves via ``exposure.exposure_id``, preferring
+            a payload-supplied parent id (``obs_id``/``exposure_id``/
+            ``visit_id`` in ``valdict``) over the URL ``obs_id``.
+
+        TODO: once ``/insert/`` no longer accepts the parent ``exposure`` /
+        ``ccdexposure`` tables, the ccdexposure-child branch is the only
+        case with a ``detector`` column and the discriminator simplifies to
+        ``"detector" in table.columns``.
+        """
+        table = self.schemas.tables[table_name]
+        has_detector = "detector" in table.columns
+
+        need_day_obs = "day_obs" not in valdict
+        need_seq_num = "seq_num" not in valdict
+        need_detector = has_detector and "detector" not in valdict
+        if not (need_day_obs or need_seq_num or need_detector):
+            return {}
+
+        result: dict[str, int] = {}
+        if has_detector and "exposure_id" not in table.columns:
+            day_obs, seq_num, detector = self.get_day_obs_and_seq_num_and_detector(obs_id)
+            if need_detector:
+                result["detector"] = detector
+        else:
+            parent_id = obs_id
+            for name in ("obs_id", "exposure_id", "visit_id"):
+                if name in valdict:
+                    parent_id = valdict[name]
+            day_obs, seq_num = self.get_day_obs_and_seq_num(parent_id)
+
+        if need_day_obs:
+            result["day_obs"] = day_obs
+        if need_seq_num:
+            result["seq_num"] = seq_num
+        return result
 
     def refresh_flexible_metadata_schema(self, obs_type: str):
         schema = dict()
