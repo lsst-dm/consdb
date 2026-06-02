@@ -116,15 +116,6 @@ def include_object(object, name, type_, reflected, compare_to):
         logger.info(f"Excluding table {object.schema}.{name}")
         return False
 
-    # Not sure why Alembic insists on adding these redundantly
-    elif type_ == "unique_constraint" and name in {
-        "un_ccdexposure_ccdexposure_id",
-        "un_exposure_day_obs_seq_num",
-        "un_exposure_flexdata_day_obs_seq_num_key",
-    }:
-        logger.info(f"Excluding unique constraint {name}")
-        return False
-
     else:
         return True
 
