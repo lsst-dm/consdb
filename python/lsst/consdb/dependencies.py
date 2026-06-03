@@ -20,6 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from functools import cache
 from typing import Annotated
 
 from fastapi import Depends, Path, Request
@@ -38,7 +39,6 @@ _database_url = None
 _engine = None
 _SessionLocal = None
 _instrument_tables: dict[str, InstrumentTable] = dict()
-_instrument_list: list[str] | None = None
 
 
 def get_engine():
@@ -82,7 +82,6 @@ def get_logger(request: Request):
 
 
 def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
-    # global _instrument_list
     # global _instrument_tables
 
     instrument = validate_instrument_name(instrument)
@@ -97,13 +96,10 @@ def get_instrument_table(instrument: str, engine: Engine = Depends(get_engine)):
     return instrument_table
 
 
+@cache
 def get_instrument_list():
-    # global _instrument_list
-    if _instrument_list is None:
-        inspector = inspect(get_engine())
-        instrument_list = [name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")]
-
-    return instrument_list
+    inspector = inspect(get_engine())
+    return [name[4:] for name in inspector.get_schema_names() if name.startswith("cdb_")]
 
 
 def validate_instrument_name(
@@ -120,9 +116,9 @@ InstrumentName = Annotated[str, AfterValidator(validate_instrument_name)]
 
 
 def reset_dependencies():
-    global _database_url, _engine, _SessionLocal, _instrument_tables, _instrument_list
+    global _database_url, _engine, _SessionLocal, _instrument_tables
     _database_url = None
     _engine = None
     _SessionLocal = None
     _instrument_tables = dict()
-    _instrument_list = None
+    get_instrument_list.cache_clear()

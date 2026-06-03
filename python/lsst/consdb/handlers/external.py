@@ -705,7 +705,7 @@ def query(
     rows are discarded.
     """
 
-    logger.info("pqserver query endpoint:\n{query!r}")
+    logger.info("pqserver query endpoint:\n%r", data.query)
 
     columns = []
     rows = []
