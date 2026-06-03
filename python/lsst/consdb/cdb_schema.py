@@ -20,6 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from contextlib import contextmanager
 from enum import StrEnum
 from typing import Any, Generator
 
@@ -152,6 +153,21 @@ class InstrumentTable:
                 self.flexible_metadata_schemas[obs_type] = None
                 self.refresh_flexible_metadata_schema(obs_type)
 
+    @contextmanager
+    def _borrow_db(self) -> Generator[Session, None, None]:
+        """Yield a Session and guarantee its return to the pool.
+
+        ``get_db`` is a generator; advancing it checks out a pooled connection
+        and closing it runs the ``finally: db.close()`` that returns the
+        connection. The ``finally`` here ensures that happens even if the
+        caller's query raises.
+        """
+        db_gen = self.get_db()
+        try:
+            yield next(db_gen)
+        finally:
+            db_gen.close()
+
     def get_timestamp_columns(self, table: str) -> set[str]:
         """Returns a set containing all timestamp columns.
 
@@ -185,8 +201,8 @@ class InstrumentTable:
             exposure_table.c.exposure_id == exposure_id
         )
 
-        db = next(self.get_db())
-        query_result = db.execute(query).first()
+        with self._borrow_db() as db:
+            query_result = db.execute(query).first()
 
         if not query_result:
             raise BadValueException("exposure_id", exposure_id)
@@ -201,8 +217,8 @@ class InstrumentTable:
             ccd_table.c.detector,
         ).where(ccd_table.c.ccdexposure_id == ccdexposure_id)
 
-        db = next(self.get_db())
-        query_result = db.execute(query).first()
+        with self._borrow_db() as db:
+            query_result = db.execute(query).first()
 
         if not query_result:
             raise BadValueException("ccdexposure_id", ccdexposure_id)
@@ -261,9 +277,9 @@ class InstrumentTable:
         schema_table = self.get_flexible_metadata_schema(obs_type)
         stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
         self.logger.debug(str(stmt))
-        db = next(self.get_db())
-        for row in db.execute(stmt):
-            schema[row[0]] = row[1:]
+        with self._borrow_db() as db:
+            for row in db.execute(stmt):
+                schema[row[0]] = row[1:]
         self.flexible_metadata_schemas[obs_type] = schema
 
     def compute_flexible_metadata_table_name(self, obs_type: str) -> str:
