@@ -26,6 +26,7 @@ import astropy
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from ..cdb_schema import (
@@ -53,6 +54,7 @@ from ..models import (
     QueryResponseModel,
     TableConsistencyModel,
 )
+from .consistency_page import TABLE_CONSISTENCY_HTML
 
 external_router = APIRouter()
 """FastAPI router for all external handlers."""
@@ -78,6 +80,22 @@ def external_root(
         obs_types=[o.value for o in ObsTypeEnum],
         dtypes=[d.value for d in AllowedFlexTypeEnum],
     )
+
+
+@external_router.get(
+    "/table_consistency",
+    summary="Interactive table consistency report",
+    description=(
+        "Self-contained HTML page that displays consistency-rule violations for "
+        "an instrument and observing day, fetched from the JSON endpoint below."
+    ),
+    response_class=HTMLResponse,
+    include_in_schema=False,
+)
+def table_consistency_page() -> HTMLResponse:
+    """Serve the interactive table consistency report page."""
+
+    return HTMLResponse(content=TABLE_CONSISTENCY_HTML)
 
 
 @external_router.get(
