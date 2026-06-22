@@ -57,6 +57,7 @@ Configuration Files:
 --------------------
 The module uses YAML files for instrument-specific configurations:
 - `config_latiss.yaml`: Configuration for LATISS.
+- `config_lsstcam.yaml`: Configuration for LSSTCam.
 - `config_lsstcomcam.yaml`: Configuration for LSSTComCam.
 - `config_lsstcomcamsim.yaml`: Configuration for LSSTComCamSim.
 
