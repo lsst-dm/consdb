@@ -24,7 +24,7 @@
 import logging
 import warnings
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import numpy
 import pandas
@@ -32,7 +32,7 @@ from sqlalchemy import Engine, MetaData, Table, create_engine
 from sqlalchemy import exc as sa_exc
 from sqlalchemy import func
 from sqlalchemy.dialects import postgresql, sqlite
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import QueuePool
 
 
 class DBBase:
@@ -46,7 +46,6 @@ class DBBase:
     ----------
         db_uris (list[str]): All database URIs.
         db_uri (str): The primary database URI (first in list).
-        connexion: The database connection (primary).
         dialect: The database dialect.
         logger (logging.Logger): The logger for the class.
 
@@ -75,9 +74,20 @@ class DBBase:
             self.db_uris = list(db_uri)
 
         self.db_uri = self.db_uris[0]
-        self._engines: list[Engine | None] = [None] * len(self.db_uris)
-        self.connexion = None
-        self.log = logger
+        self.log = logger or logging.getLogger(__name__)
+        self._setup_warning_redirect()
+
+        self._engines: list[Engine] = [
+            create_engine(
+                uri,
+                poolclass=QueuePool,
+                pool_size=1,
+                max_overflow=0,
+                pool_pre_ping=True,
+                connect_args={"connect_timeout": 5},
+            )
+            for uri in self.db_uris
+        ]
 
         sgbd = self.db_uri.split(":")[0]
 
@@ -86,13 +96,33 @@ class DBBase:
         elif sgbd == "postgresql":
             self.dialect = postgresql
         else:
-            raise Exception(f"The dialect for {sgbd} has not yet been implemented.")
+            raise NotImplementedError(f"The dialect for {sgbd} has not yet been implemented.")
+
+    def _setup_warning_redirect(self) -> None:
+        """Redirect SQLAlchemy warnings to the structured logger.
+
+        SAWarning is intercepted and logged with ``event=db_sa_warning``
+        so it is discoverable in Loki / log-based monitoring. All other
+        warnings pass through to the default handler unchanged.
+        """
+        _original = warnings.showwarning
+
+        def _handler(message, category, filename, lineno, file=None, line=None):
+            if issubclass(category, sa_exc.SAWarning):
+                self.log.warning(
+                    "event=db_sa_warning message=%s filename=%s lineno=%s",
+                    str(message), filename, lineno,
+                )
+            else:
+                _original(message, category, filename, lineno, file, line)
+
+        warnings.showwarning = _handler
 
     def get_db_engine(self, index: int = 0) -> Engine:
         """Return the database engine for the given index.
 
-        If the engine is not already created, it creates a new engine
-        using the corresponding database URI and returns it.
+        Engines are created eagerly in ``__init__``, so this method
+        is thread-safe and guaranteed to return immediately.
 
         Parameters
         ----------
@@ -104,35 +134,13 @@ class DBBase:
             The database engine.
 
         """
-        if self._engines[index] is None:
-            self._engines[index] = create_engine(self.db_uris[index], poolclass=NullPool)
-
         return self._engines[index]
-
-    def get_con(self):
-        """Return the database connection.
-
-        If the connection is not already established, it creates a new
-        connection using the database engine obtained
-        from `get_db_engine` method.
-
-        Returns
-        -------
-            The database connection.
-
-        """
-        if self.connexion is None:
-            engine = self.get_db_engine()
-            self.connexion = engine.connect()
-
-        return self.connexion
 
     def _write_to_all_engines(self, write_fn):
         """Execute write_fn(engine) on every configured engine.
 
         Primary (index 0) failure is fatal and re-raised. Secondary
-        failures are logged as partial success and do not interrupt
-        processing.
+        failures are logged and do not interrupt processing.
 
         Parameters
         ----------
@@ -158,7 +166,9 @@ class DBBase:
             except Exception as e:
                 if i == 0:
                     raise
-                self.log.error("event=db_write_failed db=%s uri=...@%s error=%s", db_label, safe_uri, e)
+                self.log.warning(
+                    "event=db_write_failed db=%s uri=...@%s error=%s", db_label, safe_uri, e
+                )
 
         return primary_result
 
@@ -176,18 +186,14 @@ class DBBase:
             Table: The table object representing the requested table.
 
         """
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
-
-            engine = self.get_db_engine()
-            metadata = MetaData()
-            metadata.reflect(engine)
-
-            if schema is not None and self.dialect == postgresql:
-                tbl = Table(tablename, metadata, autoload_with=self.get_con(), schema=schema)
-            else:
-                tbl = Table(tablename, metadata, autoload_with=self.get_con())
-            return tbl
+        engine = self.get_db_engine()
+        metadata = MetaData()
+        metadata.reflect(engine)
+        if schema is not None and self.dialect == postgresql:
+            with engine.connect() as con:
+                return Table(tablename, metadata, autoload_with=con, schema=schema)
+        with engine.connect() as con:
+            return Table(tablename, metadata, autoload_with=con)
 
     def execute(self, stm):
         """Execute SQL statement on the database.
@@ -201,11 +207,9 @@ class DBBase:
             ResultProxy: The result of the executed statement.
 
         """
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
-            engine = self.get_db_engine()
-            with engine.connect() as con:
-                return con.execute(stm)
+        engine = self.get_db_engine()
+        with engine.connect() as con:
+            return con.execute(stm)
 
     def fetch_all_dict(self, stm) -> List[Dict]:
         """Fetch all rows from the database using the provided SQL statement.
@@ -219,22 +223,19 @@ class DBBase:
             List[Dict]: A list of dictionaries representing the fetched rows.
 
         """
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+        engine = self.get_db_engine()
+        with engine.connect() as con:
 
-            engine = self.get_db_engine()
-            with engine.connect() as con:
+            queryset = con.execute(stm)
 
-                queryset = con.execute(stm)
+            rows = []
+            for row in queryset:
+                d = row._asdict()
+                rows.append(d)
 
-                rows = []
-                for row in queryset:
-                    d = row._asdict()
-                    rows.append(d)
+            return rows
 
-                return rows
-
-    def fetch_one_dict(self, stm) -> Dict:
+    def fetch_one_dict(self, stm) -> Optional[Dict]:
         """Fetch single row from the database and returns it as a dictionary.
 
         Args:
@@ -247,19 +248,16 @@ class DBBase:
                 row is found.
 
         """
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+        engine = self.get_db_engine()
+        with engine.connect() as con:
 
-            engine = self.get_db_engine()
-            with engine.connect() as con:
+            queryset = con.execute(stm).fetchone()
 
-                queryset = con.execute(stm).fetchone()
-
-                if queryset is not None:
-                    d = queryset._asdict()
-                    return d
-                else:
-                    return None
+            if queryset is not None:
+                d = queryset._asdict()
+                return d
+            else:
+                return None
 
     def fetch_scalar(self, stm) -> Any:
         """Execute SQL statement and returns the first column of the first row.
@@ -364,7 +362,7 @@ class DBBase:
             if update_cols:
                 upsert_stm = insert_stm.on_conflict_do_update(
                     index_elements=tbl.primary_key.columns,
-                    set_={k: getattr(insert_stm.excluded, k) for k in update_cols},
+                    set_={k: func.coalesce(getattr(insert_stm.excluded, k), getattr(tbl.c, k)) for k in update_cols},
                 )
             else:
                 upsert_stm = insert_stm.on_conflict_do_nothing()
@@ -436,49 +434,6 @@ class DBBase:
             affected_rows += primary_rowcount
 
         return affected_rows
-
-    def debug_query(self, stm, with_parameters=False) -> str:
-        """Returns SQL representation of the statement for debugging.
-
-        Args:
-        ----
-            stm: The statement to be converted to SQL.
-            with_parameters: Whether to include parameter values in the SQL.
-
-        Returns:
-        -------
-            str: The SQL representation of the statement.
-
-        """
-        sql = self.stm_to_str(stm, with_parameters)
-        return sql
-
-    def stm_to_str(self, stm, with_parameters=False):
-        """Convert SQLAlchemy statement object to a string representation.
-
-        Args:
-        ----
-            stm (sqlalchemy.sql.expression.Selectable): The SQLAlchemy
-                statement object to convert.
-            with_parameters (bool, optional): Whether to include parameter
-                values in the resulting SQL string. Defaults to False.
-
-        Returns:
-        -------
-            str: The string representation of the SQL query.
-
-        """
-        sql = str(
-            stm.compile(
-                dialect=self.dialect.dialect(),
-                compile_kwargs={"literal_binds": with_parameters},
-            )
-        )
-
-        # Remove new lines
-        sql = sql.replace("\n", " ").replace("\r", "")
-
-        return sql
 
     @staticmethod
     def _ensure_utc(dt: datetime) -> datetime:
