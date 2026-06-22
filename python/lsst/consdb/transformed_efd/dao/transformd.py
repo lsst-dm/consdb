@@ -87,22 +87,6 @@ class TransformdDao(DBBase):
             self.log.error("event=task_update_failed id=%s status=%s error=%s", id, status, e, exc_info=True)
             raise Exception(f"Error updating task: error={e}") from e
 
-    @staticmethod
-    def _ensure_utc_naive(dt: Optional[datetime]) -> Optional[datetime]:
-        """Convert datetime to UTC-naive format.
-
-        Args:
-            dt: Input datetime (naive or aware)
-
-        Returns:
-            UTC-naive datetime, or None if input was None
-        """
-        if dt is None:
-            return None
-        if dt.tzinfo is not None:
-            return dt.astimezone(timezone.utc).replace(tzinfo=None)
-        return dt  # Assume naive datetimes are UTC
-
     def select_by_id(self, id: int) -> Task:
         """Get task by ID.
 
@@ -302,7 +286,7 @@ class TransformdDao(DBBase):
         visits1 : int
             Visit count
         """
-        self._update_task_status(id, "failed", exposures=exposures, visits1=visits1)
+        self._update_task_status(id, "running", exposures=exposures, visits1=visits1)
 
     def task_completed(self, id: int) -> None:
         """Mark task as completed.
@@ -313,6 +297,8 @@ class TransformdDao(DBBase):
             Task ID to update
         """
         row = self.select_by_id(id)
+        if row is None:
+            raise ValueError(f"Task not found: id={id}")
         end_time = self._ensure_utc(datetime.now(timezone.utc))
         exec_time = (end_time - row["process_start_time"]).total_seconds()
         self._update_task_status(
@@ -334,6 +320,8 @@ class TransformdDao(DBBase):
             Error message
         """
         row = self.select_by_id(id)
+        if row is None:
+            raise ValueError(f"Task not found: id={id}")
         end_time = self._ensure_utc(datetime.now(timezone.utc))
         exec_time = (end_time - row["process_start_time"]).total_seconds()
         self._update_task_status(
@@ -464,11 +452,11 @@ class TransformdDao(DBBase):
         List[Task]
             List of task records
         """
-        query = select(self.tbl.c).where(self.tbl.c.status == "failed")
-        if max_retries:
-            query = query.where(
-                and_(self.tbl.c.retries <= max_retries, self.tbl.c.butler_repo == butler_repo)
-            )
+        query = select(self.tbl.c).where(
+            and_(self.tbl.c.status == "failed", self.tbl.c.butler_repo == butler_repo)
+        )
+        if max_retries is not None:
+            query = query.where(self.tbl.c.retries <= max_retries)
         query = query.order_by(self.tbl.c.created_at.asc(), self.tbl.c.id.asc())
         return self.fetch_all_dict(query)
 
