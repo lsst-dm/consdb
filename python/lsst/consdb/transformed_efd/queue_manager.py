@@ -109,10 +109,11 @@ class QueueManager:
         # Convert process_interval to TimeDelta once
         process_interval_td = TimeDelta(process_interval * 60, format="sec")
 
+        current_utc = Time.now().utc
+
         # Handle start_time logic
         if start_time is None:
             last_task = self.dao.select_last()
-            current_utc = Time.now().utc  # Get current time in UTC using Astropy's built-in method
 
             if last_task is None:
                 # First task: [current - interval, current]
@@ -123,7 +124,7 @@ class QueueManager:
 
         # Handle end_time logic
         if end_time is None:
-            end_time = current_utc  # Current UTC time
+            end_time = current_utc
             # Ensure at least one interval exists / deal with floating point
             time_delta = TimeDelta(round((end_time - start_time).to_value("sec"), 6), format="sec")
             if time_delta < process_interval_td:
@@ -312,7 +313,7 @@ class QueueManager:
 
         return task
 
-    def failed_tasks(self, butler_repo: str, max_retries: int = 3) -> Optional[dict]:
+    def failed_tasks(self, butler_repo: str, max_retries: int = 3) -> List[dict]:
         """Retrieves failed tasks.
 
         Args:
@@ -322,17 +323,17 @@ class QueueManager:
 
         Returns:
         -------
-        Optional[dict]: A dictionary representing the next task with the
-            specified status. If no task is found, returns `None`.
+        List[dict]: A list of dictionaries representing the failed tasks.
+            Empty list if no tasks found.
         """
 
-        task = self.dao.select_failed(butler_repo, max_retries=max_retries)
+        tasks = self.dao.select_failed(butler_repo, max_retries=max_retries)
 
         # add a retry key to act as a verifier to increment retries
-        if task:
-            task = [d.update({"retry": True}) or d for d in task]
+        if tasks:
+            tasks = [d.update({"retry": True}) or d for d in tasks]
 
-        return task
+        return tasks
 
     def get_task_by_interval(
         self, start_time: Time, end_time: Time, butler_repo: str, status: str
