@@ -374,7 +374,7 @@ async def process_tasks(
     instrument: str,
     timewindow: int,
     batch_size: int = 50,
-    shutdown_event: Optional[asyncio.Event] = None,
+    shutdown_event: asyncio.Event,
 ) -> None:
     """Execute task batches and log results.
 
