@@ -69,6 +69,11 @@ class Transform:
         self.efd = efd
         self.config = config
         self.commit_every = commit_every
+        # DAO cache — created lazily on first _store_results call.
+        self._exp_dao: ExposureEfdDao | None = None
+        self._vis_dao: VisitEfdDao | None = None
+        self._exp_unpivoted_dao: ExposureEfdUnpivotedDao | None = None
+        self._vis_unpivoted_dao: VisitEfdUnpivotedDao | None = None
 
     def get_schema_by_instrument(self, instrument: str) -> str:
         """Get the schema name for the given instrument."""
@@ -213,6 +218,17 @@ class Transform:
         log_context: Dict[str, Any] | None = None,
     ) -> Dict[str, Any]:
         """Process the given time interval for a specific instrument."""
+        # Only process exposures / visits completely within the time window.
+        # Partial overlaps are handled by the adjacent task.
+        full_exposures = [
+            e for e in exposures
+            if e["timespan"].begin.utc >= start_time and e["timespan"].end.utc <= end_time
+        ]
+        full_visits = [
+            v for v in visits
+            if v["timespan"].begin.utc >= start_time and v["timespan"].end.utc <= end_time
+        ]
+
         results = {
             "exposures": {
                 exp["id"]: {
@@ -220,7 +236,7 @@ class Transform:
                     "seq_num": exp["seq_num"],
                     "exposure_id": exp["id"],
                 }
-                for exp in exposures
+                for exp in full_exposures
             },
             "visits": {
                 vis["id"]: {
@@ -228,13 +244,13 @@ class Transform:
                     "seq_num": vis["seq_num"],
                     "visit_id": vis["id"],
                 }
-                for vis in visits
+                for vis in full_visits
             },
             "exposures_unpivoted": [],
             "visits_unpivoted": [],
         }
 
-        topic_interval = self._get_topic_interval(start_time, end_time, exposures, visits)
+        topic_interval = self._get_topic_interval(start_time, end_time, full_exposures, full_visits)
         self.log.debug("event=topic_interval start=%s end=%s", topic_interval[0], topic_interval[1])
         topics_map = self._map_topics()
         for key, topic in topics_map.items():
@@ -246,22 +262,27 @@ class Transform:
             if pre_aggregate_interval is not None and function in ["mean", "max", "min"]:
                 processing_topic["pre_aggregate_interval"] = pre_aggregate_interval
 
-            # apply offset to the topic interval if specified
+            # Apply start_offset to topic and propagate to all columns in this
+            # group so _compute_column_value can shift the per-exposure window.
             if start_offset is not None:
-                processing_topic["function_args"]["start_offset"] = start_offset
+                processing_topic.setdefault("function_args", {})["start_offset"] = start_offset
+                for col in processing_topic["columns"]:
+                    if col.get("function_args") is None:
+                        col["function_args"] = {}
+                    col["function_args"]["start_offset"] = start_offset
                 offset_topic_interval = topic_interval.copy()
                 offset_topic_interval[0] += astropy.time.TimeDelta(float(start_offset) * 3600, format="sec")
                 self._process_topic(
                     processing_topic,
                     offset_topic_interval,
-                    exposures,
-                    visits,
+                    full_exposures,
+                    full_visits,
                     results,
                     log_context=log_context,
                 )
             else:
                 self._process_topic(
-                    processing_topic, topic_interval, exposures, visits, results, log_context=log_context
+                    processing_topic, topic_interval, full_exposures, full_visits, results, log_context=log_context
                 )
 
         return results
@@ -536,13 +557,23 @@ class Transform:
 
         schema = self.get_schema_by_instrument(instrument)
 
+        # Lazy-init DAOs once per Transform instance.
+        if self._exp_dao is None:
+            self._exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=schema, logger=self.log)
+            self._vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=schema, logger=self.log)
+            self._exp_unpivoted_dao = ExposureEfdUnpivotedDao(
+                db_uri=self.db_uri, schema=schema, logger=self.log
+            )
+            self._vis_unpivoted_dao = VisitEfdUnpivotedDao(
+                db_uri=self.db_uri, schema=schema, logger=self.log
+            )
+
         # Store exposures
         if results["exposures"]:
             exposures_list = list(results["exposures"].values())
             df_exposures = pandas.DataFrame(exposures_list)
             if not df_exposures.empty:
-                exp_dao = ExposureEfdDao(db_uri=self.db_uri, schema=schema, logger=self.log)
-                affected_rows = exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
+                affected_rows = self._exp_dao.upsert(df=df_exposures, commit_every=self.commit_every)
                 count["exposures"] = affected_rows
                 self.log.debug("event=store_exposure_records affected_rows=%s", affected_rows)
 
@@ -551,8 +582,7 @@ class Transform:
             visits_list = list(results["visits"].values())
             df_visits = pandas.DataFrame(visits_list)
             if not df_visits.empty:
-                vis_dao = VisitEfdDao(db_uri=self.db_uri, schema=schema, logger=self.log)
-                affected_rows = vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
+                affected_rows = self._vis_dao.upsert(df=df_visits, commit_every=self.commit_every)
                 count["visits1"] = affected_rows
                 self.log.debug("event=store_visit_records affected_rows=%s", affected_rows)
 
@@ -560,10 +590,7 @@ class Transform:
         if results["exposures_unpivoted"]:
             df_exposures_unpivoted = pandas.DataFrame(results["exposures_unpivoted"])
             if not df_exposures_unpivoted.empty:
-                exp_unpivoted_dao = ExposureEfdUnpivotedDao(
-                    db_uri=self.db_uri, schema=schema, logger=self.log
-                )
-                affected_rows = exp_unpivoted_dao.upsert(
+                affected_rows = self._exp_unpivoted_dao.upsert(
                     df=df_exposures_unpivoted, commit_every=self.commit_every
                 )
                 count["exposures_unpivoted"] = affected_rows
@@ -575,8 +602,7 @@ class Transform:
         if results["visits_unpivoted"]:
             df_visits_unpivoted = pandas.DataFrame(results["visits_unpivoted"])
             if not df_visits_unpivoted.empty:
-                vis_unpivoted_dao = VisitEfdUnpivotedDao(db_uri=self.db_uri, schema=schema, logger=self.log)
-                affected_rows = vis_unpivoted_dao.upsert(
+                affected_rows = self._vis_unpivoted_dao.upsert(
                     df=df_visits_unpivoted, commit_every=self.commit_every
                 )
                 count["visits1_unpivoted"] = affected_rows
