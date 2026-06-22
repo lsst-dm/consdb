@@ -83,6 +83,22 @@ def test_column_with_empty_tables():
     assert column.tables == []
 
 
+def test_column_start_offset():
+    column = Column(
+        name="hexapod_u",
+        function="most_recent_value",
+        start_offset=-0.5,
+        datatype="float",
+        description="Test start_offset",
+        packed_series=False,
+        topics=[Topic(name="TestTopic", fields=[Field(name="u")])],
+    )
+    assert column.start_offset == -0.5
+
+    dumped = column.model_dump()
+    assert dumped["start_offset"] == -0.5
+
+
 def test_config_model():
     config = ConfigModel(
         version="1.0.0",
