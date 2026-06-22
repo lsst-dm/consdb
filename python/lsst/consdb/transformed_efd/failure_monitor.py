@@ -212,6 +212,8 @@ class ButlerReconciliationCheck:
         self.log = log
         self.schema = _schema_by_instrument(instrument)
         self.butler_instrument = _butler_instrument(instrument)
+        self.exp_dao = ExposureEfdDao(self.db_uri, self.schema, self.log)
+        self.vis_dao = VisitEfdDao(self.db_uri, self.schema, self.log)
 
     def run(self, args: Any) -> List[Dict[str, Any]]:
         window_days = max(1, int(getattr(args, "monitor_window_days", 7)))
@@ -223,11 +225,8 @@ class ButlerReconciliationCheck:
         exp_records = self.butler_dao.exposures_by_day_obs(self.butler_instrument, day_start, day_end)
         vis_records = self.butler_dao.visits_by_day_obs(self.butler_instrument, day_start, day_end)
 
-        exp_dao = ExposureEfdDao(self.db_uri, self.schema, self.log)
-        vis_dao = VisitEfdDao(self.db_uri, self.schema, self.log)
-
-        existing_exp_ids = exp_dao.select_ids_by_day_obs(day_start, day_end)
-        existing_vis_ids = vis_dao.select_ids_by_day_obs(day_start, day_end)
+        existing_exp_ids = self.exp_dao.select_ids_by_day_obs(day_start, day_end)
+        existing_vis_ids = self.vis_dao.select_ids_by_day_obs(day_start, day_end)
 
         missing_exp = [record for record in exp_records if record["id"] not in existing_exp_ids]
         missing_vis = [record for record in vis_records if record["id"] not in existing_vis_ids]
