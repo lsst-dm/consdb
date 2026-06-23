@@ -378,7 +378,9 @@ class InfluxDBClient:
         except Exception as e:
             self.log.error(
                 "event=influx_merge_packed_failed base_fields=%s error=%s",
-                base_fields, e, exc_info=True,
+                base_fields,
+                e,
+                exc_info=True,
             )
             raise
 
