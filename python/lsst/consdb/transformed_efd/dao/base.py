@@ -111,7 +111,9 @@ class DBBase:
             if issubclass(category, sa_exc.SAWarning):
                 self.log.warning(
                     "event=db_sa_warning message=%s filename=%s lineno=%s",
-                    str(message), filename, lineno,
+                    str(message),
+                    filename,
+                    lineno,
                 )
             else:
                 _original(message, category, filename, lineno, file, line)
@@ -166,9 +168,7 @@ class DBBase:
             except Exception as e:
                 if i == 0:
                     raise
-                self.log.warning(
-                    "event=db_write_failed db=%s uri=...@%s error=%s", db_label, safe_uri, e
-                )
+                self.log.warning("event=db_write_failed db=%s uri=...@%s error=%s", db_label, safe_uri, e)
 
         return primary_result
 
@@ -362,7 +362,10 @@ class DBBase:
             if update_cols:
                 upsert_stm = insert_stm.on_conflict_do_update(
                     index_elements=tbl.primary_key.columns,
-                    set_={k: func.coalesce(getattr(insert_stm.excluded, k), getattr(tbl.c, k)) for k in update_cols},
+                    set_={
+                        k: func.coalesce(getattr(insert_stm.excluded, k), getattr(tbl.c, k))
+                        for k in update_cols
+                    },
                 )
             else:
                 upsert_stm = insert_stm.on_conflict_do_nothing()

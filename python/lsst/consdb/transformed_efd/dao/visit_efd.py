@@ -46,7 +46,7 @@ class VisitEfdDao(DBBase):
 
         Args:
         ----
-            db_uri (str | list[str]): The URI(s) of the database. First is primary.
+            db_uri (str | list[str]): Database URI(s). First is primary.
             schema (str): The schema name in the database.
             logger (logging.Logger, optional): Logger instance for logging.
 
@@ -126,7 +126,7 @@ class VisitEfdUnpivotedDao(DBBase):
 
         Args:
         ----
-            db_uri (str | list[str]): The URI(s) of the database. First is primary.
+            db_uri (str | list[str]): Database URI(s). First is primary.
             schema (str): The schema name in the database.
             logger (logging.Logger, optional): Logger instance for logging.
 

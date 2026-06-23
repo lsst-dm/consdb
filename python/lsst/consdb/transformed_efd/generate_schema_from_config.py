@@ -69,15 +69,13 @@ def generate_schema(instrument: str, output_dir: Optional[Path] = None) -> Path:
     # Generate schema content
     with open(schema_path, "w") as f:
         # Header
-        f.write(
-            f"""---
+        f.write(f"""---
 name: {schema_name}
 "@id": "#{schema_name}"
 description: Transformed EFD Consolidated Database for {instrument}.
 version:
   current: {config["version"]}
-tables:"""
-        )
+tables:""")
 
         # Exposure tables
         write_exposure_tables(f, config)
@@ -89,8 +87,7 @@ tables:"""
 def write_exposure_tables(f, config):
     """Write exposure-related tables to schema file"""
     # exposure_efd table
-    f.write(
-        """
+    f.write("""
 - name: exposure_efd
   "@id": "#exposure_efd"
   description: Transformed EFD topics by exposure.
@@ -127,8 +124,7 @@ def write_exposure_tables(f, config):
     "@id": "#exposure_efd.created_at"
     description: Timestamp when the record was created, default is current timestamp.
     datatype: timestamp
-    value: 'CURRENT_TIMESTAMP'\n"""
-    )
+    value: 'CURRENT_TIMESTAMP'\n""")
 
     # Add dynamic columns from config
     for column in config["columns"]:
@@ -137,8 +133,7 @@ def write_exposure_tables(f, config):
                 write_column(f, column, "exposure_efd")
 
     # exposure_efd_unpivoted table
-    f.write(
-        """
+    f.write("""
 - name: exposure_efd_unpivoted
   "@id": "#exposure_efd_unpivoted"
   description: Unpivoted EFD exposure data.
@@ -189,15 +184,13 @@ def write_exposure_tables(f, config):
     "@id": "#exposure_efd_unpivoted.created_at"
     description: Timestamp when record was created, default current timestamp.
     datatype: timestamp
-    value: 'CURRENT_TIMESTAMP'\n"""
-    )
+    value: 'CURRENT_TIMESTAMP'\n""")
 
 
 def write_visit_tables(f, config):
     """Write visit-related tables to schema file"""
     # visit1_efd table
-    f.write(
-        """
+    f.write("""
 - name: visit1_efd
   "@id": "#visit1_efd"
   description: Transformed EFD topics by visit.
@@ -234,8 +227,7 @@ def write_visit_tables(f, config):
     "@id": "#visit1_efd.created_at"
     description: Timestamp when record was created, default current timestamp.
     datatype: timestamp
-    value: 'CURRENT_TIMESTAMP'\n"""
-    )
+    value: 'CURRENT_TIMESTAMP'\n""")
 
     # Add dynamic columns from config
     for column in config["columns"]:
@@ -244,8 +236,7 @@ def write_visit_tables(f, config):
                 write_column(f, column, "visit1_efd")
 
     # visit1_efd_unpivoted table
-    f.write(
-        """
+    f.write("""
 - name: visit1_efd_unpivoted
   "@id": "#visit1_efd_unpivoted"
   description: Unpivoted EFD visit data.
@@ -296,8 +287,7 @@ def write_visit_tables(f, config):
     "@id": "#visit1_efd_unpivoted.created_at"
     description: Timestamp when record was created, default current timestamp.
     datatype: timestamp
-    value: 'CURRENT_TIMESTAMP'\n"""
-    )
+    value: 'CURRENT_TIMESTAMP'\n""")
 
 
 def write_column(f, column: dict, table: str):

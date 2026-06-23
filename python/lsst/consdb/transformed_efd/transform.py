@@ -221,12 +221,12 @@ class Transform:
         # Only process exposures / visits completely within the time window.
         # Partial overlaps are handled by the adjacent task.
         full_exposures = [
-            e for e in exposures
+            e
+            for e in exposures
             if e["timespan"].begin.utc >= start_time and e["timespan"].end.utc <= end_time
         ]
         full_visits = [
-            v for v in visits
-            if v["timespan"].begin.utc >= start_time and v["timespan"].end.utc <= end_time
+            v for v in visits if v["timespan"].begin.utc >= start_time and v["timespan"].end.utc <= end_time
         ]
 
         results = {
@@ -282,7 +282,12 @@ class Transform:
                 )
             else:
                 self._process_topic(
-                    processing_topic, topic_interval, full_exposures, full_visits, results, log_context=log_context
+                    processing_topic,
+                    topic_interval,
+                    full_exposures,
+                    full_visits,
+                    results,
+                    log_context=log_context,
                 )
 
         return results
@@ -564,9 +569,12 @@ class Transform:
             self._exp_unpivoted_dao = ExposureEfdUnpivotedDao(
                 db_uri=self.db_uri, schema=schema, logger=self.log
             )
-            self._vis_unpivoted_dao = VisitEfdUnpivotedDao(
-                db_uri=self.db_uri, schema=schema, logger=self.log
-            )
+            self._vis_unpivoted_dao = VisitEfdUnpivotedDao(db_uri=self.db_uri, schema=schema, logger=self.log)
+
+        assert self._exp_dao is not None  # lazy-init above guarantees this
+        assert self._vis_dao is not None
+        assert self._exp_unpivoted_dao is not None
+        assert self._vis_unpivoted_dao is not None
 
         # Store exposures
         if results["exposures"]:
