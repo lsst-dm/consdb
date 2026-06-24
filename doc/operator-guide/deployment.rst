@@ -113,4 +113,3 @@ The ``hinfo`` service retrieves primary keys and associated values from HeaderSe
 It is only deployed in Phalanx at the Summit.
 
 Deployment and maintenance of this service is the same as for any other `Phalanx application <https://phalanx.lsst.io/developers/index.html>`__.
-
