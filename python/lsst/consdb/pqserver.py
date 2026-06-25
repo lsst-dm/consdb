@@ -27,6 +27,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from safir.middleware.x_forwarded import XForwardedMiddleware
 from sqlalchemy.exc import SQLAlchemyError
+from starlette.middleware.gzip import GZipMiddleware
 
 from .config import config
 from .exceptions import BadValueException, UnknownInstrumentException
@@ -72,6 +73,10 @@ app.include_router(external_router, prefix=config.url_prefix)
 
 # Add the middleware
 app.add_middleware(XForwardedMiddleware)
+
+# Compress responses (e.g. large /query results) for clients that send
+# Accept-Encoding: gzip. Responses smaller than minimum_size are sent as-is.
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
 @app.exception_handler(UnknownInstrumentException)

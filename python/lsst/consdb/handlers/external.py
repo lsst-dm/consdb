@@ -26,6 +26,7 @@ import astropy
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from ..cdb_schema import (
@@ -37,6 +38,7 @@ from ..cdb_schema import (
     convert_to_flex_type,
 )
 from ..config import config
+from ..consistency_queries import CONSISTENCY_QUERIES
 from ..dependencies import InstrumentName, get_db, get_instrument_list, get_instrument_table, get_logger
 from ..exceptions import BadValueException
 from ..models import (
@@ -50,7 +52,9 @@ from ..models import (
     InsertMultipleResponseModel,
     QueryRequestModel,
     QueryResponseModel,
+    TableConsistencyModel,
 )
+from .consistency_page import TABLE_CONSISTENCY_HTML
 
 external_router = APIRouter()
 """FastAPI router for all external handlers."""
@@ -76,6 +80,52 @@ def external_root(
         obs_types=[o.value for o in ObsTypeEnum],
         dtypes=[d.value for d in AllowedFlexTypeEnum],
     )
+
+
+@external_router.get(
+    "/table_consistency",
+    summary="Interactive table consistency report",
+    description=(
+        "Self-contained HTML page that displays consistency-rule violations for "
+        "an instrument and observing day, fetched from the JSON endpoint below."
+    ),
+    response_class=HTMLResponse,
+    include_in_schema=False,
+)
+def table_consistency_page() -> HTMLResponse:
+    """Serve the interactive table consistency report page."""
+
+    return HTMLResponse(content=TABLE_CONSISTENCY_HTML)
+
+
+@external_router.get(
+    "/table_consistency/{instrument}/{day_obs}",
+    summary="Report table consistency rule violations for one observing day",
+    description=(
+        "Return one row per consistency-rule violation for the requested "
+        "instrument and observing day, identified by (rule, day_obs, seq_num)."
+    ),
+)
+def table_consistency(
+    instrument: str = Path(title="Instrument name"),
+    day_obs: int = Path(title="Observation day in YYYYMMDD format"),
+    db: Session = Depends(get_db),
+    logger: logging.Logger = Depends(get_logger),
+) -> list[TableConsistencyModel]:
+    """Return consistency-rule violations for one observing day."""
+
+    instrument_lower = instrument.lower()
+    if instrument_lower not in CONSISTENCY_QUERIES:
+        raise BadValueException("instrument", instrument, list(CONSISTENCY_QUERIES.keys()))
+    query = CONSISTENCY_QUERIES[instrument_lower]
+
+    logger.info(
+        "table consistency query for instrument=%s day_obs=%s",
+        instrument_lower,
+        day_obs,
+    )
+    rows = db.execute(sqlalchemy.text(query), {"day_obs": day_obs}).mappings().all()
+    return [TableConsistencyModel.model_validate(row) for row in rows]
 
 
 @external_router.post(

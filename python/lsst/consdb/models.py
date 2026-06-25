@@ -114,3 +114,12 @@ class QueryRequestModel(BaseModel):
 class QueryResponseModel(BaseModel):
     columns: list[str] = Field(title="Column names")
     data: list[Any] = Field(title="Data rows")
+
+
+class TableConsistencyModel(BaseModel):
+    """A single consistency-rule violation for one exposure identity."""
+
+    rule: str = Field(title="Name of the consistency rule that failed")
+    day_obs: int = Field(title="Observation day in YYYYMMDD format")
+    seq_num: int = Field(title="Sequence number within the observing day")
+    detail: str = Field(title="Description of the specific violation")
