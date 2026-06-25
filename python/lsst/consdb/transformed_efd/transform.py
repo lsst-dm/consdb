@@ -218,8 +218,8 @@ class Transform:
         log_context: Dict[str, Any] | None = None,
     ) -> Dict[str, Any]:
         """Process the given time interval for a specific instrument."""
-        # Only process exposures / visits completely within the time window.
-        # Partial overlaps are handled by the adjacent task.
+        # Discard exposures / visits that fall partially outside the interval
+        # to avoid computing values from incomplete EFD data.
         full_exposures = [
             e
             for e in exposures
