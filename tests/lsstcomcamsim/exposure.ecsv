@@ -52,4 +52,3 @@
 # schema: astropy-2.0
 exposure_id exposure_name controller day_obs seq_num physical_filter band s_ra s_dec sky_rotation azimuth_start azimuth_end azimuth altitude_start altitude_end altitude zenith_distance_start zenith_distance_end zenith_distance airmass exp_midpt exp_midpt_mjd obs_start obs_start_mjd obs_end obs_end_mjd exp_time shut_time dark_time group_id cur_index max_index img_type emulated science_program observation_reason target_name air_temp pressure humidity wind_speed wind_dir dimm_seeing focus_z simulated s_region vignette vignette_min
 7024040300451 CC_S_20240403_000451 S 20240403 451 null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null null
-

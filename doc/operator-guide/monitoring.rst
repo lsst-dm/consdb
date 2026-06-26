@@ -33,7 +33,6 @@ If the K8s infrastructure died then the ConsDB team can verify the problem, but 
 
 USDF or Summit K8s/IT support should be responsible for fixing.
 
-
 Daily table consistency checks
 ==============================
 
