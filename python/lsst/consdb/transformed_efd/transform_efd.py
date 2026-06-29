@@ -423,7 +423,7 @@ async def process_tasks(
                 log.warning("event=graceful_shutdown_between_tasks")
                 break  # Exit task loop
 
-        if shutdown_event.is_set():
+        if shutdown_event and shutdown_event.is_set():
             break  # Exit batch loop
 
     log.info(

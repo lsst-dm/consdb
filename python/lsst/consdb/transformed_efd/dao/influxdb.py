@@ -198,7 +198,7 @@ class InfluxDBClient:
             ret[bfield].sort(key=part)
         return ret, n
 
-    def make_fields(self, fields: str, base_fields: [str, bytes]):
+    def make_fields(self, fields: str, base_fields: str | bytes | list[str]):
         """Construct a list of fields based on provided base field names.
 
         This function was adapted from the original implementation found at
@@ -212,7 +212,7 @@ class InfluxDBClient:
         ----------
         fields : str
             A string representing all fields.
-        base_fields : str or bytes
+        base_fields : str or bytes or list[str]
             The base field name(s) to expand.
 
         Returns
@@ -376,7 +376,12 @@ class InfluxDBClient:
             # vals.update({"times": df["times"]})
             return pd.DataFrame(vals, index=df.index)
         except Exception as e:
-            self.log.error("event=influx_merge_packed_failed field=%s error=%s", f, e)
+            self.log.error(
+                "event=influx_merge_packed_failed base_fields=%s error=%s",
+                base_fields,
+                e,
+                exc_info=True,
+            )
             raise
 
     def _convert_index_format(self, x):

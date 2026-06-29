@@ -41,17 +41,17 @@ class VisitEfdDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str, schema: str, logger: logging.Logger = None):
+    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger = None):
         """Initialize the `VisitEfdDao` class.
 
         Args:
         ----
-            db_uri (str): The URI of the database.
+            db_uri (str | list[str]): Database URI(s). First is primary.
             schema (str): The schema name in the database.
             logger (logging.Logger, optional): Logger instance for logging.
 
         """
-        super(VisitEfdDao, self).__init__(db_uri, schema, logger)
+        super().__init__(db_uri, schema, logger)
 
         self.tbl = self.get_table("visit1_efd", schema=schema)
 
@@ -67,7 +67,7 @@ class VisitEfdDao(DBBase):
             list: A list of rows matching the visit_id.
 
         """
-        stm = select(self.tbl.c).where(and_(self.tbl.c.visit_id == visit_id))
+        stm = select(self.tbl.c).where(self.tbl.c.visit_id == visit_id)
 
         rows = self.fetch_all_dict(stm)
 
@@ -121,17 +121,17 @@ class VisitEfdUnpivotedDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str, schema: str, logger: logging.Logger = None):
+    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger = None):
         """Initialize the `VisitEfdUnpivotedDao` class.
 
         Args:
         ----
-            db_uri (str): The URI of the database.
+            db_uri (str | list[str]): Database URI(s). First is primary.
             schema (str): The schema name in the database.
             logger (logging.Logger, optional): Logger instance for logging.
 
         """
-        super(VisitEfdUnpivotedDao, self).__init__(db_uri, schema, logger)
+        super().__init__(db_uri, schema, logger)
 
         self.tbl = self.get_table("visit1_efd_unpivoted", schema=schema)
 

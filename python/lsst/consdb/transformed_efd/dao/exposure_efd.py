@@ -41,17 +41,17 @@ class ExposureEfdDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str, schema: str, logger: logging.Logger = None):
+    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger = None):
         """Initialize the `ExposureEfdDao` class.
 
         Args:
         ----
-            db_uri (str): The URI of the database.
+            db_uri (str | list[str]): Database URI(s). First is primary.
             schema (str): The schema name in the database.
             logger (logging.Logger, optional): Logger instance for logging.
 
         """
-        super(ExposureEfdDao, self).__init__(db_uri, schema, logger)
+        super().__init__(db_uri, schema, logger)
 
         self.tbl = self.get_table("exposure_efd", schema=schema)
 
@@ -67,7 +67,7 @@ class ExposureEfdDao(DBBase):
             list: List of dictionaries for rows retrieved from the table.
 
         """
-        stm = select(self.tbl.c).where(and_(self.tbl.c.exposure_id == exposure_id))
+        stm = select(self.tbl.c).where(self.tbl.c.exposure_id == exposure_id)
 
         rows = self.fetch_all_dict(stm)
 
@@ -122,17 +122,17 @@ class ExposureEfdUnpivotedDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str, schema: str, logger: logging.Logger = None):
+    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger = None):
         """Initialize the `ExposureEfdUnpivotedDao` class.
 
         Args:
         ----
-            db_uri (str): The URI of the database.
+            db_uri (str | list[str]): Database URI(s). First is primary.
             schema (str): The schema name in the database.
             logger (logging.Logger, optional): Logger instance for logging.
 
         """
-        super(ExposureEfdUnpivotedDao, self).__init__(db_uri, schema, logger)
+        super().__init__(db_uri, schema, logger)
 
         self.tbl = self.get_table("exposure_efd_unpivoted", schema=schema)
 

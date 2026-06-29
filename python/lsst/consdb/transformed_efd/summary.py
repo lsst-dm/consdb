@@ -18,7 +18,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""Provides the `Summary` class to perform the EDF transformations."""
+"""Provides the `Summary` class to perform the EFD transformations."""
+
 from typing import Optional, Union
 
 import numpy as np

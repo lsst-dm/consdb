@@ -73,6 +73,9 @@ class Column(BaseModel):
         function (str): The transformation function to apply to the column.
         function_args (Optional[Dict]): A dictionary of arguments for the
             transformation function.
+        start_offset (Optional[float]): Hours to shift the exposure/visit
+            window start when querying EFD and computing values (e.g. -0.5
+            looks back 30 minutes before the timespan begin).
         datatype (str): The data type of the column. Must match the
             Felis type.
         ivoa (Optional[Dict]): Dictionary containing IVOA metadata for TAP,
@@ -94,6 +97,7 @@ class Column(BaseModel):
     store_unpivoted: Optional[bool] = False
     function: str
     function_args: Optional[Dict] = None
+    start_offset: Optional[float] = None
     pre_aggregate_interval: Optional[str] = None
     datatype: str
     ivoa: Optional[Dict] = None
