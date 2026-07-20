@@ -72,7 +72,7 @@ class TestDBBaseInit:
         assert db.dialect is sqlite
 
     def test_unsupported_dialect_raises(self, logger):
-        with pytest.raises(Exception, match="not yet been implemented"):
+        with pytest.raises(NotImplementedError, match="not yet been implemented"):
             DBBase("mysql://localhost/db", logger=logger)
 
 

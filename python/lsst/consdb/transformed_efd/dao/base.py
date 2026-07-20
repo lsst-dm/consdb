@@ -32,6 +32,7 @@ from sqlalchemy import Engine, MetaData, Table, create_engine
 from sqlalchemy import exc as sa_exc
 from sqlalchemy import func
 from sqlalchemy.dialects import postgresql, sqlite
+from sqlalchemy.engine import make_url
 from sqlalchemy.pool import QueuePool
 
 
@@ -65,7 +66,7 @@ class DBBase:
 
         Raises:
         ------
-            Exception: If the dialect has not been implemented.
+            NotImplementedError: If the dialect has not been implemented.
 
         """
         if isinstance(db_uri, str):
@@ -77,6 +78,13 @@ class DBBase:
         self.log = logger or logging.getLogger(__name__)
         self._setup_warning_redirect()
 
+        dialect_name = make_url(self.db_uri).get_backend_name()
+        supported_dialects = {"postgresql": postgresql, "sqlite": sqlite}
+        if dialect_name not in supported_dialects:
+            raise NotImplementedError(f"The dialect for {dialect_name} has not yet been implemented.")
+        self.dialect = supported_dialects[dialect_name]
+
+        # Only construct engines after dialect validation.
         self._engines: list[Engine] = [
             create_engine(
                 uri,
@@ -88,15 +96,6 @@ class DBBase:
             )
             for uri in self.db_uris
         ]
-
-        sgbd = self.db_uri.split(":")[0]
-
-        if sgbd == "sqlite":
-            self.dialect = sqlite
-        elif sgbd == "postgresql":
-            self.dialect = postgresql
-        else:
-            raise NotImplementedError(f"The dialect for {sgbd} has not yet been implemented.")
 
     def _setup_warning_redirect(self) -> None:
         """Redirect SQLAlchemy warnings to the structured logger.
