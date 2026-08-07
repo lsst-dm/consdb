@@ -53,6 +53,7 @@ from ..models import (
     IndexResponseModel,
     InsertDataModel,
     InsertDataResponse,
+    InsertFlexDataModel,
     InsertFlexDataResponse,
     InsertMultipleRequestModel,
     InsertMultipleResponseModel,
@@ -232,7 +233,7 @@ def insert_flexible_metadata(
     instrument: InstrumentName,
     obs_type: ObsTypeEnum,
     obs_id: ObservationIdType,
-    data: InsertDataModel = Body(title="Data to insert or update"),
+    data: InsertFlexDataModel = Body(title="Data to insert or update"),
     u: int | None = Query(0, title="Update if exists"),
     db: Session = Depends(get_db),
     logger: logging.Logger = Depends(get_logger),
@@ -330,6 +331,18 @@ def validate_columns(
     extra_columns = set(valdict.keys()) - valid_columns
     if extra_columns:
         raise BadValueException("extra columns", ",".join(extra_columns))
+
+    # JSON objects and arrays are only meaningful for JSON/JSONB columns.
+    # Request validation accepts them for any column because it has no view of
+    # the schema, so reject the mismatched ones here; otherwise psycopg2 fails
+    # to adapt the value and the driver error surfaces as a 500.
+    non_json_columns = [
+        name
+        for name, value in valdict.items()
+        if isinstance(value, (dict, list)) and not isinstance(table_obj.columns[name].type, sqlalchemy.JSON)
+    ]
+    if non_json_columns:
+        raise BadValueException("JSON value for non-JSON columns", ",".join(sorted(non_json_columns)))
 
 
 # ---------------------------------------------------------------------------
