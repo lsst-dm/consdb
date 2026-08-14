@@ -366,7 +366,14 @@ def validate_columns(
 #
 # Column validation lives in ``validate_columns()``: it rejects extra
 # columns and (when ``u=0``) missing non-nullable columns.
+#
+# The parent ``exposure`` and ``ccdexposure`` tables are owned by the hinfo
+# service, which writes them directly from the header service. None of these
+# endpoints may touch them: they hold the rows every child table's composite
+# key is resolved against.
 # ---------------------------------------------------------------------------
+
+INSERT_FORBIDDEN_TABLES = frozenset({"exposure", "ccdexposure"})
 
 
 def _insert_by_day_obs_seq_num(
@@ -395,20 +402,23 @@ def _insert_by_day_obs_seq_num(
     if not table.lower().startswith(schema):
         table_name = schema + table_name
 
-    if table_name not in instrument_table.schemas.tables:
-        valid_tables = [
-            name for name, table in instrument_table.schemas.tables.items() if "day_obs" in table.columns
+    forbidden = {schema + name for name in INSERT_FORBIDDEN_TABLES}
+
+    def valid_tables() -> list[str]:
+        return [
+            name
+            for name, table in instrument_table.schemas.tables.items()
+            if "day_obs" in table.columns and name not in forbidden
         ]
-        raise BadValueException("table", table_name, valid_tables)
+
+    if table_name in forbidden or table_name not in instrument_table.schemas.tables:
+        raise BadValueException("table", table_name, valid_tables())
 
     # by_seq_num is only meaningful for tables that actually have
     # day_obs + seq_num. Reject anything else with the list of valid targets.
     table_obj = instrument_table.schemas.tables[table_name]
     if "day_obs" not in table_obj.columns:
-        valid_tables = [
-            name for name, table in instrument_table.schemas.tables.items() if "day_obs" in table.columns
-        ]
-        raise BadValueException("table", table_name, valid_tables)
+        raise BadValueException("table", table_name, valid_tables())
 
     # The URL provides day_obs/seq_num/detector authoritatively; the body
     # carries everything else. Layer URL values on top of body values so the
@@ -533,10 +543,16 @@ def insert(
         table_name = schema + table_name
 
     # Verify that this table is allowed with this endpoint.
-    def day_obs_tables() -> list[str]:
-        return [name for name, table in instrument_table.schemas.tables.items() if "day_obs" in table.columns]
+    forbidden = {schema + name for name in INSERT_FORBIDDEN_TABLES}
 
-    if table_name not in instrument_table.schemas.tables:
+    def day_obs_tables() -> list[str]:
+        return [
+            name
+            for name, table in instrument_table.schemas.tables.items()
+            if "day_obs" in table.columns and name not in forbidden
+        ]
+
+    if table_name in forbidden or table_name not in instrument_table.schemas.tables:
         raise BadValueException("table", table_name, day_obs_tables())
 
     table_obj = instrument_table.schemas.tables[table_name]
@@ -613,10 +629,16 @@ def insert_multiple(
         table_name = schema + table_name
 
     # Verify that this table is allowed with this endpoint.
-    def day_obs_tables() -> list[str]:
-        return [name for name, table in instrument_table.schemas.tables.items() if "day_obs" in table.columns]
+    forbidden = {schema + name for name in INSERT_FORBIDDEN_TABLES}
 
-    if table_name not in instrument_table.schemas.tables:
+    def day_obs_tables() -> list[str]:
+        return [
+            name
+            for name, table in instrument_table.schemas.tables.items()
+            if "day_obs" in table.columns and name not in forbidden
+        ]
+
+    if table_name in forbidden or table_name not in instrument_table.schemas.tables:
         raise BadValueException("table", table_name, day_obs_tables())
 
     table_obj = instrument_table.schemas.tables[table_name]

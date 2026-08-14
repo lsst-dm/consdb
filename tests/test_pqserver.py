@@ -17,10 +17,29 @@ from lsst.consdb import pqserver
 from lsst.consdb.config import config
 from lsst.consdb.dependencies import reset_dependencies
 from requests import Response
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 
 def _assert_http_status(response: Response, status: int):
     assert response.status_code == status, f"{response.status_code} {response.json()}"
+
+
+def _seed_rows(client, table_name: str, rows: list[dict], schema: str = "cdb_lsstcomcamsim") -> None:
+    """Insert parent rows directly, the way the hinfo service does.
+
+    The /insert/ endpoints refuse the exposure and ccdexposure tables, so
+    tests needing parent rows for a child-table insert have to write them
+    straight to the database.
+    """
+    table = sa.Table(table_name, sa.MetaData(), schema=schema, autoload_with=client.connection)
+    client.connection.execute(pg_insert(table).values(rows).on_conflict_do_nothing())
+    client.connection.commit()
+
+
+def _seed_exposures(client, exposures: dict[int, dict], schema: str = "cdb_lsstcomcamsim") -> None:
+    """Seed ``exposure`` rows from an ``{exposure_id: {col: value}}`` map."""
+    rows = [{"exposure_id": exposure_id, **values} for exposure_id, values in exposures.items()]
+    _seed_rows(client, "exposure", rows, schema)
 
 
 def _load_schema_metadata(schema_file: Path) -> sa.MetaData:
@@ -217,17 +236,22 @@ def test_insert_multiple(lsstcomcamsim):
             "emulated": False,
         },
     }
+    # The exposure parents are hinfo's to write; the bulk endpoint under test
+    # here targets a child table.
+    _seed_exposures(lsstcomcamsim, data)
+    quicklook = {visit_id: {"n_inputs": 100 + i} for i, visit_id in enumerate(data)}
+
     response = lsstcomcamsim.get("/consdb")
     response = lsstcomcamsim.post(
-        "/consdb/insert/lsstcomcamsim/exposure",
-        json={"obs_dict": data},
+        "/consdb/insert/lsstcomcamsim/visit1_quicklook",
+        json={"obs_dict": quicklook},
     )
     _assert_http_status(response, 200)
     result = response.json()
     assert "Data inserted" in result["message"]
-    assert result["table"] == "exposure"
+    assert result["table"] == "visit1_quicklook"
     assert result["instrument"] == "lsstcomcamsim"
-    assert result["obs_id"] == list(data.keys())
+    assert result["obs_id"] == list(quicklook.keys())
 
 
 def test_insert_multiple_update(lsstcomcamsim):
@@ -261,26 +285,30 @@ def test_insert_multiple_update(lsstcomcamsim):
             "emulated": False,
         },
     }
+    _seed_exposures(lsstcomcamsim, data)
+    quicklook = {visit_id: {"n_inputs": 200 + i} for i, visit_id in enumerate(data)}
+
     response = lsstcomcamsim.post(
-        "/consdb/insert/lsstcomcamsim/exposure",
-        json={"obs_dict": data},
+        "/consdb/insert/lsstcomcamsim/visit1_quicklook",
+        json={"obs_dict": quicklook},
     )
     _assert_http_status(response, 200)
 
-    data[7024052800012]["exposure_name"] = "fred"
-    data[7024052800011]["exposure_name"] = "sally"
+    # Re-posting the same rows without ?u=1 conflicts on the primary key.
+    for visit_id in quicklook:
+        quicklook[visit_id]["n_inputs"] = 999
     response = lsstcomcamsim.post(
-        "/consdb/insert/lsstcomcamsim/exposure",
-        json={"obs_dict": data},
+        "/consdb/insert/lsstcomcamsim/visit1_quicklook",
+        json={"obs_dict": quicklook},
     )
     _assert_http_status(response, 500)
 
     response = lsstcomcamsim.post(
-        "/consdb/insert/lsstcomcamsim/exposure?u=1",
-        json={"obs_dict": data},
+        "/consdb/insert/lsstcomcamsim/visit1_quicklook?u=1",
+        json={"obs_dict": quicklook},
     )
     _assert_http_status(response, 200)
-    assert response.json()["obs_id"] == list(data.keys())
+    assert response.json()["obs_id"] == list(quicklook.keys())
 
 
 def test_schema(lsstcomcamsim):
@@ -469,25 +497,18 @@ def test_query_endpoint(lsstcomcamsim):
 def test_missing_primary_key(lsstcomcamsim):
     client = lsstcomcamsim
 
-    response = client.post(
-        "/consdb/insert/latiss/exposure/obs/2024032100003",
-        json={
-            "values": {
+    _seed_exposures(
+        client,
+        {
+            2024032100003: {
                 "exposure_name": "AT_O_20240327_000002",
                 "controller": "O",
                 "day_obs": 20240327,
                 "seq_num": 2,
-            },
+            }
         },
+        schema="cdb_latiss",
     )
-    _assert_http_status(response, 200)
-    result = response.json()
-    assert result == {
-        "message": "Data inserted",
-        "table": "cdb_latiss.exposure",
-        "instrument": "latiss",
-        "obs_id": 2024032100003,
-    }
 
     # Add n_inputs to the visit1_quicklook table
     response = client.post(
@@ -539,24 +560,98 @@ def test_missing_primary_key(lsstcomcamsim):
     ).scalar_one_or_none()
     assert query_result == 54321
 
-    response = client.post(
-        "/consdb/insert/latiss/ccdexposure/obs/8675309",
-        json={
-            "values": {
-                "s_region": "testregion",
+    # ccdexposure is hinfo's; seed the parent, then insert its quicklook child
+    # without day_obs/seq_num/detector to check they are backfilled from it.
+    _seed_rows(
+        client,
+        "ccdexposure",
+        [
+            {
+                "ccdexposure_id": 8675309,
                 "exposure_id": 2024032100003,
+                "day_obs": 20240327,
+                "seq_num": 2,
                 "detector": 0,
-            },
-        },
+                "s_region": "testregion",
+            }
+        ],
+        schema="cdb_latiss",
+    )
+
+    response = client.post(
+        "/consdb/insert/latiss/ccdvisit1_quicklook/obs/8675309",
+        json={"values": {"psf_sigma": 1.5}},
     )
     _assert_http_status(response, 200)
     result = response.json()
     assert result == {
         "message": "Data inserted",
-        "table": "cdb_latiss.ccdexposure",
+        "table": "cdb_latiss.ccdvisit1_quicklook",
         "instrument": "latiss",
         "obs_id": 8675309,
     }
+
+    query_result = client.connection.execute(
+        sa.text(
+            "SELECT psf_sigma FROM cdb_latiss.ccdvisit1_quicklook"
+            " WHERE day_obs = 20240327 AND seq_num = 2 AND detector = 0"
+        )
+    ).scalar_one_or_none()
+    assert query_result == 1.5
+
+
+@pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
+@pytest.mark.parametrize("table", ["exposure", "ccdexposure", "cdb_latiss.exposure"])
+def test_insert_rejects_hinfo_owned_tables(lsstcomcamsim, table):
+    """The exposure and ccdexposure tables are written only by hinfo.
+
+    Every /insert/ endpoint variant must refuse them, whether the URL names
+    the table bare or fully qualified.
+    """
+    client = lsstcomcamsim
+    qualified = table if table.startswith("cdb_latiss.") else f"cdb_latiss.{table}"
+    values = {"values": {"day_obs": 20240327, "seq_num": 2}}
+
+    urls = [
+        f"/consdb/insert/latiss/{table}/obs/2024032100003",
+        f"/consdb/insert/latiss/{table}/by_seq_num/20240327/2",
+        f"/consdb/insert/latiss/{table}/by_seq_num/20240327/2/0",
+    ]
+    for url in urls:
+        response = client.post(url, json=values)
+        _assert_http_status(response, 404)
+        result = response.json()
+        assert result["message"] == "Invalid table"
+        assert result["value"] == qualified
+        assert qualified not in result["valid"]
+
+    response = client.post(
+        f"/consdb/insert/latiss/{table}",
+        json={"obs_dict": {2024032100003: {"day_obs": 20240327, "seq_num": 2}}},
+    )
+    _assert_http_status(response, 404)
+    result = response.json()
+    assert result["value"] == qualified
+    assert qualified not in result["valid"]
+
+
+@pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
+def test_insert_rejects_hinfo_owned_tables_leaves_rows_alone(lsstcomcamsim):
+    """A rejected insert must not modify the exposure table."""
+    client = lsstcomcamsim
+    select = sa.text(
+        "SELECT exposure_name FROM cdb_latiss.exposure WHERE day_obs = 20240403 AND seq_num = 451"
+    )
+    before = client.connection.execute(select).scalar_one_or_none()
+    assert before is not None
+
+    response = client.post(
+        "/consdb/insert/latiss/exposure/by_seq_num/20240403/451?u=1",
+        json={"values": {"exposure_name": "clobbered"}},
+    )
+    _assert_http_status(response, 404)
+
+    assert client.connection.execute(select).scalar_one_or_none() == before
 
 
 def test_validate_unit():
@@ -720,25 +815,18 @@ def test_flexible_metadata(lsstcomcamsim):
     assert "values" in result["loc"]
     assert "body" in result["loc"]
 
-    response = client.post(
-        "/consdb/insert/latiss/exposure/obs/2024032100003",
-        json={
-            "values": {
+    _seed_exposures(
+        client,
+        {
+            2024032100003: {
                 "exposure_name": "AT_O_20240327_000002",
                 "controller": "O",
                 "day_obs": 20240327,
                 "seq_num": 2,
-            },
+            }
         },
+        schema="cdb_latiss",
     )
-    _assert_http_status(response, 200)
-    result = response.json()
-    assert result == {
-        "message": "Data inserted",
-        "table": "cdb_latiss.exposure",
-        "instrument": "latiss",
-        "obs_id": 2024032100003,
-    }
 
     response = client.post(
         "/consdb/query", json={"query": "SELECT * FROM cdb_latiss.exposure ORDER BY day_obs;"}
