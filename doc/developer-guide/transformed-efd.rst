@@ -1321,3 +1321,85 @@ Code Organization
     ├── summary.py           # Statistical processing
     ├── transform.py         # Main transformation logic
     └── transform_efd.py     # CLI entry point
+
+Additional Notes on Behavior
+----------------------------
+
+The following notes record behavior read from the code that the sections above do not cover.
+File and line references are to the ``transformed_efd`` package.
+
+Selecting the exposures of a task
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``_process_task()`` in ``transform_efd.py`` widens the task interval by ``timewindow`` minutes on each side before calling ``Transform.process_interval()``.
+``ButlerDao`` then queries the ``exposure`` and ``visit`` dimension records whose time span *overlaps* the widened interval.
+``process_interval()`` keeps only the records whose time span lies entirely inside the widened interval, with the comment that partial overlaps are handled by the adjacent task.
+The ``timewindow`` value is stored in the task row and applied only here; it is not an overlap between chunks.
+
+Task selection in each mode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- In job mode, ``handle_job()`` returns the idle tasks of the repository and, in addition, the failed tasks with at most three retries.
+  A job run therefore retries failed tasks whether or not ``--failure-monitor`` is given.
+  The ``--resume`` option selects tasks in the ``idle`` status.
+- In cronjob mode, ``handle_cronjob()`` selects tasks with ``recent_tasks_to_run(margin_seconds=-300)``.
+  A chunk is processed only once five minutes have passed since its end, so that the EFD data are present.
+  A new task starts where the previous task ended, so ``timedelta`` is also the cadence at which the cronjob catches up.
+
+Orphaned tasks
+~~~~~~~~~~~~~~
+
+At start, ``TransformdDao.fail_orphaned_tasks()`` marks as failed every task whose status is ``running`` and whose ``process_start_time`` or ``process_end_time`` is null.
+There is no time threshold.
+The ``error`` column of such a task reads ``Task interrupted``.
+Two instances of the service on the same instrument would therefore fail each other's tasks.
+
+Failure monitor constants
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``FailedTaskRetryCheck`` uses three constants that are not exposed on the command line: a base of ``2.82843`` hours, at most ``3`` retries, and a maximum age of ``72`` hours.
+The wait before the next retry is ``base ** (retries + 1)`` hours.
+A task older than the maximum age is marked ``stale``.
+
+Sizes fixed in the code
+~~~~~~~~~~~~~~~~~~~~~~~
+
+``process_tasks()`` handles tasks in batches of 50.
+``Transform`` commits every 100 rows.
+``InfluxDbDao`` requests at most 100 fields in one query.
+None of these is a command-line option.
+
+Environment variables
+~~~~~~~~~~~~~~~~~~~~~
+
+``InfluxDbDao`` reads ``EFD_USERNAME`` (default ``efdreader``), ``EFD_PASSWORD``, ``EFD_HOST`` (default ``usdf-rsp.slac.stanford.edu``), ``EFD_PORT`` (default ``443``), and ``EFD_PATH`` (default ``/influxdb-enterprise-data/``).
+The path is joined to the host as a URL component, so it needs its leading and trailing slashes.
+The ``-E`` option does not take part in building this URL.
+``transform_efd.py`` reads ``LOG_LEVEL`` (default ``INFO``).
+
+Shutdown
+~~~~~~~~
+
+``main()`` installs handlers for ``SIGTERM`` and ``SIGINT`` that set an ``asyncio.Event``.
+``process_tasks()`` checks the event between batches and between tasks.
+A task in progress runs to completion, so a pod that Kubernetes stops loses at most the tasks it had not started.
+
+A difference between the two unpivoted paths
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``_process_exposures_unpivoted()`` writes a row when the value ``is not None``.
+``_process_visits_unpivoted()`` writes a row when the value is true, so a computed ``0.0`` is dropped from ``visit1_efd_unpivoted`` but kept in ``exposure_efd_unpivoted``.
+This is probably unintended.
+
+The ``efd_scheduler`` schema in Alembic
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The scheduler tables are defined in ``schemas/yml/efd_scheduler.yaml``, one table for each instrument, and they have their own Alembic tree, ``alembic/efd_scheduler``.
+The ``efd_*`` trees record their revision in the ``efd`` schema rather than in ``cdb``, and ``alembic-autogenerate.py`` does not process them unless ``--instrument`` names them.
+The :doc:`alembic` page gives the layout of the trees.
+
+The container image in this repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``docker/Dockerfile.transformed-efd`` still refers to the directory ``efd_transform``, and its command passes no ``--mode`` argument, which ``build_argparser()`` requires.
+The :doc:`building-artifacts` page gives the details.

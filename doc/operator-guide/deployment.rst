@@ -21,9 +21,10 @@ When the Summit schema is migrated to a new version, corresponding migrations ne
 Tools:
 ------
 
-- Argo-CD
-- LOVE
-- Felis
+- Argo-CD, to deploy the Phalanx applications and to read the pod logs.
+- LOVE, to take a test image at a test stand.
+- Felis and Alembic, to apply a schema migration.
+- ``psql`` or ``pgcli``, to run the migration and to check the result.
 
 Repositories:
 -------------
@@ -46,34 +47,34 @@ Process:
 Deploy code to populate db at Summit and/or USDF
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Follow the testing steps above for testing alembic migration and code at TTS/BTS, before the you consider deploying at the summit.
+Test the Alembic migration and the code at the TTS or the BTS before you deploy at the Summit.
+The :doc:`schema-migration-process` page gives the test procedure.
 
-The steps to deploy at the summit mirror the steps to test on a test stand with coordination and permission from the observers and site teams.
-Access to argo-cd deployments is available via the Summit OpenVPN.
-To coordinate your deployment update on the summit, you must attend Coordination Activities Planning (CAP) meeting on Tuesday mornings and announce your request.
+The steps that deploy at the Summit are the same as the steps that test at a test stand.
+The observers and the site teams must agree to the work.
+The Summit OpenVPN gives access to the Argo-CD deployments.
 
-Add your migration intentions to the CAP SITCOM confluence agenda `here <https://rubinobs.atlassian.net/wiki/spaces/LSSTCOM/pages/53765933/Agenda+Items+for+Future+CAP+Meetings>`__
+Coordinate with the Summit before you deploy.
+Some changes need a time window when the cameras are not in use.
+To ask for a time window, write in the ``#summit-control-room`` Slack channel.
+Put ``@os-day-shift`` in your message.
 
-The CAP members may tell you a time frame that is acceptable for you to perform these changes.
+Announce your intention in the ``#recap-software`` and the ``#summit-announce`` Slack channels.
+The announcement in ``#recap-software`` is for information only.
+The versioning board does not have to approve the migration.
+Put the DONE stamp on each announcement when the migration is complete.
 
-They may also tell you specific people to coordinate with to help you take images to test LATISS and LSSTCOMCAMSIM tables. There will be more tables to test eventually.
-
-Channels to note: #rubinobs-test-planning; #summit-announce; #summit-auxtel, and `channel usage guide  <https://obs-ops.lsst.io/Communications/slack-channel-usage.html>`__.
-
-When you get your final approval and designated time to perform the changes to ConsDB, announce on #summit-announce, and follow similar steps as test stand procedure above.
+The `channel usage guide <https://obs-ops.lsst.io/Communications/slack-channel-usage.html>`__
+gives the function of each Slack channel.
 
 USDF Deployment Steps
 ^^^^^^^^^^^^^^^^^^^^^
 
-These steps must happen in synchrony with a Summit migration.
+A migration at the USDF must happen in synchrony with the same migration at the Summit, with the replication paused between the two.
+Steps 7 to 9 of the :doc:`schema-migration-process` page give the sequence.
+This page does not repeat it.
 
-1. Disable (pause) SUBSCRIPTION at USDF.
-2. Perform the migration at the summit with the steps below.
-3. Connect to the USDF database via psql and perform the alembic migration.
-4. Check or test as agreed upon with the ConsDB team.
-5. Enable and Refresh Subscription at USDF.
-
-If there is no impact or coordination with Summit needed: Run alembic migration at USDF, and test as appropriate.
+If the change has no effect on the Summit, apply the Alembic migration at the USDF and test it.
 
 Summit Deployment Steps
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -105,6 +106,8 @@ Deployments of the REST API service (``pqserver``) are currently located in Phal
 Deployment and maintenance of this service is the same as for any other `Phalanx application <https://phalanx.lsst.io/developers/index.html>`__.
 
 
+To learn which version is deployed at a site, read the ``version`` field of the root endpoint, or the image tag in the Phalanx values file of that environment.
+
 HInfo Service
 =============
 
@@ -113,3 +116,23 @@ The ``hinfo`` service retrieves primary keys and associated values from HeaderSe
 It is only deployed in Phalanx at the Summit.
 
 Deployment and maintenance of this service is the same as for any other `Phalanx application <https://phalanx.lsst.io/developers/index.html>`__.
+
+TAP Service
+===========
+
+The ``consdbtap`` service is a Phalanx application at the USDF only.
+Its schema comes from a TAP schema container built from ``sdm_schemas``.
+After a migration, that container must be rebuilt and deployed before the new columns appear in TAP.
+Step 12 of the :doc:`schema-migration-process` page gives this.
+
+Daily Consistency Check
+=======================
+
+A scheduled job at the USDF runs the image described on the :doc:`../developer-guide/building-artifacts` page once each day.
+The :doc:`monitoring` page gives what it checks and how it reports.
+
+Transformed EFD
+===============
+
+The Transformed EFD runs at the USDF only, from the ``slaclab/usdf-consdb-deploy`` repository rather than from Phalanx.
+The :doc:`transformed-efd` page gives its deployment.
