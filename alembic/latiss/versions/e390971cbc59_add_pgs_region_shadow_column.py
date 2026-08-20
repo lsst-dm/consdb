@@ -9,9 +9,8 @@ Create Date: 2025-09-30 19:08:53.519014+00:00
 from collections.abc import Sequence
 
 import sqlalchemy as sa
-from lsst.consdb.cdb_pgsphere import SPoly
-
 from alembic import op
+from lsst.consdb.cdb_pgsphere import SPoly
 
 # revision identifiers, used by Alembic.
 revision: str = "e390971cbc59"

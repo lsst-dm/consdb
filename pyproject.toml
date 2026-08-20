@@ -53,6 +53,11 @@ max-doc-length = 79
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.Path", "fastapi.Query", "fastapi.Body", "fastapi.Header"]
 
+[tool.ruff.lint.isort]
+# The top-level alembic/ migrations directory shadows the Alembic library's
+# name; without this, its imports are classified (and sorted) as first-party.
+known-third-party = ["alembic"]
+
 [tool.ruff.lint.per-file-ignores]
 "python/lsst/consdb/transformed_efd/**" = ["BLE001"]
 "alembic/*/versions/*" = ["E501", "W505"]
