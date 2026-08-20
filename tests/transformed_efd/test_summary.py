@@ -24,9 +24,9 @@ import numpy as np
 import pandas as pd
 import pytest
 from astropy.time import Time
-from lsst.consdb.transformed_efd.summary import (
-    Summary,  # Replace with the actual module path if different
-)
+
+# Replace with the actual module path if different
+from lsst.consdb.transformed_efd.summary import Summary
 
 
 # --- Fixtures ---

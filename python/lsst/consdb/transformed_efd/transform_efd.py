@@ -53,7 +53,6 @@ def parse_utc_naive(isostr: str) -> datetime:
 
 
 def get_logger(path: str | Path | None = None) -> logging.Logger:
-
     log = logging.getLogger("transformed_efd")
     log.handlers.clear()
     log.propagate = False
