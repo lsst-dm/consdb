@@ -39,7 +39,13 @@ from ..cdb_schema import (
 )
 from ..config import config
 from ..consistency_queries import CONSISTENCY_QUERIES
-from ..dependencies import InstrumentName, get_db, get_instrument_list, get_instrument_table, get_logger
+from ..dependencies import (
+    InstrumentName,
+    get_db,
+    get_instrument_list,
+    get_instrument_table,
+    get_logger,
+)
 from ..exceptions import BadValueException
 from ..models import (
     AddKeyRequestModel,
@@ -206,7 +212,7 @@ def get_flexible_metadata(
 
     table = instrument_table.get_flexible_metadata_table(obs_type)
     schema = instrument_table.flexible_metadata_schemas[obs_type]
-    result = dict()
+    result = {}
 
     query = db.query(table.c.key, table.c.value).filter(table.c.obs_id == obs_id)
     if len(k) > 0:
@@ -320,7 +326,7 @@ def validate_columns(
             raise BadValueException("missing columns", ",".join(missing_columns))
 
     # Check for extra columns in valdict that would be unconsumed.
-    valid_columns = set(column.name for column in table_obj.columns)
+    valid_columns = {column.name for column in table_obj.columns}
     extra_columns = set(valdict.keys()) - valid_columns
     if extra_columns:
         raise BadValueException("extra columns", ",".join(extra_columns))
@@ -650,7 +656,7 @@ def insert_multiple(
             # row Postgres tried to insert).
             stmt = sqlalchemy.dialects.postgresql.insert(table_obj).values(bulk_data)
             if u != 0:
-                update_dict = {col: stmt.excluded[col] for col in table_obj.columns.keys()}
+                update_dict = {col.key: stmt.excluded[col.key] for col in table_obj.columns}
                 primary_key_columns = [col.name for col in table_obj.primary_key.columns]
                 if not primary_key_columns:
                     primary_key_columns = [obs_id_colname]
@@ -712,7 +718,7 @@ def get_all_metadata(
     view_name = instrument_table.compute_wide_view_name(obs_type)
     view = instrument_table.schemas[view_name]
     obs_id_column = instrument_table.obs_id_column[view_name]
-    result = dict()
+    result = {}
 
     row = db.query(view).filter(view.c[obs_id_column] == obs_id).one_or_none()
     if row is None:

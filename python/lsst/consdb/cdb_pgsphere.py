@@ -52,7 +52,7 @@ def add_shadow_column(metadata: MetaData) -> None:
         will be searched for an `s_region` column, and the tables
         will be modified in place.
     """
-    for table_name, table in metadata.tables.items():
+    for table in metadata.tables.values():
         if "s_region" in table.columns:
             table.append_column(
                 Column(

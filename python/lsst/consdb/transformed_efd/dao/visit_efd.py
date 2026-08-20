@@ -41,7 +41,7 @@ class VisitEfdDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger = None):
+    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger | None = None):
         """Initialize the `VisitEfdDao` class.
 
         Args:
@@ -121,7 +121,7 @@ class VisitEfdUnpivotedDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger = None):
+    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger | None = None):
         """Initialize the `VisitEfdUnpivotedDao` class.
 
         Args:

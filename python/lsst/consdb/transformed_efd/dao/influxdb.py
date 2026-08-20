@@ -63,7 +63,7 @@ class InfluxDBClient:
         database_name: str,
         username: str | None = None,
         password: str | None = None,
-        logger: logging.Logger = None,
+        logger: logging.Logger | None = None,
         max_fields_per_query: int = 100,
     ) -> None:
         """Initialize the InfluxDBClient class.
@@ -116,15 +116,10 @@ class InfluxDBClient:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as exc:
-            self.log.error(
-                "event=influx_request_failed url=%s/query params=%s data=%s error=%s",
-                self.url,
-                params,
-                data,
-                exc,
-                exc_info=True,
+            self.log.exception(
+                "event=influx_request_failed url=%s/query params=%s data=%s", self.url, params, data
             )
-            raise Exception(f"An error occurred: error={exc}") from exc
+            raise RuntimeError(f"An error occurred: error={exc}") from exc
 
     def get_fields(self, topic_name):
         """Retrieves field keys for a topic from the InfluxDB database.
@@ -189,7 +184,7 @@ class InfluxDBClient:
             if n is None:
                 n = len(ret[bfield])
             if n != len(ret[bfield]):
-                raise ValueError(f"Field lengths do not agree for " f"{bfield}: {n} vs. {len(ret[bfield])}")
+                raise ValueError(f"Field lengths do not agree for {bfield}: {n} vs. {len(ret[bfield])}")
 
             def sorter(prefix, val):
                 return int(val[len(prefix) :])
@@ -230,7 +225,7 @@ class InfluxDBClient:
             base_fields = [
                 base_fields,
             ]
-        qfields, els = self._make_fields(fields, base_fields)
+        qfields, _els = self._make_fields(fields, base_fields)
         field_list = []
         for k in qfields:
             field_list += qfields[k]
@@ -281,14 +276,12 @@ class InfluxDBClient:
 
         """
         packed_fields = [
-            k for k in packed_dataframe.keys() if k.startswith(base_field) and k[len(base_field) :].isdigit()
+            k for k in packed_dataframe if k.startswith(base_field) and k[len(base_field) :].isdigit()
         ]
         packed_fields = sorted(packed_fields, key=lambda k: int(k[len(base_field) :]))  # sort by pack ID
         npack = len(packed_fields)
         if npack % stride != 0:
-            raise RuntimeError(
-                "Stride must be a factor of the number of packed fields: " f"{stride} v. {npack}"
-            )
+            raise RuntimeError(f"Stride must be a factor of the number of packed fields: {stride} v. {npack}")
         packed_len = len(packed_dataframe)
         n_used = npack // stride  # number of raw fields being used
         output = np.empty(n_used * packed_len)
@@ -375,13 +368,8 @@ class InfluxDBClient:
                 vals[f] = df[f]
             # vals.update({"times": df["times"]})
             return pd.DataFrame(vals, index=df.index)
-        except Exception as e:
-            self.log.error(
-                "event=influx_merge_packed_failed base_fields=%s error=%s",
-                base_fields,
-                e,
-                exc_info=True,
-            )
+        except Exception:
+            self.log.exception("event=influx_merge_packed_failed base_fields=%s", base_fields)
             raise
 
     def _convert_index_format(self, x):
@@ -506,7 +494,7 @@ class InfluxDBClient:
             start_str = start.isot
             end_str = end.isot
         else:
-            raise TypeError("The second time argument must be the time stamp for the end " "or a time delta.")
+            raise TypeError("The second time argument must be the time stamp for the end or a time delta.")
 
         index_str = ""
         if index:
@@ -532,7 +520,7 @@ class InfluxDBClient:
                 raise ValueError(f"aggregate_func must be one of {valid_funcs}")
             # Use AS to keep original column names in the result
             select_fields = [f'{aggregate_func.upper()}("{f}") AS "{f}"' for f in fields]
-            select_clause = f'SELECT {", ".join(select_fields)}'
+            select_clause = f"SELECT {', '.join(select_fields)}"
         elif aggregate_interval and not aggregate_func:
             raise ValueError("aggregate_func must be provided if aggregate_interval is set.")
         else:
@@ -718,14 +706,13 @@ class InfluxDBClient:
                 )
                 if not df_chunk.empty:
                     all_series_dfs.append(df_chunk)
-            except Exception as e:
-                self.log.error(
-                    "event=influx_query_chunk_failed topic=%s chunk=%s error=%s "
+            except Exception:
+                self.log.exception(
+                    "event=influx_query_chunk_failed topic=%s chunk=%s "
                     "task_id=%s day_obs=%s day_obs_min=%s "
                     "day_obs_max=%s exposure_id_min=%s exposure_id_max=%s visit_id_min=%s visit_id_max=%s",
                     topic_name,
                     i + 1,
-                    e,
                     log_context.get("task_id") if log_context else None,
                     log_context.get("day_obs") if log_context else None,
                     log_context.get("day_obs_min") if log_context else None,
@@ -734,7 +721,6 @@ class InfluxDBClient:
                     log_context.get("exposure_id_max") if log_context else None,
                     log_context.get("visit_id_min") if log_context else None,
                     log_context.get("visit_id_max") if log_context else None,
-                    exc_info=True,
                 )
 
         if not all_series_dfs:
@@ -872,7 +858,7 @@ class InfluxDbDao(InfluxDBClient):
         efd_name: str,
         database_name="efd",
         creds_service="https://roundtable.lsst.codes/segwarides/",
-        logger: logging.Logger = None,
+        logger: logging.Logger | None = None,
         max_fields_per_query: int = 100,
     ):
         """Initializes InfluxDbDao, extending the InfluxDBClient class.
@@ -896,7 +882,7 @@ class InfluxDbDao(InfluxDBClient):
         user = os.getenv("EFD_USERNAME", "efdreader")
         password = os.getenv("EFD_PASSWORD")
         host = os.getenv("EFD_HOST", "usdf-rsp.slac.stanford.edu")
-        port = os.getenv("EFD_PORT", 443)
+        port = os.getenv("EFD_PORT", "443")
         path = os.getenv("EFD_PATH", "/influxdb-enterprise-data/")
         url = urljoin(f"https://{host}:{port}", f"{path}")
 

@@ -23,12 +23,15 @@
 
 import copy
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import astropy.time
 import pandas
 from lsst.consdb.transformed_efd.dao.butler import ButlerDao
-from lsst.consdb.transformed_efd.dao.exposure_efd import ExposureEfdDao, ExposureEfdUnpivotedDao
+from lsst.consdb.transformed_efd.dao.exposure_efd import (
+    ExposureEfdDao,
+    ExposureEfdUnpivotedDao,
+)
 from lsst.consdb.transformed_efd.dao.influxdb import InfluxDbDao
 from lsst.consdb.transformed_efd.dao.visit_efd import VisitEfdDao, VisitEfdUnpivotedDao
 from lsst.consdb.transformed_efd.summary import Summary
@@ -41,10 +44,8 @@ def handle_processing_errors(func):
     def wrapper(self, *args, **kwargs):
         try:
             return func(self, *args, **kwargs)
-        except Exception as e:
-            self.log.error(
-                "event=transform_handler_error function=%s error=%s", func.__name__, e, exc_info=True
-            )
+        except Exception:
+            self.log.exception("event=transform_handler_error function=%s", func.__name__)
             raise
 
     return wrapper
@@ -58,7 +59,7 @@ class Transform:
         butler: Butler,
         db_uri: str | list[str],
         efd: InfluxDbDao,
-        config: Dict[str, Any],
+        config: dict[str, Any],
         logger: logging.Logger,
         commit_every: int = 100,
     ):
@@ -101,8 +102,8 @@ class Transform:
         instrument: str,
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
-        task_context: Dict[str, Any] | None = None,
-    ) -> Dict[str, int]:
+        task_context: dict[str, Any] | None = None,
+    ) -> dict[str, int]:
         """Process the given time interval for a specific instrument."""
         count = self._initialize_counts()
         self.log.debug("event=process_interval start_time=%s end_time=%s", start_time, end_time)
@@ -128,7 +129,7 @@ class Transform:
         self,
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
-        topics: List[Dict[str, pandas.DataFrame]],
+        topics: list[dict[str, pandas.DataFrame]],
         transform_function: str,
         **function_kwargs: Any,
     ) -> Any:
@@ -160,7 +161,7 @@ class Transform:
         )
 
     @handle_processing_errors
-    def _map_topics(self) -> Dict[str, Any]:
+    def _map_topics(self) -> dict[str, Any]:
         """Map topics and fields to perform a single query per topic."""
         groups_map = {}
 
@@ -211,12 +212,12 @@ class Transform:
     @handle_processing_errors
     def _process_interval(
         self,
-        exposures: List[Dict[str, Any]],
-        visits: List[Dict[str, Any]],
+        exposures: list[dict[str, Any]],
+        visits: list[dict[str, Any]],
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
-        log_context: Dict[str, Any] | None = None,
-    ) -> Dict[str, Any]:
+        log_context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """Process the given time interval for a specific instrument."""
         # Only process exposures / visits completely within the time window.
         # Partial overlaps are handled by the adjacent task.
@@ -295,12 +296,12 @@ class Transform:
     @handle_processing_errors
     def _process_topic(
         self,
-        topic: Dict[str, Any],
-        topic_interval: List[astropy.time.Time],
-        exposures: List[Dict[str, Any]],
-        visits: List[Dict[str, Any]],
-        results: Dict[str, Any],
-        log_context: Dict[str, Any] | None = None,
+        topic: dict[str, Any],
+        topic_interval: list[astropy.time.Time],
+        exposures: list[dict[str, Any]],
+        visits: list[dict[str, Any]],
+        results: dict[str, Any],
+        log_context: dict[str, Any] | None = None,
     ) -> None:
         """Process a single topic and update results."""
         self.log.debug("event=query_topic name=%s", topic["name"])
@@ -331,12 +332,12 @@ class Transform:
     @handle_processing_errors
     def _process_column(
         self,
-        column: Dict[str, Any],
-        topic: Dict[str, Any],
+        column: dict[str, Any],
+        topic: dict[str, Any],
         topic_series: pandas.DataFrame,
-        exposures: List[Dict[str, Any]],
-        visits: List[Dict[str, Any]],
-        results: Dict[str, Any],
+        exposures: list[dict[str, Any]],
+        visits: list[dict[str, Any]],
+        results: dict[str, Any],
     ) -> None:
         """Process a single column and update results."""
         self.log.debug("event=process_column name=%s", column["name"])
@@ -357,10 +358,10 @@ class Transform:
     @handle_processing_errors
     def _process_exposures(
         self,
-        column: Dict[str, Any],
-        data: List[Dict[str, pandas.DataFrame]],
-        exposures: List[Dict[str, Any]],
-        results: Dict[str, Any],
+        column: dict[str, Any],
+        data: list[dict[str, pandas.DataFrame]],
+        exposures: list[dict[str, Any]],
+        results: dict[str, Any],
     ) -> None:
         """Process exposure data and update results."""
         for exposure in exposures:
@@ -377,11 +378,11 @@ class Transform:
     @handle_processing_errors
     def _process_exposures_unpivoted(
         self,
-        topic: Dict[str, Any],
-        column: Dict[str, Any],
-        data: List[Dict[str, pandas.DataFrame]],
-        exposures: List[Dict[str, Any]],
-        results: List[Dict[str, Any]],
+        topic: dict[str, Any],
+        column: dict[str, Any],
+        data: list[dict[str, pandas.DataFrame]],
+        exposures: list[dict[str, Any]],
+        results: list[dict[str, Any]],
     ) -> None:
         """Process exposure unpivoted data and update results."""
         for exposure in exposures:
@@ -416,10 +417,10 @@ class Transform:
     @handle_processing_errors
     def _process_visits(
         self,
-        column: Dict[str, Any],
-        data: List[Dict[str, pandas.DataFrame]],
-        visits: List[Dict[str, Any]],
-        results: Dict[str, Any],
+        column: dict[str, Any],
+        data: list[dict[str, pandas.DataFrame]],
+        visits: list[dict[str, Any]],
+        results: dict[str, Any],
     ) -> None:
         """Process visit data and update results."""
         for visit in visits:
@@ -436,11 +437,11 @@ class Transform:
     @handle_processing_errors
     def _process_visits_unpivoted(
         self,
-        topic: Dict[str, Any],
-        column: Dict[str, Any],
-        data: List[Dict[str, pandas.DataFrame]],
-        visits: List[Dict[str, Any]],
-        results: List[Dict[str, Any]],
+        topic: dict[str, Any],
+        column: dict[str, Any],
+        data: list[dict[str, pandas.DataFrame]],
+        visits: list[dict[str, Any]],
+        results: list[dict[str, Any]],
     ) -> None:
         """Process visit unpivoted data and update results."""
         for visit in visits:
@@ -473,10 +474,10 @@ class Transform:
     @handle_processing_errors
     def _prepare_column_data(
         self,
-        column: Dict[str, Any],
-        topic: Dict[str, Any],
+        column: dict[str, Any],
+        topic: dict[str, Any],
         topic_series: pandas.DataFrame,
-    ) -> List[Dict[str, pandas.DataFrame]]:
+    ) -> list[dict[str, pandas.DataFrame]]:
         """Prepare data for a single column."""
         if not topic_series.empty:
             fields = [f["name"] for f in column["topics"][0]["fields"]]
@@ -526,7 +527,7 @@ class Transform:
             data = [{"topic": topic["name"], "series": pandas.DataFrame()}]
         return data
 
-    def _initialize_counts(self) -> Dict[str, int]:
+    def _initialize_counts(self) -> dict[str, int]:
         """Initialize counts for exposures and visits."""
         return {
             "exposures": 0,
@@ -541,7 +542,7 @@ class Transform:
         instrument: str,
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
-    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         """Retrieve exposures and visits from Butler"""
         instrument_name = self.get_instrument(instrument)
         exposures = self.butler_dao.exposures_by_period(instrument_name, start_time, end_time)
@@ -555,8 +556,8 @@ class Transform:
     def _store_results(
         self,
         instrument: str,
-        results: Dict[str, Any],
-    ) -> Dict[str, int]:
+        results: dict[str, Any],
+    ) -> dict[str, int]:
         """Store the processed results into the database."""
         count = {"exposures": 0, "visits1": 0}
 
@@ -623,10 +624,10 @@ class Transform:
     @handle_processing_errors
     def _query_efd_values(
         self,
-        topic: Dict[str, Any],
-        topic_interval: List[astropy.time.Time],
+        topic: dict[str, Any],
+        topic_interval: list[astropy.time.Time],
         packed_series: bool = False,
-        log_context: Dict[str, Any] | None = None,
+        log_context: dict[str, Any] | None = None,
     ) -> pandas.DataFrame:
         """
         Query EFD values for a topic within a specified time interval.
@@ -673,14 +674,14 @@ class Transform:
                     aggregate_func=aggregate_func,
                     log_context=log_context,
                 )
-        except Exception as e:
+        except Exception:
             # 3. Handle any exceptions from the DAO and return an empty
             # DataFrame
-            self.log.error("event=efd_query_failed topic=%s error=%s", topic["name"], e, exc_info=True)
+            self.log.exception("event=efd_query_failed topic=%s", topic["name"])
             return pandas.DataFrame()
 
     @staticmethod
-    def _min_max(records: List[Dict[str, Any]], key: str) -> tuple[Any, Any]:
+    def _min_max(records: list[dict[str, Any]], key: str) -> tuple[Any, Any]:
         values = [record.get(key) for record in records if record.get(key) is not None]
         if not values:
             return None, None
@@ -688,10 +689,10 @@ class Transform:
 
     def _build_log_context(
         self,
-        task_context: Dict[str, Any] | None,
-        exposures: List[Dict[str, Any]],
-        visits: List[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        task_context: dict[str, Any] | None,
+        exposures: list[dict[str, Any]],
+        visits: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         exposure_min, exposure_max = self._min_max(exposures, "id")
         visit_min, visit_max = self._min_max(visits, "id")
         day_obs_exp_min, day_obs_exp_max = self._min_max(exposures, "day_obs")
@@ -718,7 +719,7 @@ class Transform:
         }
 
     def _log_task_impact_scope(
-        self, log_context: Dict[str, Any], start_time: astropy.time.Time, end_time: astropy.time.Time
+        self, log_context: dict[str, Any], start_time: astropy.time.Time, end_time: astropy.time.Time
     ) -> None:
         self.log.info(
             "event=task_impact_scope task_id=%s start_time=%s end_time=%s day_obs=%s "
@@ -741,7 +742,7 @@ class Transform:
 
     def _update_bounds(
         self,
-        timespans: List[dict],
+        timespans: list[dict],
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
         min_time: astropy.time.Time,
@@ -762,9 +763,9 @@ class Transform:
         self,
         start_time: astropy.time.Time,
         end_time: astropy.time.Time,
-        exposures: List[dict],
-        visits: List[dict],
-    ) -> List[astropy.time.Time]:
+        exposures: list[dict],
+        visits: list[dict],
+    ) -> list[astropy.time.Time]:
         """Get the time bounds within the given interval."""
 
         min_topic_time = end_time

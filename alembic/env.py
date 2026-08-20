@@ -1,10 +1,11 @@
-# flake8: noqa: E402
-
 import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "python"))
+
 from lsst.consdb.cdb_pgsphere import SPoly, add_shadow_column  # Must be imported before MetaDataBuilder
+
+# isort: split
 
 import logging
 import os
@@ -16,7 +17,6 @@ from felis.metadata import MetaDataBuilder
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -43,7 +43,8 @@ if sdm_schemas_dir is None:
 schema_name = context.config.get_main_option("consdb.schema_name")
 schema_path = f"{sdm_schemas_dir}/yml/{schema_name}.yaml"
 logger.info(f"Using schema path: {schema_path}")
-yaml_data = yaml.safe_load(open(schema_path, "r"))
+with open(schema_path, "r") as schema_file:
+    yaml_data = yaml.safe_load(schema_file)
 schema = Schema.model_validate(yaml_data)
 schema_metadata = MetaDataBuilder(schema).build()
 logger.info(f"Schema {schema_metadata.schema} loaded successfully")
@@ -71,7 +72,7 @@ def generate_upgrade_sqls(schema_metadata, schema_name) -> list[str]:
         view_name = f"{prefix}visit1"
         view_sql = f"""
         CREATE OR REPLACE VIEW {schema_name}.{view_name} AS
-        SELECT {', '.join(view_columns)}
+        SELECT {", ".join(view_columns)}
         FROM {schema_name}.{prefix}exposure;
         """
         sql.append(view_sql.strip())

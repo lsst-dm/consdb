@@ -24,8 +24,9 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Iterable, List, Tuple
+from collections.abc import Iterable
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from astropy.time import Time
 from lsst.consdb.transformed_efd.dao.butler import ButlerDao
@@ -60,17 +61,17 @@ def _to_astropy_time(value: Any) -> Time:
     if hasattr(value, "utc"):
         return value.utc
     if isinstance(value, datetime):
-        dt = value.astimezone(timezone.utc).replace(tzinfo=None) if value.tzinfo else value
+        dt = value.astimezone(UTC).replace(tzinfo=None) if value.tzinfo else value
         return Time(dt.isoformat(), format="isot", scale="utc")
     return Time(value, scale="utc")
 
 
-def _merged_intervals(intervals: Iterable[Tuple[int, Time, Time]]) -> List[Tuple[int, Time, Time]]:
+def _merged_intervals(intervals: Iterable[tuple[int, Time, Time]]) -> list[tuple[int, Time, Time]]:
     ordered = sorted(intervals, key=lambda item: (item[0], item[1].unix))
     if not ordered:
         return []
 
-    merged: List[Tuple[int, Time, Time]] = [ordered[0]]
+    merged: list[tuple[int, Time, Time]] = [ordered[0]]
     for day_obs, start, end in ordered[1:]:
         last_day_obs, last_start, last_end = merged[-1]
         if day_obs == last_day_obs and start.unix <= last_end.unix:
@@ -84,10 +85,10 @@ def _merged_intervals(intervals: Iterable[Tuple[int, Time, Time]]) -> List[Tuple
     return merged
 
 
-def _intervals_from_sequential_records(records: List[Dict[str, Any]]) -> List[Tuple[int, Time, Time]]:
+def _intervals_from_sequential_records(records: list[dict[str, Any]]) -> list[tuple[int, Time, Time]]:
     """Build intervals from contiguous records by day_obs/seq_num."""
     ordered = sorted(records, key=lambda rec: (rec.get("day_obs", 0), rec.get("seq_num", 0)))
-    intervals: List[Tuple[int, Time, Time]] = []
+    intervals: list[tuple[int, Time, Time]] = []
 
     current_day_obs: Any = None
     previous_seq: int | None = None
@@ -139,8 +140,8 @@ def _intervals_from_sequential_records(records: List[Dict[str, Any]]) -> List[Tu
     return intervals
 
 
-def _day_obs_window(window_days: int) -> Tuple[int, int]:
-    now = datetime.now(timezone.utc)
+def _day_obs_window(window_days: int) -> tuple[int, int]:
+    now = datetime.now(UTC)
     # Rubin day_obs rolls over at 12:00 UTC, not midnight.
     end_day = now.date() if now.hour >= 12 else (now - timedelta(days=1)).date()
     start_day = end_day - timedelta(days=window_days - 1)
@@ -158,17 +159,17 @@ class FailedTaskRetryCheck:
         base_hour: float = 2.82843,
         max_retries: int = 3,
         max_age_hours: float = 72.0,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         tasks = qm.failed_tasks(repo, max_retries=max_retries)
-        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        now = datetime.now(UTC).replace(tzinfo=None)
         max_age = timedelta(hours=max_age_hours)
-        selected: List[Dict[str, Any]] = []
+        selected: list[dict[str, Any]] = []
 
         for task in tasks:
             retries = task["retries"]
             created = task["created_at"]
             if created.tzinfo:
-                created = created.astimezone(timezone.utc).replace(tzinfo=None)
+                created = created.astimezone(UTC).replace(tzinfo=None)
 
             since_created = now - created
             next_wait = timedelta(hours=base_hour ** (retries + 1))
@@ -215,7 +216,7 @@ class ButlerReconciliationCheck:
         self.exp_dao = ExposureEfdDao(self.db_uri, self.schema, self.log)
         self.vis_dao = VisitEfdDao(self.db_uri, self.schema, self.log)
 
-    def run(self, args: Any) -> List[Dict[str, Any]]:
+    def run(self, args: Any) -> list[dict[str, Any]]:
         window_days = max(1, int(getattr(args, "monitor_window_days", 7)))
         process_interval = max(1, int(getattr(args, "timedelta", 5)))
         # Keep the configured overlap, but cap at 5 for monitor-created tasks.
@@ -243,7 +244,7 @@ class ButlerReconciliationCheck:
         exp_intervals = _intervals_from_sequential_records(missing_exp)
         vis_intervals = _intervals_from_sequential_records(missing_vis)
         merged = _merged_intervals(exp_intervals + vis_intervals)
-        created_tasks: List[Dict[str, Any]] = []
+        created_tasks: list[dict[str, Any]] = []
         for _day_obs, start_time, end_time in merged:
             created_tasks.extend(
                 self.qm.create_tasks(
@@ -292,12 +293,12 @@ class FailureMonitor:
             log=log,
         )
 
-    def run(self, args: Any) -> List[Dict[str, Any]]:
+    def run(self, args: Any) -> list[dict[str, Any]]:
         retry_tasks = self.retry_check.run(self.qm, args.repo, self.log)
         reconciled_tasks = self.reconciliation_check.run(args)
         tasks = retry_tasks + reconciled_tasks
 
-        dedup: Dict[Any, Dict[str, Any]] = {}
+        dedup: dict[Any, dict[str, Any]] = {}
         for task in tasks:
             task_id = task.get("id")
             if task_id is None:

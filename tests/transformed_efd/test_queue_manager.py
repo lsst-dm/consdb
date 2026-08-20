@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import create_autospec, patch
 
 import pytest
@@ -75,8 +75,8 @@ def sample_task():
     """Sample task data structure"""
     return {
         "id": 1,
-        "start_time": datetime(2023, 1, 1, 0, 0, tzinfo=timezone.utc),
-        "end_time": datetime(2023, 1, 1, 1, 0, tzinfo=timezone.utc),
+        "start_time": datetime(2023, 1, 1, 0, 0, tzinfo=UTC),
+        "end_time": datetime(2023, 1, 1, 1, 0, tzinfo=UTC),
         "timewindow": 1,
         "status": "pending",
         "butler_repo": "test_repo",
@@ -93,7 +93,6 @@ class TestQueueManagerInitialization:
 
 
 class TestCreateTasks:
-
     def test_create_tasks_valid_interval(self, queue_manager, sample_task):
         """Test task creation with valid time interval"""
 
@@ -160,7 +159,7 @@ class TestTaskRetrieval:
         test_time = Time("2023-01-01T00:00:00")
 
         # Configure test task
-        sample_task["end_time"] = test_time.to_datetime(timezone.utc)
+        sample_task["end_time"] = test_time.to_datetime(UTC)
         mock_dao.select_next.return_value = sample_task
 
         # Case 1: Current time exactly at end_time with positive margin

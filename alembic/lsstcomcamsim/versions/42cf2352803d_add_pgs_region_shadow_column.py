@@ -6,17 +6,18 @@ Create Date: 2025-09-30 19:08:59.614450+00:00
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
 from lsst.consdb.cdb_pgsphere import SPoly
 
+from alembic import op
+
 # revision identifiers, used by Alembic.
 revision: str = "42cf2352803d"
-down_revision: Union[str, None] = "9f11c054a792"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "9f11c054a792"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:

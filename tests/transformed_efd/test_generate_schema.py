@@ -86,9 +86,11 @@ def test_invalid_instrument():
 def test_missing_config_columns(mock_config):
     """Test that a config missing the 'columns' section raises a ValueError."""
     invalid_config = {"version": "1.0.0"}
-    with patch(f"{gen_schema.__name__}.read_config", return_value=invalid_config):
-        with pytest.raises(ValueError, match="must contain 'columns' section"):
-            gen_schema.generate_schema("latiss")
+    with (
+        patch(f"{gen_schema.__name__}.read_config", return_value=invalid_config),
+        pytest.raises(ValueError, match="must contain 'columns' section"),
+    ):
+        gen_schema.generate_schema("latiss")
 
 
 def test_schema_generation_with_custom_output_dir(tmp_path, mock_config):

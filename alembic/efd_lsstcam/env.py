@@ -46,7 +46,8 @@ schema_name = context.config.get_main_option("consdb.schema_name")
 logger.info(f"Schema name: {schema_name}")
 schema_path = f"{sdm_schemas_dir}/yml/{schema_name}.yaml"
 logger.info(f"Using schema path: {schema_path}")
-yaml_data = yaml.safe_load(open(schema_path, "r"))
+with open(schema_path, "r") as schema_file:
+    yaml_data = yaml.safe_load(schema_file)
 schema = Schema.model_validate(yaml_data)
 schema_metadata = MetaDataBuilder(schema).build()
 logger.info(f"Schema {schema_metadata.schema} loaded successfully")
@@ -76,7 +77,7 @@ target_metadata = schema_metadata
 
 # Add this after schema_metadata is built
 logger.debug(f"Tables in metadata: {list(target_metadata.tables.keys())}")
-logger.debug(f"Metadata details: {repr(target_metadata)}")
+logger.debug(f"Metadata details: {target_metadata!r}")
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

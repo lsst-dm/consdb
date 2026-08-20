@@ -32,7 +32,7 @@ def _load_schema_metadata(schema_file: Path) -> sa.MetaData:
 
 @pytest.fixture
 def astropy_tables(scope="module"):
-    t = dict()
+    t = {}
     return t
 
 
@@ -85,7 +85,9 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
                         else (
                             v.to_datetime()
                             if isinstance(v, Time)
-                            else bool(v) if isinstance(v, np.bool_) else str(v)
+                            else bool(v)
+                            if isinstance(v, np.bool_)
+                            else str(v)
                         )
                     )
                     for k, v in dict(row).items()
@@ -402,7 +404,7 @@ def test_schema_table(lsstcomcamsim, astropy_tables):
     _assert_http_status(response, 200)
     result = response.json()
     for column in astropy_table.columns:
-        assert column in result.keys()
+        assert column in result
 
 
 @pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)

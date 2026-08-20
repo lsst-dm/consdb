@@ -6,17 +6,17 @@ Create Date: 2026-05-14 23:22:28.696408+00:00
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "68b3d07af9e6"
-down_revision: Union[str, None] = "970dc2b4e727"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "970dc2b4e727"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -26,9 +26,7 @@ def upgrade() -> None:
         " TO un_ccdexposure_ccdexposure_id_dsd"
     )
     op.execute(
-        "ALTER TABLE cdb_latiss.exposure"
-        " RENAME CONSTRAINT un_exposure_day_obs_seq_num"
-        " TO un_exposure_ds"
+        "ALTER TABLE cdb_latiss.exposure RENAME CONSTRAINT un_exposure_day_obs_seq_num TO un_exposure_ds"
     )
     op.execute(
         "ALTER TABLE cdb_latiss.exposure"
@@ -226,9 +224,7 @@ def downgrade() -> None:
         " TO un_exposure_exposure_id_day_obs_seq_num"
     )
     op.execute(
-        "ALTER TABLE cdb_latiss.exposure"
-        " RENAME CONSTRAINT un_exposure_ds"
-        " TO un_exposure_day_obs_seq_num"
+        "ALTER TABLE cdb_latiss.exposure RENAME CONSTRAINT un_exposure_ds TO un_exposure_day_obs_seq_num"
     )
     op.execute(
         "ALTER TABLE cdb_latiss.ccdexposure"

@@ -22,6 +22,7 @@
 """
 Utility functions for consdb services.
 """
+
 import logging
 import os
 import re
@@ -29,7 +30,7 @@ import sys
 
 import sqlalchemy
 
-__all__ = ["setup_postgres", "setup_logging"]
+__all__ = ["setup_logging", "setup_postgres"]
 
 
 logger = logging.getLogger(__name__)
@@ -66,7 +67,7 @@ def setup_postgres() -> sqlalchemy.Engine:
         metadata = sqlalchemy.MetaData()
         table = sqlalchemy.Table("schemas", metadata, autoload_with=engine)
         stmt = sqlalchemy.select(table.c.name, table.c.path)
-        schemas = dict()
+        schemas = {}
         with engine.connect() as conn:
             for row in conn.execute(stmt):
                 schemas[row.name] = row.path

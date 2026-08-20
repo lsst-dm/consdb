@@ -22,7 +22,6 @@
 import argparse
 import importlib.resources
 from pathlib import Path
-from typing import Optional
 
 from lsst.consdb.transformed_efd.transform_efd import read_config
 
@@ -34,7 +33,7 @@ schema_dict = {
 }
 
 
-def generate_schema(instrument: str, output_dir: Optional[Path] = None) -> Path:
+def generate_schema(instrument: str, output_dir: Path | None = None) -> Path:
     """Generate database schema YAML file based on configuration
 
     Args:
@@ -132,9 +131,8 @@ def write_exposure_tables(f, config):
 
     # Add dynamic columns from config
     for column in config["columns"]:
-        if "exposure_efd" in column.get("tables", []):
-            if not column.get("store_unpivoted", False):
-                write_column(f, column, "exposure_efd")
+        if "exposure_efd" in column.get("tables", []) and not column.get("store_unpivoted", False):
+            write_column(f, column, "exposure_efd")
 
     # exposure_efd_unpivoted table
     f.write(
@@ -239,9 +237,8 @@ def write_visit_tables(f, config):
 
     # Add dynamic columns from config
     for column in config["columns"]:
-        if "visit1_efd" in column.get("tables", []):
-            if not column.get("store_unpivoted", False):
-                write_column(f, column, "visit1_efd")
+        if "visit1_efd" in column.get("tables", []) and not column.get("store_unpivoted", False):
+            write_column(f, column, "visit1_efd")
 
     # visit1_efd_unpivoted table
     f.write(
@@ -305,8 +302,8 @@ def write_column(f, column: dict, table: str):
     column_name = column["name"]
     f.write(f"  - name: {column_name}\n")
     f.write(f'    "@id": "#{table}.{column_name}"\n')
-    f.write(f'    description: {column["description"]}\n')
-    f.write(f'    datatype: {column["datatype"]}\n')
+    f.write(f"    description: {column['description']}\n")
+    f.write(f"    datatype: {column['datatype']}\n")
     # Check for 'ivoa' metadata and write it
     if ("ivoa" in column) and column["ivoa"] is not None:
         for key, value in sorted(column["ivoa"].items()):

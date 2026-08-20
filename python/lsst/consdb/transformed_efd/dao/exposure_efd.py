@@ -41,7 +41,7 @@ class ExposureEfdDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger = None):
+    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger | None = None):
         """Initialize the `ExposureEfdDao` class.
 
         Args:
@@ -122,7 +122,7 @@ class ExposureEfdUnpivotedDao(DBBase):
 
     """
 
-    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger = None):
+    def __init__(self, db_uri: str | list[str], schema: str, logger: logging.Logger | None = None):
         """Initialize the `ExposureEfdUnpivotedDao` class.
 
         Args:

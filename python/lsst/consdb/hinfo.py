@@ -2,8 +2,9 @@ import asyncio
 import os
 import random
 import re
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Union
+from typing import Any
 
 import aiokafka  # type: ignore
 import astropy.time  # type: ignore
@@ -15,7 +16,12 @@ import lsst.geom  # type: ignore
 import lsst.obs.lsst  # type: ignore
 import numpy as np  # type: ignore
 from astro_metadata_translator import ObservationInfo
-from astropy.coordinates import AltAz, CartesianRepresentation, EarthLocation, SkyCoord  # type: ignore
+from astropy.coordinates import (  # type: ignore
+    AltAz,
+    CartesianRepresentation,
+    EarthLocation,
+    SkyCoord,
+)
 from lsst.obs.lsst.rawFormatter import LsstCamRawFormatter  # type: ignore
 from lsst.resources import ResourcePath
 from sqlalchemy import MetaData, Table
@@ -31,9 +37,7 @@ try:
 except ImportError:
     from yaml import Loader
 
-if TYPE_CHECKING:
-    import lsst.afw.cameraGeom  # type: ignore
-
+import lsst.afw.cameraGeom  # type: ignore
 
 # If set, only these columns will be updated.
 exp_columns_to_update: list[str] | None = None
@@ -86,7 +90,7 @@ def get_vertices(
 
 
 def logical_or(*bools: int | str | None) -> bool:
-    return any([b == 1 or b == "1" for b in bools])
+    return any(b == 1 or b == "1" for b in bools)
 
 
 def region_ivoa(
@@ -263,7 +267,7 @@ def fp_region_spoly(
 # Header Mapping Configurations #
 #################################
 
-ColumnMapping = Union[str, tuple[Callable[..., Any], *tuple[str, ...]]]
+ColumnMapping = str | tuple[Callable[..., Any], *tuple[str, ...]]
 
 # Non-instrument-specific mapping to column name from Header Service keyword
 KW_MAPPING: dict[str, ColumnMapping] = {
@@ -592,9 +596,9 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
     assert engine is not None
 
     logger.info(f"Obtained for processing: {resource.basename()}")
-    exposure_rec = dict()
+    exposure_rec = {}
 
-    info = dict()
+    info = {}
     content = load(resource.read(), Loader=Loader)
 
     for header in content["PRIMARY"]:
@@ -656,7 +660,7 @@ def process_resource(resource: ResourcePath, instrument_dict: dict, update: bool
 
         det_exposure_recs = []
         for detector in detectors:
-            det_exposure_rec = dict()
+            det_exposure_rec = {}
             det_info = info.copy()
             det_info["exposure_id"] = obs_info.exposure_id
             ccdname = f"{detector[0:3]}_{detector[3:6]}"
@@ -907,7 +911,7 @@ async def handle_message(
     try:
         await asyncio.wait_for(wait_for_resource(resource), timeout=60)
         process_resource(resource, instrument_dict)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         logger.warning(f"Timeout reached while waiting for {url}. Skipping.")
     except Exception:
         logger.exception(f"Exception while handling {url}")

@@ -18,7 +18,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from lsst.consdb.transformed_efd import failure_monitor
 
@@ -33,7 +33,7 @@ def _patch_now(monkeypatch, fixed_now: datetime) -> None:
 
 
 def test_day_obs_window_before_noon_utc(monkeypatch):
-    _patch_now(monkeypatch, datetime(2026, 1, 2, 11, 59, tzinfo=timezone.utc))
+    _patch_now(monkeypatch, datetime(2026, 1, 2, 11, 59, tzinfo=UTC))
 
     day_start, day_end = failure_monitor._day_obs_window(window_days=1)
 
@@ -42,7 +42,7 @@ def test_day_obs_window_before_noon_utc(monkeypatch):
 
 
 def test_day_obs_window_at_or_after_noon_utc(monkeypatch):
-    _patch_now(monkeypatch, datetime(2026, 1, 2, 12, 0, tzinfo=timezone.utc))
+    _patch_now(monkeypatch, datetime(2026, 1, 2, 12, 0, tzinfo=UTC))
 
     day_start, day_end = failure_monitor._day_obs_window(window_days=2)
 
