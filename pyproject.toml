@@ -14,13 +14,9 @@ dynamic = ["version"]
 Homepage = "https://consdb.lsst.io"
 Source = "https://github.com/lsst-dm/consdb"
 
-[tool.black]
+[tool.ruff]
 line-length = 110
-target-version = ["py313"]
-
-[tool.isort]
-profile = "black"
-line_length = 110
+target-version = "py313"
 
 [tool.setuptools.dynamic]
 version = { attr = "setuptools_scm.get_version" }
@@ -45,3 +41,18 @@ test = ["pytest"]
 dev = [
     "documenteer[guide]",
 ]
+
+[tool.ruff.format]
+
+[tool.ruff.lint]
+extend-select = ["E501", "W505"]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 79
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Path", "fastapi.Query", "fastapi.Body", "fastapi.Header"]
+
+[tool.ruff.lint.per-file-ignores]
+"python/lsst/consdb/transformed_efd/**" = ["BLE001"]
+"alembic/*/versions/*" = ["E501", "W505"]
