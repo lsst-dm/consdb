@@ -24,11 +24,38 @@ from lsst.consdb import pqserver
 from lsst.consdb.cdb_schema import ObsIdColname
 from lsst.consdb.config import config
 from lsst.consdb.dependencies import reset_dependencies
+from lsst.consdb.handlers.external import INSERT_FORBIDDEN_TABLES
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 
 def _assert_http_status(response, status: int) -> None:
     """Assert an HTTP response code, surfacing the JSON body on mismatch."""
     assert response.status_code == status, f"{response.status_code} {response.json()}"
+
+
+def _seed_parent_row(client: TestClient, table: sa.Table, row: dict[str, object]) -> None:
+    """Write a hinfo-owned parent row straight to the DB.
+
+    The ``exposure`` and ``ccdexposure`` tables are not writable through the
+    /insert/ endpoints, but the child tables under test still need their
+    parent rows to exist for FK resolution, so seed them the way hinfo does.
+    Repeat calls for the same row are no-ops.
+    """
+    with client.engine.begin() as connection:
+        connection.execute(pg_insert(table).values(row).on_conflict_do_nothing())
+
+
+def _seed_if_forbidden(client: TestClient, table: sa.Table, row: dict[str, object]) -> bool:
+    """Seed the row directly if its table is hinfo-owned.
+
+    Returns True when the table cannot go through the /insert/ endpoints and
+    the row was written via ``_seed_parent_row`` instead; the caller should
+    then skip its API call.
+    """
+    if table.name not in INSERT_FORBIDDEN_TABLES:
+        return False
+    _seed_parent_row(client, table, row)
+    return True
 
 
 @pytest.fixture(scope="module")
@@ -261,6 +288,8 @@ def _insert_multiple_path(instrument: str, table_name: str) -> str:
 
 def _call_insert_by_seq(client: TestClient, table_name: str, table: sa.Table, row: dict[str, object], u: int):
     """POST one row via ``by_seq_num``, picking the 2- or 3-segment variant."""
+    if _seed_if_forbidden(client, table, row):
+        return
     path = _by_seq_path("lsstcam", table_name, row, "detector" in table.columns)
     response = client.post(path, params={"u": u}, json={"values": row})
     _assert_http_status(response, 200)
@@ -268,6 +297,8 @@ def _call_insert_by_seq(client: TestClient, table_name: str, table: sa.Table, ro
 
 def _call_insert(client: TestClient, table_name: str, table: sa.Table, row: dict[str, object], u: int):
     """POST one row via ``/obs/{obs_id}``."""
+    if _seed_if_forbidden(client, table, row):
+        return
     obs_id_col = _obs_id_column(table)
     path = _insert_path("lsstcam", table_name, int(row[obs_id_col]))
     response = client.post(path, params={"u": u}, json={"values": row})
@@ -278,6 +309,8 @@ def _call_insert_multiple(
     client: TestClient, table_name: str, table: sa.Table, row: dict[str, object], u: int
 ):
     """POST one row as a single-entry ``obs_dict`` via the bulk endpoint."""
+    if _seed_if_forbidden(client, table, row):
+        return
     obs_id_col = _obs_id_column(table)
     obs_id = int(row[obs_id_col])
     path = _insert_multiple_path("lsstcam", table_name)

@@ -232,17 +232,12 @@ class InstrumentTable:
         already carries every composite-key column the table requires.
 
         Dispatch:
-          * ccdexposure-level children (have a ``detector`` column and no
-            ``exposure_id`` FK) resolve via ``ccdexposure.ccdexposure_id``
-            using the URL ``obs_id``;
+          * ccdexposure-level children (those with a ``detector`` column)
+            resolve via ``ccdexposure.ccdexposure_id`` using the URL
+            ``obs_id``;
           * everything else resolves via ``exposure.exposure_id``, preferring
             a payload-supplied parent id (``obs_id``/``exposure_id``/
             ``visit_id`` in ``valdict``) over the URL ``obs_id``.
-
-        TODO: once ``/insert/`` no longer accepts the parent ``exposure`` /
-        ``ccdexposure`` tables, the ccdexposure-child branch is the only
-        case with a ``detector`` column and the discriminator simplifies to
-        ``"detector" in table.columns``.
         """
         table = self.schemas.tables[table_name]
         has_detector = "detector" in table.columns
@@ -254,7 +249,7 @@ class InstrumentTable:
             return {}
 
         result: dict[str, int] = {}
-        if has_detector and "exposure_id" not in table.columns:
+        if has_detector:
             day_obs, seq_num, detector = self.get_day_obs_and_seq_num_and_detector(obs_id)
             if need_detector:
                 result["detector"] = detector
