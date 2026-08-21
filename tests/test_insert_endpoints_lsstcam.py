@@ -45,6 +45,19 @@ def _seed_parent_row(client: TestClient, table: sa.Table, row: dict[str, object]
         connection.execute(pg_insert(table).values(row).on_conflict_do_nothing())
 
 
+def _seed_if_forbidden(client: TestClient, table: sa.Table, row: dict[str, object]) -> bool:
+    """Seed the row directly if its table is hinfo-owned.
+
+    Returns True when the table cannot go through the /insert/ endpoints and
+    the row was written via ``_seed_parent_row`` instead; the caller should
+    then skip its API call.
+    """
+    if table.name not in INSERT_FORBIDDEN_TABLES:
+        return False
+    _seed_parent_row(client, table, row)
+    return True
+
+
 @pytest.fixture(scope="module")
 def lsstcam_client():
     """FastAPI TestClient wired to a fresh temporary Postgres instance.
@@ -275,8 +288,7 @@ def _insert_multiple_path(instrument: str, table_name: str) -> str:
 
 def _call_insert_by_seq(client: TestClient, table_name: str, table: sa.Table, row: dict[str, object], u: int):
     """POST one row via ``by_seq_num``, picking the 2- or 3-segment variant."""
-    if table.name in INSERT_FORBIDDEN_TABLES:
-        _seed_parent_row(client, table, row)
+    if _seed_if_forbidden(client, table, row):
         return
     path = _by_seq_path("lsstcam", table_name, row, "detector" in table.columns)
     response = client.post(path, params={"u": u}, json={"values": row})
@@ -285,8 +297,7 @@ def _call_insert_by_seq(client: TestClient, table_name: str, table: sa.Table, ro
 
 def _call_insert(client: TestClient, table_name: str, table: sa.Table, row: dict[str, object], u: int):
     """POST one row via ``/obs/{obs_id}``."""
-    if table.name in INSERT_FORBIDDEN_TABLES:
-        _seed_parent_row(client, table, row)
+    if _seed_if_forbidden(client, table, row):
         return
     obs_id_col = _obs_id_column(table)
     path = _insert_path("lsstcam", table_name, int(row[obs_id_col]))
@@ -298,8 +309,7 @@ def _call_insert_multiple(
     client: TestClient, table_name: str, table: sa.Table, row: dict[str, object], u: int
 ):
     """POST one row as a single-entry ``obs_dict`` via the bulk endpoint."""
-    if table.name in INSERT_FORBIDDEN_TABLES:
-        _seed_parent_row(client, table, row)
+    if _seed_if_forbidden(client, table, row):
         return
     obs_id_col = _obs_id_column(table)
     obs_id = int(row[obs_id_col])

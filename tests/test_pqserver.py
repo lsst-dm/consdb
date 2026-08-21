@@ -19,6 +19,11 @@ from lsst.consdb.dependencies import reset_dependencies
 from requests import Response
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
+# n_inputs value posted in a deliberately conflicting insert. It must not
+# reach the database when the insert fails on a primary-key conflict, and it
+# must appear once the same rows are re-posted as an upsert (?u=1).
+CONFLICT_N_INPUTS = 999
+
 
 def _assert_http_status(response: Response, status: int):
     assert response.status_code == status, f"{response.status_code} {response.json()}"
@@ -239,7 +244,7 @@ def test_insert_multiple(lsstcomcamsim):
     # The exposure parents are hinfo's to write; the bulk endpoint under test
     # here targets a child table.
     _seed_exposures(lsstcomcamsim, data)
-    quicklook = {visit_id: {"n_inputs": 100 + i} for i, visit_id in enumerate(data)}
+    quicklook = {visit_id: {"n_inputs": i} for i, visit_id in enumerate(data)}
 
     response = lsstcomcamsim.get("/consdb")
     response = lsstcomcamsim.post(
@@ -286,7 +291,7 @@ def test_insert_multiple_update(lsstcomcamsim):
         },
     }
     _seed_exposures(lsstcomcamsim, data)
-    quicklook = {visit_id: {"n_inputs": 200 + i} for i, visit_id in enumerate(data)}
+    quicklook = {visit_id: {"n_inputs": i} for i, visit_id in enumerate(data)}
 
     response = lsstcomcamsim.post(
         "/consdb/insert/lsstcomcamsim/visit1_quicklook",
@@ -295,13 +300,20 @@ def test_insert_multiple_update(lsstcomcamsim):
     _assert_http_status(response, 200)
 
     # Re-posting the same rows without ?u=1 conflicts on the primary key.
-    for visit_id in quicklook:
-        quicklook[visit_id]["n_inputs"] = 999
+    for row in quicklook.values():
+        row["n_inputs"] = CONFLICT_N_INPUTS
     response = lsstcomcamsim.post(
         "/consdb/insert/lsstcomcamsim/visit1_quicklook",
         json={"obs_dict": quicklook},
     )
     _assert_http_status(response, 500)
+
+    # The conflicting insert must have been rolled back without writing rows.
+    leaked = lsstcomcamsim.connection.execute(
+        sa.text("SELECT COUNT(*) FROM cdb_lsstcomcamsim.visit1_quicklook WHERE n_inputs = :n"),
+        {"n": CONFLICT_N_INPUTS},
+    ).scalar_one()
+    assert leaked == 0
 
     response = lsstcomcamsim.post(
         "/consdb/insert/lsstcomcamsim/visit1_quicklook?u=1",
@@ -309,6 +321,13 @@ def test_insert_multiple_update(lsstcomcamsim):
     )
     _assert_http_status(response, 200)
     assert response.json()["obs_id"] == list(quicklook.keys())
+
+    # The upsert must have committed the new value to every posted row.
+    updated = lsstcomcamsim.connection.execute(
+        sa.text("SELECT COUNT(*) FROM cdb_lsstcomcamsim.visit1_quicklook WHERE n_inputs = :n"),
+        {"n": CONFLICT_N_INPUTS},
+    ).scalar_one()
+    assert updated == len(quicklook)
 
 
 def test_schema(lsstcomcamsim):
