@@ -22,7 +22,7 @@
 import logging
 from typing import Any
 
-import astropy
+import astropy.time
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query

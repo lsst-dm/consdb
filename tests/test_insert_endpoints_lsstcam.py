@@ -439,6 +439,36 @@ def test_insert_multiple_stores_json_object_in_jsonb_column(
     assert stored == payload
 
 
+def test_insert_stores_json_array_in_jsonb_column(lsstcam_client, lsstcam_tables, row_builder, jsonb_column):
+    """A JSON array sent to a JSONB column is stored as a JSON array."""
+    md, _ = lsstcam_tables
+    table_name, row = _quicklook_row(lsstcam_client, md, row_builder, seed=204)
+    payload = [{"detector": 94, "zk": [0.1, -0.2]}, {"detector": 95, "zk": [0.3]}]
+    row[jsonb_column] = payload
+
+    _call_insert_by_seq(lsstcam_client, table_name, md.tables[table_name], row, u=0)
+
+    stored, typeof = _fetch_jsonb(lsstcam_client, jsonb_column, row)
+    assert typeof == "array"
+    assert stored == payload
+
+
+def test_insert_multiple_stores_json_array_in_jsonb_column(
+    lsstcam_client, lsstcam_tables, row_builder, jsonb_column
+):
+    """The bulk endpoint accepts JSON arrays for JSONB columns too."""
+    md, _ = lsstcam_tables
+    table_name, row = _quicklook_row(lsstcam_client, md, row_builder, seed=205)
+    payload = [1.0, 2.0, 3.5]
+    row[jsonb_column] = payload
+
+    _call_insert_multiple(lsstcam_client, table_name, md.tables[table_name], row, u=0)
+
+    stored, typeof = _fetch_jsonb(lsstcam_client, jsonb_column, row)
+    assert typeof == "array"
+    assert stored == payload
+
+
 def test_flexdata_rejects_non_scalar_values(lsstcam_client, lsstcam_tables, row_builder):
     """Flexible metadata stays scalar-only even though regular columns are not.
 

@@ -63,9 +63,8 @@ AllowedFlexTypeEnum = AllowedFlexTypeEnumBase
 
 # Add JSON as an allowed column type in the non-flexdata tables.
 # The actual JSON column in PostgreSQL is a ``str`` but represented to
-# sqlalchemy as a dict. (A list is also possible, but we assume that
-# JSONB columns are all going to contain dicts.)
-AllowedColumnType = AllowedFlexType | dict
+# sqlalchemy as a dict (for JSON objects) or a list (for JSON arrays).
+AllowedColumnType = AllowedFlexType | dict | list
 
 
 def convert_to_flex_type(ty: AllowedFlexTypeEnum, v: str) -> AllowedFlexType:
