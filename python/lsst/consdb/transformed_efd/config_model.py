@@ -21,8 +21,6 @@
 
 """Defines the configuration models used in the application."""
 
-from typing import Dict, List, Optional, Union
-
 from pydantic import BaseModel, model_validator
 
 TABLES = [
@@ -57,7 +55,7 @@ class Topic(BaseModel):
     """
 
     name: str
-    fields: List[Field]
+    fields: list[Field]
 
 
 class Column(BaseModel):
@@ -93,19 +91,19 @@ class Column(BaseModel):
     """
 
     name: str
-    tables: Optional[List[str]] = TABLES
-    store_unpivoted: Optional[bool] = False
+    tables: list[str] | None = TABLES
+    store_unpivoted: bool | None = False
     function: str
-    function_args: Optional[Dict] = None
-    start_offset: Optional[float] = None
-    pre_aggregate_interval: Optional[str] = None
+    function_args: dict | None = None
+    start_offset: float | None = None
+    pre_aggregate_interval: str | None = None
     datatype: str
-    ivoa: Optional[Dict] = None
+    ivoa: dict | None = None
     description: str
     packed_series: bool
-    subset_field: Optional[str] = None
-    subset_value: Optional[Union[str, int, List[Union[str, int]]]] = None
-    topics: List[Topic]
+    subset_field: str | None = None
+    subset_value: str | int | list[str | int] | None = None
+    topics: list[Topic]
 
     @model_validator(mode="after")
     @classmethod  # Add this decorator
@@ -143,4 +141,4 @@ class ConfigModel(BaseModel):
     """
 
     version: str
-    columns: List[Column]
+    columns: list[Column]

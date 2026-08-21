@@ -33,12 +33,12 @@ from .cdb_schema import InstrumentTable
 from .config import config
 from .exceptions import UnknownInstrumentException
 
-__all__ = ["get_logger", "get_db"]
+__all__ = ["get_db", "get_logger"]
 
 _database_url = None
 _engine = None
 _SessionLocal = None
-_instrument_tables: dict[str, InstrumentTable] = dict()
+_instrument_tables: dict[str, InstrumentTable] = {}
 
 
 def get_engine():
@@ -120,5 +120,5 @@ def reset_dependencies():
     _database_url = None
     _engine = None
     _SessionLocal = None
-    _instrument_tables = dict()
+    _instrument_tables = {}
     get_instrument_list.cache_clear()

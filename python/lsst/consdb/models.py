@@ -25,7 +25,12 @@ import astropy
 from pydantic import BaseModel, Field, field_validator
 from safir.metadata import Metadata
 
-from .cdb_schema import AllowedFlexType, AllowedFlexTypeEnum, ObservationIdType, ObsTypeEnum
+from .cdb_schema import (
+    AllowedFlexType,
+    AllowedFlexTypeEnum,
+    ObservationIdType,
+    ObsTypeEnum,
+)
 from .dependencies import InstrumentName
 
 

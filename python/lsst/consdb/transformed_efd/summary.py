@@ -20,8 +20,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Provides the `Summary` class to perform the EFD transformations."""
 
-from typing import Optional, Union
-
 import numpy as np
 import pandas as pd
 from astropy.time import Time
@@ -42,7 +40,7 @@ class Summary:
         dataframe: pd.DataFrame,
         exposure_start: Time,
         exposure_end: Time,
-        datatype: Optional[str] = None,
+        datatype: str | None = None,
     ):
         """Initialize Summary class with a pandas DataFrame.
         Args:
@@ -57,31 +55,31 @@ class Summary:
                 conversion.
         Raises:
         ------
-            ValueError: If the DataFrame index is not a DatetimeIndex or
+            TypeError: If the DataFrame index is not a DatetimeIndex or
                 contains invalid data types.
             ValueError: If exposure times are invalid or not compatible
                 with the DataFrame index.
         """
         if not isinstance(dataframe.index, pd.DatetimeIndex):
-            raise ValueError("The DataFrame index must be a DatetimeIndex.")
+            raise TypeError("The DataFrame index must be a DatetimeIndex.")
         if len(dataframe) == 0:
             raise ValueError("The DataFrame must not be empty.")
         if not isinstance(exposure_start, Time) or not isinstance(exposure_end, Time):
-            raise ValueError("Exposure times must be astropy.time.Time objects.")
+            raise TypeError("Exposure times must be astropy.time.Time objects.")
         if exposure_start >= exposure_end:
             raise ValueError("Exposure start time must be earlier than exposure end time.")
 
-        self._raw_dataframe: Optional[pd.DataFrame] = dataframe
+        self._raw_dataframe: pd.DataFrame | None = dataframe
         self._datatype = datatype
         self.exposure_start = exposure_start
         self.exposure_end = exposure_end
 
-        self._data_array: Optional[np.ndarray] = None
-        self._timestamps: Optional[pd.DatetimeIndex] = None
-        self._flat_numeric_values: Optional[np.ndarray] = None
-        self._numeric_timestamps: Optional[np.ndarray] = None
-        self._time_indices: Optional[np.ndarray] = None
-        self._is_all_nan: Optional[bool] = None
+        self._data_array: np.ndarray | None = None
+        self._timestamps: pd.DatetimeIndex | None = None
+        self._flat_numeric_values: np.ndarray | None = None
+        self._numeric_timestamps: np.ndarray | None = None
+        self._time_indices: np.ndarray | None = None
+        self._is_all_nan: bool | None = None
 
     def _process_dataframe(self):
         """Lazily process the raw dataframe into the final array and index."""
@@ -120,22 +118,22 @@ class Summary:
         """Calculate the mean ignoring NaN values."""
         return np.nanmean(self._get_numeric_values())
 
-    def stddev(self, ddof: int = 1) -> Optional[float]:
+    def stddev(self, ddof: int = 1) -> float | None:
         """Calculate the standard deviation ignoring NaN values."""
         values = self._get_numeric_values()
         if np.count_nonzero(~np.isnan(values)) > 1:
             return np.nanstd(values, ddof=ddof)
         return None
 
-    def max(self) -> Union[float, int, bool]:
+    def max(self) -> float | int | bool:
         """Find the maximum value ignoring NaN values."""
         return np.nanmax(self._get_numeric_values())
 
-    def min(self) -> Union[float, int, bool]:
+    def min(self) -> float | int | bool:
         """Find the minimum value ignoring NaN values."""
         return np.nanmin(self._get_numeric_values())
 
-    def rms_from_polynomial_fit(self, degree=1, fit_basis="index") -> Optional[float]:
+    def rms_from_polynomial_fit(self, degree=1, fit_basis="index") -> float | None:
         """Calculate RMS after fitting a polynomial."""
         try:
             if fit_basis == "time":
@@ -159,7 +157,7 @@ class Summary:
         except Exception as e:
             raise ValueError(f"RMS calculation failed: error={e}")
 
-    def most_recent_value(self, start_offset: Union[float, int] = 0) -> Optional[Union[float, int, bool]]:
+    def most_recent_value(self, start_offset: float = 0) -> float | int | bool | None:
         """Return the most‐recent scalar."""
         try:
             if self._data_array is None and self._raw_dataframe is not None:
@@ -170,7 +168,7 @@ class Summary:
         except Exception as e:
             raise ValueError(f"Error finding recent value: error={e}")
 
-    def apply(self, method_name: str, **kwargs) -> Optional[float]:
+    def apply(self, method_name: str, **kwargs) -> float | None:
         """Apply a transformation method specified by method_name.
         Args:
         ----

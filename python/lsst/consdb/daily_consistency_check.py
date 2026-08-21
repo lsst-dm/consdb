@@ -42,7 +42,7 @@ def default_day_obs() -> int:
     day_obs = os.environ.get("DAY_OBS")
     if day_obs is not None:
         return int(day_obs)
-    yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
+    yesterday = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=1)
     return int(yesterday.strftime("%Y%m%d"))
 
 

@@ -19,8 +19,8 @@
 
 import argparse
 import os
-import sys
 import subprocess
+import sys
 
 from felis.tests.postgresql import setup_postgres_test_db
 from sqlalchemy.sql import text

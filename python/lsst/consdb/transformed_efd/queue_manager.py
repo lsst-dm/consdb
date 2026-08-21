@@ -27,8 +27,7 @@ handling gaps. Includes features for task creation, retrieval, and management.
 
 import logging
 import math
-from datetime import timezone
-from typing import List, Optional
+from datetime import UTC
 
 import pandas
 from astropy.time import Time, TimeDelta
@@ -76,8 +75,8 @@ class QueueManager:
         process_interval: int,
         time_window: int = 1,
         status: str = "pending",
-        butler_repo: str = None,
-    ) -> List[dict]:
+        butler_repo: str | None = None,
+    ) -> list[dict]:
         """Create tasks based on the given time range and process interval.
 
         This method generates tasks within the specified time range, divided by
@@ -139,7 +138,6 @@ class QueueManager:
 
         rows = []
         for t in intervals:
-
             # Check if task already exists and is idle to avoid duplicates
             if self.check_existing_task_by_interval(t[0], t[1], butler_repo, "idle"):
                 self.log.debug(
@@ -150,8 +148,8 @@ class QueueManager:
                 )
             else:
                 task = {
-                    "start_time": t[0].to_datetime(timezone=timezone.utc),
-                    "end_time": t[1].to_datetime(timezone=timezone.utc),
+                    "start_time": t[0].to_datetime(timezone=UTC),
+                    "end_time": t[1].to_datetime(timezone=UTC),
                     "timewindow": time_window,
                     "status": status,
                     "butler_repo": butler_repo,
@@ -164,8 +162,8 @@ class QueueManager:
             try:
                 df = pandas.DataFrame(rows)
                 tasks = self.dao.bulk_insert(df)
-            except Exception as e:
-                self.log.error("event=task_bulk_insert_failed error=%s", e, exc_info=True)
+            except Exception:
+                self.log.exception("event=task_bulk_insert_failed")
                 return []
 
         if tasks:
@@ -179,7 +177,7 @@ class QueueManager:
         start_time: Time,
         end_time: Time,
         process_interval: TimeDelta,
-    ) -> List[List[Time]]:
+    ) -> list[list[Time]]:
         """Create time intervals between a start and end time.
 
         Args:
@@ -210,9 +208,9 @@ class QueueManager:
 
     def recent_tasks_to_run(
         self,
-        limit: Optional[int] = None,
+        limit: int | None = None,
         margin_seconds: int = 0,
-    ) -> List[dict]:
+    ) -> list[dict]:
         """Retrieve list of recent tasks to run.
 
         This method fetches recent tasks from the database up to the specified
@@ -235,15 +233,15 @@ class QueueManager:
         end_time = Time.now().utc
         end_time_with_margin = end_time + TimeDelta(margin_seconds, format="sec")
 
-        tasks = self.dao.select_recent(end_time_with_margin.to_datetime(timezone.utc), limit)
+        tasks = self.dao.select_recent(end_time_with_margin.to_datetime(UTC), limit)
         return tasks
 
     def next_task_to_run(
         self,
-        start_time: Optional[Time] = None,
-        end_time: Optional[Time] = None,
+        start_time: Time | None = None,
+        end_time: Time | None = None,
         margin_seconds: int = 0,  # Allow negative margins
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """Retrieve the next task to run within a specified time range.
 
         Args:
@@ -264,8 +262,8 @@ class QueueManager:
         """
 
         # Convert Astropy Time to timezone-aware datetime (UTC)
-        start_dt = start_time.to_datetime(timezone=timezone.utc) if start_time else None
-        end_dt = end_time.to_datetime(timezone=timezone.utc) if end_time else None
+        start_dt = start_time.to_datetime(timezone=UTC) if start_time else None
+        end_dt = end_time.to_datetime(timezone=UTC) if end_time else None
 
         # Fetch the next task from the database
         task = self.dao.select_next(start_dt, end_dt)
@@ -287,9 +285,9 @@ class QueueManager:
         self,
         butler_repo: str,
         status: str = "pending",
-        start_time: Optional[Time] = None,
-        end_time: Optional[Time] = None,
-    ) -> List[dict]:
+        start_time: Time | None = None,
+        end_time: Time | None = None,
+    ) -> list[dict]:
         """Retrieves unprocessed tasks.
 
         Args:
@@ -304,8 +302,8 @@ class QueueManager:
         Optional[Time]: The start time for the task.
         Optional[Time]: The end time for the task.
         """
-        start_utc = start_time.to_datetime(timezone.utc) if start_time else None
-        end_utc = end_time.to_datetime(timezone.utc) if end_time else None
+        start_utc = start_time.to_datetime(UTC) if start_time else None
+        end_utc = end_time.to_datetime(UTC) if end_time else None
 
         task = self.dao.select_queued(
             butler_repo=butler_repo, status=status, start_time=start_utc, end_time=end_utc
@@ -313,7 +311,7 @@ class QueueManager:
 
         return task
 
-    def failed_tasks(self, butler_repo: str, max_retries: int = 3) -> List[dict]:
+    def failed_tasks(self, butler_repo: str, max_retries: int = 3) -> list[dict]:
         """Retrieves failed tasks.
 
         Args:
@@ -337,7 +335,7 @@ class QueueManager:
 
     def get_task_by_interval(
         self, start_time: Time, end_time: Time, butler_repo: str, status: str
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """Get task by interval
 
         Args:
@@ -352,8 +350,8 @@ class QueueManager:
             Optional[dict]: A dictionary representing the task.
             If no task is found, returns `None`.
         """
-        start_time = start_time.to_datetime(timezone.utc)
-        end_time = end_time.to_datetime(timezone.utc)
+        start_time = start_time.to_datetime(UTC)
+        end_time = end_time.to_datetime(UTC)
         task = self.dao.get_task_by_interval(start_time, end_time, butler_repo, status)
         return task
 
@@ -376,10 +374,7 @@ class QueueManager:
         """
 
         task = self.get_task_by_interval(start_time, end_time, butler_repo, status)
-        if task:
-            return True
-
-        return False
+        return bool(task)
 
     def _mark_task_stale(self, task_id: int) -> None:
         """Mark task as stale to prevent reselection.

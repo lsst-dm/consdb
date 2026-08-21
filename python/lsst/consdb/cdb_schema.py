@@ -20,9 +20,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from collections.abc import Generator
 from contextlib import contextmanager
 from enum import StrEnum
-from typing import Any, Generator
+from typing import Any
 
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
@@ -107,7 +108,7 @@ class InstrumentTable:
         self,
         *,
         engine: sqlalchemy.Engine,
-        get_db: Generator[Session, None, None],
+        get_db: Generator[Session],
         instrument: str,
         logger: logging.Logger,
     ):
@@ -117,22 +118,20 @@ class InstrumentTable:
 
         self.table_names = set()
         self.schemas = sqlalchemy.MetaData()
-        self.flexible_metadata_schemas = dict()
-        self.obs_id_column = dict()
-        self.timestamp_columns = dict()
+        self.flexible_metadata_schemas = {}
+        self.obs_id_column = {}
+        self.timestamp_columns = {}
 
         self.schemas.reflect(engine, schema=f"cdb_{self.instrument}", views=True)
         self.schemas.reflect(engine, schema=f"efd_{self.instrument}", views=True)
         self.table_names.update(self.schemas.tables)
         for table in self.schemas.tables:
             # Find all timestamp columns in the table
-            self.timestamp_columns[table] = set(
-                [
-                    column.name
-                    for column in self.schemas.tables[table].columns
-                    if isinstance(column.type, sqlalchemy.DateTime)
-                ]
-            )
+            self.timestamp_columns[table] = {
+                column.name
+                for column in self.schemas.tables[table].columns
+                if isinstance(column.type, sqlalchemy.DateTime)
+            }
 
             # Compile the list of obs id column names for
             # each table.
@@ -154,7 +153,7 @@ class InstrumentTable:
                 self.refresh_flexible_metadata_schema(obs_type)
 
     @contextmanager
-    def _borrow_db(self) -> Generator[Session, None, None]:
+    def _borrow_db(self) -> Generator[Session]:
         """Yield a Session and guarantee its return to the pool.
 
         ``get_db`` is a generator; advancing it checks out a pooled connection
@@ -273,7 +272,7 @@ class InstrumentTable:
         return result
 
     def refresh_flexible_metadata_schema(self, obs_type: str):
-        schema = dict()
+        schema = {}
         schema_table = self.get_flexible_metadata_schema(obs_type)
         stmt = sqlalchemy.select(schema_table.c["key", "dtype", "doc", "unit", "ucd"])
         self.logger.debug(str(stmt))
@@ -385,7 +384,7 @@ class InstrumentTable:
         view_name = f"cdb_{self.instrument}.{obs_type}_wide_view"
         if view_name not in self.schemas.tables:
             obs_type_list = [
-                name[len(f"cdb_{self.instrument}.") : -len("_wide_view")]  # noqa: E203
+                name[len(f"cdb_{self.instrument}.") : -len("_wide_view")]
                 for name in self.schemas.tables
                 if name.endswith("_wide_view")
             ]

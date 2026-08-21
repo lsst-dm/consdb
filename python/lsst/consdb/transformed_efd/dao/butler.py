@@ -25,7 +25,7 @@ It includes methods to query dimensions and retrieve exposures or visits within
 specified time periods.
 """
 
-from typing import Any, Dict, List
+from typing import Any
 
 import astropy.time
 import pandas
@@ -101,14 +101,14 @@ class ButlerDao:
 
         """
         where_clause = (
-            f"instrument=instr and exposure.timespan OVERLAPS " f"(T'{start_time}/utc', T'{end_time}/utc')"
+            f"instrument=instr and exposure.timespan OVERLAPS (T'{start_time}/utc', T'{end_time}/utc')"
         )
 
         try:
             resultset = self.butler.query_dimension_records(
                 "exposure",
                 where=where_clause,
-                bind=dict(instr=instrument),
+                bind={"instr": instrument},
                 order_by="exposure.timespan.begin",
             )
 
@@ -137,14 +137,14 @@ class ButlerDao:
 
         """
         where_clause = (
-            f"instrument=instr and visit.timespan OVERLAPS " f"(T'{start_time}/utc', T'{end_time}/utc')"
+            f"instrument=instr and visit.timespan OVERLAPS (T'{start_time}/utc', T'{end_time}/utc')"
         )
 
         try:
             resultset = self.butler.query_dimension_records(
                 "visit",
                 where=where_clause,
-                bind=dict(instr=instrument),
+                bind={"instr": instrument},
                 order_by="visit.timespan.begin",
             )
 
@@ -155,7 +155,7 @@ class ButlerDao:
 
     def exposures_by_day_obs(
         self, instrument: str, day_obs_start: int, day_obs_end: int
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Retrieve exposure records in a day_obs range.
 
         Parameters
@@ -182,7 +182,7 @@ class ButlerDao:
 
     def visits_by_day_obs(
         self, instrument: str, day_obs_start: int, day_obs_end: int
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Retrieve visit records in a day_obs range.
 
         Parameters

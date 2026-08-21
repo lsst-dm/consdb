@@ -23,14 +23,13 @@
 
 import logging
 import warnings
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 
 import numpy
 import pandas
-from sqlalchemy import Engine, MetaData, Table, create_engine
+from sqlalchemy import Engine, MetaData, Table, create_engine, func
 from sqlalchemy import exc as sa_exc
-from sqlalchemy import func
 from sqlalchemy.dialects import postgresql, sqlite
 from sqlalchemy.engine import make_url
 from sqlalchemy.pool import QueuePool
@@ -52,7 +51,9 @@ class DBBase:
 
     """
 
-    def __init__(self, db_uri: str | list[str], schema: str = None, logger: logging.Logger = None):
+    def __init__(
+        self, db_uri: str | list[str], schema: str | None = None, logger: logging.Logger | None = None
+    ):
         """Initialize a BaseDAO object.
 
         Args:
@@ -157,7 +158,7 @@ class DBBase:
 
         for i, uri in enumerate(self.db_uris):
             safe_uri = uri.split("@")[-1] if "@" in uri else uri
-            db_label = f"db_{i+1}/{len(self.db_uris)}"
+            db_label = f"db_{i + 1}/{len(self.db_uris)}"
             try:
                 engine = self.get_db_engine(i)
                 result = write_fn(engine)
@@ -210,7 +211,7 @@ class DBBase:
         with engine.connect() as con:
             return con.execute(stm)
 
-    def fetch_all_dict(self, stm) -> List[Dict]:
+    def fetch_all_dict(self, stm) -> list[dict]:
         """Fetch all rows from the database using the provided SQL statement.
 
         Args:
@@ -224,7 +225,6 @@ class DBBase:
         """
         engine = self.get_db_engine()
         with engine.connect() as con:
-
             queryset = con.execute(stm)
 
             rows = []
@@ -234,7 +234,7 @@ class DBBase:
 
             return rows
 
-    def fetch_one_dict(self, stm) -> Optional[Dict]:
+    def fetch_one_dict(self, stm) -> dict | None:
         """Fetch single row from the database and returns it as a dictionary.
 
         Args:
@@ -249,7 +249,6 @@ class DBBase:
         """
         engine = self.get_db_engine()
         with engine.connect() as con:
-
             queryset = con.execute(stm).fetchone()
 
             if queryset is not None:
@@ -274,7 +273,7 @@ class DBBase:
         with engine.connect() as con:
             return con.execute(stm).scalar()
 
-    def fetch_scalars(self, stm) -> List[Any]:
+    def fetch_scalars(self, stm) -> list[Any]:
         """Fetch and return list of scalar values from the database.
 
         Args:
@@ -446,5 +445,5 @@ class DBBase:
             UTC-naive datetime
         """
         if dt.tzinfo is not None:
-            return dt.astimezone(timezone.utc).replace(tzinfo=None)
+            return dt.astimezone(UTC).replace(tzinfo=None)
         return dt

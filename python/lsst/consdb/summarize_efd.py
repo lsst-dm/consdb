@@ -1,16 +1,15 @@
 import argparse
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import astropy.time
+import lsst.daf.butler
 import lsst_efd_client
+import pandas
+import sqlalchemy
 import yaml
 from lsst.daf.butler import Butler
 from sqlalchemy import create_engine
-
-if TYPE_CHECKING:
-    import lsst.daf.butler
-    import pandas
-    import sqlalchemy
 
 
 class Summary:
@@ -28,7 +27,7 @@ def gen_mean(
     return do
 
 
-FUNCTION_GENERATORS = dict(mean=gen_mean)
+FUNCTION_GENERATORS = {"mean": gen_mean}
 
 
 class EfdValues:
@@ -101,7 +100,7 @@ def process_interval(
     for e in butler.queryDimensionRecords(
         "exposure",
         where=where_clause,
-        bind=dict(instr=instrument, start=start, end=end),
+        bind={"instr": instrument, "start": start, "end": end},
     ):
         if e.timespan.end < end:
             exposure_list.append(e)
@@ -109,7 +108,7 @@ def process_interval(
             max_topic_time = max(e.timespan.begin, max_topic_time)
 
     for v in butler.queryDimensionRecords(
-        "visit", where=where_clause, bind=dict(instr=instrument, start=start, end=end)
+        "visit", where=where_clause, bind={"instr": instrument, "start": start, "end": end}
     ):
         if v.timespan.end < end:
             visit_list.append(v)

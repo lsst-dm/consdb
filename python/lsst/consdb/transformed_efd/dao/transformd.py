@@ -20,8 +20,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, TypedDict
+from datetime import UTC, datetime
+from typing import TypedDict
 
 import numpy
 import pandas
@@ -37,21 +37,21 @@ class Task(TypedDict):
     status: str
     start_time: datetime
     end_time: datetime
-    process_start_time: Optional[datetime]
-    process_end_time: Optional[datetime]
+    process_start_time: datetime | None
+    process_end_time: datetime | None
     process_exec_time: float
     exposures: int
     visits1: int
     retries: int
-    error: Optional[str]
-    butler_repo: Optional[str]
+    error: str | None
+    butler_repo: str | None
 
 
 class TransformdDao(DBBase):
     """DAO for transformed_efd_scheduler table operations."""
 
     def __init__(
-        self, db_uri: str | list[str], instrument: str, schema: str, logger: logging.Logger = None
+        self, db_uri: str | list[str], instrument: str, schema: str, logger: logging.Logger | None = None
     ) -> None:
         """Initialize DAO.
 
@@ -84,8 +84,8 @@ class TransformdDao(DBBase):
         try:
             self.update(id, {"status": status, **kwargs})
         except Exception as e:
-            self.log.error("event=task_update_failed id=%s status=%s error=%s", id, status, e, exc_info=True)
-            raise Exception(f"Error updating task: error={e}") from e
+            self.log.exception("event=task_update_failed id=%s status=%s", id, status)
+            raise RuntimeError(f"Error updating task: error={e}") from e
 
     def select_by_id(self, id: int) -> Task:
         """Get task by ID.
@@ -113,7 +113,7 @@ class TransformdDao(DBBase):
         """
         return self.execute_count(self.tbl)
 
-    def bulk_insert(self, df: pandas.DataFrame, commit_every: int = 100) -> List[Dict]:
+    def bulk_insert(self, df: pandas.DataFrame, commit_every: int = 100) -> list[dict]:
         """Bulk insert DataFrame and return the inserted task records.
 
         Inserts into the primary database first to obtain generated IDs,
@@ -176,14 +176,14 @@ class TransformdDao(DBBase):
                 except Exception as e:
                     self.log.error(
                         "event=bulk_insert_replication_failed db=%s uri=...@%s error=%s",
-                        f"db_{db_idx+1}/{len(self.db_uris)}",
+                        f"db_{db_idx + 1}/{len(self.db_uris)}",
                         safe_uri,
                         e,
                     )
 
         return inserted_tasks
 
-    def insert(self, data: Dict) -> Task:
+    def insert(self, data: dict) -> Task:
         """Insert new task.
 
         Inserts into primary first to obtain the generated ID, then
@@ -207,7 +207,7 @@ class TransformdDao(DBBase):
             con.commit()
 
         if row is None:
-            raise Exception("Insert failed: no row returned from primary database.")
+            raise RuntimeError("Insert failed: no row returned from primary database.")
 
         task = dict(row._mapping)
 
@@ -223,14 +223,14 @@ class TransformdDao(DBBase):
             except Exception as e:
                 self.log.error(
                     "event=insert_replication_failed db=%s uri=...@%s error=%s",
-                    f"db_{db_idx+1}/{len(self.db_uris)}",
+                    f"db_{db_idx + 1}/{len(self.db_uris)}",
                     safe_uri,
                     e,
                 )
 
         return task
 
-    def update(self, id: int, data: Dict) -> int:
+    def update(self, id: int, data: dict) -> int:
         """Update task by ID on all databases.
 
         Parameters
@@ -266,7 +266,7 @@ class TransformdDao(DBBase):
         self._update_task_status(
             id,
             "running",
-            process_start_time=self._ensure_utc(datetime.now(timezone.utc)),
+            process_start_time=self._ensure_utc(datetime.now(UTC)),
             process_end_time=None,
             process_exec_time=0,
             exposures=0,
@@ -299,7 +299,7 @@ class TransformdDao(DBBase):
         row = self.select_by_id(id)
         if row is None:
             raise ValueError(f"Task not found: id={id}")
-        end_time = self._ensure_utc(datetime.now(timezone.utc))
+        end_time = self._ensure_utc(datetime.now(UTC))
         exec_time = (end_time - row["process_start_time"]).total_seconds()
         self._update_task_status(
             id,
@@ -322,7 +322,7 @@ class TransformdDao(DBBase):
         row = self.select_by_id(id)
         if row is None:
             raise ValueError(f"Task not found: id={id}")
-        end_time = self._ensure_utc(datetime.now(timezone.utc))
+        end_time = self._ensure_utc(datetime.now(UTC))
         exec_time = (end_time - row["process_start_time"]).total_seconds()
         self._update_task_status(
             id,
@@ -343,7 +343,7 @@ class TransformdDao(DBBase):
         row = self.select_by_id(id)
         self.update(id, {"retries": row["retries"] + 1})
 
-    def select_next(self, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None) -> Task:
+    def select_next(self, start_time: datetime | None = None, end_time: datetime | None = None) -> Task:
         """Get next pending task in time range.
 
         Parameters
@@ -376,7 +376,7 @@ class TransformdDao(DBBase):
         stm = select(self.tbl.c).order_by(desc(self.tbl.c.end_time)).limit(1)
         return self.fetch_one_dict(stm)
 
-    def select_recent(self, end_time: datetime, limit: Optional[int] = None) -> List[Task]:
+    def select_recent(self, end_time: datetime, limit: int | None = None) -> list[Task]:
         """Get recent pending tasks.
 
         Parameters
@@ -401,8 +401,12 @@ class TransformdDao(DBBase):
         return self.fetch_all_dict(query)
 
     def select_queued(
-        self, butler_repo: str, status: str, start_time: datetime = None, end_time: datetime = None
-    ) -> List[Task]:
+        self,
+        butler_repo: str,
+        status: str,
+        start_time: datetime | None = None,
+        end_time: datetime | None = None,
+    ) -> list[Task]:
         """Get queued tasks by repo and status.
 
         Parameters
@@ -437,7 +441,7 @@ class TransformdDao(DBBase):
         )
         return self.fetch_all_dict(query)
 
-    def select_failed(self, butler_repo: str, max_retries: Optional[int] = None) -> List[Task]:
+    def select_failed(self, butler_repo: str, max_retries: int | None = None) -> list[Task]:
         """Get failed tasks with optional retry limit.
 
         Parameters
@@ -510,7 +514,7 @@ class TransformdDao(DBBase):
             .values(
                 status="failed",
                 error="Task interrupted",
-                process_end_time=self._ensure_utc(datetime.now(timezone.utc)),
+                process_end_time=self._ensure_utc(datetime.now(UTC)),
             )
         )
 

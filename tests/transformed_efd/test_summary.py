@@ -24,7 +24,9 @@ import numpy as np
 import pandas as pd
 import pytest
 from astropy.time import Time
-from lsst.consdb.transformed_efd.summary import Summary  # Replace with the actual module path if different
+
+# Replace with the actual module path if different
+from lsst.consdb.transformed_efd.summary import Summary
 
 
 # --- Fixtures ---
@@ -72,7 +74,7 @@ def test_init_with_valid_data(valid_dataframe, exposure_times):
     # timestamps must be timezone-aware UTC
     tzinfo = summary.timestamps.tz
     assert tzinfo is not None, "Index is not timezone-aware"
-    assert tzinfo == datetime.timezone.utc, f"Expected UTC tz, got {tzinfo}"
+    assert tzinfo == datetime.UTC, f"Expected UTC tz, got {tzinfo}"
     assert summary.timestamps[0] == pd.Timestamp("2023-01-01 00:00:00", tz="UTC")
 
     # exposure_range preserved correctly
@@ -83,7 +85,7 @@ def test_init_with_valid_data(valid_dataframe, exposure_times):
 def test_init_with_invalid_index():
     df = pd.DataFrame({"value": [1, 2, 3]}, index=[1, 2, 3])
     start, end = Time("2023-01-01T00:00:00"), Time("2023-01-01T00:02:00")
-    with pytest.raises(ValueError, match="The DataFrame index must be a DatetimeIndex."):
+    with pytest.raises(TypeError, match="The DataFrame index must be a DatetimeIndex."):
         Summary(dataframe=df, exposure_start=start, exposure_end=end)
 
 

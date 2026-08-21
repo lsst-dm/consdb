@@ -19,7 +19,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import pytest
-from lsst.consdb.transformed_efd.config_model import TABLES, Column, ConfigModel, Field, Topic
+from lsst.consdb.transformed_efd.config_model import (
+    TABLES,
+    Column,
+    ConfigModel,
+    Field,
+    Topic,
+)
 from pydantic import ValidationError
 
 

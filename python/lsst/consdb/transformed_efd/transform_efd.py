@@ -32,9 +32,9 @@ import os
 import signal
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import yaml
 from astropy.time import Time, TimeDelta
@@ -49,11 +49,10 @@ from lsst.daf.butler import Butler
 def parse_utc_naive(isostr: str) -> datetime:
     """Parse ISO string to UTC-naive datetime."""
     dt = datetime.fromisoformat(isostr)
-    return dt.astimezone(timezone.utc).replace(tzinfo=None) if dt.tzinfo else dt
+    return dt.astimezone(UTC).replace(tzinfo=None) if dt.tzinfo else dt
 
 
 def get_logger(path: str | Path | None = None) -> logging.Logger:
-
     log = logging.getLogger("transformed_efd")
     log.handlers.clear()
     log.propagate = False
@@ -81,7 +80,7 @@ def get_logger(path: str | Path | None = None) -> logging.Logger:
             file_handler = logging.FileHandler(path)
             file_handler.setFormatter(file_fmt)
             log.addHandler(file_handler)
-        except (IOError, PermissionError, OSError) as e:
+        except (PermissionError, OSError) as e:
             log.warning("event=logging_file_init_failed error=%s", e)
 
     return log
@@ -211,7 +210,7 @@ def _to_astropy_time(dt: datetime | None) -> Time | None:
     """
     if dt is None:
         return None
-    dt = dt.astimezone(timezone.utc).replace(tzinfo=None) if dt.tzinfo else dt
+    dt = dt.astimezone(UTC).replace(tzinfo=None) if dt.tzinfo else dt
     return Time(dt.isoformat(), format="isot", scale="utc")
 
 
@@ -271,7 +270,7 @@ async def _process_task(
         qm.dao.task_completed(task["id"])
         return counts
     except Exception as e:
-        log.error("event=task_processing_failed id=%s error=%s", task["id"], e, exc_info=True)
+        log.exception("event=task_processing_failed id=%s", task["id"])
         qm.dao.task_failed(task["id"], error=str(e))
         return {"exposures": 0, "visits1": 0}
 
@@ -374,7 +373,7 @@ async def process_tasks(
     instrument: str,
     timewindow: int,
     batch_size: int = 50,
-    shutdown_event: Optional[asyncio.Event] = None,
+    shutdown_event: asyncio.Event | None = None,
 ) -> None:
     """Execute task batches and log results.
 
@@ -435,7 +434,7 @@ async def process_tasks(
 
 
 async def main() -> None:
-    exec_start = datetime.now(timezone.utc).replace(tzinfo=None)
+    exec_start = datetime.now(UTC).replace(tzinfo=None)
     args = build_argparser().parse_args()
     log = get_logger(args.logfile)
     exit_code = 0
@@ -538,11 +537,11 @@ async def main() -> None:
     except ValueError as e:
         log.error("event=configuration_error error=%s", e)
         exit_code = 1
-    except Exception as e:
-        log.error("event=processing_failed error=%s", e, exc_info=True)
+    except Exception:
+        log.exception("event=processing_failed")
         exit_code = 1
     finally:
-        log.info("event=runtime duration=%s", datetime.now(timezone.utc).replace(tzinfo=None) - exec_start)
+        log.info("event=runtime duration=%s", datetime.now(UTC).replace(tzinfo=None) - exec_start)
         sys.exit(exit_code)
 
 
