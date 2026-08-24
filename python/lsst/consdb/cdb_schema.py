@@ -61,9 +61,8 @@ AllowedFlexTypeEnumBase = StrEnum(
 )
 AllowedFlexTypeEnum = AllowedFlexTypeEnumBase
 
-# Add JSON as an allowed column type in the non-flexdata tables.
-# The actual JSON column in PostgreSQL is a ``str`` but represented to
-# sqlalchemy as a dict (for JSON objects) or a list (for JSON arrays).
+# Allow JSON objects and arrays as values in non-flexdata tables.
+# SQLAlchemy represents JSON/JSONB objects as dictionaries and arrays as lists.
 AllowedColumnType = AllowedFlexType | dict | list
 
 
