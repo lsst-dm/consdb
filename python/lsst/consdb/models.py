@@ -26,6 +26,7 @@ from pydantic import BaseModel, Field, field_validator
 from safir.metadata import Metadata
 
 from .cdb_schema import (
+    AllowedColumnType,
     AllowedFlexType,
     AllowedFlexTypeEnum,
     ObservationIdType,
@@ -78,7 +79,18 @@ class AddKeyResponseModel(BaseModel):
 
 
 class InsertDataModel(BaseModel):
-    """This model can be used for either flex or regular data."""
+    """Data for an insert into a regular (non-flexdata) table."""
+
+    values: dict[str, AllowedColumnType] = Field(title="Data to insert or update")
+
+
+class InsertFlexDataModel(BaseModel):
+    """Data for an insert into a flexible metadata table.
+
+    Kept separate from `InsertDataModel` because flex values are stored as
+    text with a declared scalar dtype, so the JSON objects and arrays that
+    regular JSONB columns accept are not valid here.
+    """
 
     values: dict[str, AllowedFlexType] = Field(title="Data to insert or update")
 
@@ -100,7 +112,7 @@ class InsertDataResponse(BaseModel):
 
 
 class InsertMultipleRequestModel(BaseModel):
-    obs_dict: dict[ObservationIdType, dict[str, AllowedFlexType]] = Field(
+    obs_dict: dict[ObservationIdType, dict[str, AllowedColumnType]] = Field(
         title="Observation ID and key/value pairs to insert or update"
     )
 

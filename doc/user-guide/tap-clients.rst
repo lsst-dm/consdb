@@ -6,6 +6,14 @@ The `TAP <https://www.ivoa.net/documents/TAP/>`__ interface is the "official" re
 It provides the most stable, standards-compliant access method.
 Asynchronous connections to TAP are recommended.
 
+.. note::
+
+   Columns holding JSON data are exposed through TAP as text, and ADQL provides no JSON operators.
+   Their contents therefore cannot be searched or unpacked within a TAP query, unlike a
+   :doc:`pqserver <rest-api-and-clients>` or :doc:`SQL <sql-clients>` query, which can use the
+   native PostgreSQL JSON operators. A TAP query can still retrieve such a column in full and parse
+   the JSON on the client side.
+
 Connection information
 ======================
 

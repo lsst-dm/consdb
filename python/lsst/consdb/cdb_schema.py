@@ -61,6 +61,10 @@ AllowedFlexTypeEnumBase = StrEnum(
 )
 AllowedFlexTypeEnum = AllowedFlexTypeEnumBase
 
+# Allow JSON objects and arrays as values in non-flexdata tables.
+# SQLAlchemy represents JSON/JSONB objects as dictionaries and arrays as lists.
+AllowedColumnType = AllowedFlexType | dict | list
+
 
 def convert_to_flex_type(ty: AllowedFlexTypeEnum, v: str) -> AllowedFlexType:
     """Converts a string containing a flex database value into the

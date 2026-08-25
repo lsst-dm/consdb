@@ -356,6 +356,166 @@ def test_insert_multiple(lsstcam_client, lsstcam_tables, row_builder):
         _call_insert_multiple(lsstcam_client, table_name, table, row, u=1)
 
 
+@pytest.fixture(scope="module")
+def jsonb_column(lsstcam_client):
+    """Add a JSONB column to ``visit1_quicklook`` and force a re-reflect.
+
+    ``visit1_quicklook`` is the target because it is writable through the
+    /insert/ endpoints (``exposure`` is hinfo-owned and refused there). The
+    column is created here with DDL rather than taken from the Felis schema
+    so these tests hold whether or not a JSONB column has landed in
+    sdm_schemas. ``InstrumentTable`` caches its reflection, so the dependency
+    cache is dropped to make the new column visible to the endpoints.
+    """
+    column = "jsonb_probe"
+    with lsstcam_client.engine.begin() as connection:
+        connection.exec_driver_sql(
+            f"ALTER TABLE {lsstcam_client.schema_name}.visit1_quicklook ADD COLUMN {column} JSONB"
+        )
+    reset_dependencies()
+    return column
+
+
+def _fetch_jsonb(client: TestClient, column: str, row: dict[str, object]) -> tuple[object, str]:
+    """Return ``(value, jsonb_typeof)`` for a quicklook row's JSONB column."""
+    with client.engine.begin() as connection:
+        return connection.exec_driver_sql(
+            f"SELECT {column}, jsonb_typeof({column})"
+            f" FROM {client.schema_name}.visit1_quicklook"
+            f" WHERE day_obs = {int(row['day_obs'])} AND seq_num = {int(row['seq_num'])}"
+        ).one()
+
+
+def _quicklook_row(client: TestClient, md: sa.MetaData, row_builder, seed: int) -> tuple[str, dict]:
+    """Build a ``visit1_quicklook`` row with its ``exposure`` parent seeded.
+
+    ``exposure`` is hinfo-owned, so the parent row is written straight to the
+    DB; building it through ``row_builder`` first makes the quicklook row
+    built from the same seed FK-align to it.
+    """
+    exposure_name = f"{client.schema_name}.exposure"
+    _seed_parent_row(client, md.tables[exposure_name], row_builder(exposure_name, seed))
+    table_name = f"{client.schema_name}.visit1_quicklook"
+    return table_name, row_builder(table_name, seed)
+
+
+def test_insert_stores_json_object_in_jsonb_column(lsstcam_client, lsstcam_tables, row_builder, jsonb_column):
+    """A JSON object sent to a JSONB column is stored as a JSON object.
+
+    Guards the double-encoding trap: pqserver reflects the live database, so
+    SQLAlchemy knows the column as JSONB and re-encodes whatever it is handed.
+    A JSON *string* would therefore land as a JSON string scalar rather than
+    an object, which is valid JSONB and so fails silently.
+    """
+    md, _ = lsstcam_tables
+    table_name, row = _quicklook_row(lsstcam_client, md, row_builder, seed=200)
+    payload = {"donuts": [{"detector": 94, "zk": [0.1, -0.2]}], "ok": True}
+    row[jsonb_column] = payload
+
+    _call_insert_by_seq(lsstcam_client, table_name, md.tables[table_name], row, u=0)
+
+    stored, typeof = _fetch_jsonb(lsstcam_client, jsonb_column, row)
+    assert typeof == "object"
+    assert stored == payload
+
+
+def test_insert_multiple_stores_json_object_in_jsonb_column(
+    lsstcam_client, lsstcam_tables, row_builder, jsonb_column
+):
+    """The bulk endpoint accepts JSON objects for JSONB columns too.
+
+    ``insert_multiple`` takes its payload through a different request model
+    than the per-row endpoints, so it needs its own coverage.
+    """
+    md, _ = lsstcam_tables
+    table_name, row = _quicklook_row(lsstcam_client, md, row_builder, seed=201)
+    payload = {"zernikes": [1.0, 2.0], "ok": False}
+    row[jsonb_column] = payload
+
+    _call_insert_multiple(lsstcam_client, table_name, md.tables[table_name], row, u=0)
+
+    stored, typeof = _fetch_jsonb(lsstcam_client, jsonb_column, row)
+    assert typeof == "object"
+    assert stored == payload
+
+
+def test_insert_stores_json_array_in_jsonb_column(lsstcam_client, lsstcam_tables, row_builder, jsonb_column):
+    """A JSON array sent to a JSONB column is stored as a JSON array."""
+    md, _ = lsstcam_tables
+    table_name, row = _quicklook_row(lsstcam_client, md, row_builder, seed=204)
+    payload = [{"detector": 94, "zk": [0.1, -0.2]}, {"detector": 95, "zk": [0.3]}]
+    row[jsonb_column] = payload
+
+    _call_insert_by_seq(lsstcam_client, table_name, md.tables[table_name], row, u=0)
+
+    stored, typeof = _fetch_jsonb(lsstcam_client, jsonb_column, row)
+    assert typeof == "array"
+    assert stored == payload
+
+
+def test_insert_multiple_stores_json_array_in_jsonb_column(
+    lsstcam_client, lsstcam_tables, row_builder, jsonb_column
+):
+    """The bulk endpoint accepts JSON arrays for JSONB columns too."""
+    md, _ = lsstcam_tables
+    table_name, row = _quicklook_row(lsstcam_client, md, row_builder, seed=205)
+    payload = [1.0, 2.0, 3.5]
+    row[jsonb_column] = payload
+
+    _call_insert_multiple(lsstcam_client, table_name, md.tables[table_name], row, u=0)
+
+    stored, typeof = _fetch_jsonb(lsstcam_client, jsonb_column, row)
+    assert typeof == "array"
+    assert stored == payload
+
+
+def test_flexdata_rejects_non_scalar_values(lsstcam_client, lsstcam_tables, row_builder):
+    """Flexible metadata stays scalar-only even though regular columns are not.
+
+    Flex values are stored as text alongside a declared dtype, so a JSON
+    object has no meaning there and must still be refused by request
+    validation rather than reaching the handler.
+    """
+    md, _ = lsstcam_tables
+    table_name = f"{lsstcam_client.schema_name}.exposure"
+    row = row_builder(table_name, seed=202)
+    _call_insert_by_seq(lsstcam_client, table_name, md.tables[table_name], row, u=0)
+
+    response = lsstcam_client.post(
+        "/consdb/flex/lsstcam/exposure/addkey",
+        json={"key": "flex_scalar_guard", "dtype": "int", "doc": "guard"},
+    )
+    _assert_http_status(response, 200)
+
+    response = lsstcam_client.post(
+        f"/consdb/flex/lsstcam/exposure/obs/{int(row['exposure_id'])}",
+        json={"values": {"flex_scalar_guard": {"a": 1}}},
+    )
+    _assert_http_status(response, 422)
+
+
+def test_insert_rejects_json_object_for_non_json_column(lsstcam_client, lsstcam_tables, row_builder):
+    """A JSON object aimed at a plain text column is refused, not a 500.
+
+    Request validation cannot tell which columns are JSONB, so a JSON object
+    for a ``text`` column reaches the driver. That has to surface as a
+    client error rather than an unhandled adaptation failure.
+    """
+    md, _ = lsstcam_tables
+    table_name, row = _quicklook_row(lsstcam_client, md, row_builder, seed=203)
+    row["ra_version"] = {"not": "a string"}
+
+    path = _by_seq_path("lsstcam", table_name, row, has_detector=False)
+    response = lsstcam_client.post(path, params={"u": 0}, json={"values": row})
+
+    # BadValueException is how this endpoint family reports a bad payload, and
+    # it is mapped to 404. The point of the assertion is that the request is
+    # rejected before reaching the driver, rather than surfacing as a 500 with
+    # an adaptation error and the generated SQL in the body.
+    _assert_http_status(response, 404)
+    assert "ra_version" in response.text
+
+
 def test_insert_autofills_day_obs_seq_num_for_ccd_table(lsstcam_client, lsstcam_tables, row_builder):
     """Posting to /insert/{instrument}/{table}/obs/{obs_id} for a
     ccdexposure-level table without supplying day_obs/seq_num must backfill
