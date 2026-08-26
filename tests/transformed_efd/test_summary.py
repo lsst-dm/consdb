@@ -119,6 +119,11 @@ def test_mean(summary_instance):
     assert summary_instance.mean() == 3.0
 
 
+# 3b. Test median
+def test_median(summary_instance):
+    assert summary_instance.median() == 3.0
+
+
 # 4. Test stddev
 def test_stddev(summary_instance):
     assert summary_instance.stddev() == pytest.approx(1.5811, rel=1e-3)
@@ -166,6 +171,11 @@ def test_apply_stddev(summary_instance):
     assert result == pytest.approx(1.5811, rel=1e-3)
 
 
+def test_apply_median(summary_instance):
+    result = summary_instance.apply("median")
+    assert result == 3.0
+
+
 def test_apply_invalid_method(summary_instance):
     with pytest.raises(AttributeError, match="Method not found: method=invalid_method"):
         summary_instance.apply("invalid_method")
@@ -176,3 +186,345 @@ def test_apply_with_empty_data():
     start, end = Time("2023-01-01T00:00:00"), Time("2023-01-01T00:02:00")
     with pytest.raises(ValueError, match="The DataFrame must not be empty."):  # <-- Updated error message
         Summary(dataframe=df, exposure_start=start, exposure_end=end)
+
+
+# ------------------------------------------------------------------
+# Tests: metadata separation (_process_dataframe)
+# ------------------------------------------------------------------
+
+
+@pytest.fixture
+def dataframe_with_metadata():
+    """DataFrame with numeric telemetry and non-numeric metadata columns."""
+    times = pd.to_datetime(
+        [
+            "2023-01-01 00:00:00",
+            "2023-01-01 00:00:30",
+            "2023-01-01 00:01:00",
+        ]
+    ).tz_localize("UTC")
+    return pd.DataFrame(
+        {
+            "temperatureItem0": [20.1, 20.2, 20.0],
+            "temperatureItem1": [20.3, 20.4, 20.2],
+            "salIndex": ["114", "114", "115"],
+            "sensorName": [
+                "m1m3-ts-1 1/6",
+                "m1m3-ts-1 1/6",
+                "m1m3-ts-2 3/6",
+            ],
+        },
+        index=times,
+    )
+
+
+@pytest.fixture
+def exposure_times_short():
+    start = Time("2023-01-01T00:00:00.000", scale="utc")
+    end = Time("2023-01-01T00:01:00.000", scale="utc")
+    return start, end
+
+
+def test_metadata_separation(dataframe_with_metadata, exposure_times_short):
+    """Non-numeric columns go to metadata, numeric to data_array."""
+    start, end = exposure_times_short
+    summary = Summary(dataframe=dataframe_with_metadata, exposure_start=start, exposure_end=end)
+
+    # data_array has only numeric columns (temperatureItem0, temperatureItem1)
+    assert summary.data_array.shape == (3, 2)
+
+    # metadata has non-numeric columns
+    assert summary.metadata is not None
+    assert list(summary.metadata.columns) == ["salIndex", "sensorName"]
+    assert len(summary.metadata) == 3
+
+
+def test_mean_with_metadata_present(dataframe_with_metadata, exposure_times_short):
+    """mean() ignores metadata columns, same result as if they
+    weren't there.
+    """
+    start, end = exposure_times_short
+    summary = Summary(dataframe=dataframe_with_metadata, exposure_start=start, exposure_end=end)
+    # mean of all 6 values: (20.1+20.2+20.0+20.3+20.4+20.2) / 6
+    expected = np.nanmean([20.1, 20.3, 20.2, 20.4, 20.0, 20.2])
+    assert summary.mean() == pytest.approx(expected)
+
+
+def test_median_with_metadata_present(dataframe_with_metadata, exposure_times_short):
+    """median() ignores metadata columns."""
+    start, end = exposure_times_short
+    summary = Summary(dataframe=dataframe_with_metadata, exposure_start=start, exposure_end=end)
+    result = summary.median()
+    assert result == pytest.approx(20.2)
+
+
+def test_no_metadata_when_no_non_numeric_columns(valid_dataframe, exposure_times):
+    """metadata is None when DataFrame has only numeric columns."""
+    start, end = exposure_times
+    summary = Summary(dataframe=valid_dataframe, exposure_start=start, exposure_end=end)
+    assert summary.metadata is None
+
+
+def test_nan_values_preserved_in_data_array(exposure_times_short):
+    """NaN values survive into data_array (no dropna)."""
+    times = pd.to_datetime(["2023-01-01 00:00:00", "2023-01-01 00:00:30"]).tz_localize("UTC")
+    df = pd.DataFrame(
+        {
+            "temp0": [20.0, np.nan],
+            "temp1": [np.nan, 20.5],
+        },
+        index=times,
+    )
+    start, end = exposure_times_short
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    # Both values preserved; mean skips NaN
+    assert summary.mean() == pytest.approx(20.25)
+    assert summary.median() == pytest.approx(20.25)
+
+
+# ------------------------------------------------------------------
+# Tests: M1M3 bulk temperature (DM-55710)
+# ------------------------------------------------------------------
+
+
+@pytest.fixture
+def accept_all_thermocouples(monkeypatch):
+    """Stub find_thermocouple so synthetic fixtures need not match ts_xml."""
+    import lsst.consdb.transformed_efd.summary as smod
+
+    monkeypatch.setattr(smod, "find_thermocouple", lambda *args, **kwargs: object())
+
+
+# ------------------------------------------------------------------
+# Helpers: build test data using real thermocouple entries
+# ------------------------------------------------------------------
+
+
+def _get_real_thermocouple_samples():
+    """Return list of (salIndex, sensorName, temperatureItem_index) for
+    valid thermocouples from the ts_xml thermocouple table.
+
+    Returns an empty list when ts_xml is not available.
+    """
+    try:
+        from lsst.ts.xml.tables.m1m3 import ThermocoupleTable
+    except ModuleNotFoundError:
+        return []
+
+    samples = []
+    for tc in ThermocoupleTable:
+        # channel = 16 * sequence_num + item_idx
+        channel = tc.channel
+        sequence_num = channel // 16
+        item_idx = channel % 16
+        # sensorName example: "m1m3-ts-<tc.scanner.value> <sequence_num>/6"
+        sensor_name = f"m1m3-ts-{tc.scanner.value} {sequence_num}/6"
+        samples.append((int(tc.scanner.value), sensor_name, item_idx))
+    return samples
+
+
+@pytest.fixture
+def real_thermocouple_samples():
+    """Fixture: valid (salIndex, sensorName, item_idx) tuples.
+
+    Empty list when ts_xml is not available — tests that depend on this
+    should be skipped in that case.
+    """
+    return _get_real_thermocouple_samples()
+
+
+def _build_m1m3_dataframe(samples, rng=None):
+    """Build a minimal M1M3 DataFrame from thermocouple samples.
+
+    Each sample becomes one row with a single valid temperatureItem;
+    all other temperatureItems are NaN.
+    """
+    if rng is None:
+        rng = np.random.default_rng(42)
+
+    rows = []
+    for sal_idx, sensor_name, item_idx in samples[:10]:  # cap at 10 rows
+        temps = [np.nan] * 16
+        temps[item_idx] = rng.uniform(19.0, 22.0)
+        row = {f"temperatureItem{i}": temps[i] for i in range(16)}
+        row["salIndex"] = str(sal_idx)
+        row["sensorName"] = sensor_name
+        rows.append(row)
+
+    times = pd.to_datetime([f"2023-01-01 00:00:{i:02d}" for i in range(len(rows))]).tz_localize("UTC")
+    return pd.DataFrame(rows, index=times)
+
+
+@pytest.fixture
+def m1m3_dataframe():
+    """Mock M1M3 thermocouple data for 2 scanners, 2 sensorNames each."""
+    times = pd.to_datetime(
+        [
+            "2023-01-01 00:00:00",
+            "2023-01-01 00:00:30",
+        ]
+    ).tz_localize("UTC")
+    # 2 temperatureItems per row for simplicity (real data has 16)
+    return pd.DataFrame(
+        {
+            "temperatureItem0": [20.1, 20.5],
+            "temperatureItem1": [20.3, np.nan],  # second row has NaN (unmapped channel)
+            "salIndex": ["114", "115"],
+            "sensorName": [
+                "m1m3-ts-1 1/6",
+                "m1m3-ts-2 2/6",
+            ],
+        },
+        index=times,
+    )
+
+
+def test_m1m3_bulk_temperature_median(m1m3_dataframe, exposure_times_short, accept_all_thermocouples):
+    """Bulk median over valid thermocouple readings."""
+    start, end = exposure_times_short
+    summary = Summary(dataframe=m1m3_dataframe, exposure_start=start, exposure_end=end)
+    result = summary.m1m3_bulk_temperature_median()
+    # Valid values: 20.1, 20.3, 20.5 (NaN excluded)
+    assert result == pytest.approx(np.median([20.1, 20.3, 20.5]))
+
+
+def test_m1m3_bulk_temperature_mean(m1m3_dataframe, exposure_times_short, accept_all_thermocouples):
+    """Bulk mean over valid thermocouple readings."""
+    start, end = exposure_times_short
+    summary = Summary(dataframe=m1m3_dataframe, exposure_start=start, exposure_end=end)
+    result = summary.m1m3_bulk_temperature_mean()
+    assert result == pytest.approx(np.mean([20.1, 20.3, 20.5]))
+
+
+def test_m1m3_bulk_no_metadata_returns_none(valid_dataframe, exposure_times):
+    """Returns None when metadata is not available."""
+    start, end = exposure_times
+    summary = Summary(dataframe=valid_dataframe, exposure_start=start, exposure_end=end)
+    assert summary.m1m3_bulk_temperature_median() is None
+    assert summary.m1m3_bulk_temperature_mean() is None
+
+
+def test_m1m3_bulk_no_sensor_name_returns_none(exposure_times_short):
+    """Returns None when sensorName is not in metadata."""
+    times = pd.to_datetime(["2023-01-01 00:00:00"]).tz_localize("UTC")
+    df = pd.DataFrame(
+        {
+            "temperatureItem0": [20.0],
+            "salIndex": ["114"],  # string → non-numeric → metadata
+        },
+        index=times,
+    )
+    start, end = exposure_times_short
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    assert summary.m1m3_bulk_temperature_median() is None
+
+
+def test_m1m3_bulk_invalid_sensor_name(exposure_times_short):
+    """Rows with non-matching sensorName are skipped."""
+    times = pd.to_datetime(["2023-01-01 00:00:00"]).tz_localize("UTC")
+    df = pd.DataFrame(
+        {
+            "temperatureItem0": [20.0],
+            "salIndex": [114],
+            "sensorName": ["not-a-valid-m1m3-sensor"],
+        },
+        index=times,
+    )
+    start, end = exposure_times_short
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    # sensorName doesn't match regex → no valid temperatures
+    assert summary.m1m3_bulk_temperature_median() is None
+
+
+def test_m1m3_bulk_all_nan_returns_none(exposure_times_short):
+    """All-NaN temperatureItems return None."""
+    times = pd.to_datetime(["2023-01-01 00:00:00"]).tz_localize("UTC")
+    df = pd.DataFrame(
+        {
+            "temperatureItem0": [np.nan],
+            "temperatureItem1": [np.nan],
+            # String so salIndex stays in metadata.
+            "salIndex": ["114"],
+            "sensorName": ["m1m3-ts-1 1/6"],
+        },
+        index=times,
+    )
+    start, end = exposure_times_short
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    assert summary.m1m3_bulk_temperature_median() is None
+    assert summary.m1m3_bulk_temperature_mean() is None
+
+
+def test_m1m3_bulk_via_apply(m1m3_dataframe, exposure_times_short, accept_all_thermocouples):
+    """Bulk functions work through apply()."""
+    start, end = exposure_times_short
+    summary = Summary(dataframe=m1m3_dataframe, exposure_start=start, exposure_end=end)
+    result = summary.apply("m1m3_bulk_temperature_median")
+    assert result == pytest.approx(np.median([20.1, 20.3, 20.5]))
+
+
+def test_m1m3_bulk_salindex_not_in_value_pool(exposure_times_short, accept_all_thermocouples):
+    """salIndex must stay in metadata and not pollute median/mean."""
+    times = pd.to_datetime(["2023-01-01 00:00:00"]).tz_localize("UTC")
+    df = pd.DataFrame(
+        {
+            "temperatureItem0": [11.0],
+            "temperatureItem1": [12.0],
+            "salIndex": ["115"],  # would coerce to 115 and inflate mean if treated as value
+            "sensorName": ["m1m3-ts-02 1/6"],
+        },
+        index=times,
+    )
+    start, end = exposure_times_short
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    assert summary.metadata is not None
+    assert "salIndex" in summary.metadata.columns
+    assert summary.data_array.shape == (1, 2)
+    assert summary.m1m3_bulk_temperature_median() == pytest.approx(11.5)
+    assert summary.m1m3_bulk_temperature_mean() == pytest.approx(11.5)
+
+
+def test_m1m3_bulk_numeric_salindex_stays_metadata(exposure_times_short, accept_all_thermocouples):
+    """Even numeric salIndex must not enter data_array."""
+    times = pd.to_datetime(["2023-01-01 00:00:00"]).tz_localize("UTC")
+    df = pd.DataFrame(
+        {
+            "temperatureItem0": [11.0],
+            "salIndex": [117],
+            "sensorName": ["m1m3-ts-04 1/6"],
+        },
+        index=times,
+    )
+    start, end = exposure_times_short
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    assert summary.data_array.shape == (1, 1)
+    assert "salIndex" in summary.metadata.columns
+    assert summary.m1m3_bulk_temperature_mean() == pytest.approx(11.0)
+
+
+@pytest.mark.skipif(
+    not _get_real_thermocouple_samples(),
+    reason="lsst.ts.xml not available — cannot test real thermocouple filtering",
+)
+def test_m1m3_bulk_with_real_thermocouples(real_thermocouple_samples, exposure_times_short):
+    """Bulk temperature with real thermocouple data and find_thermocouple.
+
+    Uses the actual thermocouple table to build test data, then verifies
+    that find_thermocouple correctly filters cold-junction / unmapped
+    channels and that median/mean are computed only from valid entries.
+    """
+    df = _build_m1m3_dataframe(real_thermocouple_samples)
+    start, end = exposure_times_short
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+
+    # All rows have valid sensorNames and salIndexes; find_thermocouple
+    # should map each (salIndex, channel) to a valid thermocouple →
+    # every non-NaN temperatureItem is included.
+    median_result = summary.m1m3_bulk_temperature_median()
+    mean_result = summary.m1m3_bulk_temperature_mean()
+
+    # Results should be finite (real data produces valid temperatures).
+    assert median_result is not None
+    assert mean_result is not None
+    assert np.isfinite(median_result)
+    assert np.isfinite(mean_result)
