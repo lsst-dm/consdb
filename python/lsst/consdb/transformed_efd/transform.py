@@ -389,6 +389,14 @@ class Transform:
             function_kwargs = column["function_args"] or {}
             series_df = data[0]["series"].copy()
             for col in series_df.columns:
+                if not self._is_unpivoted_value_field(series_df[col]):
+                    self.log.debug(
+                        "event=skip_non_numeric_unpivoted_field column=%s field=%s dtype=%s",
+                        column.get("name"),
+                        col,
+                        series_df[col].dtype,
+                    )
+                    continue
                 col_series = series_df[[col]].copy()
                 new_topic = topic.copy()
                 new_topic["fields"] = [col]
@@ -448,6 +456,14 @@ class Transform:
             function_kwargs = column["function_args"] or {}
             series_df = data[0]["series"]
             for col in series_df.columns:
+                if not self._is_unpivoted_value_field(series_df[col]):
+                    self.log.debug(
+                        "event=skip_non_numeric_unpivoted_field column=%s field=%s dtype=%s",
+                        column.get("name"),
+                        col,
+                        series_df[col].dtype,
+                    )
+                    continue
                 new_topic = topic.copy()
                 new_topic["fields"] = [col]
                 new_topic["columns"][0]["topics"][0]["fields"] = [{"name": col}]
@@ -470,6 +486,20 @@ class Transform:
                             "value": column_value,
                         }
                     )
+
+    @staticmethod
+    def _is_unpivoted_value_field(series: pandas.Series) -> bool:
+        """Return True if a series can become a Summary numeric value field.
+
+        All-null object columns (common from EFD missing channels) and columns
+        that coerce losslessly to numeric are accepted. True string metadata
+        (e.g. ``sensorName``) is rejected so it is not summarized alone.
+        """
+        if pandas.api.types.is_numeric_dtype(series.dtype) or pandas.api.types.is_bool_dtype(series.dtype):
+            return True
+        coerced = pandas.to_numeric(series, errors="coerce")
+        original_non_null = int(series.notna().sum())
+        return original_non_null == 0 or int(coerced.notna().sum()) == original_non_null
 
     @handle_processing_errors
     def _prepare_column_data(
@@ -496,14 +526,13 @@ class Transform:
                         subset_value_str = str(raw_subset_value)
                         filtered_df = topic_series.loc[topic_series[subset_field] == subset_value_str]
 
-                    fields.remove(subset_field)
                     valid_fields = [field for field in fields if field in filtered_df.columns]
 
                     if valid_fields:
                         data = [
                             {
                                 "topic": topic["name"],
-                                "series": filtered_df[valid_fields].dropna(),
+                                "series": filtered_df[valid_fields],
                             }
                         ]
                     else:
@@ -520,7 +549,7 @@ class Transform:
                 data = [
                     {
                         "topic": topic["name"],
-                        "series": topic_series[fields].dropna(),
+                        "series": topic_series[fields],
                     }
                 ]
         else:
