@@ -131,6 +131,11 @@ class QueryRequestModel(BaseModel):
 class QueryResponseModel(BaseModel):
     columns: list[str] = Field(title="Column names")
     data: list[Any] = Field(title="Data rows")
+    truncated: bool = Field(
+        False,
+        title="True if the query returned more rows than the endpoint's row limit",
+        description="When true, result has been capped by the row limit.",
+    )
 
 
 class TableConsistencyModel(BaseModel):
