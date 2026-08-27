@@ -20,17 +20,17 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Provides the `Summary` class to perform the EFD transformations."""
 
-import re
-
 import numpy as np
 import pandas as pd
 from astropy.time import Time
-from lsst.ts.xml.tables.m1m3 import find_thermocouple
-
-_M1M3_SENSOR_NAME_RE = re.compile(r"m1m3-ts-\d+ (\d+)/\d+")
+from lsst.consdb.transformed_efd.auxiliary.m1m3 import (
+    is_glass_thermocouple,
+    item_channel,
+    sequence_number,
+)
 
 # Never fold these into data_array (even when numeric / string-encoded ints).
-# salIndex was polluting bulk stats and disabling find_thermocouple filtering.
+# salIndex was polluting bulk stats and disabling glass-thermocouple filtering.
 _METADATA_COLUMNS = frozenset({"salIndex", "sensorName"})
 
 
@@ -199,8 +199,8 @@ class Summary:
 
         Row filtering (scanners) is handled by ``subset_field`` /
         ``subset_value`` in the config.  Uses ``sensorName`` from
-        metadata and ``find_thermocouple`` to exclude cold-junction and
-        unmapped channels.
+        metadata and ``is_glass_thermocouple`` to exclude cold-junction
+        and unmapped channels.
 
         Returns
         -------
@@ -245,11 +245,9 @@ class Summary:
 
         for row_idx in range(len(data)):
             sensor_name = str(sensor_names[row_idx])
-            match = _M1M3_SENSOR_NAME_RE.match(sensor_name)
-            if match is None:
+            sequence_num = sequence_number(sensor_name)
+            if sequence_num is None:
                 continue
-
-            sequence_num = int(match.group(1))
 
             sal_idx = None
             if has_sal and sal_indices is not None:
@@ -266,8 +264,8 @@ class Summary:
                 if np.isnan(temp):
                     continue
 
-                channel = 16 * sequence_num + item_idx
-                if find_thermocouple(sal_idx, channel) is None:
+                channel = item_channel(sequence_num, item_idx)
+                if not is_glass_thermocouple(sal_idx, channel):
                     continue  # cold junction or unmapped channel
 
                 valid_temperatures.append(float(temp))

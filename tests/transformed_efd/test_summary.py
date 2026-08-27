@@ -26,6 +26,7 @@ import pytest
 from astropy.time import Time
 
 # Replace with the actual module path if different
+from lsst.consdb.transformed_efd.auxiliary.m1m3 import GLASS_THERMOCOUPLES
 from lsst.consdb.transformed_efd.summary import Summary
 
 
@@ -287,50 +288,15 @@ def test_nan_values_preserved_in_data_array(exposure_times_short):
 # ------------------------------------------------------------------
 
 
-@pytest.fixture
-def accept_all_thermocouples(monkeypatch):
-    """Stub find_thermocouple so synthetic fixtures need not match ts_xml."""
-    import lsst.consdb.transformed_efd.summary as smod
-
-    monkeypatch.setattr(smod, "find_thermocouple", lambda *args, **kwargs: object())
-
-
-# ------------------------------------------------------------------
-# Helpers: build test data using real thermocouple entries
-# ------------------------------------------------------------------
-
-
-def _get_real_thermocouple_samples():
-    """Return list of (salIndex, sensorName, temperatureItem_index) for
-    valid thermocouples from the ts_xml thermocouple table.
-
-    Returns an empty list when ts_xml is not available.
-    """
-    try:
-        from lsst.ts.xml.tables.m1m3 import ThermocoupleTable
-    except ModuleNotFoundError:
-        return []
-
+def _glass_thermocouple_samples():
+    """Return (salIndex, sensorName, temperatureItem_index) for glass TCs."""
     samples = []
-    for tc in ThermocoupleTable:
-        # channel = 16 * sequence_num + item_idx
-        channel = tc.channel
-        sequence_num = channel // 16
+    for sal_idx, channel in sorted(GLASS_THERMOCOUPLES):
+        sequence_num = channel // 16 + 1
         item_idx = channel % 16
-        # sensorName example: "m1m3-ts-<tc.scanner.value> <sequence_num>/6"
-        sensor_name = f"m1m3-ts-{tc.scanner.value} {sequence_num}/6"
-        samples.append((int(tc.scanner.value), sensor_name, item_idx))
+        sensor_name = f"m1m3-ts-{sal_idx} {sequence_num}/6"
+        samples.append((sal_idx, sensor_name, item_idx))
     return samples
-
-
-@pytest.fixture
-def real_thermocouple_samples():
-    """Fixture: valid (salIndex, sensorName, item_idx) tuples.
-
-    Empty list when ts_xml is not available — tests that depend on this
-    should be skipped in that case.
-    """
-    return _get_real_thermocouple_samples()
 
 
 def _build_m1m3_dataframe(samples, rng=None):
@@ -368,32 +334,32 @@ def m1m3_dataframe():
     return pd.DataFrame(
         {
             "temperatureItem0": [20.1, 20.5],
-            "temperatureItem1": [20.3, np.nan],  # second row has NaN (unmapped channel)
+            "temperatureItem1": [20.3, np.nan],
             "salIndex": ["114", "115"],
             "sensorName": [
-                "m1m3-ts-1 1/6",
-                "m1m3-ts-2 2/6",
+                "m1m3-ts-1 1/6",  # item0=ch0 cold junction; item1=ch1 glass
+                "m1m3-ts-2 2/6",  # item0=ch16 glass
             ],
         },
         index=times,
     )
 
 
-def test_m1m3_bulk_temperature_median(m1m3_dataframe, exposure_times_short, accept_all_thermocouples):
+def test_m1m3_bulk_temperature_median(m1m3_dataframe, exposure_times_short):
     """Bulk median over valid thermocouple readings."""
     start, end = exposure_times_short
     summary = Summary(dataframe=m1m3_dataframe, exposure_start=start, exposure_end=end)
     result = summary.m1m3_bulk_temperature_median()
-    # Valid values: 20.1, 20.3, 20.5 (NaN excluded)
-    assert result == pytest.approx(np.median([20.1, 20.3, 20.5]))
+    # 20.1 is ch0 (cold junction); valid: 20.3, 20.5
+    assert result == pytest.approx(np.median([20.3, 20.5]))
 
 
-def test_m1m3_bulk_temperature_mean(m1m3_dataframe, exposure_times_short, accept_all_thermocouples):
+def test_m1m3_bulk_temperature_mean(m1m3_dataframe, exposure_times_short):
     """Bulk mean over valid thermocouple readings."""
     start, end = exposure_times_short
     summary = Summary(dataframe=m1m3_dataframe, exposure_start=start, exposure_end=end)
     result = summary.m1m3_bulk_temperature_mean()
-    assert result == pytest.approx(np.mean([20.1, 20.3, 20.5]))
+    assert result == pytest.approx(np.mean([20.3, 20.5]))
 
 
 def test_m1m3_bulk_no_metadata_returns_none(valid_dataframe, exposure_times):
@@ -455,15 +421,15 @@ def test_m1m3_bulk_all_nan_returns_none(exposure_times_short):
     assert summary.m1m3_bulk_temperature_mean() is None
 
 
-def test_m1m3_bulk_via_apply(m1m3_dataframe, exposure_times_short, accept_all_thermocouples):
+def test_m1m3_bulk_via_apply(m1m3_dataframe, exposure_times_short):
     """Bulk functions work through apply()."""
     start, end = exposure_times_short
     summary = Summary(dataframe=m1m3_dataframe, exposure_start=start, exposure_end=end)
     result = summary.apply("m1m3_bulk_temperature_median")
-    assert result == pytest.approx(np.median([20.1, 20.3, 20.5]))
+    assert result == pytest.approx(np.median([20.3, 20.5]))
 
 
-def test_m1m3_bulk_salindex_not_in_value_pool(exposure_times_short, accept_all_thermocouples):
+def test_m1m3_bulk_salindex_not_in_value_pool(exposure_times_short):
     """salIndex must stay in metadata and not pollute median/mean."""
     times = pd.to_datetime(["2023-01-01 00:00:00"]).tz_localize("UTC")
     df = pd.DataFrame(
@@ -471,7 +437,7 @@ def test_m1m3_bulk_salindex_not_in_value_pool(exposure_times_short, accept_all_t
             "temperatureItem0": [11.0],
             "temperatureItem1": [12.0],
             "salIndex": ["115"],  # would coerce to 115 and inflate mean if treated as value
-            "sensorName": ["m1m3-ts-02 1/6"],
+            "sensorName": ["m1m3-ts-02 2/6"],
         },
         index=times,
     )
@@ -484,14 +450,14 @@ def test_m1m3_bulk_salindex_not_in_value_pool(exposure_times_short, accept_all_t
     assert summary.m1m3_bulk_temperature_mean() == pytest.approx(11.5)
 
 
-def test_m1m3_bulk_numeric_salindex_stays_metadata(exposure_times_short, accept_all_thermocouples):
+def test_m1m3_bulk_numeric_salindex_stays_metadata(exposure_times_short):
     """Even numeric salIndex must not enter data_array."""
     times = pd.to_datetime(["2023-01-01 00:00:00"]).tz_localize("UTC")
     df = pd.DataFrame(
         {
             "temperatureItem0": [11.0],
             "salIndex": [117],
-            "sensorName": ["m1m3-ts-04 1/6"],
+            "sensorName": ["m1m3-ts-04 2/6"],
         },
         index=times,
     )
@@ -502,29 +468,33 @@ def test_m1m3_bulk_numeric_salindex_stays_metadata(exposure_times_short, accept_
     assert summary.m1m3_bulk_temperature_mean() == pytest.approx(11.0)
 
 
-@pytest.mark.skipif(
-    not _get_real_thermocouple_samples(),
-    reason="lsst.ts.xml not available — cannot test real thermocouple filtering",
-)
-def test_m1m3_bulk_with_real_thermocouples(real_thermocouple_samples, exposure_times_short):
-    """Bulk temperature with real thermocouple data and find_thermocouple.
-
-    Uses the actual thermocouple table to build test data, then verifies
-    that find_thermocouple correctly filters cold-junction / unmapped
-    channels and that median/mean are computed only from valid entries.
-    """
-    df = _build_m1m3_dataframe(real_thermocouple_samples)
+def test_m1m3_bulk_with_glass_thermocouples(exposure_times_short):
+    """Bulk temperature using the consdb glass thermocouple snapshot."""
+    df = _build_m1m3_dataframe(_glass_thermocouple_samples())
     start, end = exposure_times_short
     summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
 
-    # All rows have valid sensorNames and salIndexes; find_thermocouple
-    # should map each (salIndex, channel) to a valid thermocouple →
-    # every non-NaN temperatureItem is included.
     median_result = summary.m1m3_bulk_temperature_median()
     mean_result = summary.m1m3_bulk_temperature_mean()
 
-    # Results should be finite (real data produces valid temperatures).
     assert median_result is not None
     assert mean_result is not None
     assert np.isfinite(median_result)
     assert np.isfinite(mean_result)
+
+
+def test_m1m3_bulk_skips_cold_junction(exposure_times_short):
+    """Channel 0 (cold junction) is not a glass thermocouple."""
+    times = pd.to_datetime(["2023-01-01 00:00:00"]).tz_localize("UTC")
+    df = pd.DataFrame(
+        {
+            "temperatureItem0": [99.0],
+            "salIndex": [114],
+            "sensorName": ["m1m3-ts-1 1/6"],
+        },
+        index=times,
+    )
+    start, end = exposure_times_short
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    assert summary.m1m3_bulk_temperature_median() is None
+    assert summary.m1m3_bulk_temperature_mean() is None
