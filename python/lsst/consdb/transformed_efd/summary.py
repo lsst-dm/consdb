@@ -27,6 +27,7 @@ from lsst.consdb.transformed_efd.auxiliary.m1m3 import (
     is_glass_thermocouple,
     item_channel,
     sequence_number,
+    temperature_item_index,
 )
 
 # Never fold these into data_array (even when numeric / string-encoded ints).
@@ -87,6 +88,7 @@ class Summary:
         self.exposure_end = exposure_end
 
         self._data_array: np.ndarray | None = None
+        self._numeric_column_names: list[str] = []
         self._timestamps: pd.DatetimeIndex | None = None
         self._metadata: pd.DataFrame | None = None
         self._flat_numeric_values: np.ndarray | None = None
@@ -140,6 +142,7 @@ class Summary:
         if not numeric_cols:
             raise ValueError("The DataFrame must contain at least one numeric or boolean column.")
 
+        self._numeric_column_names = list(numeric_cols)
         self._data_array = (
             df[numeric_cols].to_numpy(dtype=self._datatype, na_value=np.nan)
             if self._datatype
@@ -259,8 +262,12 @@ class Summary:
             if sal_idx is None:
                 continue
 
-            for item_idx in range(data.shape[1]):
-                temp = data[row_idx, item_idx]
+            for col_idx, col_name in enumerate(self._numeric_column_names):
+                item_idx = temperature_item_index(col_name)
+                if item_idx is None:
+                    continue
+
+                temp = data[row_idx, col_idx]
                 if np.isnan(temp):
                     continue
 
@@ -303,24 +310,40 @@ class Summary:
                     self._time_indices = np.arange(len(self.timestamps))
                 x = self._time_indices
 
-            y = self.data_array
-            if len(x) <= degree:
+            y = np.asarray(self.data_array, dtype=np.float64)
+            if y.ndim == 1:
+                finite_rows = np.isfinite(y)
+            else:
+                finite_rows = np.all(np.isfinite(y), axis=1)
+            mask = np.isfinite(x) & finite_rows
+            n_valid = int(np.count_nonzero(mask))
+            if n_valid <= degree:
                 return np.nan
 
-            coeffs = np.polyfit(x, y, degree)
-            residuals = y - np.polyval(coeffs, x)
+            x_fit = x[mask]
+            y_fit = y[mask]
+            coeffs = np.polyfit(x_fit, y_fit, degree)
+            residuals = y_fit - np.polyval(coeffs, x_fit)
             return np.sqrt(np.mean(residuals**2))
         except Exception as e:
             raise ValueError(f"RMS calculation failed: error={e}")
 
     def most_recent_value(self, start_offset: float = 0) -> float | int | bool | None:
-        """Return the most‐recent scalar."""
+        """Return the most recent finite scalar in the first value column."""
         try:
             if self._data_array is None and self._raw_dataframe is not None:
                 if self._raw_dataframe.empty:
                     return None
-                return self._raw_dataframe.iloc[-1, 0]
-            return self.data_array[-1, 0]
+                series = self._raw_dataframe.iloc[:, 0]
+                for val in reversed(series.tolist()):
+                    if pd.notna(val):
+                        return val
+                return None
+            values = np.asarray(self.data_array[:, 0], dtype=np.float64)
+            finite = np.isfinite(values)
+            if not np.any(finite):
+                return None
+            return self.data_array[np.where(finite)[0][-1], 0]
         except Exception as e:
             raise ValueError(f"Error finding recent value: error={e}")
 

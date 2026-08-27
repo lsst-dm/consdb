@@ -156,9 +156,63 @@ def test_rms_from_polynomial_fit_time_basis(summary_instance):
     assert summary_instance.rms_from_polynomial_fit(degree=4, fit_basis="time") == pytest.approx(2.0)
 
 
+def test_rms_from_polynomial_fit_with_missing_values(exposure_times):
+    """Gaps must be filtered before polyfit, not propagate NaN into RMS."""
+    times = pd.to_datetime(
+        [
+            "2023-01-01 00:00:00",
+            "2023-01-01 00:00:30",
+            "2023-01-01 00:01:00",
+            "2023-01-01 00:01:30",
+            "2023-01-01 00:02:00",
+        ]
+    ).tz_localize("UTC")
+    y = np.array([1.0, 2.0, np.nan, 4.0, 5.0])
+    df = pd.DataFrame({"value": y}, index=times)
+    start, end = exposure_times
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+
+    x = np.arange(len(y), dtype=np.float64)
+    y2 = y.reshape(-1, 1)
+    mask = np.isfinite(x) & np.all(np.isfinite(y2), axis=1)
+    coeffs = np.polyfit(x[mask], y2[mask], 1)
+    expected = np.sqrt(np.mean((y2[mask] - np.polyval(coeffs, x[mask])) ** 2))
+    result = summary.rms_from_polynomial_fit(degree=1, fit_basis="index")
+    assert np.isfinite(result)
+    assert result == pytest.approx(expected)
+
+
+def test_rms_from_polynomial_fit_insufficient_finite_samples(exposure_times):
+    times = pd.to_datetime(
+        [
+            "2023-01-01 00:00:00",
+            "2023-01-01 00:00:30",
+            "2023-01-01 00:01:00",
+        ]
+    ).tz_localize("UTC")
+    df = pd.DataFrame({"value": [1.0, np.nan, np.nan]}, index=times)
+    start, end = exposure_times
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    assert np.isnan(summary.rms_from_polynomial_fit(degree=1, fit_basis="index"))
+
+
 # 8. Test most_recent_value
 def test_most_recent_value(summary_instance):
     assert summary_instance.most_recent_value() == 5
+
+
+def test_most_recent_value_skips_trailing_nan(exposure_times):
+    times = pd.to_datetime(
+        [
+            "2023-01-01 00:00:00",
+            "2023-01-01 00:00:30",
+            "2023-01-01 00:01:00",
+        ]
+    ).tz_localize("UTC")
+    df = pd.DataFrame({"value": [1.0, 2.0, np.nan]}, index=times)
+    start, end = exposure_times
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    assert summary.most_recent_value() == pytest.approx(2.0)
 
 
 # 9. Test apply
@@ -481,6 +535,25 @@ def test_m1m3_bulk_with_glass_thermocouples(exposure_times_short):
     assert mean_result is not None
     assert np.isfinite(median_result)
     assert np.isfinite(mean_result)
+
+
+def test_m1m3_bulk_uses_column_name_not_position(exposure_times_short):
+    """Extra numeric columns must not shift temperatureItem channel mapping."""
+    times = pd.to_datetime(["2023-01-01 00:00:00"]).tz_localize("UTC")
+    df = pd.DataFrame(
+        {
+            "pressure": [999.0],
+            "temperatureItem0": [99.0],
+            "temperatureItem1": [20.3],
+            "salIndex": ["114"],
+            "sensorName": ["m1m3-ts-1 1/6"],
+        },
+        index=times,
+    )
+    start, end = exposure_times_short
+    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
+    # pressure and cold-junction item0 skipped; item1 is glass channel 1
+    assert summary.m1m3_bulk_temperature_median() == pytest.approx(20.3)
 
 
 def test_m1m3_bulk_skips_cold_junction(exposure_times_short):

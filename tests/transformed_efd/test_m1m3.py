@@ -23,6 +23,7 @@ from lsst.consdb.transformed_efd.auxiliary.m1m3 import (
     is_glass_thermocouple,
     item_channel,
     sequence_number,
+    temperature_item_index,
 )
 
 
@@ -46,3 +47,10 @@ def test_item_channel_matches_gec_packing():
     assert item_channel(1, 15) == 15
     assert item_channel(2, 0) == 16
     assert item_channel(2, 15) == 31
+
+
+def test_temperature_item_index():
+    assert temperature_item_index("temperatureItem0") == 0
+    assert temperature_item_index("temperatureItem15") == 15
+    assert temperature_item_index("pressure") is None
+    assert temperature_item_index("temperatureItem") is None

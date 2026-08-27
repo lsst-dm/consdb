@@ -39,6 +39,7 @@ import re
 # ts_eas GlassTemperatureModel uses 16 * n + i with the same n, so 1/6
 # becomes channels 16–31 there. Do not change this to match ts_eas.
 _SENSOR_NAME_RE = re.compile(r"m1m3-ts-\d+ (\d+)/\d+")
+_TEMPERATURE_ITEM_RE = re.compile(r"^temperatureItem(\d+)$")
 _CHANNELS_PER_SEQUENCE = 16
 
 # Snapshot of lsst.ts.xml.tables.m1m3.ThermocoupleTable.
@@ -212,6 +213,18 @@ def sequence_number(sensor_name: str) -> int | None:
     Example: ``m1m3-ts-04 1/6`` → 1.
     """
     match = _SENSOR_NAME_RE.match(sensor_name)
+    if match is None:
+        return None
+    return int(match.group(1))
+
+
+def temperature_item_index(column_name: str) -> int | None:
+    """Return the item index from a ``temperatureItemN`` column name.
+
+    Returns ``None`` when the name is not a packed GEC temperature item,
+    so extra numeric fields cannot shift the channel mapping.
+    """
+    match = _TEMPERATURE_ITEM_RE.match(column_name)
     if match is None:
         return None
     return int(match.group(1))
