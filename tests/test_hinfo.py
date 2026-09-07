@@ -6,7 +6,7 @@ import pytest
 import sqlalchemy as sa
 import yaml
 from felis.datamodel import Schema
-from felis.db.utils import DatabaseContext
+from felis.db.database_context import create_database_context
 from felis.metadata import MetaDataBuilder
 from felis.tests.postgresql import setup_postgres_test_db
 from lsst.consdb import hinfo
@@ -31,7 +31,7 @@ def pg_engine(request, scope="module"):
         table.append_column(sa.Column("pgs_region", sa.String(1024)))
 
     with setup_postgres_test_db() as instance:
-        context = DatabaseContext(md, instance.engine)
+        context = create_database_context(instance.engine.url, md)
         context.initialize()
         context.create_all()
 
