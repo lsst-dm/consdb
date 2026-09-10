@@ -45,6 +45,12 @@ and set ``INSTRUMENTS`` to a semicolon-separated list (for example
 The job connects to PostgreSQL using the ``DB_HOST``, ``DB_PORT``, ``DB_USER``,
 ``DB_PASS``, and ``DB_NAME`` environment variables.
 
+The SQL of each rule is in ``python/lsst/consdb/consistency_queries.py``, with one
+set of rules for ``lsstcam`` (nine rules) and one for ``latiss`` (four rules).
+An instrument with no set there is not checked.
+On the command line, the day may also be given as an argument:
+``python -m lsst.consdb.daily_consistency_check 20260519``.
+
 The checks read the ``exposure`` and ``ccdexposure`` base tables and their
 ``*_quicklook`` companions directly.  The rules fall into two groups, defined in
 the two sections below: structural invariants that must always hold, and
@@ -175,3 +181,26 @@ The same report is available for any observing day through the REST API::
 
 allowing an operator to re-check a day after a backfill without waiting for the
 next scheduled run.
+Each entry in the response gives the ``rule``, the ``day_obs`` and ``seq_num`` of the exposure, and a ``detail`` string.
+
+The path ``/consdb/table_consistency`` with no parameters serves a web page for the same report.
+Choose the instrument and the day in the page, and it calls the endpoint above and lists the violations.
+It is available at every site that runs ``pqserver``, for example at
+`the USDF <https://usdf-rsp.slac.stanford.edu/consdb/table_consistency>`__.
+
+When a rule fires for the most recent night, re-check the day after the night has ended before you act.
+The products of the last exposures may still be in progress when the job runs.
+
+Other things to watch
+=====================
+
+The daily check covers the tables of one night.
+These other conditions have no automatic check and are worth a look when users report a problem:
+
+- The replication lag from the Summit to the USDF.
+  A row present at the Summit and absent at the USDF a few minutes later suggests a paused subscription.
+- The ``hinfo`` pod logs at the Summit.
+  An image without an ``exposure`` row means that ``hinfo`` did not receive the Kafka message or could not read the header file.
+- The task table of the Transformed EFD, for failed or stale tasks.
+  The :doc:`transformed-efd` page gives the queries.
+- The rate of 5xx responses from ``pqserver``, in the Argo CD logs.

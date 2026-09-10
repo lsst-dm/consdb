@@ -752,3 +752,95 @@ Repository Structure
            ├── lsstcam-cronjob/
            ├── lsstcomcam-job/
            └── lsstcomcam-cronjob/
+
+Additional Operational Notes
+----------------------------
+
+The image in this repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. warning::
+
+   ``docker/Dockerfile.transformed-efd`` in the ``consdb`` repository refers to the old package directory ``efd_transform`` and passes no ``--mode`` argument.
+   Its command reads ``CONFIG_FILE``, ``INSTRUMENT``, ``BUTLER_REPO``, ``CONSDB_URL``, ``EFD``, ``TIMEDELTA``, and ``LOG_FILE`` only.
+   The ``MODE``, ``DATETIME_START``, ``DATETIME_END``, and ``TIMEWINDOW`` variables in the manifests above take effect only if the deployment repository supplies its own command line.
+   Check the manifests of ``usdf-consdb-deploy`` before you rely on them.
+
+Meaning of ``TIMEDELTA`` and ``TIMEWINDOW``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``TIMEDELTA`` is the length of one task in minutes.
+In cronjob mode each new task starts where the last one ended, so it is also the step at which the service catches up.
+``TIMEWINDOW`` is stored in each task row and widens the Butler query of that task by the given number of minutes on each side.
+It does not make the tasks overlap.
+The :doc:`../developer-guide/transformed-efd` page gives the selection rule in full.
+
+Retries and shutdown
+~~~~~~~~~~~~~~~~~~~~
+
+- A job run retries failed tasks with at most three retries, whether or not ``--failure-monitor`` is given.
+- The failure monitor waits ``2.82843 ** (retries + 1)`` hours between retries and marks a task older than 72 hours as ``stale``.
+  These values are fixed in the code.
+- At start, every task in the ``running`` status with no ``process_start_time`` or no ``process_end_time`` is marked ``failed`` with the error ``Task interrupted``.
+  This is how a task interrupted by a pod restart appears.
+- On ``SIGTERM`` the service finishes the task in progress and then stops.
+  Allow the pod a termination grace period long enough for one task.
+
+Queries on the scheduler tables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The scheduler table of each instrument is ``efd_scheduler.<instrument>``.
+These queries show the state of the ``lsstcam`` service.
+
+Tasks that failed, with their error and retry count:
+
+.. code-block:: sql
+
+   SELECT id, start_time, end_time, retries, error
+   FROM efd_scheduler.lsstcam
+   WHERE status = 'failed'
+   ORDER BY start_time DESC
+   LIMIT 20;
+
+Tasks that were interrupted, and tasks that appear to be running:
+
+.. code-block:: sql
+
+   SELECT id, start_time, end_time, process_start_time, process_end_time, error
+   FROM efd_scheduler.lsstcam
+   WHERE status = 'running' OR error = 'Task interrupted'
+   ORDER BY start_time DESC;
+
+Tasks the failure monitor gave up on:
+
+.. code-block:: sql
+
+   SELECT id, start_time, end_time, retries, error
+   FROM efd_scheduler.lsstcam
+   WHERE status = 'stale'
+   ORDER BY start_time;
+
+The most recent completed tasks, with their duration and the number of rows they wrote:
+
+.. code-block:: sql
+
+   SELECT id, start_time, end_time, process_exec_time, exposures, visits1
+   FROM efd_scheduler.lsstcam
+   WHERE status = 'completed'
+   ORDER BY end_time DESC
+   LIMIT 10;
+
+How far behind the service is:
+
+.. code-block:: sql
+
+   SELECT max(end_time) AS last_task_end, now() AT TIME ZONE 'UTC' - max(end_time) AS lag
+   FROM efd_scheduler.lsstcam
+   WHERE status = 'completed';
+
+Additional environment variables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The EFD connection is built from ``EFD_USERNAME`` (default ``efdreader``), ``EFD_PASSWORD``, ``EFD_HOST`` (default ``usdf-rsp.slac.stanford.edu``), ``EFD_PORT`` (default ``443``), and ``EFD_PATH`` (default ``/influxdb-enterprise-data/``).
+``EFD_PATH`` needs its leading and trailing slashes.
+``LOG_LEVEL`` (default ``INFO``) sets the log level of the service.

@@ -69,3 +69,16 @@ This API is also available via ``lsst.summit.utils.ConsDbClient`` as the ``get_a
 Finally, a SQL query can be used with the ``/query`` REST API endpoint to retrieve flexible metadata or use a flexible metadata value as a filter in a ``WHERE`` clause.
 The query will need to join to the ``exposure_flexdata`` or ``ccdexposure_flexdata`` tables in the appropriate ``cdb_{instrument}`` schema using the ``obs_id`` column or the ``day_obs`` and ``seq_num`` column pair as the join key, giving the desired flexible metadata key in the ``WHERE`` clause.
 Note that all flexible metadata values are stored as SQL character strings; they may require conversion to an appropriate data type for further computation or manipulation.
+The ``dtype`` column of the schema table says which conversion applies.
+This example returns one key as a number, for the exposures of one night:
+
+.. code-block:: sql
+
+   SELECT f.day_obs, f.seq_num, CAST(f.value AS double precision) AS seeing_estimate
+   FROM cdb_lsstcam.exposure_flexdata AS f
+   JOIN cdb_lsstcam.exposure_flexdata_schema AS s ON s.key = f.key
+   WHERE f.key = 'seeing_estimate' AND s.dtype = 'float'
+     AND f.day_obs = 20250421;
+
+The interactive API documentation described on the :doc:`rest-api-and-clients` page gives the exact request and response models of every ``/flex`` endpoint.
+A key of the wrong data type, or a value whose type does not match the key, is reported with HTTP status 404 as described on that page.

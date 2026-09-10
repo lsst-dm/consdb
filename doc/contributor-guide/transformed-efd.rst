@@ -834,3 +834,50 @@ Troubleshooting
    - Check EFD topic availability and field names
    - Verify time range specifications
    - Test with smaller data samples first
+
+Additional Notes on Configuration Keys
+--------------------------------------
+
+The following notes come from ``config_model.py`` and ``transform.py`` and complement the data model above.
+
+- ``tables`` is optional.
+  When it is absent, the column is written to all four tables.
+  The only validation of ``tables`` is that a column with ``store_unpivoted: true`` may name only the two unpivoted tables.
+- A key that the model does not define is ignored without an error.
+  A misspelled key therefore has no effect rather than a visible failure.
+- ``start_offset`` is a key of the column itself, not only an argument of ``most_recent_value``.
+  It shifts the start of the query window and of each exposure's window by the given number of hours, and columns with different offsets are queried separately.
+- ``pre_aggregate_interval`` takes effect only when ``function`` is ``mean``, ``max``, or ``min``.
+  For any other function it is ignored without a message.
+- ``subset_field`` matching is done on the string form of the value, which is why an integer ``subset_value`` matches a field stored as text.
+  The subset field itself is removed from the data before the function runs.
+- An exception inside a function fails the whole task, and the task is recorded as failed in the scheduler table.
+  It does not leave a ``NULL`` in one column and continue.
+
+A real column from ``config_lsstcam.yaml``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The examples above are illustrative.
+This entry is the first column of ``python/lsst/consdb/transformed_efd/config/config_lsstcam.yaml`` as it stands, and it is a good model to copy:
+
+.. code-block:: yaml
+
+   - name: mt_azimuth_encoder_absolute_position_0_rms_jitter
+     tables: ["exposure_efd"]
+     function: rms_from_polynomial_fit
+     function_args: {"degree": 4, "fit_basis": "index"}
+     datatype: float
+     ivoa: {"unit":"\"\"", "ucd":"stat.rms"}
+     description: RMS after 4th order polynomial fit of azimuth absolute position read by each encoder head.
+     packed_series: False
+     topics:
+     - name: lsst.sal.MTMount.encoder
+       fields:
+       - name: azimuthEncoderAbsolutePosition0
+
+Where the schema files are published
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The generated schema files are copied to the ``sdm_schemas`` repository by the ``efd_schema_sync.yaml`` workflow.
+The published copies are the `efd_*.yaml files <https://github.com/lsst/sdm_schemas/tree/main/python/lsst/sdm/schemas>`__ in that repository, and the `schema browser <https://sdm-schemas.lsst.io>`__ renders them.
+Compare a regenerated file with the published one to check a change.
