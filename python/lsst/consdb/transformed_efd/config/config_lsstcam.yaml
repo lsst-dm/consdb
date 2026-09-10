@@ -19092,7 +19092,7 @@ columns:
   description: Mean M1M3 temperature gradient along X axis over the visit window (2 min lookback).
   packed_series: False
   topics:
-  - name: lsst.sal.ess.m1m3ThermalGradients
+  - name: lsst.sal.ESS.m1m3ThermalGradients
     fields:
     - name: xGradient
 
@@ -19105,7 +19105,7 @@ columns:
   description: Mean M1M3 temperature gradient along Y axis over the visit window (2 min lookback).
   packed_series: False
   topics:
-  - name: lsst.sal.ess.m1m3ThermalGradients
+  - name: lsst.sal.ESS.m1m3ThermalGradients
     fields:
     - name: yGradient
 
@@ -19118,7 +19118,7 @@ columns:
   description: Mean M1M3 temperature gradient along Z axis over the visit window (2 min lookback).
   packed_series: False
   topics:
-  - name: lsst.sal.ess.m1m3ThermalGradients
+  - name: lsst.sal.ESS.m1m3ThermalGradients
     fields:
     - name: zGradient
 
@@ -19131,7 +19131,7 @@ columns:
   description: Mean M1M3 radial temperature gradient over the visit window (2 min lookback).
   packed_series: False
   topics:
-  - name: lsst.sal.ess.m1m3ThermalGradients
+  - name: lsst.sal.ESS.m1m3ThermalGradients
     fields:
     - name: radialGradient
 
@@ -19144,7 +19144,7 @@ columns:
   description: Mean estimated error of M1M3 temperature gradient along X axis over the visit window (2 min lookback).
   packed_series: False
   topics:
-  - name: lsst.sal.ess.m1m3ThermalGradients
+  - name: lsst.sal.ESS.m1m3ThermalGradients
     fields:
     - name: xGradientError
 
@@ -19157,7 +19157,7 @@ columns:
   description: Mean estimated error of M1M3 temperature gradient along Y axis over the visit window (2 min lookback).
   packed_series: False
   topics:
-  - name: lsst.sal.ess.m1m3ThermalGradients
+  - name: lsst.sal.ESS.m1m3ThermalGradients
     fields:
     - name: yGradientError
 
@@ -19170,7 +19170,7 @@ columns:
   description: Mean estimated error of M1M3 temperature gradient along Z axis over the visit window (2 min lookback).
   packed_series: False
   topics:
-  - name: lsst.sal.ess.m1m3ThermalGradients
+  - name: lsst.sal.ESS.m1m3ThermalGradients
     fields:
     - name: zGradientError
 
@@ -19183,7 +19183,7 @@ columns:
   description: Mean estimated error of M1M3 radial temperature gradient over the visit window (2 min lookback).
   packed_series: False
   topics:
-  - name: lsst.sal.ess.m1m3ThermalGradients
+  - name: lsst.sal.ESS.m1m3ThermalGradients
     fields:
     - name: radialGradientError
 

@@ -328,7 +328,7 @@ class Summary:
         except Exception as e:
             raise ValueError(f"RMS calculation failed: error={e}")
 
-    def most_recent_value(self, start_offset: float = 0) -> float | int | bool | None:
+    def most_recent_value(self) -> float | int | bool | None:
         """Return the most recent finite scalar in the first value column."""
         try:
             if self._data_array is None and self._raw_dataframe is not None:

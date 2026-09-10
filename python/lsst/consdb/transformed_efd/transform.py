@@ -136,8 +136,9 @@ class Transform:
         """Compute column value using named transformation."""
 
         ts_start = pandas.to_datetime(start_time.utc.datetime, utc=True)
-        if "start_offset" in function_kwargs:
-            ts_start += pandas.Timedelta(function_kwargs["start_offset"], unit="h")
+        start_offset = function_kwargs.pop("start_offset", None)
+        if start_offset is not None:
+            ts_start += pandas.Timedelta(start_offset, unit="h")
 
         ts_end = pandas.to_datetime(end_time.utc.datetime, utc=True)
 
