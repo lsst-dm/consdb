@@ -23,6 +23,16 @@
 import numpy as np
 import pandas as pd
 from astropy.time import Time
+from lsst.consdb.transformed_efd.auxiliary.m1m3 import (
+    is_glass_thermocouple,
+    item_channel,
+    sequence_number,
+    temperature_item_index,
+)
+
+# Never fold these into data_array (even when numeric / string-encoded ints).
+# salIndex was polluting bulk stats and disabling glass-thermocouple filtering.
+_METADATA_COLUMNS = frozenset({"salIndex", "sensorName"})
 
 
 class Summary:
@@ -33,6 +43,9 @@ class Summary:
         timestamps (pd.DatetimeIndex): The time index of the DataFrame.
         exposure_start (Time): The start of the exposure period.
         exposure_end (Time): The end of the exposure period.
+        metadata (pd.DataFrame | None): Non-numeric columns preserved for
+            custom transformation functions (e.g. ``sensorName``,
+            ``salIndex``).
     """
 
     def __init__(
@@ -75,25 +88,71 @@ class Summary:
         self.exposure_end = exposure_end
 
         self._data_array: np.ndarray | None = None
+        self._numeric_column_names: list[str] = []
         self._timestamps: pd.DatetimeIndex | None = None
+        self._metadata: pd.DataFrame | None = None
         self._flat_numeric_values: np.ndarray | None = None
         self._numeric_timestamps: np.ndarray | None = None
         self._time_indices: np.ndarray | None = None
         self._is_all_nan: bool | None = None
 
     def _process_dataframe(self):
-        """Lazily process the raw dataframe into the final array and index."""
+        """Lazily process the raw dataframe into the final array and index.
+
+        Numeric and boolean columns go to ``_data_array``; non-numeric
+        columns are preserved in ``_metadata`` for custom transformation
+        functions.  ``dropna`` is not called — individual functions skip
+        NaN via ``np.nanmean`` / ``np.nanmedian``.
+        """
         if self._data_array is not None:
             return
 
-        df = self._raw_dataframe.dropna().convert_dtypes()
-        if not all(
-            pd.api.types.is_numeric_dtype(dtype) or pd.api.types.is_bool_dtype(dtype) for dtype in df.dtypes
-        ):
-            raise ValueError("All columns in the DataFrame must be numeric or boolean.")
+        df = self._raw_dataframe.convert_dtypes()
 
-        self._data_array = df.to_numpy(dtype=self._datatype) if self._datatype else df.to_numpy()
+        numeric_cols = [
+            col
+            for col in df.columns
+            if col not in _METADATA_COLUMNS
+            and (pd.api.types.is_numeric_dtype(df[col].dtype) or pd.api.types.is_bool_dtype(df[col].dtype))
+        ]
+        non_numeric_cols = [col for col in df.columns if col not in numeric_cols]
+
+        # EFD / pandas may return telemetry as object (e.g. all-null or
+        # string-encoded numbers). Coerce lossless or all-null columns to
+        # numeric so statistics still run; leave true strings as metadata.
+        # Never coerce known metadata ids (salIndex, sensorName) into values.
+        if non_numeric_cols:
+            for col in list(non_numeric_cols):
+                if col in _METADATA_COLUMNS:
+                    continue
+                coerced = pd.to_numeric(df[col], errors="coerce")
+                original_non_null = int(df[col].notna().sum())
+                if original_non_null == 0 or int(coerced.notna().sum()) == original_non_null:
+                    df[col] = coerced
+            numeric_cols = [
+                col
+                for col in df.columns
+                if col not in _METADATA_COLUMNS
+                and (
+                    pd.api.types.is_numeric_dtype(df[col].dtype) or pd.api.types.is_bool_dtype(df[col].dtype)
+                )
+            ]
+            non_numeric_cols = [col for col in df.columns if col not in numeric_cols]
+
+        if not numeric_cols:
+            raise ValueError("The DataFrame must contain at least one numeric or boolean column.")
+
+        self._numeric_column_names = list(numeric_cols)
+        self._data_array = (
+            df[numeric_cols].to_numpy(dtype=self._datatype, na_value=np.nan)
+            if self._datatype
+            else df[numeric_cols].to_numpy(dtype=np.float64, na_value=np.nan)
+        )
         self._timestamps = df.index
+
+        if non_numeric_cols:
+            self._metadata = df[non_numeric_cols]
+
         self._raw_dataframe = None
 
     @property
@@ -108,6 +167,18 @@ class Summary:
             self._process_dataframe()
         return self._timestamps
 
+    @property
+    def metadata(self) -> pd.DataFrame | None:
+        """Non-numeric metadata columns preserved from the raw DataFrame.
+
+        Only populated when the config lists non-numeric fields
+        (e.g. ``salIndex``, ``sensorName``) alongside the numeric
+        telemetry fields.  ``None`` otherwise.
+        """
+        if self._data_array is None:
+            self._process_dataframe()
+        return self._metadata
+
     def _get_numeric_values(self) -> np.ndarray:
         """Flatten and ensure numeric values. Result cached for performance."""
         if self._flat_numeric_values is None:
@@ -117,6 +188,98 @@ class Summary:
     def mean(self, pre_aggregate_interval=None) -> float:
         """Calculate the mean ignoring NaN values."""
         return np.nanmean(self._get_numeric_values())
+
+    def median(self) -> float:
+        """Calculate the median ignoring NaN values."""
+        return np.nanmedian(self._get_numeric_values())
+
+    # ------------------------------------------------------------------
+    # M1M3 bulk glass temperature (DM-55710)
+    # ------------------------------------------------------------------
+
+    def m1m3_bulk_temperature_median(self, **kwargs) -> float | None:
+        """Median bulk temperature of M1M3 glass thermocouples.
+
+        Row filtering (scanners) is handled by ``subset_field`` /
+        ``subset_value`` in the config.  Uses ``sensorName`` from
+        metadata and ``is_glass_thermocouple`` to exclude cold-junction
+        and unmapped channels.
+
+        Returns
+        -------
+        float | None
+            Median temperature in °C, or ``None`` if no valid
+            thermocouple readings are found.
+        """
+        valid = self._m1m3_bulk_temperatures()
+        if not valid:
+            return None
+        return float(np.median(valid))
+
+    def m1m3_bulk_temperature_mean(self, **kwargs) -> float | None:
+        """Mean bulk temperature of M1M3 glass thermocouples.
+
+        Same filtering as ``m1m3_bulk_temperature_median``.
+
+        Returns
+        -------
+        float | None
+            Mean temperature in °C, or ``None`` if no valid thermocouple
+            readings are found.
+        """
+        valid = self._m1m3_bulk_temperatures()
+        if not valid:
+            return None
+        return float(np.mean(valid))
+
+    def _m1m3_bulk_temperatures(self) -> list[float]:
+        """Return valid M1M3 thermocouple temperatures from the timespan."""
+        # Trigger lazy processing before reading _metadata
+        # (same as data_array).
+        data = self.data_array
+        if self._metadata is None or "sensorName" not in self._metadata.columns:
+            return []
+
+        sensor_names = self._metadata["sensorName"].values
+        has_sal = "salIndex" in self._metadata.columns
+        sal_indices = self._metadata["salIndex"].values if has_sal else None
+
+        valid_temperatures: list[float] = []
+
+        for row_idx in range(len(data)):
+            sensor_name = str(sensor_names[row_idx])
+            sequence_num = sequence_number(sensor_name)
+            if sequence_num is None:
+                continue
+
+            sal_idx = None
+            if has_sal and sal_indices is not None:
+                try:
+                    sal_idx = int(str(sal_indices[row_idx]))
+                except (ValueError, TypeError):
+                    pass
+
+            if sal_idx is None:
+                continue
+
+            for col_idx, col_name in enumerate(self._numeric_column_names):
+                item_idx = temperature_item_index(col_name)
+                if item_idx is None:
+                    continue
+
+                temp = data[row_idx, col_idx]
+                if np.isnan(temp):
+                    continue
+
+                channel = item_channel(sequence_num, item_idx)
+                if not is_glass_thermocouple(sal_idx, channel):
+                    continue  # cold junction or unmapped channel
+
+                valid_temperatures.append(float(temp))
+
+        return valid_temperatures
+
+    # ------------------------------------------------------------------
 
     def stddev(self, ddof: int = 1) -> float | None:
         """Calculate the standard deviation ignoring NaN values."""
@@ -147,24 +310,40 @@ class Summary:
                     self._time_indices = np.arange(len(self.timestamps))
                 x = self._time_indices
 
-            y = self.data_array
-            if len(x) <= degree:
+            y = np.asarray(self.data_array, dtype=np.float64)
+            if y.ndim == 1:
+                finite_rows = np.isfinite(y)
+            else:
+                finite_rows = np.all(np.isfinite(y), axis=1)
+            mask = np.isfinite(x) & finite_rows
+            n_valid = int(np.count_nonzero(mask))
+            if n_valid <= degree:
                 return np.nan
 
-            coeffs = np.polyfit(x, y, degree)
-            residuals = y - np.polyval(coeffs, x)
+            x_fit = x[mask]
+            y_fit = y[mask]
+            coeffs = np.polyfit(x_fit, y_fit, degree)
+            residuals = y_fit - np.polyval(coeffs, x_fit)
             return np.sqrt(np.mean(residuals**2))
         except Exception as e:
             raise ValueError(f"RMS calculation failed: error={e}")
 
-    def most_recent_value(self, start_offset: float = 0) -> float | int | bool | None:
-        """Return the most‐recent scalar."""
+    def most_recent_value(self) -> float | int | bool | None:
+        """Return the most recent finite scalar in the first value column."""
         try:
             if self._data_array is None and self._raw_dataframe is not None:
                 if self._raw_dataframe.empty:
                     return None
-                return self._raw_dataframe.iloc[-1, 0]
-            return self.data_array[-1, 0]
+                series = self._raw_dataframe.iloc[:, 0]
+                for val in reversed(series.tolist()):
+                    if pd.notna(val):
+                        return val
+                return None
+            values = np.asarray(self.data_array[:, 0], dtype=np.float64)
+            finite = np.isfinite(values)
+            if not np.any(finite):
+                return None
+            return self.data_array[np.where(finite)[0][-1], 0]
         except Exception as e:
             raise ValueError(f"Error finding recent value: error={e}")
 

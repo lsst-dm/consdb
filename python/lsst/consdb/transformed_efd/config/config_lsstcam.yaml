@@ -654,6 +654,2206 @@ columns:
     - name: speedMaxMagnitude
     - name: salIndex
 
+- name: mt_salindex123_sonic_temperature_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: mt_salindex123_sonic_temperature_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: mt_salindex123_sonic_temperature_stddev_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Standard deviation of the mean standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperatureStdDev
+    - name: salIndex
+
+- name: mt_salindex123_sonic_temperature_stddev_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperatureStdDev
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_0_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 0 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_0_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 0 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_0_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 0 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_0_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 0 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_1_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 1 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_1_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 1 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_1_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 1 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_1_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 1 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_2_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 2 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_2_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 2 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_2_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 2 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_2_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-01-S along axis 2 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_0_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 0 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_0_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 0 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_0_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 0 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_0_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 0 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_1_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 1 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_1_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 1 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_1_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 1 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_1_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 1 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_2_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 2 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_2_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 2 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_2_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 2 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_stddev_2_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-01-S along axis 2 (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_magnitude_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed magnitude in TEA-3D-ANEM-01-S (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_magnitude_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed magnitude in TEA-3D-ANEM-01-S (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_magnitude_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed magnitude in TEA-3D-ANEM-01-S (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_magnitude_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed magnitude in TEA-3D-ANEM-01-S (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_maxmagnitude_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean maximum wind speed magnitude in TEA-3D-ANEM-01-S (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_maxmagnitude_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the maximum wind speed magnitude in TEA-3D-ANEM-01-S (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_maxmagnitude_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum maximum wind speed magnitude in TEA-3D-ANEM-01-S (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex123_wind_speed_maxmagnitude_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum maximum wind speed magnitude in TEA-3D-ANEM-01-S (salIndex 123).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 123
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex124_sonic_temperature_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: mt_salindex124_sonic_temperature_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: mt_salindex124_sonic_temperature_stddev_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Standard deviation of the mean standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperatureStdDev
+    - name: salIndex
+
+- name: mt_salindex124_sonic_temperature_stddev_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperatureStdDev
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_0_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 0 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_0_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 0 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_0_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 0 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_0_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 0 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_1_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 1 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_1_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 1 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_1_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 1 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_1_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 1 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_2_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 2 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_2_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 2 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_2_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 2 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_2_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-02-S along axis 2 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_0_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 0 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_0_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 0 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_0_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 0 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_0_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 0 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_1_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 1 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_1_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 1 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_1_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 1 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_1_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 1 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_2_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 2 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_2_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 2 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_2_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 2 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_stddev_2_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-02-S along axis 2 (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_magnitude_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed magnitude in TEA-3D-ANEM-02-S (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_magnitude_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed magnitude in TEA-3D-ANEM-02-S (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_magnitude_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed magnitude in TEA-3D-ANEM-02-S (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_magnitude_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed magnitude in TEA-3D-ANEM-02-S (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_maxmagnitude_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean maximum wind speed magnitude in TEA-3D-ANEM-02-S (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_maxmagnitude_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the maximum wind speed magnitude in TEA-3D-ANEM-02-S (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_maxmagnitude_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum maximum wind speed magnitude in TEA-3D-ANEM-02-S (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex124_wind_speed_maxmagnitude_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum maximum wind speed magnitude in TEA-3D-ANEM-02-S (salIndex 124).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 124
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex125_sonic_temperature_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: mt_salindex125_sonic_temperature_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: mt_salindex125_sonic_temperature_stddev_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Standard deviation of the mean standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperatureStdDev
+    - name: salIndex
+
+- name: mt_salindex125_sonic_temperature_stddev_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperatureStdDev
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_0_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 0 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_0_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 0 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_0_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 0 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_0_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 0 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_1_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 1 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_1_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 1 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_1_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 1 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_1_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 1 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_2_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 2 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_2_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 2 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_2_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 2 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_2_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-03-P along axis 2 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_0_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 0 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_0_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 0 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_0_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 0 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_0_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 0 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_1_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 1 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_1_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 1 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_1_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 1 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_1_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 1 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_2_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 2 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_2_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 2 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_2_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 2 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_stddev_2_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-03-P along axis 2 (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_magnitude_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed magnitude in TEA-3D-ANEM-03-P (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_magnitude_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed magnitude in TEA-3D-ANEM-03-P (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_magnitude_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed magnitude in TEA-3D-ANEM-03-P (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_magnitude_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed magnitude in TEA-3D-ANEM-03-P (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_maxmagnitude_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean maximum wind speed magnitude in TEA-3D-ANEM-03-P (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_maxmagnitude_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the maximum wind speed magnitude in TEA-3D-ANEM-03-P (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_maxmagnitude_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum maximum wind speed magnitude in TEA-3D-ANEM-03-P (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex125_wind_speed_maxmagnitude_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum maximum wind speed magnitude in TEA-3D-ANEM-03-P (salIndex 125).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 125
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex126_sonic_temperature_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: mt_salindex126_sonic_temperature_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the median sonic temperature (air temperature measured sonically). Sonic temperature has poor absolute accuracy (it can be off by several degrees) but good time resolution.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperature
+    - name: salIndex
+
+- name: mt_salindex126_sonic_temperature_stddev_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"meta.ucd;stat.mean"}
+  description: Standard deviation of the mean standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperatureStdDev
+    - name: salIndex
+
+- name: mt_salindex126_sonic_temperature_stddev_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"deg_C", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of sonic temperature (air temperature measured sonically) estimated from quartiles.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: sonicTemperatureStdDev
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_0_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 0 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_0_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 0 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_0_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 0 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_0_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 0 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed0
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_1_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 1 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_1_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 1 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_1_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 1 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_1_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 1 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed1
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_2_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 2 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_2_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 2 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_2_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 2 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_2_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed (x, y, z) in TEA-3D-ANEM-04-S along axis 2 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speed2
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_0_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 0 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_0_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 0 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_0_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 0 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_0_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 0 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev0
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_1_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 1 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_1_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 1 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_1_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 1 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_1_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 1 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev1
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_2_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 2 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_2_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 2 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_2_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 2 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_stddev_2_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum standard deviation of wind speed (x, y, z) estimated from quartiles in TEA-3D-ANEM-04-S along axis 2 (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedStdDev2
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_magnitude_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean median wind speed magnitude in TEA-3D-ANEM-04-S (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_magnitude_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the median wind speed magnitude in TEA-3D-ANEM-04-S (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_magnitude_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum median wind speed magnitude in TEA-3D-ANEM-04-S (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_magnitude_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum median wind speed magnitude in TEA-3D-ANEM-04-S (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMagnitude
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_maxmagnitude_mean
+  tables: ["exposure_efd","visit1_efd"]
+  function: mean
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.mean"}
+  description: Mean maximum wind speed magnitude in TEA-3D-ANEM-04-S (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_maxmagnitude_stddev
+  tables: ["exposure_efd","visit1_efd"]
+  function: stddev
+  function_args: {"ddof": 1}
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"stat.stdev"}
+  description: Standard deviation of the maximum wind speed magnitude in TEA-3D-ANEM-04-S (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_maxmagnitude_min
+  tables: ["exposure_efd","visit1_efd"]
+  function: min
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.min"}
+  description: Minimum maximum wind speed magnitude in TEA-3D-ANEM-04-S (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
+- name: mt_salindex126_wind_speed_maxmagnitude_max
+  tables: ["exposure_efd","visit1_efd"]
+  function: max
+  datatype: float
+  ivoa: {"unit":"m/s", "ucd":"meta.ucd;stat.max"}
+  description: Maximum maximum wind speed magnitude in TEA-3D-ANEM-04-S (salIndex 126).
+  packed_series: False
+  subset_field: salIndex
+  subset_value: 126
+  topics:
+  - name: lsst.sal.ESS.airTurbulence
+    fields:
+    - name: speedMaxMagnitude
+    - name: salIndex
+
 - name: mt_salindex301_airflow_speed_mean
   tables: ["exposure_efd","visit1_efd"]
   function: mean
@@ -14213,7 +16413,7 @@ columns:
     - name: accelerationPSDZ96
     - name: accelerationPSDZ97
     - name: accelerationPSDZ98
-    - name: accelerationPSDZ100
+    - name: accelerationPSDZ99
 
 - name: mt_vibration_data_max
   tables: ["exposure_efd_unpivoted","visit1_efd_unpivoted"]
@@ -14525,7 +16725,7 @@ columns:
     - name: accelerationPSDZ96
     - name: accelerationPSDZ97
     - name: accelerationPSDZ98
-    - name: accelerationPSDZ101
+    - name: accelerationPSDZ99
 
 - name: mt_vibration_data_min
   tables: ["exposure_efd_unpivoted","visit1_efd_unpivoted"]
@@ -14837,7 +17037,7 @@ columns:
     - name: accelerationPSDZ96
     - name: accelerationPSDZ97
     - name: accelerationPSDZ98
-    - name: accelerationPSDZ102
+    - name: accelerationPSDZ99
 
 - name: mt_logevent_annular_zernike_coeff
   tables: ["exposure_efd_unpivoted","visit1_efd_unpivoted"]
@@ -16882,3 +19082,171 @@ columns:
     fields:
     - name: temperatureItem7
     - name: salIndex
+
+- name: mt_m1m3_x_gradient_mean
+  tables: ["visit1_efd"]
+  function: mean
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.mean"}
+  description: Mean M1M3 temperature gradient along X axis over the visit window (2 min lookback).
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.m1m3ThermalGradients
+    fields:
+    - name: xGradient
+
+- name: mt_m1m3_y_gradient_mean
+  tables: ["visit1_efd"]
+  function: mean
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.mean"}
+  description: Mean M1M3 temperature gradient along Y axis over the visit window (2 min lookback).
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.m1m3ThermalGradients
+    fields:
+    - name: yGradient
+
+- name: mt_m1m3_z_gradient_mean
+  tables: ["visit1_efd"]
+  function: mean
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.mean"}
+  description: Mean M1M3 temperature gradient along Z axis over the visit window (2 min lookback).
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.m1m3ThermalGradients
+    fields:
+    - name: zGradient
+
+- name: mt_m1m3_radial_gradient_mean
+  tables: ["visit1_efd"]
+  function: mean
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.mean"}
+  description: Mean M1M3 radial temperature gradient over the visit window (2 min lookback).
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.m1m3ThermalGradients
+    fields:
+    - name: radialGradient
+
+- name: mt_m1m3_x_gradient_error_mean
+  tables: ["visit1_efd"]
+  function: mean
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.mean"}
+  description: Mean estimated error of M1M3 temperature gradient along X axis over the visit window (2 min lookback).
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.m1m3ThermalGradients
+    fields:
+    - name: xGradientError
+
+- name: mt_m1m3_y_gradient_error_mean
+  tables: ["visit1_efd"]
+  function: mean
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.mean"}
+  description: Mean estimated error of M1M3 temperature gradient along Y axis over the visit window (2 min lookback).
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.m1m3ThermalGradients
+    fields:
+    - name: yGradientError
+
+- name: mt_m1m3_z_gradient_error_mean
+  tables: ["visit1_efd"]
+  function: mean
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.mean"}
+  description: Mean estimated error of M1M3 temperature gradient along Z axis over the visit window (2 min lookback).
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.m1m3ThermalGradients
+    fields:
+    - name: zGradientError
+
+- name: mt_m1m3_radial_gradient_error_mean
+  tables: ["visit1_efd"]
+  function: mean
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.mean"}
+  description: Mean estimated error of M1M3 radial temperature gradient over the visit window (2 min lookback).
+  packed_series: False
+  topics:
+  - name: lsst.sal.ESS.m1m3ThermalGradients
+    fields:
+    - name: radialGradientError
+
+- name: mt_m1m3_bulk_temperature_median
+  tables: ["visit1_efd"]
+  function: m1m3_bulk_temperature_median
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.median"}
+  description: Median bulk temperature of M1M3 glass from thermocouples (scanners 114-117), with 2 min lookback.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: [114, 115, 116, 117]
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: temperatureItem1
+    - name: temperatureItem2
+    - name: temperatureItem3
+    - name: temperatureItem4
+    - name: temperatureItem5
+    - name: temperatureItem6
+    - name: temperatureItem7
+    - name: temperatureItem8
+    - name: temperatureItem9
+    - name: temperatureItem10
+    - name: temperatureItem11
+    - name: temperatureItem12
+    - name: temperatureItem13
+    - name: temperatureItem14
+    - name: temperatureItem15
+    - name: salIndex
+    - name: sensorName
+
+- name: mt_m1m3_bulk_temperature_mean
+  tables: ["visit1_efd"]
+  function: m1m3_bulk_temperature_mean
+  start_offset: -0.033
+  datatype: float
+  ivoa: {"unit": "deg_C", "ucd": "phys.temperature;stat.mean"}
+  description: Mean bulk temperature of M1M3 glass from thermocouples (scanners 114-117), with 2 min lookback.
+  packed_series: False
+  subset_field: salIndex
+  subset_value: [114, 115, 116, 117]
+  topics:
+  - name: lsst.sal.ESS.temperature
+    fields:
+    - name: temperatureItem0
+    - name: temperatureItem1
+    - name: temperatureItem2
+    - name: temperatureItem3
+    - name: temperatureItem4
+    - name: temperatureItem5
+    - name: temperatureItem6
+    - name: temperatureItem7
+    - name: temperatureItem8
+    - name: temperatureItem9
+    - name: temperatureItem10
+    - name: temperatureItem11
+    - name: temperatureItem12
+    - name: temperatureItem13
+    - name: temperatureItem14
+    - name: temperatureItem15
+    - name: salIndex
+    - name: sensorName
