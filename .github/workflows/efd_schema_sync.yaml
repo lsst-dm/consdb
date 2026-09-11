@@ -52,6 +52,31 @@ jobs:
           TICKET_NAME=$(echo "$BRANCH" | sed -E 's/tickets\/(DM-[0-9]+).*/\1/')
           echo "ticket_name=$TICKET_NAME" >> $GITHUB_OUTPUT
 
+      # Mint a short-lived installation token for the sdm-schemas-sync-bot App.
+      # The App is owned by the 'lsst' org and installed only on lsst/sdm_schemas,
+      # so PRs it opens are authored by sdm-schemas-sync-bot[bot].
+      - name: Generate sdm_schemas app token
+        if: steps.validate.outputs.should_sync == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SDM_SCHEMAS_SYNC_APP_ID }}
+          private-key: ${{ secrets.SDM_SCHEMAS_SYNC_APP_PRIVATE_KEY }}
+          owner: lsst
+          repositories: sdm_schemas
+
+      # Resolve the App's bot user id, needed to form a commit email that
+      # GitHub links back to the bot account.
+      - name: Get app user id
+        if: steps.validate.outputs.should_sync == 'true'
+        id: app-user
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          echo "user_id=$user_id" >> "$GITHUB_OUTPUT"
+
       # Checkout source repo ('main' branch) to get latest schema files.
       - name: Checkout consdb (source)
         if: steps.validate.outputs.should_sync == 'true'
@@ -61,14 +86,14 @@ jobs:
           path: consdb_source
           fetch-depth: 0
 
-      # Checkout destination repo using a PAT for write access.
+      # Checkout destination repo using the app token for write access.
       - name: Checkout sdm_schemas (destination)
         if: steps.validate.outputs.should_sync == 'true'
         uses: actions/checkout@v4
         with:
           repository: lsst/sdm_schemas
           path: sdm_schemas_dest
-          token: ${{ secrets.SDM_SCHEMAS_PR }}
+          token: ${{ steps.app-token.outputs.token }}
 
       # Copy new or modified schema files to destination. Set 'has_changes' output.
       - name: Synchronize sdm_schemas from consdb (Safe, Add/Update Only)
@@ -101,7 +126,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           path: sdm_schemas_dest
-          token: ${{ secrets.SDM_SCHEMAS_PR }}
+          token: ${{ steps.app-token.outputs.token }}
           branch: ${{ env.BRANCH_NAME }}
           base: main
           delete-branch: true
@@ -129,5 +154,5 @@ jobs:
             - [ ] Added a news fragment [describing the changes](/lsst/sdm_schemas/blob/main/docs/changes/README.md)
           labels: automated, schemas, sync
           draft: false
-          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
+          committer: ${{ steps.app-token.outputs.app-slug }}[bot] <${{ steps.app-user.outputs.user_id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>
+          author: ${{ steps.app-token.outputs.app-slug }}[bot] <${{ steps.app-user.outputs.user_id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com>
