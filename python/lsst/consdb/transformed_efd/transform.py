@@ -136,11 +136,14 @@ class Transform:
         """Compute column value using named transformation."""
 
         ts_start = pandas.to_datetime(start_time.utc.datetime, utc=True)
+        # With start_offset, window is [obs_start + offset, obs_start]
+        # (lookback ending at exposure begin), not through obs_end.
         start_offset = function_kwargs.pop("start_offset", None)
         if start_offset is not None:
+            ts_end = ts_start
             ts_start += pandas.Timedelta(start_offset, unit="h")
-
-        ts_end = pandas.to_datetime(end_time.utc.datetime, utc=True)
+        else:
+            ts_end = pandas.to_datetime(end_time.utc.datetime, utc=True)
 
         valid_series = []
 
