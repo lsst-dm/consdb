@@ -17,7 +17,7 @@ import sqlalchemy as sa
 import yaml
 from fastapi.testclient import TestClient
 from felis.datamodel import Schema
-from felis.db.utils import DatabaseContext
+from felis.db.database_context import create_database_context
 from felis.metadata import MetaDataBuilder
 from felis.tests.postgresql import setup_postgres_test_db
 from lsst.consdb import pqserver
@@ -79,7 +79,7 @@ def lsstcam_client():
         os.environ["POSTGRES_URL"] = instance.url
         config.postgres_url = instance.url
 
-        context = DatabaseContext(md, instance.engine)
+        context = create_database_context(instance.engine.url, md)
         context.initialize()
         context.create_all()
 

@@ -10,7 +10,7 @@ from astropy.table import Table
 from astropy.time import Time
 from fastapi.testclient import TestClient
 from felis.datamodel import Schema
-from felis.db.utils import DatabaseContext
+from felis.db.database_context import create_database_context
 from felis.metadata import MetaDataBuilder
 from felis.tests.postgresql import setup_postgres_test_db
 from lsst.consdb import pqserver
@@ -77,7 +77,7 @@ def lsstcomcamsim(request, astropy_tables, scope="module"):
         os.environ["POSTGRES_URL"] = instance.url
         config.postgres_url = instance.url
 
-        context = DatabaseContext(md, instance.engine)
+        context = create_database_context(instance.engine.url, md)
         context.initialize()
         context.create_all()
 
@@ -360,12 +360,12 @@ def lsstcam_schema_client(scope="module"):
         os.environ["POSTGRES_URL"] = instance.url
         config.postgres_url = instance.url
 
-        DatabaseContext(cdb_md, instance.engine).initialize()
-        DatabaseContext(cdb_md, instance.engine).create_all()
-        DatabaseContext(efd_md, instance.engine).initialize()
-        DatabaseContext(efd_md, instance.engine).create_all()
-        DatabaseContext(scheduler_md, instance.engine).initialize()
-        DatabaseContext(scheduler_md, instance.engine).create_all()
+        create_database_context(instance.engine.url, cdb_md).initialize()
+        create_database_context(instance.engine.url, cdb_md).create_all()
+        create_database_context(instance.engine.url, efd_md).initialize()
+        create_database_context(instance.engine.url, efd_md).create_all()
+        create_database_context(instance.engine.url, scheduler_md).initialize()
+        create_database_context(instance.engine.url, scheduler_md).create_all()
 
         client = TestClient(pqserver.app)
         yield client
@@ -383,8 +383,8 @@ def lsstcam_no_efd_schema_client(scope="module"):
         os.environ["POSTGRES_URL"] = instance.url
         config.postgres_url = instance.url
 
-        DatabaseContext(cdb_md, instance.engine).initialize()
-        DatabaseContext(cdb_md, instance.engine).create_all()
+        create_database_context(instance.engine.url, cdb_md).initialize()
+        create_database_context(instance.engine.url, cdb_md).create_all()
 
         client = TestClient(pqserver.app)
         yield client
