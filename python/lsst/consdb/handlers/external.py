@@ -780,19 +780,21 @@ def query(
         JSON response with 200 HTTP status on success.
         Response is a dict with a ``columns`` key with value being a list
         of string column names and a ``data`` key with value being a list
-        of rows.
+        of rows, plus a ``truncated`` flag.
 
     Notes
     -----
     Results are capped at ``config.max_rows`` rows. This is 1 million rows
     by default. If the query returns more rows than this limit, the remaining
-    rows are discarded.
+    rows are discarded and ``truncated`` is set to True in the response so
+    that callers can distinguish between a complete result and a truncated one.
     """
 
     logger.info("pqserver query endpoint:\n%r", data.query)
 
     columns = []
     rows = []
+    truncated = False
 
     with db.begin() as transaction:
         result = None
@@ -814,6 +816,13 @@ def query(
                         break
                     rows.extend([list(r) for r in batch])
                     rows_fetched += len(batch)
+
+                # After we reach the cap, peek into one more row. If it exists,
+                # set the truncated flag.
+                if rows_fetched >= config.max_rows:
+                    truncated = bool(result.fetchmany(1))
+                    if truncated:
+                        logger.warning("query truncated at %d rows:\n%r", config.max_rows, data.query)
             else:
                 columns = ["commit"]
                 rows = [[commit]]
@@ -827,6 +836,7 @@ def query(
     return QueryResponseModel(
         columns=columns,
         data=rows,
+        truncated=truncated,
     )
 
 
