@@ -1,4 +1,4 @@
-version: 1.1.0
+version: 1.2.0
 columns:
 - name: mt_azimuth_encoder_absolute_position_0_rms_jitter
   tables: ["exposure_efd"]
