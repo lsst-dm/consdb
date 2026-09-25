@@ -73,6 +73,8 @@ Quick Reference for Experienced Contributors
 
    python -m pytest tests/
 
+6. **Submit the instrument schema to** ``lsst/sdm_schemas`` **manually** (see **Schema Propagation** below). There is no automated sync.
+
 **Adding New Function (3-minute workflow):**
 
 1. **Add method to Summary class:**
@@ -596,7 +598,15 @@ Follow these steps to add or modify a transformed metric:
    Submit to the ``lsst-dm/consdb`` repository for review.
 
 8. **Schema Propagation**
-   Once approved and merged, an automated workflow propagates schema changes to the ``lsst/sdm_schemas`` repository. Follow the checklist in the generated SDM schemas pull request.
+   Schema files are **not** copied to ``lsst/sdm_schemas`` automatically.
+   After the ConsDB pull request is ready (the generated ``efd_<instrument>.yaml`` is stable), open a matching pull request in `sdm_schemas <https://github.com/lsst/sdm_schemas>`__ yourself:
+
+   - Copy the instrument schema YAML files from ``python/lsst/consdb/transformed_efd/schemas/yml/`` in this repository to ``python/lsst/sdm/schemas/`` in ``lsst/sdm_schemas``.
+   - Include only the instrument schemas: ``efd_latiss.yaml``, ``efd_lsstcomcam.yaml``, and ``efd_lsstcam.yaml``. Do not copy ``efd_scheduler.yaml``.
+   - Add or update files; do not delete schemas in ``sdm_schemas`` unless that deletion is an explicit, reviewed change.
+   - Follow the checklist in the `sdm_schemas contribution guide <https://github.com/lsst/sdm_schemas/blob/main/CONTRIBUTING.md>`__ (schema version, news fragment, Jenkins, and any schema-specific constraints).
+
+   Published column documentation at https://sdm-schemas.lsst.io/ is generated from ``sdm_schemas``, so instrument schema pages stay outdated until that pull request is merged.
 
 Adding New Transformation Methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

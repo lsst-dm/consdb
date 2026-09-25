@@ -82,7 +82,7 @@ The unpivoted tables were created to handle cases where there were too many colu
 
   .. note::
 
-     Science Data Models:
+     Science Data Models (published from ``lsst/sdm_schemas`` after the instrument YAML is submitted there; not synced automatically from ConsDB):
 
      - LATISS: https://sdm-schemas.lsst.io/efd_latiss.html
      - LSSTCam: https://sdm-schemas.lsst.io/efd_lsstcam.html
