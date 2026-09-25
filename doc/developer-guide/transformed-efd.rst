@@ -1126,6 +1126,8 @@ Scenario 2: Adding Support for a New Instrument
 
    python ./python/lsst/consdb/transformed_efd/generate_schema_from_config.py --instrument newcam
 
+   Copy the generated ``efd_newcam.yaml`` into ``lsst/sdm_schemas`` (``python/lsst/sdm/schemas/``) in a separate pull request. Instrument schemas are not synced automatically.
+
 4. **Create Alembic migration:**
 
 .. code-block:: bash
