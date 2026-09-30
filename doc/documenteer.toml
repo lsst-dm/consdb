@@ -1,11 +1,27 @@
 [project]
 title = "ConsDB"
-copyright = "GNU General Public License v3"
+# Copyright information displayed on the footer of each page
+copyright = "2019-2026 Association of Universities for Research in Astronomy, Inc. (AURA)"
 
 [project.python]
 package = "consdb"
 
 [sphinx]
+# Where sphinx-automodapi writes the stub page for each documented object.
+# doc/.gitignore already ignores this directory name.
+python_api_dir = "py-api"
+
+# Sphinx runs nitpicky, so every type named in a docstring must resolve.
+nitpick_ignore_regex = [
+    # Subscripted builtin generics, e.g. `list[str]`, written in docstrings.
+    ["py:obj", "^(list|dict|set|tuple|frozenset)\\[.*"],
+]
 disable_primary_sidebars = [
     "index"
 ]
+
+[sphinx.intersphinx.projects]
+ts-xml = "https://ts-xml.lsst.io"
+salobj = "https://ts-salobj.lsst.io"
+python = "https://docs.python.org/3.13/"
+sqlalchemy = "https://docs.sqlalchemy.org/en/20/"

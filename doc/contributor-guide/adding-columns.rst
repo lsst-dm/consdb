@@ -33,6 +33,13 @@ Checklist
 - The ConsDB team will then generate a schema migration and deploy it at an appropriate time.
   After the schema has been migrated, the data source can begin to populate it.
 
+- If the column comes from a header keyword, the ``hinfo`` service must learn to fill it.
+  The :doc:`../developer-guide/hinfo` page gives the mapping to change.
+  The same page gives the way to fill the column for images from the past.
+
+- Decide the new version of the schema.
+  The :doc:`../user-guide/schemas` page gives the rules.
+
 
 .. _add-columns-structure:
 
@@ -77,3 +84,20 @@ Column descriptions
 - The description can be several sentences; completeness is more important than conciseness.
 - Include `units <https://www.ivoa.net/documents/VOUnits/>`__ for measurements.  Note that these should follow IVOA standards whenever possible, and Astropy unit standards if not.
 - Include a `Unified Content Descriptor (UCD) <https://ivoa.net/documents/UCD1+/20230125/index.html>`__ indicating the meaning of the column.
+
+A column entry in the ``sdm_schemas`` YAML looks like this:
+
+.. code-block:: yaml
+
+   - name: mount_jitter_rms
+     "@id": "#exposure_quicklook.mount_jitter_rms"
+     datatype: float
+     nullable: true
+     description: >
+       RMS of the mount tracking error over the exposure, computed from the
+       azimuth and elevation encoder readings.
+     ivoa:ucd: stat.stdev;pos.az;pos.alt
+     fits:tunit: arcsec
+
+The existing entries in the `schema files <https://github.com/lsst/sdm_schemas/tree/main/python/lsst/sdm/schemas>`__ (``cdb_*.yaml`` and ``efd_*.yaml``) are the best models to copy.
+The `sdm_schemas documentation <https://sdm-schemas.lsst.io>`__ gives the full set of keys and the rules of that repository.

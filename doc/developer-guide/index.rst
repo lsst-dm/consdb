@@ -6,7 +6,12 @@ Developer Guide
    :maxdepth: 1
 
    repository-structure
+   local-environment
    building-artifacts
    standards-practices
-   documentation
+   api
+   pqserver
+   hinfo
+   alembic
    transformed-efd
+   wide-views
