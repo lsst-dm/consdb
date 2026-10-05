@@ -45,6 +45,7 @@ from ..dependencies import (
     get_instrument_list,
     get_instrument_table,
     get_logger,
+    require_writer,
 )
 from ..exceptions import BadValueException
 from ..models import (
@@ -137,6 +138,7 @@ def table_consistency(
 
 @external_router.post(
     "/flex/{instrument}/{obs_type}/addkey",
+    dependencies=[Depends(require_writer)],
     summary="Add a flexible metadata key",
     description="Add a flexible metadata key for the specified instrument and obs_type.",
 )
@@ -228,7 +230,10 @@ def get_flexible_metadata(
     return result
 
 
-@external_router.post("/flex/{instrument}/{obs_type}/obs/{obs_id}")
+@external_router.post(
+    "/flex/{instrument}/{obs_type}/obs/{obs_id}",
+    dependencies=[Depends(require_writer)],
+)
 def insert_flexible_metadata(
     instrument: InstrumentName,
     obs_type: ObsTypeEnum,
@@ -478,6 +483,7 @@ def _insert_by_day_obs_seq_num(
 
 @external_router.post(
     "/insert/{instrument}/{table}/by_seq_num/{day_obs}/{seq_num}",
+    dependencies=[Depends(require_writer)],
     summary="Insert data row indexed by day_obs and seq_num",
 )
 def insert_by_day_obs_seq_num(
@@ -507,6 +513,7 @@ def insert_by_day_obs_seq_num(
 
 @external_router.post(
     "/insert/{instrument}/{table}/by_seq_num/{day_obs}/{seq_num}/{detector}",
+    dependencies=[Depends(require_writer)],
     summary="Insert data row indexed by day_obs, seq_num, and detector",
 )
 def insert_by_day_obs_seq_num_detector(
@@ -537,6 +544,7 @@ def insert_by_day_obs_seq_num_detector(
 
 @external_router.post(
     "/insert/{instrument}/{table}/obs/{obs_id}",
+    dependencies=[Depends(require_writer)],
     summary="Insert data row",
 )
 def insert(
@@ -610,6 +618,7 @@ def insert(
 
 @external_router.post(
     "/insert/{instrument}/{table}",
+    dependencies=[Depends(require_writer)],
     summary="Insert multiple data rows",
 )
 def insert_multiple(
