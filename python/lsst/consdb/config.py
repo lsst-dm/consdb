@@ -4,7 +4,7 @@ import logging
 import re
 import sys
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings
 
 __all__ = ["Configuration", "config"]
@@ -74,6 +74,42 @@ class Configuration(BaseSettings):
         "https://consdb.lsst.io/index.html", title="URL for documentation of this project."
     )
 
+    write_auth_enabled: bool = Field(
+        False,
+        title="Require a Gafaelfawr token to write",
+        description="""If true, the insert and flexible metadata write endpoints
+            require an ``Authorization: Bearer`` Gafaelfawr token belonging to
+            one of the users in ``allowed_writers``. Set by WRITE_AUTH_ENABLED.
+        """,
+    )
+
+    allowed_writers: list[str] = Field(
+        [],
+        title="Usernames allowed to write",
+        description="""Gafaelfawr usernames (normally service token users such
+            as ``bot-rapid-analysis``) allowed to use the write endpoints when
+            ``write_auth_enabled`` is true. Set by ALLOWED_WRITERS as a JSON
+            list.
+        """,
+    )
+
+    gafaelfawr_url: str | None = Field(
+        None,
+        title="Base URL of Gafaelfawr",
+        description="""Base URL used to verify tokens, such as
+            ``https://summit-lsp.lsst.codes``. Gafaelfawr only accepts traffic
+            from its ingress, so this must be the external URL rather than a
+            cluster-internal service URL. Set by GAFAELFAWR_URL.
+        """,
+    )
+
+    gafaelfawr_timeout: float = Field(10.0, title="Timeout for Gafaelfawr requests (seconds).")
+
+    write_auth_cache_seconds: int = Field(
+        600,
+        title="How long to cache verified token owners (seconds).",
+    )
+
     @property
     def database_url(self) -> str:
         """Infers the database URL based on the provided configuration.
@@ -98,6 +134,12 @@ class Configuration(BaseSettings):
             return url
 
         raise ValueError("Database connection not specified")
+
+    @model_validator(mode="after")
+    def check_write_auth(self) -> "Configuration":
+        if self.write_auth_enabled and not self.gafaelfawr_url:
+            raise ValueError("GAFAELFAWR_URL must be set when WRITE_AUTH_ENABLED is true")
+        return self
 
     @field_validator("log_config")
     @classmethod
