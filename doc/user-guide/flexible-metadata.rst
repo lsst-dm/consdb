@@ -30,7 +30,7 @@ The data content is a JSON object containing:
 
 This API is also available via ``lsst.summit.utils.ConsDbClient`` as the ``add_flexible_metadata_key()`` method.
 
-After the key has been added, values can be added or updated using a POST to the ``/flex/{instrument}/{obs_type}/obs/{obs_id}`` REST API endpoint.
+After the key has been added, values can be added or updated using a POST to the ``/flex/{instrument}/{obs_type}/obs/{obs_id}/update`` REST API endpoint.
 The ``obs_id`` is either the ``exposure_id`` or ``ccdexposure_id`` as an integer.
 (It will automatically be converted to ``day_obs`` and ``seq_num`` as needed.)
 A ``?u=1`` query parameter can be added to the URL to indicate that the values should be updated rather than inserted if the primary key is already present.

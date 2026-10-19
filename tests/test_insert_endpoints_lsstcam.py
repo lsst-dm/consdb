@@ -488,7 +488,7 @@ def test_flexdata_rejects_non_scalar_values(lsstcam_client, lsstcam_tables, row_
     _assert_http_status(response, 200)
 
     response = lsstcam_client.post(
-        f"/consdb/flex/lsstcam/exposure/obs/{int(row['exposure_id'])}",
+        f"/consdb/flex/lsstcam/exposure/obs/{int(row['exposure_id'])}/update",
         json={"values": {"flex_scalar_guard": {"a": 1}}},
     )
     _assert_http_status(response, 422)
