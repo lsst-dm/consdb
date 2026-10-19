@@ -228,7 +228,7 @@ def get_flexible_metadata(
     return result
 
 
-@external_router.post("/flex/{instrument}/{obs_type}/obs/{obs_id}")
+@external_router.post("/flex/{instrument}/{obs_type}/obs/{obs_id}/update")
 def insert_flexible_metadata(
     instrument: InstrumentName,
     obs_type: ObsTypeEnum,

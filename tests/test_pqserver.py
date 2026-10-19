@@ -765,7 +765,7 @@ def test_flexible_metadata(lsstcomcamsim):
     assert "baz2" in result
 
     response = client.post(
-        "/consdb/flex/latiss/exposure/obs/7024040300451",
+        "/consdb/flex/latiss/exposure/obs/7024040300451/update",
         json={"values": {"foo2": True, "bar2": 42, "baz2": 3.14159}},
     )
     _assert_http_status(response, 200)
@@ -774,7 +774,7 @@ def test_flexible_metadata(lsstcomcamsim):
     assert result["obs_id"] == 7024040300451
 
     response = client.post(
-        "/consdb/flex/latiss/exposure/obs/7024040300451",
+        "/consdb/flex/latiss/exposure/obs/7024040300451/update",
         json={"values": {"foo2": True, "bar2": 42, "baz2": 3.14159}},
     )
     _assert_http_status(response, 500)
@@ -782,7 +782,7 @@ def test_flexible_metadata(lsstcomcamsim):
     assert "already exists" in result["message"]
 
     response = client.post(
-        "/consdb/flex/latiss/exposure/obs/7024040300451",
+        "/consdb/flex/latiss/exposure/obs/7024040300451/update",
         json={"values": {"bad_key": 2.71828}},
     )
     _assert_http_status(response, 404)
@@ -809,7 +809,7 @@ def test_flexible_metadata(lsstcomcamsim):
     assert result == {"bar2": 42, "baz2": 3.14159}
 
     response = client.post(
-        "/consdb/flex/latiss/exposure/obs/7024052800003?u=1",
+        "/consdb/flex/latiss/exposure/obs/7024052800003/update?u=1",
         json={"values": {"foo": False, "bar": 34, "baz": 2.71828}},
     )
     _assert_http_status(response, 200)
@@ -826,7 +826,7 @@ def test_flexible_metadata(lsstcomcamsim):
     result = response.json()
     assert result == {"baz": 2.71828}
 
-    response = client.post("/consdb/flex/latiss/exposure/obs/7024052800003", json={})
+    response = client.post("/consdb/flex/latiss/exposure/obs/7024052800003/update", json={})
     _assert_http_status(response, 422)
     result = response.json()["detail"][0]
     assert "Field required" in result["msg"]
