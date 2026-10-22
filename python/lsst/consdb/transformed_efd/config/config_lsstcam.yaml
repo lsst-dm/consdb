@@ -18719,6 +18719,7 @@ columns:
 - name: mt_ringss_fwhm_free
   tables: ["exposure_efd","visit1_efd"]
   function: mean
+  start_offset: -0.0833
   datatype: float
   ivoa: {"unit":"arcsec", "ucd":"meta.ucd;stat.mean"}
   description: Mean RINGSS free seeing full width half maximum.
@@ -18731,6 +18732,7 @@ columns:
 - name: mt_ringss_fwhm_scintillation
   tables: ["exposure_efd","visit1_efd"]
   function: mean
+  start_offset: -0.0833
   datatype: float
   ivoa: {"unit":"arcsec", "ucd":"meta.ucd;stat.mean"}
   description: Mean RINGSS scintillation seeing full width half maximum.
@@ -18743,6 +18745,7 @@ columns:
 - name: mt_ringss_fwhm_sector
   tables: ["exposure_efd","visit1_efd"]
   function: mean
+  start_offset: -0.0833
   datatype: float
   ivoa: {"unit":"arcsec", "ucd":"meta.ucd;stat.mean"}
   description: Mean RINGSS sector seeing full width half maximum.
