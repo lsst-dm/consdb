@@ -136,6 +136,11 @@ class QueryResponseModel(BaseModel):
         title="True if the query returned more rows than the endpoint's row limit",
         description="When true, result has been capped by the row limit.",
     )
+    total_rows: int | None = Field(
+        None,
+        title="Number of rows the query returned before the row limit was applied",
+        description="May be null if the total is unknown or the query does not return rows.",
+    )
 
 
 class TableConsistencyModel(BaseModel):

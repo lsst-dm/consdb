@@ -780,7 +780,7 @@ def query(
         JSON response with 200 HTTP status on success.
         Response is a dict with a ``columns`` key with value being a list
         of string column names and a ``data`` key with value being a list
-        of rows, plus a ``truncated`` flag.
+        of rows, plus a ``truncated`` flag and a ``total_rows`` count.
 
     Notes
     -----
@@ -788,6 +788,8 @@ def query(
     by default. If the query returns more rows than this limit, the remaining
     rows are discarded and ``truncated`` is set to True in the response so
     that callers can distinguish between a complete result and a truncated one.
+    ``total_rows`` gives the number of rows the query produced before the cap
+    was applied, or None if the driver cannot report it.
     """
 
     logger.info("pqserver query endpoint:\n%r", data.query)
@@ -795,6 +797,7 @@ def query(
     columns = []
     rows = []
     truncated = False
+    total_rows = None
 
     with db.begin() as transaction:
         result = None
@@ -805,10 +808,18 @@ def query(
                 "SET LOCAL statement_timeout = %s",
                 (statement_timeout_ms,),
             )
-            result = connection.exec_driver_sql(data.query)
+            result = connection.exec_driver_sql(
+                data.query,
+                execution_options={"preserve_rowcount": True},
+            )
             if result.returns_rows:
                 columns = list(result.keys())
                 rows_fetched = 0
+
+                # Pull total_rows from the result set's rowcount, if available.
+                # If not available, sorry user but you are out of luck.
+                if result.rowcount >= 0:
+                    total_rows = result.rowcount
 
                 while rows_fetched < config.max_rows:
                     batch = result.fetchmany(min(config.fetch_size, config.max_rows - rows_fetched))
@@ -822,7 +833,9 @@ def query(
                 if rows_fetched >= config.max_rows:
                     truncated = bool(result.fetchmany(1))
                     if truncated:
-                        logger.warning("query truncated at %d rows:\n%r", config.max_rows, data.query)
+                        logger.warning(
+                            "query truncated at %d (of %s) rows:\n%r", config.max_rows, total_rows, data.query
+                        )
             else:
                 columns = ["commit"]
                 rows = [[commit]]
@@ -837,6 +850,7 @@ def query(
         columns=columns,
         data=rows,
         truncated=truncated,
+        total_rows=total_rows,
     )
 
 

@@ -468,6 +468,7 @@ def test_query_endpoint(lsstcomcamsim):
         "columns": ["?column?"],
         "data": [[1]],
         "truncated": False,
+        "total_rows": 1,
     }
 
     # Modify the database, but with commit=0. The
@@ -482,6 +483,7 @@ def test_query_endpoint(lsstcomcamsim):
         "columns": ["commit"],
         "data": [[0]],
         "truncated": False,
+        "total_rows": None,
     }
 
     # Check that the rows are still present in the database
@@ -503,6 +505,7 @@ def test_query_endpoint(lsstcomcamsim):
         "columns": ["commit"],
         "data": [[1]],
         "truncated": False,
+        "total_rows": None,
     }
 
     # This time, the rows were deleted, because commit=1.
@@ -530,6 +533,7 @@ def test_query_endpoint_row_limit(lsstcomcamsim, monkeypatch):
     _assert_http_status(response, 200)
     result = response.json()
     assert result["truncated"] is True
+    assert result["total_rows"] == 25
     assert len(result["data"]) == 10
     assert result["data"][0] == [1]
     assert result["data"][-1] == [10]
@@ -542,6 +546,7 @@ def test_query_endpoint_row_limit(lsstcomcamsim, monkeypatch):
     _assert_http_status(response, 200)
     result = response.json()
     assert result["truncated"] is False
+    assert result["total_rows"] == 10
     assert len(result["data"]) == 10
 
     # A result set below the cap is complete.
@@ -552,6 +557,7 @@ def test_query_endpoint_row_limit(lsstcomcamsim, monkeypatch):
     _assert_http_status(response, 200)
     result = response.json()
     assert result["truncated"] is False
+    assert result["total_rows"] == 3
     assert len(result["data"]) == 3
 
 
