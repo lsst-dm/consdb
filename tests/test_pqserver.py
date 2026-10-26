@@ -467,6 +467,8 @@ def test_query_endpoint(lsstcomcamsim):
     assert response.json() == {
         "columns": ["?column?"],
         "data": [[1]],
+        "truncated": False,
+        "total_rows": 1,
     }
 
     # Modify the database, but with commit=0. The
@@ -480,6 +482,8 @@ def test_query_endpoint(lsstcomcamsim):
     assert response.json() == {
         "columns": ["commit"],
         "data": [[0]],
+        "truncated": False,
+        "total_rows": None,
     }
 
     # Check that the rows are still present in the database
@@ -500,6 +504,8 @@ def test_query_endpoint(lsstcomcamsim):
     assert response.json() == {
         "columns": ["commit"],
         "data": [[1]],
+        "truncated": False,
+        "total_rows": None,
     }
 
     # This time, the rows were deleted, because commit=1.
@@ -510,6 +516,49 @@ def test_query_endpoint(lsstcomcamsim):
     _assert_http_status(response, 200)
     response_json = response.json()
     assert response_json["data"][0][0] == 0
+
+
+@pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
+def test_query_endpoint_row_limit(lsstcomcamsim, monkeypatch):
+    client = lsstcomcamsim
+
+    monkeypatch.setattr(config, "max_rows", 10)
+    monkeypatch.setattr(config, "fetch_size", 4)
+
+    # A result set larger than the cap is truncated and flagged.
+    response = client.post(
+        "/consdb/query",
+        json={"query": "SELECT * FROM generate_series(1, 25);"},
+    )
+    _assert_http_status(response, 200)
+    result = response.json()
+    assert result["truncated"] is True
+    assert result["total_rows"] == 25
+    assert len(result["data"]) == 10
+    assert result["data"][0] == [1]
+    assert result["data"][-1] == [10]
+
+    # A result set exactly at the cap is complete, not truncated.
+    response = client.post(
+        "/consdb/query",
+        json={"query": "SELECT * FROM generate_series(1, 10);"},
+    )
+    _assert_http_status(response, 200)
+    result = response.json()
+    assert result["truncated"] is False
+    assert result["total_rows"] == 10
+    assert len(result["data"]) == 10
+
+    # A result set below the cap is complete.
+    response = client.post(
+        "/consdb/query",
+        json={"query": "SELECT * FROM generate_series(1, 3);"},
+    )
+    _assert_http_status(response, 200)
+    result = response.json()
+    assert result["truncated"] is False
+    assert result["total_rows"] == 3
+    assert len(result["data"]) == 3
 
 
 @pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
@@ -852,7 +901,6 @@ def test_flexible_metadata(lsstcomcamsim):
     )
     _assert_http_status(response, 200)
     result = response.json()
-    assert len(result) == 2
     assert "exposure_id" in result["columns"]
     assert 2024032100003 in result["data"][0]
     assert "CC_S_20240403_000451" in result["data"][1]
