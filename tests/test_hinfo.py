@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import astropy.units as u
 import lsst.utils
 import pytest
 import sqlalchemy as sa
@@ -67,3 +68,31 @@ def test_process_resource(pg_engine):
     assert _header_lookup(header, "VIGN_MIN") == row.vignette_min
     assert _header_lookup(header, "DOMEAZ") == row.dome_azimuth
     assert _header_lookup(header, "OBSANNOT") == row.scheduler_note
+
+
+def test_altaz_midpoint_uses_location():
+    from astropy.coordinates import AltAz, EarthLocation, SkyCoord
+    from astropy.time import Time
+    from lsst.obs.lsst.translators.lsst import SIMONYI_LOCATION
+
+    radec = SkyCoord(ra=150.0 * u.deg, dec=-30.0 * u.deg)
+    t1 = Time("2026-05-11T03:00:00", scale="tai")
+    t2 = Time("2026-05-11T03:00:30", scale="tai")
+    begin = AltAz(az=10.0 * u.deg, alt=60.0 * u.deg)
+    end = AltAz(az=12.0 * u.deg, alt=62.0 * u.deg)
+
+    altaz = hinfo.altaz_midpoint(radec, t1, t2, begin, end, SIMONYI_LOCATION)
+    expected = radec.transform_to(
+        AltAz(obstime=Time("2026-05-11T03:00:15", scale="tai"), location=SIMONYI_LOCATION)
+    )
+    assert abs(altaz.alt - expected.alt).to_value(u.arcsec) < 1e-6
+    assert abs(altaz.az - expected.az).to_value(u.arcsec) < 1e-6
+
+    # A site 1.3 km away gives a measurably different result.
+    other = EarthLocation(lat=-30.24074167 * u.deg, lon=-70.7366833 * u.deg, height=2750 * u.m)
+    altaz_other = hinfo.altaz_midpoint(radec, t1, t2, begin, end, other)
+    assert abs(altaz.alt - altaz_other.alt).to_value(u.arcsec) > 10
+
+    # Without a location, fall back on the endpoints.
+    fallback = hinfo.altaz_midpoint(radec, t1, t2, begin, end, None)
+    assert fallback.alt.deg == pytest.approx(61.0, abs=0.01)
