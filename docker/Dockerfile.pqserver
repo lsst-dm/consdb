@@ -3,7 +3,7 @@ FROM python:3.11
 ARG GITHUB_TAG
 ENV VERSION=${GITHUB_TAG}
 
-RUN pip install fastapi safir astropy uvicorn gunicorn sqlalchemy psycopg2
+RUN pip install fastapi safir astropy uvicorn gunicorn "sqlalchemy<2.1" psycopg2
 WORKDIR /
 COPY \
     python/lsst/consdb/__init__.py \

@@ -18,7 +18,7 @@ WORKDIR /app
 RUN pip install \
     lsst-felis \
     testing.postgresql \
-    alembic sqlalchemy \
+    alembic "sqlalchemy<2.1" \
     pyyaml \
     black \
     psycopg2-binary
