@@ -58,23 +58,34 @@ def generate_upgrade_sqls(schema_metadata, schema_name) -> list[str]:
     for prefix in ("", "ccd"):
         table = schema_metadata.tables[f"{schema_name}.{prefix}exposure"]
 
-        cols = [col.name for col in table.columns]
+        # Only exposures that can see the sky are visits. ccdexposure
+        # has no can_see_sky column, so join to exposure for it, which
+        # means column names must be qualified to avoid ambiguity.
+        qualifier = ""
+        from_clause = f"{schema_name}.{prefix}exposure"
+        if prefix == "ccd":
+            qualifier = "ccdexposure."
+            from_clause += (
+                f"\n    JOIN {schema_name}.exposure ON ccdexposure.exposure_id = exposure.exposure_id"
+            )
+
         view_columns = []
-        for col in cols:
-            if col == "ccdexposure_id":
-                view_columns.append("ccdexposure_id AS ccdvisit_id")
-            elif col == "exposure_id":
-                view_columns.append("exposure_id AS visit_id")
+        for col in table.columns:
+            if col.name == "ccdexposure_id":
+                view_columns.append(f"{qualifier}ccdexposure_id AS ccdvisit_id")
+            elif col.name == "exposure_id":
+                view_columns.append(f"{qualifier}exposure_id AS visit_id")
             else:
-                view_columns.append(col)
+                view_columns.append(f"{qualifier}{col.name}")
 
         view_name = f"{prefix}visit1"
-        view_sql = f"""
-        CREATE OR REPLACE VIEW {schema_name}.{view_name} AS
-        SELECT {", ".join(view_columns)}
-        FROM {schema_name}.{prefix}exposure;
-        """
-        sql.append(view_sql.strip())
+        select_list = ",\n    ".join(view_columns)
+        sql.append(
+            f"CREATE OR REPLACE VIEW {schema_name}.{view_name} AS\n"
+            f"SELECT\n    {select_list}\n"
+            f"FROM {from_clause}\n"
+            "WHERE exposure.can_see_sky IS TRUE;"
+        )
 
         for role in ("usdf", "oods"):
             sql.append(f"GRANT SELECT ON {schema_name}.{view_name} TO {role};")
@@ -84,8 +95,19 @@ def generate_upgrade_sqls(schema_metadata, schema_name) -> list[str]:
 
 def generate_downgrade_sqls(schema_name) -> list[str]:
     return [
-        f"CREATE VIEW {schema_name}.ccdvisit1 AS SELECT * FROM {schema_name}.ccdexposure",
-        f"CREATE VIEW {schema_name}.visit1 AS SELECT * FROM {schema_name}.exposure",
+        (
+            f"CREATE VIEW {schema_name}.ccdvisit1 AS\n"
+            "SELECT ccdexposure.*\n"
+            f"FROM {schema_name}.ccdexposure\n"
+            f"    JOIN {schema_name}.exposure ON ccdexposure.exposure_id = exposure.exposure_id\n"
+            "WHERE exposure.can_see_sky IS TRUE"
+        ),
+        (
+            f"CREATE VIEW {schema_name}.visit1 AS\n"
+            "SELECT *\n"
+            f"FROM {schema_name}.exposure\n"
+            "WHERE can_see_sky IS TRUE"
+        ),
         f"ALTER TABLE {schema_name}.ccdvisit1 RENAME COLUMN ccdexposure_id TO ccdvisit_id",
         f"ALTER TABLE {schema_name}.ccdvisit1 RENAME COLUMN exposure_id TO visit_id",
         f"ALTER TABLE {schema_name}.visit1 RENAME COLUMN exposure_id TO visit_id",

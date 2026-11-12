@@ -20,22 +20,33 @@ depends_on: Union[str, Sequence[str], None] = ${repr(depends_on)}
 <% drop_sqls = config.attributes.get("drop_sqls", []) %>
 <% upgrade_sqls = config.attributes.get("upgrade_sqls", []) %>
 <% downgrade_sqls = config.attributes.get("downgrade_sqls", []) %>
+<%def name="execute(sql)">\
+% if "\n" in sql:
+    op.execute(
+        """
+        ${sql.replace("\n", "\n        ")}
+        """
+    )
+% else:
+    op.execute(${repr(sql)})
+% endif
+</%def>
 
 def upgrade() -> None:
 % for sql in drop_sqls:
-    op.execute(${repr(sql)})
+${execute(sql)}\
 % endfor
     ${upgrades if upgrades else "pass"}
 % for sql in upgrade_sqls:
-    op.execute(${repr(sql)})
+${execute(sql)}\
 % endfor
 
 
 def downgrade() -> None:
 % for sql in drop_sqls:
-    op.execute(${repr(sql)})
+${execute(sql)}\
 % endfor
     ${downgrades if downgrades else "pass"}
 % for sql in downgrade_sqls:
-    op.execute(${repr(sql)})
+${execute(sql)}\
 % endfor
