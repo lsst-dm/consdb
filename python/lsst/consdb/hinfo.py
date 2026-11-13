@@ -353,11 +353,8 @@ def time_midpoint(t1: astropy.time.Time, t2: astropy.time.Time) -> astropy.time.
     return t1 + (t2 - t1) / 2
 
 
-cerro_pachon = EarthLocation(lat=-30.24074167 * u.deg, lon=-70.7366833 * u.deg, height=2750 * u.m)
-
-
 def altaz_midpoint_from_radec(
-    tracking_radec: SkyCoord, t1: astropy.time.Time, t2: astropy.time.Time
+    tracking_radec: SkyCoord, t1: astropy.time.Time, t2: astropy.time.Time, location: EarthLocation
 ) -> AltAz:
     """Return the AltAz of *tracking_radec* at the midpoint of *t1* and *t2*.
 
@@ -367,15 +364,16 @@ def altaz_midpoint_from_radec(
         Target position in an ICRS-like frame (e.g., RA/Dec).
     t1, t2 : `~astropy.time.Time`
         Start and end times.
+    location : `~astropy.coordinates.EarthLocation`
+        Location of the observatory.
 
     Returns
     -------
     `~astropy.coordinates.AltAz`
-        Altitude–azimuth coordinates at the midpoint, using the global
-        *cerro_pachon* (Cerro Pachón).
+        Altitude–azimuth coordinates at the midpoint, as seen from
+        *location*.
     """
-    # global cerro_pachon
-    altaz_frame = AltAz(obstime=time_midpoint(t1, t2), location=cerro_pachon)
+    altaz_frame = AltAz(obstime=time_midpoint(t1, t2), location=location)
     return tracking_radec.transform_to(altaz_frame)
 
 
@@ -409,8 +407,11 @@ def altaz_midpoint(
     datetime_end: astropy.time.Time,
     altaz_begin: AltAz,
     altaz_end: AltAz,
+    location: EarthLocation,
 ) -> AltAz:
     """Return the AltAz using tracking_radec falling back on the endpoints.
+
+    The endpoints are used if either *tracking_radec* or *location* is None.
 
     Parameters
     ----------
@@ -422,14 +423,16 @@ def altaz_midpoint(
         The starting AltAz coordinate.
     altaz_end : `~astropy.coordinates.AltAz`
         The ending AltAz coordinate.
+    location : `~astropy.coordinates.EarthLocation`
+        Location of the observatory, from ObservationInfo.
 
     Returns
     -------
     `~astropy.coordinates.AltAz`
         Altitude–azimuth coordinates at the midpoint.
     """
-    if tracking_radec is not None:
-        return altaz_midpoint_from_radec(tracking_radec, datetime_begin, datetime_end)
+    if tracking_radec is not None and location is not None:
+        return altaz_midpoint_from_radec(tracking_radec, datetime_begin, datetime_end, location)
     else:
         return altaz_midpoint_from_altaz(altaz_begin, altaz_end)
 
@@ -449,35 +452,38 @@ OI_MAPPING: dict[str, ColumnMapping] = {
     "azimuth_start": (lambda altaz: altaz.az.deg, "altaz_begin"),
     "azimuth_end": (lambda altaz: altaz.az.deg, "altaz_end"),
     "azimuth": (
-        lambda coord, t1, t2, altaz1, altaz2: altaz_midpoint(coord, t1, t2, altaz1, altaz2).az.deg,
+        lambda coord, t1, t2, altaz1, altaz2, loc: altaz_midpoint(coord, t1, t2, altaz1, altaz2, loc).az.deg,
         "ACCEPTS_NULL",
         "tracking_radec",
         "datetime_begin",
         "datetime_end",
         "altaz_begin",
         "altaz_end",
+        "location",
     ),
     "altitude_start": (lambda altaz: altaz.alt.deg, "altaz_begin"),
     "altitude_end": (lambda altaz: altaz.alt.deg, "altaz_end"),
     "altitude": (
-        lambda coord, t1, t2, altaz1, altaz2: altaz_midpoint(coord, t1, t2, altaz1, altaz2).alt.deg,
+        lambda coord, t1, t2, altaz1, altaz2, loc: altaz_midpoint(coord, t1, t2, altaz1, altaz2, loc).alt.deg,
         "ACCEPTS_NULL",
         "tracking_radec",
         "datetime_begin",
         "datetime_end",
         "altaz_begin",
         "altaz_end",
+        "location",
     ),
     "zenith_distance_start": (lambda altaz: altaz.zen.deg, "altaz_begin"),
     "zenith_distance_end": (lambda altaz: altaz.zen.deg, "altaz_end"),
     "zenith_distance": (
-        lambda coord, t1, t2, altaz1, altaz2: altaz_midpoint(coord, t1, t2, altaz1, altaz2).zen.deg,
+        lambda coord, t1, t2, altaz1, altaz2, loc: altaz_midpoint(coord, t1, t2, altaz1, altaz2, loc).zen.deg,
         "ACCEPTS_NULL",
         "tracking_radec",
         "datetime_begin",
         "datetime_end",
         "altaz_begin",
         "altaz_end",
+        "location",
     ),
     "airmass": "boresight_airmass",
     "exp_midpt": (lambda t1, t2: time_midpoint(t1, t2).tai.isot, "datetime_begin", "datetime_end"),
