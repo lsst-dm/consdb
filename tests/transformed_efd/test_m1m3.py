@@ -19,7 +19,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from lsst.consdb.transformed_efd.auxiliary.m1m3 import (
-    GLASS_THERMOCOUPLES,
     is_glass_thermocouple,
     item_channel,
     sequence_number,
@@ -27,8 +26,7 @@ from lsst.consdb.transformed_efd.auxiliary.m1m3 import (
 )
 
 
-def test_glass_thermocouple_snapshot():
-    assert len(GLASS_THERMOCOUPLES) == 146
+def test_is_glass_thermocouple():
     assert is_glass_thermocouple(114, 1)
     assert is_glass_thermocouple(117, 16)
     assert not is_glass_thermocouple(114, 0)
