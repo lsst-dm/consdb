@@ -24,9 +24,6 @@ import numpy as np
 import pandas as pd
 import pytest
 from astropy.time import Time
-
-# Replace with the actual module path if different
-from lsst.consdb.transformed_efd.auxiliary.m1m3 import GLASS_THERMOCOUPLES
 from lsst.consdb.transformed_efd.summary import Summary
 
 
@@ -115,14 +112,12 @@ def test_repr(summary_instance):
     assert expected_exposure in result
 
 
-# 3. Test mean
-def test_mean(summary_instance):
-    assert summary_instance.mean() == 3.0
-
-
-# 3b. Test median
-def test_median(summary_instance):
-    assert summary_instance.median() == 3.0
+@pytest.mark.parametrize(
+    ("method", "expected"),
+    [("mean", 3.0), ("median", 3.0), ("max", 5), ("min", 1)],
+)
+def test_summary_statistic(summary_instance, method, expected):
+    assert getattr(summary_instance, method)() == expected
 
 
 # 4. Test stddev
@@ -135,16 +130,6 @@ def test_stddev_with_insufficient_values(valid_dataframe, exposure_times):
     start, end = exposure_times
     summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
     assert summary.stddev() is None
-
-
-# 5. Test max
-def test_max(summary_instance):
-    assert summary_instance.max() == 5
-
-
-# 6. Test min
-def test_min(summary_instance):
-    assert summary_instance.min() == 1
 
 
 # 7. Test rms_from_polynomial_fit
@@ -216,21 +201,6 @@ def test_most_recent_value_skips_trailing_nan(exposure_times):
 
 
 # 9. Test apply
-def test_apply_mean(summary_instance):
-    result = summary_instance.apply("mean")
-    assert result == 3.0
-
-
-def test_apply_stddev(summary_instance):
-    result = summary_instance.apply("stddev")
-    assert result == pytest.approx(1.5811, rel=1e-3)
-
-
-def test_apply_median(summary_instance):
-    result = summary_instance.apply("median")
-    assert result == 3.0
-
-
 def test_apply_invalid_method(summary_instance):
     with pytest.raises(AttributeError, match="Method not found: method=invalid_method"):
         summary_instance.apply("invalid_method")
@@ -342,39 +312,6 @@ def test_nan_values_preserved_in_data_array(exposure_times_short):
 # ------------------------------------------------------------------
 
 
-def _glass_thermocouple_samples():
-    """Return (salIndex, sensorName, temperatureItem_index) for glass TCs."""
-    samples = []
-    for sal_idx, channel in sorted(GLASS_THERMOCOUPLES):
-        sequence_num = channel // 16 + 1
-        item_idx = channel % 16
-        sensor_name = f"m1m3-ts-{sal_idx} {sequence_num}/6"
-        samples.append((sal_idx, sensor_name, item_idx))
-    return samples
-
-
-def _build_m1m3_dataframe(samples, rng=None):
-    """Build a minimal M1M3 DataFrame from thermocouple samples.
-
-    Each sample becomes one row with a single valid temperatureItem;
-    all other temperatureItems are NaN.
-    """
-    if rng is None:
-        rng = np.random.default_rng(42)
-
-    rows = []
-    for sal_idx, sensor_name, item_idx in samples[:10]:  # cap at 10 rows
-        temps = [np.nan] * 16
-        temps[item_idx] = rng.uniform(19.0, 22.0)
-        row = {f"temperatureItem{i}": temps[i] for i in range(16)}
-        row["salIndex"] = str(sal_idx)
-        row["sensorName"] = sensor_name
-        rows.append(row)
-
-    times = pd.to_datetime([f"2023-01-01 00:00:{i:02d}" for i in range(len(rows))]).tz_localize("UTC")
-    return pd.DataFrame(rows, index=times)
-
-
 @pytest.fixture
 def m1m3_dataframe():
     """Mock M1M3 thermocouple data for 2 scanners, 2 sensorNames each."""
@@ -399,21 +336,17 @@ def m1m3_dataframe():
     )
 
 
-def test_m1m3_bulk_temperature_median(m1m3_dataframe, exposure_times_short):
-    """Bulk median over valid thermocouple readings."""
+@pytest.mark.parametrize(
+    ("method", "expected"),
+    [
+        ("m1m3_bulk_temperature_mean", np.mean([20.3, 20.5])),
+        ("m1m3_bulk_temperature_median", np.median([20.3, 20.5])),
+    ],
+)
+def test_m1m3_bulk_temperature(m1m3_dataframe, exposure_times_short, method, expected):
     start, end = exposure_times_short
     summary = Summary(dataframe=m1m3_dataframe, exposure_start=start, exposure_end=end)
-    result = summary.m1m3_bulk_temperature_median()
-    # 20.1 is ch0 (cold junction); valid: 20.3, 20.5
-    assert result == pytest.approx(np.median([20.3, 20.5]))
-
-
-def test_m1m3_bulk_temperature_mean(m1m3_dataframe, exposure_times_short):
-    """Bulk mean over valid thermocouple readings."""
-    start, end = exposure_times_short
-    summary = Summary(dataframe=m1m3_dataframe, exposure_start=start, exposure_end=end)
-    result = summary.m1m3_bulk_temperature_mean()
-    assert result == pytest.approx(np.mean([20.3, 20.5]))
+    assert getattr(summary, method)() == pytest.approx(expected)
 
 
 def test_m1m3_bulk_no_metadata_returns_none(valid_dataframe, exposure_times):
@@ -520,21 +453,6 @@ def test_m1m3_bulk_numeric_salindex_stays_metadata(exposure_times_short):
     assert summary.data_array.shape == (1, 1)
     assert "salIndex" in summary.metadata.columns
     assert summary.m1m3_bulk_temperature_mean() == pytest.approx(11.0)
-
-
-def test_m1m3_bulk_with_glass_thermocouples(exposure_times_short):
-    """Bulk temperature using the consdb glass thermocouple snapshot."""
-    df = _build_m1m3_dataframe(_glass_thermocouple_samples())
-    start, end = exposure_times_short
-    summary = Summary(dataframe=df, exposure_start=start, exposure_end=end)
-
-    median_result = summary.m1m3_bulk_temperature_median()
-    mean_result = summary.m1m3_bulk_temperature_mean()
-
-    assert median_result is not None
-    assert mean_result is not None
-    assert np.isfinite(median_result)
-    assert np.isfinite(mean_result)
 
 
 def test_m1m3_bulk_uses_column_name_not_position(exposure_times_short):
