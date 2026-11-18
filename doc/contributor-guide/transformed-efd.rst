@@ -61,6 +61,8 @@ Quick Reference for Experienced Contributors
 
    python ./python/lsst/consdb/transformed_efd/generate_schema_from_config.py --instrument latiss
 
+   Copy the generated file to ``$SDM_SCHEMAS_DIR/yml/``. Alembic reads the schema from there.
+
 4. **Create migration:**
 
 .. code-block:: bash
@@ -551,6 +553,9 @@ Follow these steps to add or modify a transformed metric:
 
    Replace ``<your_instrument>`` with ``latiss``, ``lsstcomcam``, or ``lsstcam``.
 
+   Copy the generated file to ``$SDM_SCHEMAS_DIR/yml/``. Alembic reads the schema from there.
+   Set ``SDM_SCHEMAS_DIR`` to a local clone of ``lsst/sdm_schemas``. Use a work branch. Do not open a pull request yet.
+
    **Note**: The schema generation process automatically validates your configuration against the Pydantic models, so any configuration errors will be caught at this step.
 
 4. **Generate Alembic Migrations**
@@ -577,7 +582,7 @@ Follow these steps to add or modify a transformed metric:
    Check the following files were created/updated:
 
    - Modified ``config_<instrument>.yaml`` file
-   - Updated schema YAML file (``schemas/yml/efd_<instrument>.yaml``)
+   - Generated schema YAML (``schemas/yml/efd_<instrument>.yaml``). Do not commit this file.
    - New Alembic migration script (``alembic/versions/``)
 
 6. **Test Your Changes**
@@ -591,20 +596,20 @@ Follow these steps to add or modify a transformed metric:
    Your commit should include:
 
    - Modified configuration file
-   - Updated schema YAML file
    - New Alembic migration script
    - Any associated test files
 
    Submit to the ``lsst-dm/consdb`` repository for review.
 
 8. **Schema Propagation**
-   Schema files are **not** copied to ``lsst/sdm_schemas`` automatically.
+   The ConsDB configuration files define the schemas. ``sdm_schemas`` keeps a copy for the TAP service. Open the ``sdm_schemas`` pull request after the migration runs and the Transformed EFD service writes correct values in the dev environment.
    After the ConsDB pull request is ready (the generated ``efd_<instrument>.yaml`` is stable), open a matching pull request in `sdm_schemas <https://github.com/lsst/sdm_schemas>`__ yourself:
 
    - Copy the instrument schema YAML files from ``python/lsst/consdb/transformed_efd/schemas/yml/`` in this repository to ``python/lsst/sdm/schemas/`` in ``lsst/sdm_schemas``.
    - Include only the instrument schemas: ``efd_latiss.yaml``, ``efd_lsstcomcam.yaml``, and ``efd_lsstcam.yaml``. Do not copy ``efd_scheduler.yaml``.
    - Add or update files; do not delete schemas in ``sdm_schemas`` unless that deletion is an explicit, reviewed change.
    - Follow the checklist in the `sdm_schemas contribution guide <https://github.com/lsst/sdm_schemas/blob/main/CONTRIBUTING.md>`__ (schema version, news fragment, Jenkins, and any schema-specific constraints).
+   - Delete the generated instrument YAML from ``schemas/yml/`` in consdb. Keep ``efd_scheduler.yaml``.
 
    Published column documentation at https://sdm-schemas.lsst.io/ is generated from ``sdm_schemas``, so instrument schema pages stay outdated until that pull request is merged.
 
