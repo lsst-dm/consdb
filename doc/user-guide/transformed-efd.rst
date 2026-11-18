@@ -82,7 +82,7 @@ The unpivoted tables were created to handle cases where there were too many colu
 
   .. note::
 
-     Science Data Models:
+     Science Data Models (column descriptions published by ``lsst/sdm_schemas``):
 
      - LATISS: https://sdm-schemas.lsst.io/efd_latiss.html
      - LSSTCam: https://sdm-schemas.lsst.io/efd_lsstcam.html
