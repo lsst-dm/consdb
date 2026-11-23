@@ -257,7 +257,7 @@ Transformation Logic
   - ``rms_from_polynomial_fit``: Calculate RMS after polynomial fitting of data within the timespan
   - ``most_recent_value``: Return the most recent scalar value within the timespan
 
-  **Timespan Context**: All functions operate on data that falls within the specific exposure or visit timespan boundaries. Data outside these timespans is ignored.
+  **Timespan Context**: All functions operate on data inside the column query window. The default window is the exposure or visit timespan. ``start_offset`` and ``end_reference`` change that window. Data outside the window is ignored.
 
 **function_args** (dictionary, optional)
   Parameters to pass to the selected function. Keys and values must match the method signature in the ``Summary`` class.
@@ -266,7 +266,17 @@ Transformation Logic
 
   - For ``stddev``: ``{"ddof": 1}`` (degrees of freedom)
   - For ``rms_from_polynomial_fit``: ``{"degree": 4, "fit_basis": "index"}``
-  - For ``most_recent_value``: ``{"start_offset": 0}`` (offset in hours)
+
+**start_offset** (float, optional)
+  Hours to shift the query window start. A negative value looks back before the exposure or visit start. Example: ``-0.5`` looks back 30 minutes. This value does not move the window end.
+
+**end_reference** (string, optional, default: ``end``)
+  Exposure or visit boundary used as the query window end.
+
+  - ``end``: The window ends at the exposure or visit end.
+  - ``start``: The window ends at the original exposure or visit start, before ``start_offset``.
+
+  The system applies ``end_reference`` first, then ``start_offset``. With ``end_reference: start`` and ``start_offset: -0.5``, the window is the 30 minutes before the exposure or visit start.
 
 **pre_aggregate_interval** (string, optional)
   For simple functions (``mean``, ``max``, ``min``), enables server-side aggregation in InfluxDB to improve performance. Use time strings like ``"1s"``, ``"5m"``, or ``"1h"``.
@@ -311,7 +321,7 @@ The transformed EFD system is fundamentally designed around exposure and visit t
 
 - **No Continuous Processing**: The system does not process continuous data streams. It only operates on discrete time windows defined by exposures and visits.
 
-- **Data Filtering**: Raw EFD data is automatically filtered to include only data points that fall within the relevant timespan boundaries before applying transformation functions.
+- **Data Filtering**: Raw EFD data is filtered to the column query window before transformation functions run. The default window is the exposure or visit timespan. ``start_offset`` and ``end_reference`` change that window.
 
 This timespan-based architecture ensures that all metrics are contextually relevant to specific astronomical observations rather than arbitrary time periods.
 

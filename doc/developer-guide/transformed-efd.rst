@@ -121,6 +121,7 @@ Pydantic models that define and validate YAML configuration files:
 - Links statistical functions to specific EFD data sources
 - Defines output schema structure and data types
 - Handles column-level configuration like null value handling and precision settings
+- Sets the query window with ``start_offset`` (hours to shift the window start) and ``end_reference`` (``end`` or ``start``; default ``end``)
 
 **ConfigModel**
 
@@ -323,18 +324,21 @@ The transformation process follows this sequence:
 
 2. **Topic Optimization** (\_map\_topics)
     - Groups columns by topic, packed\_series, start\_offset, and aggregation settings
+    - Keeps ``end_reference`` on each column. It is not part of the group key
     - Minimizes duplicate EFD queries by batching similar requests
     - Enables server-side aggregation when configured (pre\_aggregate\_interval)
 
 3. **EFD Data Retrieval** (\_query\_efd\_values)
     - Queries InfluxDB for telemetry data within calculated time windows
     - Handles both regular time series and packed time series data
-    - Applies start\_offset adjustments for time window modifications
+    - Applies ``start_offset`` to move the EFD query start. A negative offset widens the query earlier
 
 4. **Column Value Computation** (\_compute\_column\_value)
-    - Filters EFD data to exact exposure/visit time boundaries
+    - Applies ``end_reference`` before ``start_offset``
+    - ``end_reference: start`` sets the window end to the original exposure or visit start
+    - ``start_offset`` then shifts only the window start
+    - Filters EFD data to that window
     - Applies statistical transformations via Summary class
-    - Handles time offset adjustments and data validation
 
 5. **Result Storage** (\_store\_results)
     - Stores computed metrics in PostgreSQL tables (exposure\_efd, visit1\_efd)
@@ -347,7 +351,7 @@ Key methods and their responsibilities:
 
 - **process\_interval()**: Main entry point that orchestrates the entire transformation pipeline
 - **\_map\_topics()**: Critical optimization that groups similar queries to minimize EFD roundtrips
-- **\_compute\_column\_value()**: Core computation engine that applies transformations within timespans
+- **\_compute\_column\_value()**: Core computation engine that applies ``end_reference`` and ``start_offset``, then runs transformations on that window
 - **\_process\_topic()**: Handles individual topic processing and data retrieval
 - **\_process\_column()**: Manages column-level processing and result aggregation
 - **get\_schema\_by\_instrument()**: Maps instrument names to database schemas
@@ -536,6 +540,8 @@ The system follows a layered architecture with clear separation of concerns:
           +tables: List[str]
           +topics: List[Topic]
           +function_args: Dict
+          +start_offset: float
+          +end_reference: str
       }
 
       class Topic {
@@ -671,7 +677,7 @@ The system consists of the following key classes and their relationships:
 - **Transform**: Main processing engine with dependencies on ButlerDao, InfluxDbDao, Summary, and ConfigModel
 - **Summary**: Statistical processing framework with methods for mean, stddev, max, min, rms\_from\_polynomial\_fit, most\_recent\_value, apply
 - **ConfigModel**: Pydantic model containing version and list of Column objects
-- **Column**: Configuration object with name, function, tables, topics, and function\_args
+- **Column**: Configuration object with name, function, tables, topics, function\_args, start\_offset, and end\_reference
 - **Topic**: Configuration object with name and list of Field objects
 - **Field**: Simple configuration object with name attribute
 
