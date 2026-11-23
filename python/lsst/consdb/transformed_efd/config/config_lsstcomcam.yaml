@@ -5319,6 +5319,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg"}
   description: U position offset.
@@ -5332,6 +5333,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg"}
   description: V position offset.
@@ -5345,6 +5347,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg"}
   description: W position offset.
@@ -5358,6 +5361,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um"}
   description: X position offset.
@@ -5371,6 +5375,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um"}
   description: Y position offset.
@@ -5384,6 +5389,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um"}
   description: Z position offset.
@@ -5397,6 +5403,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg"}
   description: U position offset.
@@ -5410,6 +5417,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg"}
   description: V position offset.
@@ -5423,6 +5431,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg"}
   description: W position offset.
@@ -5436,6 +5445,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um"}
   description: X position offset.
@@ -5449,6 +5459,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um"}
   description: Y position offset.
@@ -5462,6 +5473,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um"}
   description: Z position offset.
@@ -14876,6 +14888,7 @@ columns:
   store_unpivoted: True
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um"}
   description: Aggregated degree of freedom in the control algorithm. The unit of angle-related elements is arcsec instead of micron.
@@ -14939,6 +14952,7 @@ columns:
   store_unpivoted: True
   function: most_recent_value
   start_offset: -1
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um"}
   description: Calculated degree of freedom in the last visit. The unit of angle-related elements is arcsec instead of micron.
@@ -16556,6 +16570,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg", "ucd":"meta.ucd"}
   description: Camera Hexapod compensation offset (LUT) mean U angle.
@@ -16572,6 +16587,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg", "ucd":"meta.ucd"}
   description: Camera Hexapod compensation offset (LUT) mean V angle.
@@ -16588,6 +16604,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg", "ucd":"meta.ucd;stat"}
   description: Camera Hexapod compensation offset (LUT) mean W angle.
@@ -16604,6 +16621,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um", "ucd":"meta.ucd"}
   description: Camera Hexapod compensation offset (LUT) mean X position.
@@ -16620,6 +16638,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um", "ucd":"meta.ucd"}
   description: Camera Hexapod compensation offset (LUT) mean Y position.
@@ -16636,6 +16655,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um", "ucd":"meta.ucd"}
   description: Camera Hexapod compensation offset (LUT) mean Z position.
@@ -16652,6 +16672,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg", "ucd":"meta.ucd"}
   description: M2 Hexapod compensation offset (LUT) mean U angle.
@@ -16668,6 +16689,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg", "ucd":"meta.ucd"}
   description: M2 Hexapod compensation offset (LUT) mean V angle.
@@ -16684,6 +16706,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"deg", "ucd":"meta.ucd"}
   description: M2 Hexapod compensation offset (LUT) mean W angle.
@@ -16700,6 +16723,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um", "ucd":"meta.ucd"}
   description: M2 Hexapod compensation offset (LUT) mean X position.
@@ -16716,6 +16740,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um", "ucd":"meta.ucd"}
   description: M2 Hexapod compensation offset (LUT) mean Y position.
@@ -16732,6 +16757,7 @@ columns:
   tables: ["exposure_efd","visit1_efd"]
   function: most_recent_value
   start_offset: -0.5
+  end_reference: start
   datatype: float
   ivoa: {"unit":"um", "ucd":"meta.ucd"}
   description: M2 Hexapod compensation offset (LUT) mean Z position.
