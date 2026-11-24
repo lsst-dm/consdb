@@ -21,6 +21,8 @@
 
 """Defines the configuration models used in the application."""
 
+from typing import Literal
+
 from pydantic import BaseModel, model_validator
 
 TABLES = [
@@ -74,6 +76,9 @@ class Column(BaseModel):
         start_offset (Optional[float]): Hours to shift the exposure/visit
             window start when querying EFD and computing values (e.g. -0.5
             looks back 30 minutes before the timespan begin).
+        end_reference (Literal["start", "end"]): Exposure/visit boundary to
+            use for the query window end. "end" uses the timespan end;
+            "start" uses the original timespan begin before start_offset.
         datatype (str): The data type of the column. Must match the
             Felis type.
         ivoa (Optional[Dict]): Dictionary containing IVOA metadata for TAP,
@@ -96,6 +101,7 @@ class Column(BaseModel):
     function: str
     function_args: dict | None = None
     start_offset: float | None = None
+    end_reference: Literal["start", "end"] = "end"
     pre_aggregate_interval: str | None = None
     datatype: str
     ivoa: dict | None = None
@@ -106,8 +112,7 @@ class Column(BaseModel):
     topics: list[Topic]
 
     @model_validator(mode="after")
-    @classmethod  # Add this decorator
-    def validate_tables_when_unpivoted(cls, model):
+    def validate_tables_when_unpivoted(self):
         """Validate the tables attribute when unpivoting is required.
 
         Args:
@@ -119,15 +124,14 @@ class Column(BaseModel):
             Column: The validated column model.
 
         """
-        # Here 'model' is an instance of 'Column'
-        if model.store_unpivoted:
-            invalid_tables = [table for table in model.tables if table not in UNPIVOTED_TABLES]
+        if self.store_unpivoted:
+            invalid_tables = [table for table in self.tables if table not in UNPIVOTED_TABLES]
             if invalid_tables:
                 raise ValueError(
                     f"When 'store_unpivoted' is True, only {UNPIVOTED_TABLES} "
                     f"are allowed. Invalid tables provided: {invalid_tables}"
                 )
-        return model
+        return self
 
 
 class ConfigModel(BaseModel):

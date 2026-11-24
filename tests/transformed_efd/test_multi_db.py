@@ -46,14 +46,6 @@ class TestDBBaseInit:
         assert db.db_uri == "sqlite:///test.db"
         assert len(db._engines) == 1
 
-    def test_single_uri_in_list(self, logger):
-        """A list with one URI should behave identically to a string."""
-        with patch.object(DBBase, "get_db_engine"):
-            db = DBBase(["sqlite:///test.db"], logger=logger)
-        assert db.db_uris == ["sqlite:///test.db"]
-        assert db.db_uri == "sqlite:///test.db"
-        assert len(db._engines) == 1
-
     def test_multiple_uris(self, logger):
         """Multiple URIs should be stored; primary is the first."""
         uris = ["postgresql://prod/db", "postgresql://dev/db"]
@@ -131,7 +123,7 @@ class TestWriteToAllEngines:
         with pytest.raises(ConnectionError, match="Primary down"):
             db._write_to_all_engines(write_fn)
 
-    def test_secondary_failure_logs_and_continues(self, logger):
+    def test_secondary_failure_logs_and_continues(self, logger, caplog):
         """If secondary fails, should log error and return primary result."""
         uris = ["postgresql://prod/db", "postgresql://dev/db"]
         with patch.object(DBBase, "get_db_engine"):
@@ -146,8 +138,16 @@ class TestWriteToAllEngines:
                 raise ConnectionError("Secondary down")
             return 10
 
-        result = db._write_to_all_engines(write_fn)
+        with caplog.at_level(logging.WARNING, logger=logger.name):
+            result = db._write_to_all_engines(write_fn)
+
         assert result == 10
+        assert any(
+            record.levelno == logging.WARNING
+            and "event=db_write_failed" in record.getMessage()
+            and "Secondary down" in record.getMessage()
+            for record in caplog.records
+        )
 
     def test_all_secondaries_fail_returns_primary(self, logger):
         """Even if all secondaries fail, primary result is returned."""

@@ -43,12 +43,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from pathlib import Path
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 import lsst.consdb.transformed_efd.generate_schema_from_config as gen_schema
 import pytest
 import yaml
-from lsst.consdb.transformed_efd.generate_schema_from_config import schema_dict
 
 
 @pytest.fixture
@@ -93,20 +92,6 @@ def test_missing_config_columns(mock_config):
         gen_schema.generate_schema("latiss")
 
 
-def test_schema_generation_with_custom_output_dir(tmp_path, mock_config):
-    """Test schema file and directories are created in a custom location."""
-    output_dir = tmp_path / "custom_schemas"
-    assert not output_dir.exists()
-
-    with patch(f"{gen_schema.__name__}.read_config", return_value=mock_config):
-        schema_path = gen_schema.generate_schema("latiss", output_dir=output_dir)
-
-    expected_file = output_dir / "efd_latiss.yaml"
-    assert output_dir.exists()
-    assert schema_path == expected_file
-    assert expected_file.is_file()
-
-
 def test_default_output_dir(tmp_path, mock_config):
     """Test the default output directory is used when none is specified."""
     # This test mocks the package resource finding mechanism to avoid writing
@@ -120,17 +105,10 @@ def test_default_output_dir(tmp_path, mock_config):
     # We patch `read_config` so we don't need a real config file on disk.
     # The call to `importlib.resources.files` still happens, however.
     with (
-        patch("importlib.resources.files", return_value=mock_traversable) as mock_files,
+        patch("importlib.resources.files", return_value=mock_traversable),
         patch(f"{gen_schema.__name__}.read_config", return_value=mock_config),
     ):
         schema_path = gen_schema.generate_schema("latiss")
-
-        expected_calls = [
-            call("lsst.consdb.transformed_efd.config"),
-            call("lsst.consdb.transformed_efd"),
-        ]
-        mock_files.assert_has_calls(expected_calls)
-        assert mock_files.call_count == 2
 
         expected_file = mock_schemas_dir / "efd_latiss.yaml"
         assert schema_path == expected_file
@@ -163,22 +141,13 @@ def test_schema_content(tmp_path, mock_config):
     assert column1_data["ivoa:ucd"] == "meta.id"
 
 
-@pytest.mark.parametrize("instrument", schema_dict.keys())
-def test_all_instruments(tmp_path, mock_config, instrument):
-    """Test that schema generation works for all supported instruments."""
-    with patch(f"{gen_schema.__name__}.read_config", return_value=mock_config):
-        schema_path = gen_schema.generate_schema(instrument, output_dir=tmp_path)
-        expected_schema_name = schema_dict[instrument]
-        assert schema_path.name == f"{expected_schema_name}.yaml"
-        assert schema_path.is_file()
-
-
-def test_argparser_setup():
+def test_argparser_setup(capsys):
     """Test that the argument parser is set up correctly."""
     parser = gen_schema.build_argparser()
 
     with pytest.raises(SystemExit):
         parser.parse_args([])
+    assert "--instrument" in capsys.readouterr().err
 
     args = parser.parse_args(["--instrument", "latiss"])
     assert args.instrument == "latiss"

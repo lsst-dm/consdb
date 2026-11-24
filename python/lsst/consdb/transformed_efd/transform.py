@@ -136,11 +136,16 @@ class Transform:
         """Compute column value using named transformation."""
 
         ts_start = pandas.to_datetime(start_time.utc.datetime, utc=True)
+        ts_end = pandas.to_datetime(end_time.utc.datetime, utc=True)
+
+        # end_reference must be set before start_offset is applied
+        end_reference = function_kwargs.pop("end_reference", "end")
+        if end_reference == "start":
+            ts_end = ts_start
+
         start_offset = function_kwargs.pop("start_offset", None)
         if start_offset is not None:
             ts_start += pandas.Timedelta(start_offset, unit="h")
-
-        ts_end = pandas.to_datetime(end_time.utc.datetime, utc=True)
 
         valid_series = []
 
@@ -264,13 +269,16 @@ class Transform:
             if pre_aggregate_interval is not None and function in ["mean", "max", "min"]:
                 processing_topic["pre_aggregate_interval"] = pre_aggregate_interval
 
+            for col in processing_topic["columns"]:
+                if col.get("function_args") is None:
+                    col["function_args"] = {}
+                col["function_args"]["end_reference"] = col.get("end_reference", "end")
+
             # Apply start_offset to topic and propagate to all columns in this
             # group so _compute_column_value can shift the per-exposure window.
             if start_offset is not None:
                 processing_topic.setdefault("function_args", {})["start_offset"] = start_offset
                 for col in processing_topic["columns"]:
-                    if col.get("function_args") is None:
-                        col["function_args"] = {}
                     col["function_args"]["start_offset"] = start_offset
                 offset_topic_interval = topic_interval.copy()
                 offset_topic_interval[0] += astropy.time.TimeDelta(float(start_offset) * 3600, format="sec")
