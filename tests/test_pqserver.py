@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -516,6 +517,28 @@ def test_query_endpoint(lsstcomcamsim):
     _assert_http_status(response, 200)
     response_json = response.json()
     assert response_json["data"][0][0] == 0
+
+
+@pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
+def test_query_endpoint_logs_user(lsstcomcamsim, caplog):
+    client = lsstcomcamsim
+
+    with caplog.at_level(logging.INFO, logger="/consdb/query"):
+        response = client.post(
+            "/consdb/query",
+            json={"query": "SELECT 1;"},
+            headers={"X-Auth-Request-User": "someuser"},
+        )
+    _assert_http_status(response, 200)
+    assert any("user=someuser" in r.getMessage() and "SELECT 1;" in r.getMessage() for r in caplog.records)
+
+    caplog.clear()
+    with caplog.at_level(logging.INFO, logger="/consdb/query"):
+        response = client.post("/consdb/query", json={"query": "SELECT 1;"})
+    _assert_http_status(response, 200)
+    messages = [r.getMessage() for r in caplog.records if "SELECT 1;" in r.getMessage()]
+    assert messages
+    assert not any("user=" in m for m in messages)
 
 
 @pytest.mark.parametrize("lsstcomcamsim", ["cdb_latiss"], indirect=True)
