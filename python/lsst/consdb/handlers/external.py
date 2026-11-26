@@ -25,7 +25,7 @@ from typing import Any
 import astropy.time
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
-from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, Body, Depends, Header, HTTPException, Path, Query
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
@@ -764,6 +764,7 @@ def get_all_metadata(
 def query(
     data: QueryRequestModel = Body(title="SQL query string"),
     commit: int | None = Query(1, title="Apply commit to the transaction."),
+    x_auth_request_user: str | None = Header(None, include_in_schema=False),
     db: Session = Depends(get_db),
     logger: logging.Logger = Depends(get_logger),
 ) -> QueryResponseModel:
@@ -792,7 +793,8 @@ def query(
     was applied, or None if the driver cannot report it.
     """
 
-    logger.info("pqserver query endpoint:\n%r", data.query)
+    user_info = f" (user={x_auth_request_user})" if x_auth_request_user else ""
+    logger.info("pqserver query endpoint%s:\n%r", user_info, data.query)
 
     columns = []
     rows = []
@@ -834,7 +836,11 @@ def query(
                     truncated = bool(result.fetchmany(1))
                     if truncated:
                         logger.warning(
-                            "query truncated at %d (of %s) rows:\n%r", config.max_rows, total_rows, data.query
+                            "query truncated at %d (of %s) rows%s:\n%r",
+                            config.max_rows,
+                            total_rows,
+                            user_info,
+                            data.query,
                         )
             else:
                 columns = ["commit"]
